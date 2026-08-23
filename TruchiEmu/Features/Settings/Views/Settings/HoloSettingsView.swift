@@ -27,6 +27,10 @@ struct HoloSettingsView: View {
     @State private var showPlayButton: Bool = HoloSettings.showPlayButton
     @State private var hueCycles: Double = HoloSettings.hueCycles
     @State private var variantWeights: [HoloVariant: Double] = HoloSettingsStore.shared.variantWeights
+    @State private var reverseColorMode: HoloReverseColorMode = HoloSettings.reverseColorMode
+    @State private var reverseSolidColor: Color = HoloSettings.reverseSolidColor
+    @State private var reverseRainbowIntensity: Double = HoloSettings.reverseRainbowIntensity
+    @State private var reverseTextureMode: HoloReverseTextureMode = HoloSettings.reverseTextureMode
 
     init(searchText: Binding<String> = .constant(""),
          focusedSectionID: Binding<String?> = .constant(nil),
@@ -330,6 +334,105 @@ struct HoloSettingsView: View {
                     Text(loc.localized("holo.depthDescription"))
                 }
                 .id("section-depth")
+            }
+
+            if (!isSearching || matchesSearch("reverse holo color solid rainbow background tint median pattern sheen variant texture etch random foil")) && sectionVisible("section-reverse") {
+                Section {
+                    SettingsRow(
+                        loc.localized("holo.reverse.colorMode"),
+                        description: loc.localized("holo.reverse.colorModeDescription")
+                    ) {
+                        Picker(loc.localized("holo.reverse.colorMode"), selection: $reverseColorMode) {
+                            ForEach(HoloReverseColorMode.allCases) { mode in
+                                Text(loc.localized(mode.localizedKey)).tag(mode)
+                            }
+                        }
+                        .labelsHidden()
+                        .frame(width: 180)
+                        .onChange(of: reverseColorMode) { _, newValue in
+                            HoloSettings.reverseColorMode = newValue
+                        }
+                    }
+
+                    SettingsRow(
+                        loc.localized("holo.reverse.textureMode"),
+                        description: loc.localized("holo.reverse.textureModeDescription")
+                    ) {
+                        Picker(loc.localized("holo.reverse.textureMode"), selection: $reverseTextureMode) {
+                            ForEach(HoloReverseTextureMode.allCases) { mode in
+                                Text(loc.localized(mode.localizedKey)).tag(mode)
+                            }
+                        }
+                        .labelsHidden()
+                        .frame(width: 180)
+                        .onChange(of: reverseTextureMode) { _, newValue in
+                            HoloSettings.reverseTextureMode = newValue
+                        }
+                    }
+
+                    if reverseColorMode == .solid {
+                        SettingsRow(
+                            loc.localized("holo.reverse.color"),
+                            description: loc.localized("holo.reverse.colorDescription")
+                        ) {
+                            HStack(spacing: 8) {
+                                ColorPicker("", selection: $reverseSolidColor)
+                                    .labelsHidden()
+                                    .frame(width: 64)
+                                HStack(spacing: 6) {
+                                    ForEach(HoloReversePreset.all, id: \.name) { preset in
+                                        Button {
+                                            reverseSolidColor = preset.color
+                                        } label: {
+                                            RoundedRectangle(cornerRadius: 4)
+                                                .fill(preset.color)
+                                                .frame(width: 18, height: 18)
+                                                .overlay(RoundedRectangle(cornerRadius: 4).strokeBorder(.white.opacity(0.25)))
+                                        }
+                                        .buttonStyle(.plain)
+                                        .help(preset.name)
+                                    }
+                                }
+                            }
+                            .onChange(of: reverseSolidColor) { _, newValue in
+                                HoloSettings.reverseSolidColor = newValue
+                            }
+                        }
+                    }
+
+                    if reverseColorMode == .rainbow {
+                        SettingsRow(
+                            loc.localized("holo.reverse.rainbowIntensity"),
+                            description: loc.localized("holo.reverse.rainbowIntensityDescription")
+                        ) {
+                            HStack(spacing: 8) {
+                                Slider(value: $reverseRainbowIntensity, in: 0.0...1.0)
+                                    .frame(width: 140)
+                                Text("\(Int((reverseRainbowIntensity * 100).rounded()))%")
+                                    .font(.system(size: 12, weight: .medium, design: .rounded))
+                                    .foregroundStyle(AppColors.textSecondary(colorScheme))
+                                    .frame(width: 36, alignment: .trailing)
+                            }
+                            .onChange(of: reverseRainbowIntensity) { _, newValue in
+                                HoloSettings.reverseRainbowIntensity = newValue
+                            }
+                        }
+                    }
+
+                    if reverseColorMode == .background {
+                        SettingsRow(
+                            loc.localized("holo.reverse.backgroundNote"),
+                            description: loc.localized("holo.reverse.backgroundNoteDescription")
+                        ) {
+                            EmptyView()
+                        }
+                    }
+                } header: {
+                    Label { Text(loc.localized("holo.reverse")) } icon: { Image(systemName: "square.on.square.intersection.dashed") }
+                } footer: {
+                    Text(loc.localized("holo.reverseDescription"))
+                }
+                .id("section-reverse")
             }
 
             if (!isSearching || matchesSearch("masks folder reveal finder cache vision holo")) && sectionVisible("section-masks") {

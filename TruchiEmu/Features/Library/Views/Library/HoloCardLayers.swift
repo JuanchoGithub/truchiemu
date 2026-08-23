@@ -1,4 +1,5 @@
 import SwiftUI
+import AppKit
 
 // MARK: - CSS Color Palette (from simeydotme/pokemon-cards-css)
 
@@ -134,6 +135,41 @@ final class HoloFoilTileCache {
     }
 }
 
+// Variant-aware contrast/saturation/brightness applied to the whole
+// `HoloFoilLayers` stack (before `colorDodge`). The standard rainbow variants
+// keep the source-faithful high-contrast "blowout"; Reverse Holo in solid /
+// background colour mode uses a mild, colour-preserving treatment that is
+// visible at rest (real reverse holo foils the whole card), and never rotates
+// the user's chosen hue.
+struct HoloFoilContrastModifier: ViewModifier {
+    let isReverse: Bool
+    let revRainbow: Bool
+    let pfc: CGFloat
+
+    func body(content: Content) -> some View {
+        if revRainbow {
+            content
+                .contrast(2.75)
+                .saturation(0.65)
+                .brightness(-0.4 + pfc * 0.25)
+        } else if isReverse {
+            // The brightness(.55) contrast(1.5) saturate(1) source filter is
+            // already baked into `reverseShine` itself (colorMultiply + .contrast
+            // on the shine before the colour-dodge), so the body-level modifier
+            // is a no-op here to avoid double-applying contrast.
+            content
+                .contrast(1.0)
+                .saturation(1.0)
+                .brightness(0.0)
+        } else {
+            content
+                .contrast(2.75)
+                .saturation(0.65)
+                .brightness(-0.4 + pfc * 0.25)
+        }
+    }
+}
+
 // MARK: - Holo Foil (cached tiles, static position)
 
 // Faithful to simeydotme/pokemon-cards-css `regular-holo.css` `.card__shine`:
@@ -196,7 +232,10 @@ struct HoloFoilLayers: View, Equatable {
     var allowBump: Bool = true
 
     var body: some View {
-        ZStack {
+        let isReverse = (settings.randomization?.variant == .reverseHolo)
+        let revRainbow = isReverse && settings.reverseColorMode == .rainbow
+        let hueDegrees = (pointerX - 0.5) * settings.hueCycles * 360 + (pointerY - 0.5) * settings.hueCycles * 360
+        return ZStack {
             if let masks {
                 if let randomization = settings.randomization {
                     // Per-launch, per-card roll: each zone picks its own
@@ -279,7 +318,7 @@ struct HoloFoilLayers: View, Equatable {
         // rainbow visibly responds to card rotation too — the source repo
         // achieves this via its 3D rotator; we mirror it as a 2D offset for
         // the non-bump path.
-        .offset(parallaxOffset)
+        .offset(parallaxOffset(variant: settings.randomization?.variant))
         // The per-region stack (texture-masked rainbow + sweep band) is
         // flattened into one layer so the outer `.colorDodge` treats the
         // whole masked foil as a single source vs the art — matches CSS
@@ -294,19 +333,7 @@ struct HoloFoilLayers: View, Equatable {
         // (.65) keeps the rainbow from becoming a saturated wash.
         // SwiftUI's `.brightness` is additive (-1..1); CSS `brightness(N)`
         // is multiplicative so 0.85 → -0.15 (slight dim before dodge).
-        .contrast(2.75)
-        .saturation(0.65)
-        // Pointer-from-center modulation — source's
-        // `filter: brightness(calc((--pointer-from-center*0.25) + 0.6))`.
-        // At cursor-center pfc=0 → brightness ~-0.4 (rainbow near-black,
-        // invisible under colorDodge, texture pattern not visible at
-        // rest-on-hover). As cursor moves pfc → 1 → brightness lifts to
-        // ~-0.15 (rainbow bright bands become visible through the
-        // texture). This is the "holographic textures only become visible
-        // when they change color/get brighter" behavior — at rest the
-        // foil is near-invisible, only the cursor-driven hueRotation +
-        // sweep + brightness lift reveal it as the user explores the card.
-        .brightness(-0.4 + pointerFromCenter * 0.25)
+        .modifier(HoloFoilContrastModifier(isReverse: isReverse, revRainbow: revRainbow, pfc: pointerFromCenter))
         // color-dodge = the holo "blowout" — source's `mix-blend-mode:
         // color-dodge` on `.card__shine`. Applied after `compositingGroup`
         // so the masking clustered region stack is flattened first.
@@ -314,6 +341,11 @@ struct HoloFoilLayers: View, Equatable {
         // unchanged; colorDodge of the bright rainbow AT the texture's
         // bright pixels LIGHTENS the art holographically. The card never
         // darkens — colorDodge only adds light.
+        // Reverse Holo is colour-dodged exactly like the source
+        // (reverse-holo.css: `mix-blend-mode: color-dodge`). Its darker cells
+        // are the card's own colour showing through where the dodge leaves the
+        // art untouched; its bright cells blow to white. The internal
+        // `difference` ray is what flips cells bright/dark.
         .blendMode(.colorDodge)
         // Angular hue shift: rotate the whole rainbow as the cursor moves.
         // `settings.hueCycles` full 360° rotations occur as the cursor travels
@@ -323,7 +355,7 @@ struct HoloFoilLayers: View, Equatable {
         // shift; the default of 4 makes the rainbow cycle four times across the
         // card. Pure GPU color filter on the pre-rendered tiles — no re-render
         // per cursor event.
-        .hueRotation(.degrees((pointerX - 0.5) * settings.hueCycles * 360 + (pointerY - 0.5) * settings.hueCycles * 360))
+        .hueRotation(.degrees(revRainbow || !isReverse ? hueDegrees : 0))
     }
 
     /// Normalized distance from the artwork center (0 at center, 1 at corner).
@@ -347,12 +379,15 @@ struct HoloFoilLayers: View, Equatable {
     /// tilt. Net effect: rainbow visibly slides across the etched mask as
     /// the cursor moves or the card tilts, replicating the source repo's
     /// actual technique (NOT a bump map — see AGENTS.md commentary).
-    private var parallaxOffset: CGSize {
+    private func parallaxOffset(variant: HoloVariant?) -> CGSize {
         // Hard-disabled when bump-only is requested: the bump shader has its
         // own light-direction math, parallax shear would double-up.
         let mode = settings.depthMode
         let strength = settings.parallaxStrength
         guard mode != .bump, strength > 0.001 else { return .zero }
+        // Reverse Holo's own diagonal shift IS its parallax (see
+        // `reverseShine`); adding the global shear would double the motion.
+        if variant == .reverseHolo { return .zero }
         let cx = (pointerX - 0.5) * 2.6
         let cy = (pointerY - 0.5) * 3.5
         // Tilt contributes ~0.05× the rotation in degrees → points. At max
@@ -435,18 +470,23 @@ struct HoloFoilLayers: View, Equatable {
     @MainActor
     @ViewBuilder
     private func regionLayer(_ pattern: HoloPattern, variant: HoloVariant?, intensity: Double, mask: NSImage, w: CGFloat, h: CGFloat) -> some View {
-        let textureTile = HoloFoilTileCache.shared.tile(for: pattern, variant: variant, w: w, h: h)
+        let isReverse = (variant == .reverseHolo)
+        // Reverse Holo is rendered as a live, pointer-driven shine
+        // (`reverseShine`) — no baked tile, because the moving highlight must
+        // track the cursor. Every other variant uses the pre-rendered tile.
+        let textureTile: NSImage? = isReverse
+            ? nil
+            : HoloFoilTileCache.shared.tile(for: pattern, variant: variant, w: w, h: h)
         let bandWidth = w * 0.5
         ZStack {
-            // Bump path (mode == .bump or .both): a Metal-rendered image
-            // that combines the masked base art + the procedurally-derived
-            // normal map + a synthesized rainbow via the HoloBump shader.
-            // When mode is .parallax this layer is invisible (no renderer
-            // call) and the parallax stack takes over.
-            if settings.depthMode != .parallax, isHovered, allowBump {
+            // Bump path: skipped for Reverse Holo — its highlight is a 2D
+            // parallax illusion driven by the cursor; the Metal bump would
+            // double up and lose the cursor-tracking read.
+            if !isReverse, settings.depthMode != .parallax, isHovered, allowBump {
                 bumpLayer(pattern: pattern, variant: variant, mask: mask, textureTile: textureTile, w: w, h: h, intensity: intensity)
             }
-            if settings.depthMode != .bump {
+            // Parallax path: always on for Reverse Holo (its only path).
+            if settings.depthMode != .bump || isReverse {
                 parallaxLayer(pattern: pattern, variant: variant, intensity: intensity, mask: mask, w: w, h: h, textureTile: textureTile, bandWidth: bandWidth)
             }
         }
@@ -458,26 +498,187 @@ struct HoloFoilLayers: View, Equatable {
     }
 
     /// Parallax illusion layer — the existing source-faithful rainbow tile
-    /// + sweep band. Rendered when `depthMode != .bump` (so it's shown in
-    /// `.parallax` and `.both` modes).
+    /// + sweep band, or the live Reverse Holo shine. Rendered when
+    /// `depthMode != .bump` (so it's shown in `.parallax` and `.both` modes),
+    /// and unconditionally for Reverse Holo.
     @ViewBuilder
     private func parallaxLayer(pattern: HoloPattern, variant: HoloVariant?, intensity: Double, mask: NSImage, w: CGFloat, h: CGFloat, textureTile: NSImage?, bandWidth: CGFloat) -> some View {
-        if let tile = textureTile {
+        if let variant, variant == .reverseHolo {
+            // Live, pointer-driven Reverse Holo shine (reverse-holo.css).
+            reverseShine(w: w, h: h)
+                .frame(width: w * 2, height: h * 2)
+        } else if let tile = textureTile {
             Image(nsImage: tile)
                 .resizable()
                 .frame(width: w * 2, height: h * 2)
         }
-        LinearGradient(
-            colors: [
-                Color.white.opacity(0.0),
-                Color.white.opacity(0.7),
-                Color.white.opacity(0.0)
-            ],
-            startPoint: .leading,
-            endPoint: .trailing
-        )
-        .frame(width: bandWidth, height: h * 2)
-        .offset(x: (pointerX - 0.5) * w * 2)
+        // Sweep band for the rainbow variants (subtle gloss). Suppressed for
+        // Reverse Holo — its moving highlight comes from `reverseShine`.
+        let isReverse = (variant == .reverseHolo)
+        let bandPeak: Double = isReverse ? 0.0 : 0.7
+        let bandW: CGFloat = bandWidth
+        if bandPeak > 0 {
+            LinearGradient(
+                colors: [
+                    Color.white.opacity(0.0),
+                    Color.white.opacity(bandPeak),
+                    Color.white.opacity(0.0)
+                ],
+                startPoint: .leading,
+                endPoint: .trailing
+            )
+            .frame(width: bandW, height: h * 2)
+            .offset(x: (pointerX - 0.5) * w * 2)
+        }
+    }
+
+    /// Source-faithful Reverse Holo `.card__shine` (reverse-holo.css), built
+    /// LIVE (not a baked NSImage) so the highlight tracks the cursor:
+    ///   layer 3 (foil):  the grating "paper" — a generated diamond lattice
+    ///                     (two crossed repeating gradients multiplied), tinted
+    ///                     to the chosen/background colour. The source builds
+    ///                     its foil the same way: layered CSS gradients that
+    ///                     interact through blend modes (no image file needed).
+    ///   layer 2 (shade): a -45° black→white→black band that slides with the
+    ///                     cursor (overlay), so each texture cell lifts then
+    ///                     drops — same colour, varying shade.
+    ///   layer 1 (glare): a cursor-centred radial (soft-light).
+    ///   filter: brightness(.55) contrast(1.5) saturate(1);
+    ///   mix-blend-mode: color-dodge onto the art (the outer HoloFoilLayers
+    ///   clips to the region mask and colour-dodges).
+    // MARK: - Reverse Holo (faithful to simeydotme reverse-holo.css)
+    //
+    // Source model (reverse-holo.css): the shine is three layers —
+    //   1. radial-gradient(circle at pointer, #fff 5%, #000 50%, #fff 80%)  -> soft-light
+    //   2. linear-gradient(-45deg, #000 15%, #fff, #000 85%)                -> difference
+    //   3. var(--foil)  (a diamond-lattice etch, injected at runtime)        -> normal
+    // then  filter: brightness(.55) contrast(1.5) saturate(1);
+    // then  mix-blend-mode: color-dodge  onto the card art.
+    //
+    // Layer 2 is the moving diagonal "light ray": blended with `difference`
+    // over the foil lattice, the ray INVERTS the diamonds it covers. So cells
+    // under the ray flip bright/dark (the inverse relation) while cells away
+    // from the ray keep the lattice. colour-dodge then lifts the bright cells
+    // to white and leaves the dark cells as a darker shade of the card's own
+    // colour — exactly the metallic-paper reverse holo read.
+
+    /// Full reverse-holo shine: foil lattice + moving difference ray + radial
+    /// soft-light glow, filtered and colour-dodged onto the art by the caller.
+    @ViewBuilder
+    private func reverseShine(w: CGFloat, h: CGFloat) -> some View {
+        let period = max(w, h) * 0.06
+        // The diagonal ray is offset along its own (-45°) axis as the pointer
+        // moves, so the white band slides across the foil (its `background-
+        // position` tracks the pointer in the source).
+        let rayOffset = CGSize(width: (pointerX - 0.5) * w * 1.6,
+                              height: -(pointerY - 0.5) * h * 1.6)
+
+        ZStack {
+            // Layer 3 — the foil etch (generated diamond lattice).
+            reverseFoil(period: period, w: w, h: h)
+
+            // Layer 2 — the moving diagonal light ray, difference-blended over
+            // the foil. White centre inverts the lattice (bright<->dark flip);
+            // black ends leave it untouched. This is the source's `difference`.
+            LinearGradient(
+                stops: [
+                    Gradient.Stop(color: .black, location: 0.15),
+                    Gradient.Stop(color: .white, location: 0.5),
+                    Gradient.Stop(color: .black, location: 0.85),
+                ],
+                startPoint: .bottomLeading,
+                endPoint: .topTrailing
+            )
+            .blendMode(.difference)
+            .frame(width: w * 3, height: h * 3)
+            .offset(rayOffset)
+
+            // Layer 1 — cursor radial glow, soft-light (source-faithful).
+            RadialGradient(
+                stops: [
+                    Gradient.Stop(color: .white, location: 0.05),
+                    Gradient.Stop(color: .black, location: 0.5),
+                    Gradient.Stop(color: .white, location: 0.8),
+                ],
+                center: UnitPoint(x: pointerX, y: pointerY),
+                startRadius: 0,
+                endRadius: max(w, h) * 0.75
+            )
+            .blendMode(.softLight)
+            .frame(width: w * 2, height: h * 2)
+        }
+        .compositingGroup()
+        // source: filter: brightness(.55) contrast(1.5) saturate(1)
+        .colorMultiply(Color(white: 0.55))
+        .contrast(1.5)
+        .saturation(1.0)
+        .frame(width: w * 2, height: h * 2)
+    }
+
+    /// Generated foil etch: a fine diamond lattice (two crossed repeating
+    /// gradients multiplied). Greyscale so that, after colour-dodge onto the
+    /// card, bright cells blow to white and dark cells resolve to a *darker
+    /// shade of the card's own colour*. `Solid` tints it; `Rainbow` swaps in a
+    /// rainbow lattice; `Background` keeps it greyscale (colour comes from the
+    /// card art via the dodge).
+    @ViewBuilder
+    private func reverseFoil(period: CGFloat, w: CGFloat, h: CGFloat) -> some View {
+        let mode = settings.reverseColorMode
+        let rainbowI = settings.reverseRainbowIntensity
+
+        // When a bundled etch is selected (`.random` picks one per card), it
+        // becomes the foil — the source repo's `var(--foil)` — and the
+        // difference ray in `reverseShine` inverts it, giving a richer, varied
+        // reverse-holo look. `.solid` still tints it to the chosen colour.
+        let etch: NSImage? = {
+            guard settings.reverseTextureMode != .generated,
+                  let p = settings.reverseTexturePattern else { return nil }
+            return HoloPatternStore.shared.image(for: p)
+        }()
+
+        if let img = etch {
+            Image(nsImage: img)
+                .resizable()
+                .scaledToFill()
+                .frame(width: w * 2, height: h * 2)
+                .colorMultiply(mode == .solid ? settings.reverseSolidColor : Color.white)
+        } else {
+            // Built-in generated diamond lattice (default Reverse Holo foil).
+            switch mode {
+            case .rainbow:
+                ZStack {
+                    RepeatingLinearGradientView(
+                        colors: [HoloCSSColors.violet, HoloCSSColors.blue, HoloCSSColors.green,
+                                 HoloCSSColors.yellow, HoloCSSColors.red],
+                        angle: 45, period: period
+                    )
+                    .saturation(rainbowI)
+                    RepeatingLinearGradientView(
+                        colors: [HoloCSSColors.violet, HoloCSSColors.blue, HoloCSSColors.green,
+                                 HoloCSSColors.yellow, HoloCSSColors.red],
+                        angle: -45, period: period
+                    )
+                    .saturation(rainbowI)
+                    .blendMode(.multiply)
+                }
+                .frame(width: w * 2, height: h * 2)
+            case .solid:
+                ZStack {
+                    RepeatingLinearGradientView(colors: [.white, Color(white: 0.3)], angle: 45, period: period)
+                    RepeatingLinearGradientView(colors: [.white, Color(white: 0.3)], angle: -45, period: period)
+                        .blendMode(.multiply)
+                }
+                .frame(width: w * 2, height: h * 2)
+                .colorMultiply(settings.reverseSolidColor)
+            case .background:
+                ZStack {
+                    RepeatingLinearGradientView(colors: [.white, Color(white: 0.3)], angle: 45, period: period)
+                    RepeatingLinearGradientView(colors: [.white, Color(white: 0.3)], angle: -45, period: period)
+                        .blendMode(.multiply)
+                }
+                .frame(width: w * 2, height: h * 2)
+            }
+        }
     }
 
     /// Bump layer — Metal-rendered. Synthesizes a mask-only base image

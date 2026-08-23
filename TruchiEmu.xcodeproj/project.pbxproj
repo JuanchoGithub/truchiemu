@@ -688,6 +688,7 @@
 		84EC6DF4F86DAB8334E83490 /* input_coreLabels_quasi88.json in Resources */ = {isa = PBXBuildFile; fileRef = 99D154B5B635E5C1ED3F2CBC /* input_coreLabels_quasi88.json */; };
 		852B847F43CEFFD70596FC15 /* ntsc_decoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D605FAA1A390ADB88CF8EDC4 /* ntsc_decoder.cpp */; settings = {COMPILER_FLAGS = "-O3"; }; };
 		852BD3C8B2586320C8203EA8 /* input_coreOverrides_flycast.json in Resources */ = {isa = PBXBuildFile; fileRef = 1DEBDA2FB6A139BF3A49E636 /* input_coreOverrides_flycast.json */; };
+		856CDB6F6CFD916FF2B1D04F /* holo_galaxy.png in Resources */ = {isa = PBXBuildFile; fileRef = 1138F2652DCA6D981274BB3E /* holo_galaxy.png */; };
 		85772B239479AD4824C29E2C /* GameDragState.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB775F5E7D4CB3DFCACA89A5 /* GameDragState.swift */; };
 		85AD2E0AAD28B3B7ED9B376C /* input_coreLabels_cannonball.json in Resources */ = {isa = PBXBuildFile; fileRef = 27D70201F3625EF918C47167 /* input_coreLabels_cannonball.json */; };
 		85BBBE31E65E1DC39A40EC77 /* RomHasher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72DFDF6462D09B051A7093FE /* RomHasher.swift */; };
@@ -747,6 +748,7 @@
 		913FD03A767921A285FC98E0 /* fightdata_sftm.json in Resources */ = {isa = PBXBuildFile; fileRef = C3A6C719C78A5090AA56F911 /* fightdata_sftm.json */; };
 		9175C767F01BBA408C2256AA /* CoreDownloadStatusBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA8729DB9F6FECA28AB753C1 /* CoreDownloadStatusBar.swift */; };
 		917EB16799865634EA575E50 /* ScreenshotOverlayViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5367CC043FEB8B24AF51BDA /* ScreenshotOverlayViews.swift */; };
+		91BAD5091CB821ADDAC67C6B /* holo_vmaxbg.png in Resources */ = {isa = PBXBuildFile; fileRef = 2ADE1EB0DBBBB34A8775C657 /* holo_vmaxbg.png */; };
 		91D7A0C32EC24E49171F7544 /* gambatte_libretro_gb.json in Resources */ = {isa = PBXBuildFile; fileRef = 15134742139975273F1F990C /* gambatte_libretro_gb.json */; };
 		920848063764C3CE17286C9F /* input_coreLabels_nside_balanced.json in Resources */ = {isa = PBXBuildFile; fileRef = F3210C3AF65F784A65527FC9 /* input_coreLabels_nside_balanced.json */; };
 		92643ECC54504397054B4E32 /* Sony - PlayStation.dat in Resources */ = {isa = PBXBuildFile; fileRef = 7D83D251D5D40ADD146236DE /* Sony - PlayStation.dat */; };
@@ -1087,6 +1089,7 @@
 		D0D14BB46406932F82A06897 /* MetadataRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76A50CEAE48F1F659CE03FFC /* MetadataRow.swift */; };
 		D1907390A325554942B6BD3A /* input_coreLabels_emux_sms.json in Resources */ = {isa = PBXBuildFile; fileRef = 3E7920C4D78EBE8A91B32017 /* input_coreLabels_emux_sms.json */; };
 		D196F27B2F8EF147261CE358 /* Nintendo_-_Super_Nintendo_Entertainment_System.json in Resources */ = {isa = PBXBuildFile; fileRef = B2B270A2A2E79100CB5BD105 /* Nintendo_-_Super_Nintendo_Entertainment_System.json */; };
+		D19EB4A6851C4F101B12B847 /* HoloColorSampler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 025E75768BE1E06F25F7AA7D /* HoloColorSampler.swift */; };
 		D1D7745A8D84B114515B08C3 /* input_systemLabels_atari2600.json in Resources */ = {isa = PBXBuildFile; fileRef = A25D1DDA83C0F604F5565945 /* input_systemLabels_atari2600.json */; };
 		D1E0957C0B07B639220DC47F /* fightdata_beastrzr.json in Resources */ = {isa = PBXBuildFile; fileRef = 2E8553AAC511B690AC71769A /* fightdata_beastrzr.json */; };
 		D1EA655C59595E4CF606EA8C /* Nintendo - Family Computer Disk System.dat in Resources */ = {isa = PBXBuildFile; fileRef = 5D2ACABD070C032CF81B99A6 /* Nintendo - Family Computer Disk System.dat */; };
@@ -1356,6 +1359,7 @@
 		0131AF2732320A89574B49A3 /* input_systemLabels_colecovision.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_colecovision.json; sourceTree = "<group>"; };
 		01412B280262985F0F003F9D /* input_coreOverrides_hatari.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_hatari.json; sourceTree = "<group>"; };
 		01806BCFD8672293F4457A33 /* controllerPreset_xbox-wireless-controller-xbox-wireless-controller.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "controllerPreset_xbox-wireless-controller-xbox-wireless-controller.json"; sourceTree = "<group>"; };
+		025E75768BE1E06F25F7AA7D /* HoloColorSampler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HoloColorSampler.swift; sourceTree = "<group>"; };
 		028968D965BBF8007BE1DC73 /* ATARI800.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ATARI800.png; sourceTree = "<group>"; };
 		02AF500782AB016FB6164846 /* DreamcastBIOSService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DreamcastBIOSService.swift; sourceTree = "<group>"; };
 		02B028190C3BC8A66CC3B62E /* holo_geometric.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = holo_geometric.png; sourceTree = "<group>"; };
@@ -1423,6 +1427,7 @@
 		111A07FE1A09FD6D2E7357C7 /* input_coreLabels_easyrpg.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_easyrpg.json; sourceTree = "<group>"; };
 		112A0F3619B6C52925987F75 /* ProgettoSnapsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgettoSnapsService.swift; sourceTree = "<group>"; };
 		112A893BD9353D23D809A9EF /* CoreDownloadSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDownloadSheet.swift; sourceTree = "<group>"; };
+		1138F2652DCA6D981274BB3E /* holo_galaxy.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = holo_galaxy.png; sourceTree = "<group>"; };
 		113AD4C753E61524836FF575 /* fightdata_wakuwak7.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_wakuwak7.json; sourceTree = "<group>"; };
 		11417D9821AF8E7D835C9025 /* TruchiEmuCoreHost.xpc */ = {isa = PBXFileReference; explicitFileType = "wrapper.xpc-service"; includeInIndex = 0; path = TruchiEmuCoreHost.xpc; sourceTree = BUILT_PRODUCTS_DIR; };
 		118C3C476FA18F110E167B39 /* input_coreOverrides_nxengine.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_nxengine.json; sourceTree = "<group>"; };
@@ -1549,6 +1554,7 @@
 		2A5F6194C027F95EB23ED33A /* CoreClientProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreClientProtocol.swift; sourceTree = "<group>"; };
 		2A96AAF72C7F18D45D235347 /* BoxArtService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoxArtService.swift; sourceTree = "<group>"; };
 		2AAB2855FD74E2E82EB51E61 /* picodrive_libretro_genesis.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = picodrive_libretro_genesis.json; sourceTree = "<group>"; };
+		2ADE1EB0DBBBB34A8775C657 /* holo_vmaxbg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = holo_vmaxbg.png; sourceTree = "<group>"; };
 		2AE07BDCFBC75CECDD7E67D7 /* input_coreLabels_dice.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_dice.json; sourceTree = "<group>"; };
 		2AEE13522E270C97DAE418DC /* appIcon512.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = appIcon512.jpg; sourceTree = "<group>"; };
 		2B0373818A51E7E098FE635B /* input_coreLabels_vaporspec.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_vaporspec.json; sourceTree = "<group>"; };
@@ -2894,6 +2900,7 @@
 				A14A3003974DDDF09684961B /* CategoryManager.swift */,
 				DF68254BB5CE5328745136C2 /* GamepadNavCoordinator.swift */,
 				34377D9B77D3186AEB2B669A /* GenreManager.swift */,
+				025E75768BE1E06F25F7AA7D /* HoloColorSampler.swift */,
 				F94B1536361C39252F23DE3C /* HoloPatternStore.swift */,
 				3106E014AE1B506B650D96BA /* HoloSaliencyService.swift */,
 				655A4E06046E79930EEE2443 /* LibraryAutomationCoordinator.swift */,
@@ -3561,6 +3568,7 @@
 				94B97B593318B9C1F4557F51 /* holo_ancient.png */,
 				F963CBD06E90F51C6DB3B43D /* holo_angular.png */,
 				CBE0822EF493F2A3F9EFA369 /* holo_crossover.png */,
+				1138F2652DCA6D981274BB3E /* holo_galaxy.png */,
 				02B028190C3BC8A66CC3B62E /* holo_geometric.png */,
 				8222819FE1DDAF0DE92707FE /* holo_glitter.png */,
 				6669CB8EDA7D41DC0623C89C /* holo_illusion-mask.png */,
@@ -3570,6 +3578,7 @@
 				C708C6081B22F03E4E6AA0BE /* holo_stylish.png */,
 				AE2C6C9DA37D7576957EF710 /* holo_stylish2.png */,
 				D5D5817A7BE45841C902F2E4 /* holo_trainerbg.png */,
+				2ADE1EB0DBBBB34A8775C657 /* holo_vmaxbg.png */,
 				7A11549D9D348C11946BFA59 /* holo_wave.png */,
 			);
 			path = HoloPatterns;
@@ -5381,6 +5390,7 @@
 				F56E9E30C13014A97069EE60 /* holo_ancient.png in Resources */,
 				541A7E28F13591BF9CFAA1C8 /* holo_angular.png in Resources */,
 				D6F2FCD149D20173B079DB9E /* holo_crossover.png in Resources */,
+				856CDB6F6CFD916FF2B1D04F /* holo_galaxy.png in Resources */,
 				A0C2858225411C93E8B52043 /* holo_geometric.png in Resources */,
 				E5EA48161580AAA1ABFA685A /* holo_glitter.png in Resources */,
 				CF77D60BAABDAA58C115562D /* holo_illusion-mask.png in Resources */,
@@ -5390,6 +5400,7 @@
 				722EB4FE9C71931649999615 /* holo_stylish.png in Resources */,
 				69D49EB40BE882E58B8B6B37 /* holo_stylish2.png in Resources */,
 				E24F330DB7780A2C7C91B051 /* holo_trainerbg.png in Resources */,
+				91BAD5091CB821ADDAC67C6B /* holo_vmaxbg.png in Resources */,
 				E7625A35543ED867C55F1E47 /* holo_wave.png in Resources */,
 				2424758D7F2AE14258968E08 /* input_coreLabels_2048.json in Resources */,
 				3D949A279B978EA924B07E42 /* input_coreLabels_3d_engine.json in Resources */,
@@ -6093,6 +6104,7 @@
 				F5476C3DB666A0A473FB2C30 /* HoloBump.metal in Sources */,
 				1766EDF8EB00B0B79DD51AAB /* HoloBumpRenderer.swift in Sources */,
 				7252CF2763DB1CB60A31BE8E /* HoloCardLayers.swift in Sources */,
+				D19EB4A6851C4F101B12B847 /* HoloColorSampler.swift in Sources */,
 				360E85B47542945CD6FE2D16 /* HoloGameCardView.swift in Sources */,
 				45EE5A222618B1A5B72A1EFD /* HoloGridCollectionView.swift in Sources */,
 				09FD8E39FF58D9B6B33EFAE7 /* HoloPatternStore.swift in Sources */,

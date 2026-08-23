@@ -766,10 +766,12 @@ struct HoloGameCardView: View {
     // `HoloFoilLayers`).
     @ViewBuilder
     private func holoLayers(width w: CGFloat, height h: CGFloat, allowBump: Bool = true) -> some View {
-        ZStack {
+        var holoSnapshot = HoloSettingsSnapshot(from: holoSettings, romID: rom.id.uuidString)
+        holoSnapshot.backgroundMedianRGB = image.flatMap { HoloColorSampler.medianRGB(romID: rom.id.uuidString, image: $0) }
+        return ZStack {
             HoloFoilLayers(
                 masks: holoMasks,
-                settings: .init(from: holoSettings, romID: rom.id.uuidString),
+                settings: holoSnapshot,
                 w: w, h: h,
                 pointerX: normalizedMouseX,
                 pointerY: normalizedMouseY,

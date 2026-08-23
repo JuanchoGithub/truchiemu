@@ -29,7 +29,7 @@ extension HoloMaskSet: Equatable {
             && lhs.title === rhs.title
             && lhs.chrome === rhs.chrome
             && lhs.background === rhs.background
-            && lhs.heroHolo == rhs.heroHolo
+            &&         lhs.heroHolo == rhs.heroHolo
             && lhs.titleBackgroundHolo == rhs.titleBackgroundHolo
             && lhs.chromeBackgroundHolo == rhs.chromeBackgroundHolo
     }

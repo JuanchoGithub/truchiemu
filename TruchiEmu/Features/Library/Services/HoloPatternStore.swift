@@ -1,6 +1,26 @@
 import AppKit
 import CoreImage
 import Foundation
+import SwiftUI
+
+// Encode/decode a SwiftUI `Color` as an `r,g,b` (0..1) string so it can be
+// persisted through `AppSettings`' String store, and used as a stable cache
+// key for pre-rendered foil tiles.
+func holoEncodeColor(_ color: Color) -> String {
+    let ns = NSColor(color)
+    let srgb = ns.usingColorSpace(.sRGB) ?? ns
+    return String(format: "%.4f,%.4f,%.4f", srgb.redComponent, srgb.greenComponent, srgb.blueComponent)
+}
+
+func holoDecodeColor(_ string: String?) -> Color {
+    // Default: a bright silver — the classic non-rare reverse-holo tint that
+    // reads clearly under colorDodge against any art.
+    let fallback = Color(red: 0.92, green: 0.92, blue: 0.94)
+    guard let string else { return fallback }
+    let parts = string.split(separator: ",").compactMap { Double($0) }
+    guard parts.count == 3 else { return fallback }
+    return Color(red: parts[0], green: parts[1], blue: parts[2])
+}
 
 // Static foil pattern textures bundled from the pokemon-cards-css project
 // (https://github.com/simeydotme/pokemon-cards-css/blob/main/public/img).
@@ -15,12 +35,14 @@ enum HoloPattern: String, CaseIterable, Identifiable {
     case crossover
     case geometric
     case glitter
+    case galaxy
     case illusion
     case illusion2
     case metal
     case stylish
     case stylish2
     case trainerbg
+    case vmaxbg
     case wave
 
     var id: String { rawValue }
@@ -177,6 +199,10 @@ final class HoloSettingsStore: ObservableObject {
     static let parallaxStrengthKey = "holo_parallax_strength"
     static let showPlayButtonKey = "holo_show_play_button"
     static let hueCyclesKey = "holo_hue_cycles"
+    static let reverseColorModeKey = "holo_reverse_color_mode"
+    static let reverseSolidColorKey = "holo_reverse_solid_color"
+    static let reverseRainbowIntensityKey = "holo_reverse_rainbow_intensity"
+    static let reverseTextureModeKey = "holo_reverse_texture_mode"
 
     @Published var titleIntensity: Double {
         didSet { AppSettings.setDouble(Self.titleIntensityKey, value: titleIntensity) }
@@ -252,6 +278,24 @@ final class HoloSettingsStore: ObservableObject {
     @Published var hueCycles: Double {
         didSet { AppSettings.setDouble(Self.hueCyclesKey, value: hueCycles) }
     }
+    // Reverse Holo's pattern-sheen colour source (solid / rainbow / background).
+    @Published var reverseColorMode: HoloReverseColorMode {
+        didSet { AppSettings.set(Self.reverseColorModeKey, value: reverseColorMode.rawValue) }
+    }
+    // User-chosen solid tint for the Reverse Holo pattern (encoded as
+    // `r,g,b` floats 0..1 so it round-trips through AppSettings' Data store).
+    @Published var reverseSolidColor: Color {
+        didSet { AppSettings.set(Self.reverseSolidColorKey, value: holoEncodeColor(reverseSolidColor)) }
+    }
+    // 0..1 — saturation/brightness of the Reverse Holo rainbow sheen. Only
+    // used when `reverseColorMode == .rainbow`. Default 1.0.
+    @Published var reverseRainbowIntensity: Double {
+        didSet { AppSettings.setDouble(Self.reverseRainbowIntensityKey, value: reverseRainbowIntensity) }
+    }
+    // Reverse Holo foil source: built-in lattice vs. a random bundled etch.
+    @Published var reverseTextureMode: HoloReverseTextureMode {
+        didSet { AppSettings.set(Self.reverseTextureModeKey, value: reverseTextureMode.rawValue) }
+    }
 
     /// Per-variant probability weight (0..1 share). A card rolls a variant
     /// against these weights; the chosen variant stays for the session.
@@ -280,6 +324,10 @@ final class HoloSettingsStore: ObservableObject {
         self.parallaxStrength = AppSettings.getDouble(Self.parallaxStrengthKey, defaultValue: 1.0)
         self.showPlayButton = AppSettings.getBool(Self.showPlayButtonKey, defaultValue: false)
         self.hueCycles = AppSettings.getDouble(Self.hueCyclesKey, defaultValue: 4.0)
+        self.reverseColorMode = HoloReverseColorMode(rawValue: AppSettings.getString(Self.reverseColorModeKey, defaultValue: HoloReverseColorMode.solid.rawValue) ?? "") ?? .solid
+        self.reverseSolidColor = holoDecodeColor(AppSettings.getString(Self.reverseSolidColorKey))
+        self.reverseRainbowIntensity = AppSettings.getDouble(Self.reverseRainbowIntensityKey, defaultValue: 1.0)
+        self.reverseTextureMode = HoloReverseTextureMode(rawValue: AppSettings.getString(Self.reverseTextureModeKey, defaultValue: HoloReverseTextureMode.generated.rawValue) ?? "") ?? .generated
     }
 
     /// Load the per-variant weight dictionary from AppSettings. Stored as a
@@ -402,6 +450,65 @@ enum HoloDepthMode: String, CaseIterable, Identifiable {
     }
 }
 
+// Colour source for the Reverse Holo variant's pattern sheen.
+//   - .solid: a user-chosen colour (with quick presets) tints the pattern.
+//   - .rainbow: an iridescent rainbow sheen, with its own intensity slider.
+//   - .background: each card's own detected background median colour tints
+//     the pattern, so the foil harmonises with the box art.
+enum HoloReverseColorMode: String, CaseIterable, Identifiable {
+    case solid
+    case rainbow
+    case background
+
+    var id: String { rawValue }
+
+    var localizedKey: String {
+        switch self {
+        case .solid:      return "holo.reverse.colorMode.solid"
+        case .rainbow:    return "holo.reverse.colorMode.rainbow"
+        case .background: return "holo.reverse.colorMode.background"
+        }
+    }
+}
+
+// How the Reverse Holo foil texture is chosen.
+//   - .generated: the built-in procedurally-generated diamond lattice (current).
+//   - .random:    one of the bundled etch textures (holo_*.png, the source
+//                 repo's `var(--foil)` images) is picked at random per card,
+//                 so each reverse-holo card gets a different, richer foil that
+//                 the `difference` ray then inverts — the cooler, varied look.
+enum HoloReverseTextureMode: String, CaseIterable, Identifiable {
+    case generated
+    case random
+
+    var id: String { rawValue }
+
+    var localizedKey: String {
+        switch self {
+        case .generated: return "holo.reverse.textureMode.generated"
+        case .random:    return "holo.reverse.textureMode.random"
+        }
+    }
+}
+
+// Quick-pick colour swatches for the Reverse Holo `.solid` mode. Gives users
+// one-tap access to common foil tints without opening the colour well.
+struct HoloReversePreset: Hashable {
+    let name: String
+    let color: Color
+
+    static let all: [HoloReversePreset] = [
+        HoloReversePreset(name: "Silver", color: Color(white: 0.80)),
+        HoloReversePreset(name: "White",  color: Color(white: 0.95)),
+        HoloReversePreset(name: "Gold",   color: Color(red: 1.00, green: 0.84, blue: 0.30)),
+        HoloReversePreset(name: "Red",    color: Color(red: 0.95, green: 0.25, blue: 0.30)),
+        HoloReversePreset(name: "Blue",   color: Color(red: 0.30, green: 0.55, blue: 0.95)),
+        HoloReversePreset(name: "Green",  color: Color(red: 0.30, green: 0.85, blue: 0.45)),
+        HoloReversePreset(name: "Purple", color: Color(red: 0.70, green: 0.40, blue: 0.95)),
+        HoloReversePreset(name: "Teal",   color: Color(red: 0.25, green: 0.85, blue: 0.80)),
+    ]
+}
+
 // Backwards-compatible static facade. Reads delegate to the shared
 // HoloSettingsStore so behavior matches the @Published path used by SwiftUI.
 @MainActor
@@ -470,6 +577,22 @@ enum HoloSettings {
         get { HoloSettingsStore.shared.hueCycles }
         set { HoloSettingsStore.shared.hueCycles = newValue }
     }
+    static var reverseColorMode: HoloReverseColorMode {
+        get { HoloSettingsStore.shared.reverseColorMode }
+        set { HoloSettingsStore.shared.reverseColorMode = newValue }
+    }
+    static var reverseSolidColor: Color {
+        get { HoloSettingsStore.shared.reverseSolidColor }
+        set { HoloSettingsStore.shared.reverseSolidColor = newValue }
+    }
+    static var reverseRainbowIntensity: Double {
+        get { HoloSettingsStore.shared.reverseRainbowIntensity }
+        set { HoloSettingsStore.shared.reverseRainbowIntensity = newValue }
+    }
+    static var reverseTextureMode: HoloReverseTextureMode {
+        get { HoloSettingsStore.shared.reverseTextureMode }
+        set { HoloSettingsStore.shared.reverseTextureMode = newValue }
+    }
 }
 
 // Value snapshot of the holo settings that the static foil depends on.
@@ -492,6 +615,18 @@ struct HoloSettingsSnapshot: Equatable {
     var tiltInfluence: Double
     var parallaxStrength: Double
     var hueCycles: Double
+    // Reverse Holo colour-sheen configuration.
+    var reverseColorMode: HoloReverseColorMode
+    var reverseSolidColor: Color
+    var reverseRainbowIntensity: Double
+    // Reverse Holo foil source. `reverseTexturePattern` holds the (possibly
+    // randomly chosen) bundled etch to use as the foil; nil means the built-in
+    // generated lattice should be used.
+    var reverseTextureMode: HoloReverseTextureMode
+    var reverseTexturePattern: HoloPattern?
+    // Per-card background median colour (r,g,b 0..1), used when
+    // `reverseColorMode == .background`. Nil when unavailable.
+    var backgroundMedianRGB: [Float]?
     // Per-launch, per-card randomized holo appearance. Non-nil only when the
     // card's `maskDeviationChance` roll succeeds; drives that card's per-zone
     // mask chance, intensity, and pattern (see `HoloCardRandomization`).
@@ -514,6 +649,12 @@ struct HoloSettingsSnapshot: Equatable {
         self.tiltInfluence = store.tiltInfluence
         self.parallaxStrength = store.parallaxStrength
         self.hueCycles = store.hueCycles
+        self.reverseColorMode = store.reverseColorMode
+        self.reverseSolidColor = store.reverseSolidColor
+        self.reverseRainbowIntensity = store.reverseRainbowIntensity
+        self.reverseTextureMode = store.reverseTextureMode
+        self.reverseTexturePattern = Self.resolveReverseTexture(mode: store.reverseTextureMode, seed: HoloSettingsStore.launchSeed)
+        self.backgroundMedianRGB = nil
         self.randomization = nil
     }
 
@@ -527,6 +668,9 @@ struct HoloSettingsSnapshot: Equatable {
     init(from store: HoloSettingsStore, romID: String) {
         self.init(from: store)
         let seed = HoloSettingsStore.launchSeed &+ stableSeed(romID)
+        // Re-roll the random foil against the card-specific seed so each
+        // reverse-holo card gets its own etch (stable per launch+rom).
+        self.reverseTexturePattern = Self.resolveReverseTexture(mode: self.reverseTextureMode, seed: seed)
         self.randomization = HoloCardRandomization(
             seed: seed,
             deviationChance: Float(store.maskDeviationChance),
@@ -542,6 +686,17 @@ struct HoloSettingsSnapshot: Equatable {
         case .hero: return heroIntensity > 0.001
         case .background: return backgroundIntensity > 0.001
         }
+    }
+
+    /// Resolve the bundled etch to use as the Reverse Holo foil. For `.random`,
+    /// deterministically picks one of `HoloPattern.allCases` from `seed` (so the
+    /// choice is stable per launch/rom but varies across cards); for `.generated`
+    /// returns nil so the built-in lattice is used.
+    static func resolveReverseTexture(mode: HoloReverseTextureMode, seed: UInt64) -> HoloPattern? {
+        guard mode == .random else { return nil }
+        let all = HoloPattern.allCases
+        guard !all.isEmpty else { return nil }
+        return all[Int(seed % UInt64(all.count))]
     }
 }
 

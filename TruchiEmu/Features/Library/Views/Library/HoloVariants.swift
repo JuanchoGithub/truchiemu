@@ -69,7 +69,7 @@ enum HoloVariant: String, CaseIterable, Identifiable {
         case .shinyRare:   return "Silver holographic, two layers."
         case .vFullArt:    return "Textured + 0deg rainbow + 133deg metallic."
         case .secretRare:  return "Pixelated rainbow with glitter overlay."
-        case .reverseHolo: return "Full-card inverted-mask foil (reverse rare)."
+        case .reverseHolo: return "Full-card pattern foil with a moving silver/coloured sheen."
         }
     }
 }
@@ -544,18 +544,30 @@ extension HoloVariant {
             )
 
         case .reverseHolo:
-            // Reverse holo: full-card foil with an inverted mask — the foil
-            // covers everything except the masked regions.
+            // Reverse holo: full-card foil. The pattern covers the whole card
+            // (per-region masks) and a silver/metallic sheen reflects a moving
+            // specular band — the "different parts of the pattern light up as
+            // the card moves" read. The Holo settings let the user swap the
+            // sheen colour between a solid pick, rainbow, and the card's own
+            // background colour.
             return HoloVariantRecipe(
                 shineLayers: [
-                    HoloShineLayer.regularHolo(),
+                    HoloShineLayer(
+                        palette: .metallicSilver,
+                        filter: HoloFilterRecipe(brightness: 0.5, contrast: 1.6, saturation: 1.0),
+                        blendMode: .hardLight,
+                        sizeX: 3.0, sizeY: 3.0,
+                        basePositionX: 0.5, basePositionY: 0.5,
+                        parallaxX: 1.0, parallaxY: 1.0,
+                        radial: nil
+                    ),
                 ],
                 glare: HoloGlareRecipe(
                     stops: [
-                        (0.0, Color.white.opacity(0.7)),
+                        (0.0, Color.white.opacity(0.8)),
                         (1.0, Color.white.opacity(0.0)),
                     ],
-                    filter: HoloFilterRecipe(brightness: 0.7, contrast: 1.5, saturation: 1.0),
+                    filter: HoloFilterRecipe(brightness: 0.9, contrast: 1.5, saturation: 1.0),
                     blendMode: .overlay,
                     opacity: .reverseGlare
                 )
