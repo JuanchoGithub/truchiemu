@@ -162,6 +162,54 @@ final class HoloPatternStore: ObservableObject {
         }
         return nil
     }
+
+    /// A bundled etch tiled into an `NSSize` image, repeated at `scale`×
+    /// (1× = one copy filling the surface; 0.1× = a fine repeat). Used by the
+    /// Reverse Holo foil so each card's etch can be a small repeating pattern
+    /// rather than one stretched copy. Cached per (pattern, scale-bucket, size)
+    /// so it's drawn once per card, not every cursor frame.
+    private var tiledImages: [TiledImageKey: NSImage] = [:]
+    struct TiledImageKey: Hashable {
+        let pattern: HoloPattern
+        let scaleBucket: Int
+        let width: Int
+        let height: Int
+    }
+
+    func tiledImage(for pattern: HoloPattern, size: NSSize, scale: CGFloat) -> NSImage? {
+        guard size.width > 0, size.height > 0 else { return nil }
+        let key = TiledImageKey(
+            pattern: pattern,
+            scaleBucket: Int((scale * 200).rounded()),
+            width: Int(size.width),
+            height: Int(size.height)
+        )
+        if let cached = tiledImages[key] { return cached }
+        guard let base = image(for: pattern),
+              let cg = base.cgImage(forProposedRect: nil, context: nil, hints: nil) else { return nil }
+        let cellW = max(1.0, size.width * scale)
+        let cellH = cellW * (CGFloat(cg.height) / CGFloat(cg.width))
+        let src = NSImage(cgImage: cg, size: NSSize(width: cg.width, height: cg.height))
+        let out = NSImage(size: size, flipped: false) { rect in
+            var y: CGFloat = 0
+            while y < size.height {
+                var x: CGFloat = 0
+                while x < size.width {
+                    src.draw(
+                        in: NSRect(x: x, y: y, width: cellW, height: cellH),
+                        from: .zero,
+                        operation: .copy,
+                        fraction: 1.0
+                    )
+                    x += cellW
+                }
+                y += cellH
+            }
+            return true
+        }
+        tiledImages[key] = out
+        return out
+    }
 }
 
 // Persisted holo parameters. Observable so visible cards re-render when the
@@ -203,6 +251,7 @@ final class HoloSettingsStore: ObservableObject {
     static let reverseSolidColorKey = "holo_reverse_solid_color"
     static let reverseRainbowIntensityKey = "holo_reverse_rainbow_intensity"
     static let reverseTextureModeKey = "holo_reverse_texture_mode"
+    static let reverseTextureVariationKey = "holo_reverse_texture_variation"
 
     @Published var titleIntensity: Double {
         didSet { AppSettings.setDouble(Self.titleIntensityKey, value: titleIntensity) }
@@ -296,6 +345,12 @@ final class HoloSettingsStore: ObservableObject {
     @Published var reverseTextureMode: HoloReverseTextureMode {
         didSet { AppSettings.set(Self.reverseTextureModeKey, value: reverseTextureMode.rawValue) }
     }
+    // When on (and the foil source is Random), each card's etch is tiled at a
+    // random scale (0.1…1.0×) and has a chance to layer a second etch on top
+    // with a random blend — the "randomly merge textures" richness.
+    @Published var reverseTextureVariation: Bool {
+        didSet { AppSettings.set(Self.reverseTextureVariationKey, value: reverseTextureVariation) }
+    }
 
     /// Per-variant probability weight (0..1 share). A card rolls a variant
     /// against these weights; the chosen variant stays for the session.
@@ -328,6 +383,7 @@ final class HoloSettingsStore: ObservableObject {
         self.reverseSolidColor = holoDecodeColor(AppSettings.getString(Self.reverseSolidColorKey))
         self.reverseRainbowIntensity = AppSettings.getDouble(Self.reverseRainbowIntensityKey, defaultValue: 1.0)
         self.reverseTextureMode = HoloReverseTextureMode(rawValue: AppSettings.getString(Self.reverseTextureModeKey, defaultValue: HoloReverseTextureMode.generated.rawValue) ?? "") ?? .generated
+        self.reverseTextureVariation = AppSettings.getBool(Self.reverseTextureVariationKey, defaultValue: true)
     }
 
     /// Load the per-variant weight dictionary from AppSettings. Stored as a
@@ -491,6 +547,22 @@ enum HoloReverseTextureMode: String, CaseIterable, Identifiable {
     }
 }
 
+// Blend mode used when two etch textures are composited into the Reverse Holo
+// foil. Picked at random per card (when variation is on) for extra variety.
+enum HoloTextureBlend: Int, CaseIterable, Equatable, Identifiable {
+    case overlay, multiply, screen
+
+    var id: Int { rawValue }
+
+    var blendMode: BlendMode {
+        switch self {
+        case .overlay:  return .overlay
+        case .multiply: return .multiply
+        case .screen:   return .screen
+        }
+    }
+}
+
 // Quick-pick colour swatches for the Reverse Holo `.solid` mode. Gives users
 // one-tap access to common foil tints without opening the colour well.
 struct HoloReversePreset: Hashable {
@@ -593,6 +665,10 @@ enum HoloSettings {
         get { HoloSettingsStore.shared.reverseTextureMode }
         set { HoloSettingsStore.shared.reverseTextureMode = newValue }
     }
+    static var reverseTextureVariation: Bool {
+        get { HoloSettingsStore.shared.reverseTextureVariation }
+        set { HoloSettingsStore.shared.reverseTextureVariation = newValue }
+    }
 }
 
 // Value snapshot of the holo settings that the static foil depends on.
@@ -624,6 +700,14 @@ struct HoloSettingsSnapshot: Equatable {
     // generated lattice should be used.
     var reverseTextureMode: HoloReverseTextureMode
     var reverseTexturePattern: HoloPattern?
+    // Variation (only meaningful when `reverseTextureMode == .random`): the
+    // primary etch is tiled at `reverseTextureScale` (0.1…1.0×), and a second
+    // etch (`reverseTexturePattern2`, when present) is composited on top with
+    // `reverseTextureBlend2` at its own random scale.
+    var reverseTextureScale: CGFloat
+    var reverseTexturePattern2: HoloPattern?
+    var reverseTextureScale2: CGFloat
+    var reverseTextureBlend2: HoloTextureBlend
     // Per-card background median colour (r,g,b 0..1), used when
     // `reverseColorMode == .background`. Nil when unavailable.
     var backgroundMedianRGB: [Float]?
@@ -653,7 +737,16 @@ struct HoloSettingsSnapshot: Equatable {
         self.reverseSolidColor = store.reverseSolidColor
         self.reverseRainbowIntensity = store.reverseRainbowIntensity
         self.reverseTextureMode = store.reverseTextureMode
-        self.reverseTexturePattern = Self.resolveReverseTexture(mode: store.reverseTextureMode, seed: HoloSettingsStore.launchSeed)
+        let cfg = Self.resolveReverseFoilConfig(
+            mode: store.reverseTextureMode,
+            variation: store.reverseTextureVariation,
+            seed: HoloSettingsStore.launchSeed
+        )
+        self.reverseTexturePattern = cfg.pattern
+        self.reverseTextureScale = cfg.scale
+        self.reverseTexturePattern2 = cfg.pattern2
+        self.reverseTextureScale2 = cfg.scale2
+        self.reverseTextureBlend2 = cfg.blend2
         self.backgroundMedianRGB = nil
         self.randomization = nil
     }
@@ -669,8 +762,17 @@ struct HoloSettingsSnapshot: Equatable {
         self.init(from: store)
         let seed = HoloSettingsStore.launchSeed &+ stableSeed(romID)
         // Re-roll the random foil against the card-specific seed so each
-        // reverse-holo card gets its own etch (stable per launch+rom).
-        self.reverseTexturePattern = Self.resolveReverseTexture(mode: self.reverseTextureMode, seed: seed)
+        // reverse-holo card gets its own etch, scale, and (maybe) second etch.
+        let cfg = Self.resolveReverseFoilConfig(
+            mode: self.reverseTextureMode,
+            variation: store.reverseTextureVariation,
+            seed: seed
+        )
+        self.reverseTexturePattern = cfg.pattern
+        self.reverseTextureScale = cfg.scale
+        self.reverseTexturePattern2 = cfg.pattern2
+        self.reverseTextureScale2 = cfg.scale2
+        self.reverseTextureBlend2 = cfg.blend2
         self.randomization = HoloCardRandomization(
             seed: seed,
             deviationChance: Float(store.maskDeviationChance),
@@ -688,15 +790,35 @@ struct HoloSettingsSnapshot: Equatable {
         }
     }
 
-    /// Resolve the bundled etch to use as the Reverse Holo foil. For `.random`,
-    /// deterministically picks one of `HoloPattern.allCases` from `seed` (so the
-    /// choice is stable per launch/rom but varies across cards); for `.generated`
-    /// returns nil so the built-in lattice is used.
-    static func resolveReverseTexture(mode: HoloReverseTextureMode, seed: UInt64) -> HoloPattern? {
-        guard mode == .random else { return nil }
+    /// Resolve the full Reverse Holo foil config for `.random` mode. All
+    /// choices are derived deterministically from `seed` (stable per
+    /// launch/rom, but varied across cards):
+    ///   - `pattern`  — the primary bundled etch.
+    ///   - `scale`    — tile scale 0.1…1.0× (1× = one copy; 0.1× = fine repeat).
+    ///   - `pattern2` — a second etch composited on top (≈35% chance when
+    ///                 variation is on), else nil.
+    ///   - `scale2`   — that second etch's tile scale.
+    ///   - `blend2`   — how the second etch is composited (overlay/multiply/screen).
+    /// For `.generated` returns nil/identity so the built-in lattice is used.
+    static func resolveReverseFoilConfig(
+        mode: HoloReverseTextureMode,
+        variation: Bool,
+        seed: UInt64
+    ) -> (pattern: HoloPattern?, scale: CGFloat, pattern2: HoloPattern?, scale2: CGFloat, blend2: HoloTextureBlend) {
+        guard mode == .random else { return (nil, 1.0, nil, 1.0, .overlay) }
         let all = HoloPattern.allCases
-        guard !all.isEmpty else { return nil }
-        return all[Int(seed % UInt64(all.count))]
+        guard !all.isEmpty else { return (nil, 1.0, nil, 1.0, .overlay) }
+        let p1 = all[Int(seed % UInt64(all.count))]
+        let s1: CGFloat = variation ? CGFloat(0.1 + Double(seed % 1000) / 1000.0 * 0.9) : 1.0
+        var p2: HoloPattern? = nil
+        var s2: CGFloat = 1.0
+        var blend2: HoloTextureBlend = .overlay
+        if variation, Int((seed >> 20) % 100) < 35 {
+            p2 = all[Int((seed >> 40) % UInt64(all.count))]
+            s2 = CGFloat(0.1 + Double((seed >> 10) % 1000) / 1000.0 * 0.9)
+            blend2 = HoloTextureBlend.allCases[Int((seed >> 50) % UInt64(HoloTextureBlend.allCases.count))]
+        }
+        return (p1, s1, p2, s2, blend2)
     }
 }
 

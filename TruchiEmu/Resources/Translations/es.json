@@ -1226,6 +1226,8 @@
   "holo.reverse.textureModeDescription": "La textura usada como foil. Aleatorio elige un grabado distinto por carta para un aspecto más variado y rico.",
   "holo.reverse.textureMode.generated": "Retícula generada",
   "holo.reverse.textureMode.random": "Grabado aleatorio",
+  "holo.reverse.textureVariation": "Variar textura por carta",
+  "holo.reverse.textureVariationDescription": "Repite el grabado a una escala aleatoria (0,1 a 1x) y puede superponer un segundo grabado para un aspecto más rico.",
   "holo.generatingMasks": "Generando holo FX…",
   "bezel.bezelsDisabled": "Marcos desactivados",
   "bezel.automaticallyMatched": "Coincidencia automática por nombre",

@@ -1233,6 +1233,8 @@
   "holo.reverse.textureModeDescription": "The texture used as the foil. Random picks a different bundled etch per card for a varied, richer look.",
   "holo.reverse.textureMode.generated": "Generated Lattice",
   "holo.reverse.textureMode.random": "Random Etch",
+  "holo.reverse.textureVariation": "Vary texture per card",
+  "holo.reverse.textureVariationDescription": "Tiles the etch at a random scale (0.1 to 1x) and may layer a second etch on top for a richer look.",
   "holo.generatingMasks": "Generating holo FX…",
   "bezel.bezelsDisabled": "Bezels are disabled",
   "bezel.automaticallyMatched": "Automatically matched by game name",

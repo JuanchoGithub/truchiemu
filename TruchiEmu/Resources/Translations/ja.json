@@ -1233,6 +1233,8 @@
   "holo.reverse.textureModeDescription": "ホイルとして使う模様。ランダムはカードごとに異なる型押しを選び、より豊かでバリエーションのある見た目になります。",
   "holo.reverse.textureMode.generated": "生成格子",
   "holo.reverse.textureMode.random": "ランダム型押し",
+  "holo.reverse.textureVariation": "カードごとに模様を変化",
+  "holo.reverse.textureVariationDescription": "型押しをランダムな倍率（0.1〜1倍）で繰り返し、さらに2枚目の型押しを重ねることでより豊かな見た目になります。",
   "holo.generatingMasks": "ホロFX生成中…",
   "bezel.bezelsDisabled": "ベゼルは無効です",
   "bezel.automaticallyMatched": "ゲーム名で自動的に照合されました",

@@ -634,21 +634,29 @@ struct HoloFoilLayers: View, Equatable {
         let rainbowI = settings.reverseRainbowIntensity
 
         // When a bundled etch is selected (`.random` picks one per card), it
-        // becomes the foil — the source repo's `var(--foil)` — and the
-        // difference ray in `reverseShine` inverts it, giving a richer, varied
-        // reverse-holo look. `.solid` still tints it to the chosen colour.
-        let etch: NSImage? = {
-            guard settings.reverseTextureMode != .generated,
-                  let p = settings.reverseTexturePattern else { return nil }
-            return HoloPatternStore.shared.image(for: p)
-        }()
+        // becomes the foil — the source repo's `var(--foil)`. Variation (when
+        // on) tiles it at a random scale (0.1…1.0×) and may layer a second etch
+        // on top with a random blend, for a richer reverse-holo look. `.solid`
+        // still tints it to the chosen colour.
+        let forceLattice = settings.reverseTextureMode == .generated || settings.reverseTexturePattern == nil
 
-        if let img = etch {
-            Image(nsImage: img)
-                .resizable()
-                .scaledToFill()
-                .frame(width: w * 2, height: h * 2)
-                .colorMultiply(mode == .solid ? settings.reverseSolidColor : Color.white)
+        if !forceLattice,
+           let p1 = settings.reverseTexturePattern,
+           let img1 = HoloPatternStore.shared.tiledImage(for: p1, size: NSSize(width: w * 2, height: h * 2), scale: settings.reverseTextureScale) {
+            ZStack {
+                Image(nsImage: img1)
+                    .resizable()
+                    .frame(width: w * 2, height: h * 2)
+                if let p2 = settings.reverseTexturePattern2,
+                   let img2 = HoloPatternStore.shared.tiledImage(for: p2, size: NSSize(width: w * 2, height: h * 2), scale: settings.reverseTextureScale2) {
+                    Image(nsImage: img2)
+                        .resizable()
+                        .frame(width: w * 2, height: h * 2)
+                        .blendMode(settings.reverseTextureBlend2.blendMode)
+                }
+            }
+            .frame(width: w * 2, height: h * 2)
+            .colorMultiply(mode == .solid ? settings.reverseSolidColor : Color.white)
         } else {
             // Built-in generated diamond lattice (default Reverse Holo foil).
             switch mode {

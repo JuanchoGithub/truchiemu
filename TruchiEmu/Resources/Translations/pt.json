@@ -1232,6 +1232,8 @@
   "holo.reverse.textureModeDescription": "A textura usada como foil. Aleatório escolhe um gravado diferente por carta para um visual mais variado e rico.",
   "holo.reverse.textureMode.generated": "Retícula gerada",
   "holo.reverse.textureMode.random": "Gravado aleatório",
+  "holo.reverse.textureVariation": "Variar textura por carta",
+  "holo.reverse.textureVariationDescription": "Repete o gravado em uma escala aleatória (0,1 a 1x) e pode sobrepor um segundo gravado para um visual mais rico.",
   "holo.generatingMasks": "Gerando holo FX…",
   "bezel.bezelsDisabled": "As molduras estão desativadas",
   "bezel.automaticallyMatched": "Vinculado automaticamente por nome de jogo",

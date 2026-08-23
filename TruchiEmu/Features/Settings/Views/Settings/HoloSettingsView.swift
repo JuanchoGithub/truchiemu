@@ -31,6 +31,7 @@ struct HoloSettingsView: View {
     @State private var reverseSolidColor: Color = HoloSettings.reverseSolidColor
     @State private var reverseRainbowIntensity: Double = HoloSettings.reverseRainbowIntensity
     @State private var reverseTextureMode: HoloReverseTextureMode = HoloSettings.reverseTextureMode
+    @State private var reverseTextureVariation: Bool = HoloSettings.reverseTextureVariation
 
     init(searchText: Binding<String> = .constant(""),
          focusedSectionID: Binding<String?> = .constant(nil),
@@ -367,6 +368,19 @@ struct HoloSettingsView: View {
                         .frame(width: 180)
                         .onChange(of: reverseTextureMode) { _, newValue in
                             HoloSettings.reverseTextureMode = newValue
+                        }
+                    }
+
+                    if reverseTextureMode == .random {
+                        SettingsRow(
+                            loc.localized("holo.reverse.textureVariation"),
+                            description: loc.localized("holo.reverse.textureVariationDescription")
+                        ) {
+                            Toggle("", isOn: $reverseTextureVariation)
+                                .labelsHidden()
+                                .onChange(of: reverseTextureVariation) { _, newValue in
+                                    HoloSettings.reverseTextureVariation = newValue
+                                }
                         }
                     }
 
