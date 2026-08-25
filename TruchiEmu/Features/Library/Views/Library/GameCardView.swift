@@ -600,7 +600,10 @@ struct GameCardView: View {
                     accent: AppColors.brandAccent,
                     action: { onDoubleClick?() },
                     diameter: playButtonDiameter,
-                    externalPointer: nil,
+                    externalPointer: artworkFrameInCard.width > 0 ? CGSize(
+                        width: ((mousePosition?.x ?? artworkFrameInCard.midX) - artworkFrameInCard.midX) / (artworkFrameInCard.width / 2),
+                        height: ((mousePosition?.y ?? artworkFrameInCard.midY) - artworkFrameInCard.midY) / (artworkFrameInCard.height / 2)
+                    ) : nil,
                     artworkFrame: artworkFrameInCard,
                     coordinateSpaceName: "gameCard"
                 )

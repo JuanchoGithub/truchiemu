@@ -467,7 +467,9 @@ final class HoloSettingsStore: ObservableObject {
 
     private static func loadRenderingEngine() -> [HoloVariant: HoloRenderingEngine] {
         var defaults = HoloVariant.allCases.reduce(into: [HoloVariant: HoloRenderingEngine]()) { $0[$1] = .web }
-        defaults[.reverseHolo] = .swift
+        // reverseHolo = web (CSS reverse-holo), reverseSwift = native SwiftUI
+        defaults[.reverseHolo] = .web
+        defaults[.reverseSwift] = .swift
         guard let raw = AppSettings.getString(Self.renderingEngineKey) else { return defaults }
         var result: [HoloVariant: HoloRenderingEngine] = [:]
         for entry in raw.split(separator: ",") {
