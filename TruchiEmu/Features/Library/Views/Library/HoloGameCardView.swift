@@ -751,12 +751,12 @@ struct HoloGameCardView: View {
                                 .resizable()
                                 .scaledToFill()
                                 .frame(width: w, height: h)
-                                .scaleEffect(isPressed ? 1.08 : 1.06)
+                                .scaleEffect(isPressed ? 1.08 : (effectsActive ? 1.06 : 1.0))
                                 .offset(x: artPX, y: artPY)
                                 .clipped()
                         } else {
                             placeholderArt
-                                .scaleEffect(isPressed ? 1.05 : 1.03)
+                                .scaleEffect(isPressed ? 1.05 : (effectsActive ? 1.03 : 1.0))
                                 .offset(x: artPX, y: artPY)
                         }
                     }
