@@ -23,7 +23,7 @@ enum HoloVariant: String, CaseIterable, Identifiable {
     case vFullArt        // v-full-art.css — textured + 0deg rainbow + 133deg metallic
     case secretRare      // secret-rare.css — pixelated rainbow + glitter
     case reverseHolo     // reverse-holo.css — full-card foil, inverted mask
-    case swiftHolo       // native SwiftUI/Metal renderer — reverse-holo style foil
+    case reverseSwift    // native SwiftUI/Metal renderer — reverse-holo style foil
 
     var id: String { rawValue }
 
@@ -38,7 +38,7 @@ enum HoloVariant: String, CaseIterable, Identifiable {
         case .vFullArt:    return "V / Full Art"
         case .secretRare:  return "Secret Rare"
         case .reverseHolo: return "Reverse Holo"
-        case .swiftHolo:   return "Holo Swift"
+        case .reverseSwift: return "Reverse Swift"
         }
     }
 
@@ -72,7 +72,7 @@ enum HoloVariant: String, CaseIterable, Identifiable {
         case .vFullArt:    return "Textured + 0deg rainbow + 133deg metallic."
         case .secretRare:  return "Pixelated rainbow with glitter overlay."
         case .reverseHolo: return "Full-card pattern foil with a moving silver/coloured sheen."
-        case .swiftHolo:   return "Native SwiftUI/Metal renderer — reverse-holo style full-card foil with moving sheen."
+        case .reverseSwift: return "Native SwiftUI/Metal renderer — reverse-holo style full-card foil with moving sheen."
         }
     }
 }
@@ -576,8 +576,8 @@ extension HoloVariant {
                 )
             )
 
-        case .swiftHolo:
-            // Holo Swift: native SwiftUI/Metal renderer — full-card foil with
+        case .reverseSwift:
+            // Reverse Swift: native SwiftUI/Metal renderer — full-card foil with
             // moving specular sheen (reverse-holo style). Uses the native
             // SwiftUI foil renderer instead of WKWebView CSS.
             return HoloVariantRecipe(
@@ -620,5 +620,15 @@ enum HoloVariantRoller {
             if roll < cumulative { return variant }
         }
         return HoloVariant.allCases.last ?? .regularHolo
+    }
+}
+
+// Variants with only one native engine (no engine dropdown in settings).
+extension HoloVariant {
+    var hasSingleNativeEngine: Bool {
+        switch self {
+        case .reverseHolo, .reverseSwift: return true
+        default: return false
+        }
     }
 }

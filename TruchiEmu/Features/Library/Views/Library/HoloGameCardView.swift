@@ -733,7 +733,7 @@ struct HoloGameCardView: View {
                     from: holoSettings, romID: rom.id.uuidString
                 ).randomization?.variant ?? .regularHolo
                 // swiftHolo always uses the native SwiftUI/Metal renderer
-                let isSwiftHolo = webVariant == .swiftHolo
+                let isSwiftHolo = webVariant == .reverseSwift
                 // For other variants, check the per-variant rendering engine setting
                 let useWebHolo = effectsActive && !isSwiftHolo && (holoSettings.renderingEngine[webVariant] ?? .web) == .web
                 ZStack {

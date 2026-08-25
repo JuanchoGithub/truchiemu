@@ -580,9 +580,9 @@ struct HoloSettingsView: View {
 
 // One variant row in the Variant Weights section: a small live preview
 // swatch (Canvas-rendered shine stack for that variant) + a percent slider +
-// a percentage readout + a rendering engine picker. Changing the slider
-// redistributes the remainder across the other variants via
-// `HoloSettingsStore.setVariantWeight`.
+// a percentage readout + a rendering engine picker (only for variants
+// with multiple native engines). Changing the slider redistributes the
+// remainder across the other variants via `HoloSettingsStore.setVariantWeight`.
 private struct HoloVariantWeightRow: View {
     let variant: HoloVariant
     @Binding var variantWeights: [HoloVariant: Double]
@@ -621,20 +621,22 @@ private struct HoloVariantWeightRow: View {
                 .foregroundStyle(AppColors.textSecondary(colorScheme))
                 .frame(width: 36, alignment: .trailing)
 
-            // Rendering engine picker
-            Picker("", selection: Binding(
-                get: { settings.renderingEngine[variant] ?? .web },
-                set: { newValue in
-                    settings.renderingEngine[variant] = newValue
+            // Rendering engine picker — only for variants with multiple native engines
+            if !variant.hasSingleNativeEngine {
+                Picker("", selection: Binding(
+                    get: { settings.renderingEngine[variant] ?? .web },
+                    set: { newValue in
+                        settings.renderingEngine[variant] = newValue
+                    }
+                )) {
+                    ForEach(HoloSettingsStore.HoloRenderingEngine.allCases) { engine in
+                        Text(engine.displayName).tag(engine)
+                    }
                 }
-            )) {
-                ForEach(HoloSettingsStore.HoloRenderingEngine.allCases) { engine in
-                    Text(engine.displayName).tag(engine)
-                }
+                .labelsHidden()
+                .frame(width: 90)
+                .pickerStyle(.menu)
             }
-            .labelsHidden()
-            .frame(width: 90)
-            .pickerStyle(.menu)
         }
     }
 
