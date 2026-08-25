@@ -29,10 +29,15 @@ struct GameCardView: View {
     @State private var blurredFillImage: NSImage?
     @State private var zoomReloadToken: UUID = UUID()
     @State private var artworkFrameInCard: CGRect = .zero
+    // 3D pivoting effect state (like HoloGameCardView but without holo/foil/glare)
+    @State private var mousePosition: CGPoint?
+    @State private var tiltRotationX: Double = 0
+    @State private var tiltRotationY: Double = 0
     @Environment(\.colorScheme) private var colorScheme
     @ObservedObject private var prefs = SystemPreferences.shared
     @ObservedObject private var dragState = GameDragState.shared
     @ObservedObject private var boxArtService = BoxArtService.shared
+    @ObservedObject private var scrollState = LibraryScrollState.shared
     @EnvironmentObject private var library: ROMLibrary
     @EnvironmentObject private var categoryManager: CategoryManager
 
@@ -194,14 +199,120 @@ struct GameCardView: View {
         isHiddenItem ? .gray : AppColors.textPrimary(colorScheme)
     }
 
+    // MARK: - 3D Pivoting Effect (mirrors HoloGameCardView but without holo/foil/glare)
+
+    private var pivotingEnabled: Bool {
+        prefs.boxArtPivotingEnabled() && !scrollState.isScrolling
+    }
+
+    // Normalized cursor position (0...1) within the artwork frame.
+    // Only valid while hovering — falls back to center (0.5, 0.5) which is
+    // fine since the rotation is gated by `pivotingEnabled && isHovered`.
+    private var normalizedMouseX: CGFloat {
+        guard let mp = mousePosition, artworkFrameInCard.width > 0 else { return 0.5 }
+        return min(max((mp.x - artworkFrameInCard.minX) / artworkFrameInCard.width, 0), 1)
+    }
+
+    private var normalizedMouseY: CGFloat {
+        guard let mp = mousePosition, artworkFrameInCard.height > 0 else { return 0.5 }
+        return min(max((mp.y - artworkFrameInCard.minY) / artworkFrameInCard.height, 0), 1)
+    }
+
+    // 3D tilt toward the cursor. The card pivots around its own center so the
+    // edge nearest the cursor lifts toward the viewer. Angles are 0 at the
+    // artwork center and reach ±maxTiltAngle at the edges.
+    //
+    // Sign convention (SwiftUI +X right, +Y down, +Z toward viewer; right-hand
+    // rule): positive rotX about (1,0,0) tilts the top AWAY (drops away from
+    // cursor at top); positive rotY about (0,1,0) tilts the LEFT toward the
+    // viewer (rises toward cursor at left). Therefore, to RAISE the edge
+    // toward the cursor:
+    //   rotX = (ny - 0.5) * 2 * maxTiltAngle  (top rises when ny < 0.5)
+    //   rotY = (0.5 - nx) * 2 * maxTiltAngle  (left rises when nx < 0.5)
+    private let maxTiltAngle: Double = 9
+
+    private var tiltTargetRotationX: Double {
+        (normalizedMouseY - 0.5) * 2 * maxTiltAngle
+    }
+
+    private var tiltTargetRotationY: Double {
+        (0.5 - normalizedMouseX) * 2 * maxTiltAngle
+    }
+
+    // SwiftUI `rotation3DEffect`'s `perspective` parameter is the reciprocal of
+    // CSS's: SMALLER = flatter, LARGER = more dramatic. 0.5 gives a subtle,
+    // clean pivot like simeydotme's `perspective: 600px` does in CSS.
+    private let tiltPerspective: CGFloat = 0.5
+
+    // Compose the two rotations (Rx then Ry) into a single axis-angle rotation
+    // via quaternion multiplication so the perspective is applied exactly once.
+    private var tiltCombinedAngle: Double {
+        let ax = tiltRotationX * .pi / 180
+        let ay = tiltRotationY * .pi / 180
+        let qw = cos(ay / 2) * cos(ax / 2)
+        return 2 * acos(min(max(qw, -1), 1)) * 180 / .pi
+    }
+
+    private var tiltCombinedAxis: (x: CGFloat, y: CGFloat, z: CGFloat) {
+        let ax = tiltRotationX * .pi / 180
+        let ay = tiltRotationY * .pi / 180
+        var x = cos(ay / 2) * sin(ax / 2)
+        var y = sin(ay / 2) * cos(ax / 2)
+        var z = -sin(ay / 2) * sin(ax / 2)
+        let len = sqrt(x * x + y * y + z * z)
+        if len < 1e-6 { return (1, 0, 0) }
+        return (x / len, y / len, z / len)
+    }
+
     var body: some View {
         cardContent
         .coordinateSpace(name: "gameCard")
+        // Hover + pointer tracking attached BEFORE the scale transform
+        // so the hit region stays stable. The 3D tilt is applied to the
+        // artwork view inside cardContent, so it doesn't move the hit region.
+        .onHover { hovering in
+            isHovered = hovering
+            if !hovering { mousePosition = nil }
+            // Ease the card back to flat on exit.
+            if pivotingEnabled {
+                withAnimation(AppMotion.tilt) {
+                    tiltRotationX = 0
+                    tiltRotationY = 0
+                }
+            }
+        }
+        .onContinuousHover { phase in
+            guard pivotingEnabled else { return }
+            switch phase {
+            case .active(let location):
+                mousePosition = location
+                // Spring the 3D tilt toward the cursor.
+                withAnimation(AppMotion.tilt) {
+                    tiltRotationX = tiltTargetRotationX
+                    tiltRotationY = tiltTargetRotationY
+                }
+            case .ended:
+                mousePosition = nil
+                withAnimation(AppMotion.tilt) {
+                    tiltRotationX = 0
+                    tiltRotationY = 0
+                }
+            }
+        }
+        .onChange(of: scrollState.isScrolling) { _, scrolling in
+            // While the grid scrolls, drop all hover-driven state so the
+            // pivoting effect doesn't fire mid-scroll.
+            if scrolling {
+                isHovered = false
+                mousePosition = nil
+                tiltRotationX = 0
+                tiltRotationY = 0
+            }
+        }
         .scaleEffect(isPressed ? 0.97 : (isLaunching ? 1.05 : (isHovered ? 1.02 : 1.0)))
         .animation(AppMotion.micro, value: isHovered)
         .animation(AppMotion.feedback, value: isPressed)
         .animation(nil, value: isLaunching)
-    .onHover { isHovered = $0 }
     .onDrag {
             let draggedIDs: [UUID]
             if isSelected, let provider = selectedIDsProvider {
@@ -329,6 +440,13 @@ struct GameCardView: View {
                     .opacity(artworkOpacity)
                     .padding(.horizontal, 4)
                     .padding(.top, 4)
+                    // 3D pivoting effect — only the artwork pivots, title stays flat
+                    .rotation3DEffect(
+                        .degrees(pivotingEnabled && isHovered ? tiltCombinedAngle : 0),
+                        axis: tiltCombinedAxis,
+                        anchor: .center,
+                        perspective: tiltPerspective
+                    )
 
                     if raEnabled && rom.raMatchStatus == "matched" {
                         Image(systemName: "trophy.fill")

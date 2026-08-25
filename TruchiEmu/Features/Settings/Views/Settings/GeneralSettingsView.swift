@@ -5,6 +5,7 @@ struct GeneralSettingsView: View {
     @EnvironmentObject var library: ROMLibrary
     @State private var autoCheckUpdates: Bool = true
     @State private var notificationsEnabled: Bool = false
+    @State private var boxArtPivotingEnabled: Bool = true
 
     @State private var pending = PendingThemeSettings()
     @State private var showRestartConfirmation = false
@@ -179,6 +180,17 @@ LazyVGrid(columns: [GridItem(.adaptive(minimum: 60))], spacing: 2) {
                 .id("section-theme")
             }
 
+            // ★ Box Art Pivoting Section
+            if (!isSearching || matchesSearch("boxArt pivoting 3D tilt cursor")) && sectionVisible("section-boxart-pivoting") {
+                Section(header: Label(loc.localized("boxArt.pivoting"), systemImage: "cube.transparent")) {
+                    Toggle(loc.localized("boxArt.pivotingEnabled"), isOn: $boxArtPivotingEnabled)
+                    Text(loc.localized("boxArt.pivotingDescription"))
+                        .font(.caption)
+                        .foregroundStyle(AppColors.textSecondary(colorScheme))
+                }
+                .id("section-boxart-pivoting")
+            }
+
             // ★ Application Section
             if (!isSearching || matchesSearch("Application version build notifications updates")) && sectionVisible("section-application") {
                 Section(header: Label(loc.localized("settings.application"), systemImage: "app.badge")) {
@@ -262,6 +274,7 @@ LazyVGrid(columns: [GridItem(.adaptive(minimum: 60))], spacing: 2) {
         NotificationService.shared.refreshAuthorizationStatus()
         autoCheckUpdates = AppUpdateService.shared.autoCheckEnabled
         notificationsEnabled = NotificationService.shared.isAuthorized
+        boxArtPivotingEnabled = prefs.boxArtPivotingEnabled()
             pending.theme = themeManager.currentTheme
             pending.appearanceMode = themeManager.appearanceMode
             pending.customColor = themeManager.customAccentColor
@@ -275,6 +288,9 @@ LazyVGrid(columns: [GridItem(.adaptive(minimum: 60))], spacing: 2) {
         }
         .onChange(of: autoCheckUpdates) { _, newValue in
             AppUpdateService.shared.autoCheckEnabled = newValue
+        }
+        .onChange(of: boxArtPivotingEnabled) { _, newValue in
+            prefs.setBoxArtPivotingEnabled(newValue)
         }
         .onChange(of: pending.theme) { _, _ in
             activePending.theme = pending.theme
@@ -431,6 +447,7 @@ private struct CustomThemeButton: View {
     private var hasMatchingSections: Bool {
         matchesSearch("Language Region systems language emulation core country localization") ||
         matchesSearch("Theme accent color appearance mode light dark gaming tinted surfaces toolbar") ||
+        matchesSearch("boxArt pivoting 3D tilt cursor") ||
         matchesSearch("Application version build notifications updates")
     }
 

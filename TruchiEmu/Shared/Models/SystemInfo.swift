@@ -643,6 +643,7 @@ class SystemPreferences: ObservableObject {
     }
 
     private static let keyBoxArtDisplayMode = "library_boxart_display_mode"
+    private static let keyBoxArtPivoting = "library_boxart_pivoting"
 
     func boxArtDisplayMode() -> BoxArtDisplayMode {
         if let rawValue = AppSettings.get(Self.keyBoxArtDisplayMode, type: String.self),
@@ -652,6 +653,15 @@ class SystemPreferences: ObservableObject {
 
     func setBoxArtDisplayMode(_ mode: BoxArtDisplayMode) {
         AppSettings.set(Self.keyBoxArtDisplayMode, value: mode.rawValue)
+        updateTrigger += 1
+    }
+
+    func boxArtPivotingEnabled() -> Bool {
+        AppSettings.getBool(Self.keyBoxArtPivoting, defaultValue: true)
+    }
+
+    func setBoxArtPivotingEnabled(_ enabled: Bool) {
+        AppSettings.setBool(Self.keyBoxArtPivoting, value: enabled)
         updateTrigger += 1
     }
 
