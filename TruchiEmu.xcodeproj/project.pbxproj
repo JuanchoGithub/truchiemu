@@ -169,6 +169,7 @@
 		1CBFB065055B2B9D9C2066C8 /* input_coreLabels_openlara.json in Resources */ = {isa = PBXBuildFile; fileRef = 3F25989FE446271EC5E29EF1 /* input_coreLabels_openlara.json */; };
 		1CCB8FB569A3845402EEB130 /* input_systemLabels_gam4980.json in Resources */ = {isa = PBXBuildFile; fileRef = 55E2E46CAAE4B5F6B9B64ECC /* input_systemLabels_gam4980.json */; };
 		1CEA121BE6907FBB9315DFE8 /* SlangCompilerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75EAFBBDCB8E845AC522DBA6 /* SlangCompilerService.swift */; };
+		1CF749C52A4DD8A87DBF59E4 /* HoloWebCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BF537C6CBE2A78FC9F6A945 /* HoloWebCardView.swift */; };
 		1D42E0EBE1B6FD7FE8F892D7 /* ADVMAME.png in Resources */ = {isa = PBXBuildFile; fileRef = 88A5AA6240BCC78ED370440C /* ADVMAME.png */; };
 		1D56B2305EF0DA5A06F98BE4 /* CelebrationPillOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1D3F92500152FBBD78B02A2 /* CelebrationPillOverlay.swift */; };
 		1D74BFC265809AEF5ED3C30F /* RetroKeycodeMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC607903568B8A010CB23C1 /* RetroKeycodeMapper.swift */; };
@@ -577,6 +578,7 @@
 		70524048D1859A1E4828EBD9 /* input_coreOverrides_handy.json in Resources */ = {isa = PBXBuildFile; fileRef = FB4F7ED2498E23BD3734F7B6 /* input_coreOverrides_handy.json */; };
 		705F3B10B7D01452C11E6E69 /* fightdata_ragnagrd.json in Resources */ = {isa = PBXBuildFile; fileRef = CB23D97A5C2796752A96F1AE /* fightdata_ragnagrd.json */; };
 		7087D0F7B70E84B687E4E97A /* Achievement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EE1FAA370EEA90A7E3D3CC5 /* Achievement.swift */; };
+		70A1373AC4795102E19B8E90 /* card.css in Resources */ = {isa = PBXBuildFile; fileRef = B6AB0B7C9154141354154656 /* card.css */; };
 		70A8376A03E3B09069D1B118 /* fightdata_gowcaizr.json in Resources */ = {isa = PBXBuildFile; fileRef = B75F53EA285C2E4D4ADC0642 /* fightdata_gowcaizr.json */; };
 		70F4DB83A82880E7F2A28D97 /* atari7800@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 15A5E5BF6348143202BAA8F9 /* atari7800@132w.png */; };
 		714D657AEDB409F1DFA924E8 /* HotkeyActionRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1454A3CD638307C2DD9561DA /* HotkeyActionRow.swift */; };
@@ -1298,6 +1300,7 @@
 		F9A2019BB33C6CF8798B7C53 /* fightdata_ggx15.json in Resources */ = {isa = PBXBuildFile; fileRef = F6CFC52641BA0B6FB051708D /* fightdata_ggx15.json */; };
 		FA0EDE6272EC534EADC7BA9E /* ShareButtonConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42388487227F2DC60AC9BACA /* ShareButtonConfig.swift */; };
 		FA47C55337EBBB63A3D8DFDB /* fightdata_fatfurwa.json in Resources */ = {isa = PBXBuildFile; fileRef = 2D6F92DA20EE106A194443EE /* fightdata_fatfurwa.json */; };
+		FA4FC2225A0F66A327550C00 /* card.html in Resources */ = {isa = PBXBuildFile; fileRef = FD93A35AA57EAFFC01A3710B /* card.html */; };
 		FA6D31B7F24E845538E9A347 /* AMIGACD.png in Resources */ = {isa = PBXBuildFile; fileRef = B3351F9CDA9E82BCDB2D7F37 /* AMIGACD.png */; };
 		FA6E349A15EA8240B24083CD /* MoveListSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BC92E3E97A6564FD5EE72BC /* MoveListSettingsView.swift */; };
 		FAA7123CC3BC4520AB7B61F4 /* input_coreLabels_jumpnbump.json in Resources */ = {isa = PBXBuildFile; fileRef = DC3027810104754F860087A9 /* input_coreLabels_jumpnbump.json */; };
@@ -1658,6 +1661,7 @@
 		3BD337DAF7B206DF941EB16D /* LottesCRT.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = LottesCRT.metal; sourceTree = "<group>"; };
 		3BD38C52C8520B46C36D80C0 /* input_systemLabels_atari_st.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_atari_st.json; sourceTree = "<group>"; };
 		3BE49C585633F028422B60E3 /* SFCMSU.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SFCMSU.png; sourceTree = "<group>"; };
+		3BF537C6CBE2A78FC9F6A945 /* HoloWebCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HoloWebCardView.swift; sourceTree = "<group>"; };
 		3C81E516A57892669DA74C24 /* fightdata_ringdest.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_ringdest.json; sourceTree = "<group>"; };
 		3C9A0ED4F14D4BDE0F914812 /* input_systemLabels_ps2.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_ps2.json; sourceTree = "<group>"; };
 		3C9C7DF8B3C788A24004D789 /* GlassOrb.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = GlassOrb.metal; sourceTree = "<group>"; };
@@ -2317,6 +2321,7 @@
 		B5E3E5DB793CCE1800B8C7BE /* GenreSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenreSettingsView.swift; sourceTree = "<group>"; };
 		B624916CC58B4F2C2A93E827 /* GameDBLookupResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameDBLookupResult.swift; sourceTree = "<group>"; };
 		B666AFBA89C9094D3D77ADBE /* input_coreLabels_beetle_psx_hw.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_beetle_psx_hw.json; sourceTree = "<group>"; };
+		B6AB0B7C9154141354154656 /* card.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = card.css; sourceTree = "<group>"; };
 		B6CE8DDABCE1ABFA58C62123 /* Shader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shader.swift; sourceTree = "<group>"; };
 		B6FF84899910D3F6FAD36B4C /* fightdata_cvsgd.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_cvsgd.json; sourceTree = "<group>"; };
 		B75F53EA285C2E4D4ADC0642 /* fightdata_gowcaizr.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_gowcaizr.json; sourceTree = "<group>"; };
@@ -2662,6 +2667,7 @@
 		FD4DB03B3063C56536FCC7D2 /* input_coreLabels_pokemini.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_pokemini.json; sourceTree = "<group>"; };
 		FD4DF5D2F13617BDA825F6F3 /* CheatSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheatSettingsView.swift; sourceTree = "<group>"; };
 		FD7F6272F74B473FA20B6E72 /* InputParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputParser.swift; sourceTree = "<group>"; };
+		FD93A35AA57EAFFC01A3710B /* card.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = card.html; sourceTree = "<group>"; };
 		FD940B054409FA9EB96E6AD1 /* tic@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tic@132w.png"; sourceTree = "<group>"; };
 		FD9A1772372E4EED4D48A027 /* PersistenceMigrationFlag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceMigrationFlag.swift; sourceTree = "<group>"; };
 		FDB4695E9E68A483C0D22E18 /* chailove-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "chailove-cheats.zip"; sourceTree = "<group>"; };
@@ -3003,6 +3009,15 @@
 				39E0ADEA9FFE4EF38D84C6B0 /* systemOverrides */,
 			);
 			path = CoreButtonSplit;
+			sourceTree = "<group>";
+		};
+		2C1F6F4977C3CAF4BED9345C /* HoloWeb */ = {
+			isa = PBXGroup;
+			children = (
+				B6AB0B7C9154141354154656 /* card.css */,
+				FD93A35AA57EAFFC01A3710B /* card.html */,
+			);
+			path = HoloWeb;
 			sourceTree = "<group>";
 		};
 		2F2DE6617AEEEBFC7DBFBD97 /* Sections */ = {
@@ -3471,6 +3486,7 @@
 				0CBD37D03C917E1671224137 /* EmulatorIcons */,
 				FB84C6DEBBF6DD736FF3B564 /* FightData */,
 				7BCD0394A17EF0807F79BAF9 /* HoloPatterns */,
+				2C1F6F4977C3CAF4BED9345C /* HoloWeb */,
 				422DEDE00C8B12820B215CCB /* InputDescriptors */,
 				00DD5E5610D92A41D1BD67D7 /* System */,
 				54FD9E210FE30BDD7A83138A /* ThumbnailManifests */,
@@ -3679,6 +3695,7 @@
 				4D3B5D16F868D592F38DD258 /* HoloGridCollectionView.swift */,
 				E2040211263BC01B0D3C0F77 /* HoloVariantRenderer.swift */,
 				48CD6D977DCA38ED6A7DC895 /* HoloVariants.swift */,
+				3BF537C6CBE2A78FC9F6A945 /* HoloWebCardView.swift */,
 				A0A1BBAF236A7482126D4923 /* IconPickerView.swift */,
 				ED22E0198CFE81289DAC573E /* ImageCropView.swift */,
 				AE6DD9F2D88F252E2CECD2CC /* LibraryAnimations.swift */,
@@ -5118,6 +5135,8 @@
 				963E5BB5553E1196E6B4BF1F /* atarilynx-cheats.zip in Resources */,
 				200CE510F205AAD9599C098E /* atarist@132w.png in Resources */,
 				FFF47BFB43D9F61765110D05 /* c64@132w.png in Resources */,
+				70A1373AC4795102E19B8E90 /* card.css in Resources */,
+				FA4FC2225A0F66A327550C00 /* card.html in Resources */,
 				AF4B08D12CEE3A6CBDCAF113 /* chai@132w.png in Resources */,
 				5909FDC618FE186B2B14CD47 /* chailove-cheats.zip in Resources */,
 				87730A8888387C2E267DFBD8 /* col@132w.png in Resources */,
@@ -6112,6 +6131,7 @@
 				9931AAD078367371520605C3 /* HoloSettingsView.swift in Sources */,
 				2AB42E1F6D46FB04C3519B83 /* HoloVariantRenderer.swift in Sources */,
 				9A9F57B6AB7FA7D121E8D24D /* HoloVariants.swift in Sources */,
+				1CF749C52A4DD8A87DBF59E4 /* HoloWebCardView.swift in Sources */,
 				714D657AEDB409F1DFA924E8 /* HotkeyActionRow.swift in Sources */,
 				FDE92E115DEE8FE3BE7318EF /* HotkeyConfig.swift in Sources */,
 				C89D895A0684B41688FF2FD4 /* HotkeyConfigSettingsView.swift in Sources */,

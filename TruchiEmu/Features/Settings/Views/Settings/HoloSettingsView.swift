@@ -32,6 +32,10 @@ struct HoloSettingsView: View {
     @State private var reverseRainbowIntensity: Double = HoloSettings.reverseRainbowIntensity
     @State private var reverseTextureMode: HoloReverseTextureMode = HoloSettings.reverseTextureMode
     @State private var reverseTextureVariation: Bool = HoloSettings.reverseTextureVariation
+    @State private var holofoilRareIntensity: Double = HoloSettings.holofoilRareIntensity
+    @State private var holofoilRareScanlineDensity: Double = HoloSettings.holofoilRareScanlineDensity
+    @State private var holofoilRareBeamStrength: Double = HoloSettings.holofoilRareBeamStrength
+    @State private var holofoilRareGlare: Double = HoloSettings.holofoilRareGlare
 
     init(searchText: Binding<String> = .constant(""),
          focusedSectionID: Binding<String?> = .constant(nil),
@@ -449,6 +453,83 @@ struct HoloSettingsView: View {
                 .id("section-reverse")
             }
 
+            if (!isSearching || matchesSearch("holofoil rare rainbow beam scanline glare intensity foil variant diagonal")) && sectionVisible("section-holofoil") {
+                Section {
+                    SettingsRow(
+                        loc.localized("holo.holofoilRare.intensity"),
+                        description: loc.localized("holo.holofoilRare.intensityDescription")
+                    ) {
+                        HStack(spacing: 8) {
+                            Slider(value: $holofoilRareIntensity, in: 0.0...2.0)
+                                .frame(width: 140)
+                            Text("\(Int((holofoilRareIntensity * 100).rounded()))%")
+                                .font(.system(size: 12, weight: .medium, design: .rounded))
+                                .foregroundStyle(AppColors.textSecondary(colorScheme))
+                                .frame(width: 36, alignment: .trailing)
+                        }
+                        .onChange(of: holofoilRareIntensity) { _, newValue in
+                            HoloSettings.holofoilRareIntensity = newValue
+                        }
+                    }
+
+                    SettingsRow(
+                        loc.localized("holo.holofoilRare.scanlineDensity"),
+                        description: loc.localized("holo.holofoilRare.scanlineDensityDescription")
+                    ) {
+                        HStack(spacing: 8) {
+                            Slider(value: $holofoilRareScanlineDensity, in: 0.25...3.0)
+                                .frame(width: 140)
+                            Text("\(Int((holofoilRareScanlineDensity * 100).rounded()))%")
+                                .font(.system(size: 12, weight: .medium, design: .rounded))
+                                .foregroundStyle(AppColors.textSecondary(colorScheme))
+                                .frame(width: 36, alignment: .trailing)
+                        }
+                        .onChange(of: holofoilRareScanlineDensity) { _, newValue in
+                            HoloSettings.holofoilRareScanlineDensity = newValue
+                        }
+                    }
+
+                    SettingsRow(
+                        loc.localized("holo.holofoilRare.beamStrength"),
+                        description: loc.localized("holo.holofoilRare.beamStrengthDescription")
+                    ) {
+                        HStack(spacing: 8) {
+                            Slider(value: $holofoilRareBeamStrength, in: 0.0...1.0)
+                                .frame(width: 140)
+                            Text("\(Int((holofoilRareBeamStrength * 100).rounded()))%")
+                                .font(.system(size: 12, weight: .medium, design: .rounded))
+                                .foregroundStyle(AppColors.textSecondary(colorScheme))
+                                .frame(width: 36, alignment: .trailing)
+                        }
+                        .onChange(of: holofoilRareBeamStrength) { _, newValue in
+                            HoloSettings.holofoilRareBeamStrength = newValue
+                        }
+                    }
+
+                    SettingsRow(
+                        loc.localized("holo.holofoilRare.glare"),
+                        description: loc.localized("holo.holofoilRare.glareDescription")
+                    ) {
+                        HStack(spacing: 8) {
+                            Slider(value: $holofoilRareGlare, in: 0.0...1.0)
+                                .frame(width: 140)
+                            Text("\(Int((holofoilRareGlare * 100).rounded()))%")
+                                .font(.system(size: 12, weight: .medium, design: .rounded))
+                                .foregroundStyle(AppColors.textSecondary(colorScheme))
+                                .frame(width: 36, alignment: .trailing)
+                        }
+                        .onChange(of: holofoilRareGlare) { _, newValue in
+                            HoloSettings.holofoilRareGlare = newValue
+                        }
+                    }
+                } header: {
+                    Label { Text(loc.localized("holo.holofoilRare")) } icon: { Image(systemName: "sparkle") }
+                } footer: {
+                    Text(loc.localized("holo.holofoilRareDescription"))
+                }
+                .id("section-holofoil")
+            }
+
             if (!isSearching || matchesSearch("masks folder reveal finder cache vision holo")) && sectionVisible("section-masks") {
                 Section {
                     SettingsRow(
@@ -499,12 +580,14 @@ struct HoloSettingsView: View {
 
 // One variant row in the Variant Weights section: a small live preview
 // swatch (Canvas-rendered shine stack for that variant) + a percent slider +
-// a percentage readout. Changing the slider redistributes the remainder
-// across the other variants via `HoloSettingsStore.setVariantWeight`.
+// a percentage readout + a rendering engine picker. Changing the slider
+// redistributes the remainder across the other variants via
+// `HoloSettingsStore.setVariantWeight`.
 private struct HoloVariantWeightRow: View {
     let variant: HoloVariant
     @Binding var variantWeights: [HoloVariant: Double]
     @Environment(\.colorScheme) private var colorScheme
+    @ObservedObject private var settings = HoloSettingsStore.shared
 
     var body: some View {
         HStack(spacing: 10) {
@@ -537,6 +620,21 @@ private struct HoloVariantWeightRow: View {
                 .font(.system(size: 12, weight: .medium, design: .rounded))
                 .foregroundStyle(AppColors.textSecondary(colorScheme))
                 .frame(width: 36, alignment: .trailing)
+
+            // Rendering engine picker
+            Picker("", selection: Binding(
+                get: { settings.renderingEngine[variant] ?? .web },
+                set: { newValue in
+                    settings.renderingEngine[variant] = newValue
+                }
+            )) {
+                ForEach(HoloSettingsStore.HoloRenderingEngine.allCases) { engine in
+                    Text(engine.displayName).tag(engine)
+                }
+            }
+            .labelsHidden()
+            .frame(width: 90)
+            .pickerStyle(.menu)
         }
     }
 

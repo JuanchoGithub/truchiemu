@@ -23,12 +23,13 @@ enum HoloVariant: String, CaseIterable, Identifiable {
     case vFullArt        // v-full-art.css — textured + 0deg rainbow + 133deg metallic
     case secretRare      // secret-rare.css — pixelated rainbow + glitter
     case reverseHolo     // reverse-holo.css — full-card foil, inverted mask
+    case swiftHolo       // native SwiftUI/Metal renderer — reverse-holo style foil
 
     var id: String { rawValue }
 
     var displayName: String {
         switch self {
-        case .regularHolo: return "Regular Holo"
+        case .regularHolo: return "Holofoil Rare"
         case .cosmosHolo:  return "Cosmos"
         case .rainbowHolo: return "Rainbow Rare"
         case .radiantHolo: return "Radiant"
@@ -37,6 +38,7 @@ enum HoloVariant: String, CaseIterable, Identifiable {
         case .vFullArt:    return "V / Full Art"
         case .secretRare:  return "Secret Rare"
         case .reverseHolo: return "Reverse Holo"
+        case .swiftHolo:   return "Holo Swift"
         }
     }
 
@@ -61,7 +63,7 @@ enum HoloVariant: String, CaseIterable, Identifiable {
 
     private var defaultDescription: String {
         switch self {
-        case .regularHolo: return "Diagonal rainbow stripe foil (default)."
+        case .regularHolo: return "Diagonal rainbow stripe holo foil (Regular Holo)."
         case .cosmosHolo:  return "Radial rainbow galaxy with centered glare."
         case .rainbowHolo: return "Rainbow + glitter, two stacked layers."
         case .radiantHolo: return "Starburst from cursor, dark gradient edges."
@@ -70,6 +72,7 @@ enum HoloVariant: String, CaseIterable, Identifiable {
         case .vFullArt:    return "Textured + 0deg rainbow + 133deg metallic."
         case .secretRare:  return "Pixelated rainbow with glitter overlay."
         case .reverseHolo: return "Full-card pattern foil with a moving silver/coloured sheen."
+        case .swiftHolo:   return "Native SwiftUI/Metal renderer — reverse-holo style full-card foil with moving sheen."
         }
     }
 }
@@ -550,6 +553,33 @@ extension HoloVariant {
             // the card moves" read. The Holo settings let the user swap the
             // sheen colour between a solid pick, rainbow, and the card's own
             // background colour.
+            return HoloVariantRecipe(
+                shineLayers: [
+                    HoloShineLayer(
+                        palette: .metallicSilver,
+                        filter: HoloFilterRecipe(brightness: 0.5, contrast: 1.6, saturation: 1.0),
+                        blendMode: .hardLight,
+                        sizeX: 3.0, sizeY: 3.0,
+                        basePositionX: 0.5, basePositionY: 0.5,
+                        parallaxX: 1.0, parallaxY: 1.0,
+                        radial: nil
+                    ),
+                ],
+                glare: HoloGlareRecipe(
+                    stops: [
+                        (0.0, Color.white.opacity(0.8)),
+                        (1.0, Color.white.opacity(0.0)),
+                    ],
+                    filter: HoloFilterRecipe(brightness: 0.9, contrast: 1.5, saturation: 1.0),
+                    blendMode: .overlay,
+                    opacity: .reverseGlare
+                )
+            )
+
+        case .swiftHolo:
+            // Holo Swift: native SwiftUI/Metal renderer — full-card foil with
+            // moving specular sheen (reverse-holo style). Uses the native
+            // SwiftUI foil renderer instead of WKWebView CSS.
             return HoloVariantRecipe(
                 shineLayers: [
                     HoloShineLayer(

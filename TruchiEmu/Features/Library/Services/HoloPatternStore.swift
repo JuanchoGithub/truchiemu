@@ -290,6 +290,10 @@ final class HoloSettingsStore: ObservableObject {
     static let reverseRainbowIntensityKey = "holo_reverse_rainbow_intensity"
     static let reverseTextureModeKey = "holo_reverse_texture_mode"
     static let reverseTextureVariationKey = "holo_reverse_texture_variation"
+    static let holofoilRareIntensityKey = "holo_holofoil_rare_intensity"
+    static let holofoilRareScanlineDensityKey = "holo_holofoil_rare_scanline_density"
+    static let holofoilRareBeamStrengthKey = "holo_holofoil_rare_beam_strength"
+    static let holofoilRareGlareKey = "holo_holofoil_rare_glare"
 
     @Published var titleIntensity: Double {
         didSet { AppSettings.setDouble(Self.titleIntensityKey, value: titleIntensity) }
@@ -389,6 +393,22 @@ final class HoloSettingsStore: ObservableObject {
     @Published var reverseTextureVariation: Bool {
         didSet { AppSettings.set(Self.reverseTextureVariationKey, value: reverseTextureVariation) }
     }
+    // Rendering engine for a holo variant: `.web` uses WKWebView (simeydotme CSS),
+    // `.swift` uses the native SwiftUI foil renderer.
+    enum HoloRenderingEngine: String, CaseIterable, Identifiable {
+        case web
+        case swift
+        var id: String { rawValue }
+        var displayName: String { rawValue.capitalized }
+    }
+
+    private static let renderingEngineKey = "holo_rendering_engine"
+
+    // Rendering engine for holo variants. `.web` uses WKWebView (simeydotme CSS),
+    // `.swift` uses the native SwiftUI foil renderer. Per-variant override.
+    @Published var renderingEngine: [HoloVariant: HoloRenderingEngine] {
+        didSet { persistRenderingEngine() }
+    }
 
     /// Per-variant probability weight (0..1 share). A card rolls a variant
     /// against these weights; the chosen variant stays for the session.
@@ -397,6 +417,22 @@ final class HoloSettingsStore: ObservableObject {
     /// to 0 forces that variant; setting all to 0 falls back to regularHolo.
     @Published var variantWeights: [HoloVariant: Double] {
         didSet { persistVariantWeights() }
+    }
+
+    // Holofoil Rare (regular-holo) tunables — let the user shape the diagonal-
+    // rainbow rare holo independently of the per-card variant roll, mirroring
+    // the dedicated Reverse Holo settings section.
+    @Published var holofoilRareIntensity: Double {
+        didSet { AppSettings.setDouble(Self.holofoilRareIntensityKey, value: holofoilRareIntensity) }
+    }
+    @Published var holofoilRareScanlineDensity: Double {
+        didSet { AppSettings.setDouble(Self.holofoilRareScanlineDensityKey, value: holofoilRareScanlineDensity) }
+    }
+    @Published var holofoilRareBeamStrength: Double {
+        didSet { AppSettings.setDouble(Self.holofoilRareBeamStrengthKey, value: holofoilRareBeamStrength) }
+    }
+    @Published var holofoilRareGlare: Double {
+        didSet { AppSettings.setDouble(Self.holofoilRareGlareKey, value: holofoilRareGlare) }
     }
 
     private init() {
@@ -422,6 +458,36 @@ final class HoloSettingsStore: ObservableObject {
         self.reverseRainbowIntensity = AppSettings.getDouble(Self.reverseRainbowIntensityKey, defaultValue: 1.0)
         self.reverseTextureMode = HoloReverseTextureMode(rawValue: AppSettings.getString(Self.reverseTextureModeKey, defaultValue: HoloReverseTextureMode.generated.rawValue) ?? "") ?? .generated
         self.reverseTextureVariation = AppSettings.getBool(Self.reverseTextureVariationKey, defaultValue: true)
+        self.holofoilRareIntensity = AppSettings.getDouble(Self.holofoilRareIntensityKey, defaultValue: 1.0)
+        self.holofoilRareScanlineDensity = AppSettings.getDouble(Self.holofoilRareScanlineDensityKey, defaultValue: 1.0)
+        self.holofoilRareBeamStrength = AppSettings.getDouble(Self.holofoilRareBeamStrengthKey, defaultValue: 1.0)
+        self.holofoilRareGlare = AppSettings.getDouble(Self.holofoilRareGlareKey, defaultValue: 0.8)
+        self.renderingEngine = Self.loadRenderingEngine()
+    }
+
+    private static func loadRenderingEngine() -> [HoloVariant: HoloRenderingEngine] {
+        var defaults = HoloVariant.allCases.reduce(into: [HoloVariant: HoloRenderingEngine]()) { $0[$1] = .web }
+        defaults[.reverseHolo] = .swift
+        guard let raw = AppSettings.getString(Self.renderingEngineKey) else { return defaults }
+        var result: [HoloVariant: HoloRenderingEngine] = [:]
+        for entry in raw.split(separator: ",") {
+            let parts = entry.split(separator: ":")
+            guard parts.count == 2,
+                  let variant = HoloVariant(rawValue: String(parts[0])),
+                  let engine = HoloRenderingEngine(rawValue: String(parts[1])) else { continue }
+            result[variant] = engine
+        }
+        for variant in HoloVariant.allCases where result[variant] == nil {
+            result[variant] = defaults[variant] ?? .web
+        }
+        return result
+    }
+
+    private func persistRenderingEngine() {
+        let raw = renderingEngine
+            .map { "\($0.key.rawValue):\($0.value.rawValue)" }
+            .joined(separator: ",")
+        AppSettings.set(Self.renderingEngineKey, value: raw)
     }
 
     /// Load the per-variant weight dictionary from AppSettings. Stored as a
@@ -707,6 +773,22 @@ enum HoloSettings {
         get { HoloSettingsStore.shared.reverseTextureVariation }
         set { HoloSettingsStore.shared.reverseTextureVariation = newValue }
     }
+    static var holofoilRareIntensity: Double {
+        get { HoloSettingsStore.shared.holofoilRareIntensity }
+        set { HoloSettingsStore.shared.holofoilRareIntensity = newValue }
+    }
+    static var holofoilRareScanlineDensity: Double {
+        get { HoloSettingsStore.shared.holofoilRareScanlineDensity }
+        set { HoloSettingsStore.shared.holofoilRareScanlineDensity = newValue }
+    }
+    static var holofoilRareBeamStrength: Double {
+        get { HoloSettingsStore.shared.holofoilRareBeamStrength }
+        set { HoloSettingsStore.shared.holofoilRareBeamStrength = newValue }
+    }
+    static var holofoilRareGlare: Double {
+        get { HoloSettingsStore.shared.holofoilRareGlare }
+        set { HoloSettingsStore.shared.holofoilRareGlare = newValue }
+    }
 }
 
 // Value snapshot of the holo settings that the static foil depends on.
@@ -754,6 +836,12 @@ struct HoloSettingsSnapshot: Equatable {
     // mask chance, intensity, and pattern (see `HoloCardRandomization`).
     var randomization: HoloCardRandomization?
 
+    // Holofoil Rare (regular-holo) tunables, copied from the settings store.
+    var holofoilRareIntensity: Double = 1.0
+    var holofoilRareScanlineDensity: Double = 1.0
+    var holofoilRareBeamStrength: Double = 1.0
+    var holofoilRareGlare: Double = 0.8
+
     @MainActor
     init(from store: HoloSettingsStore) {
         self.titleIntensity = store.titleIntensity
@@ -787,6 +875,10 @@ struct HoloSettingsSnapshot: Equatable {
         self.reverseTextureBlend2 = cfg.blend2
         self.backgroundMedianRGB = nil
         self.randomization = nil
+        self.holofoilRareIntensity = store.holofoilRareIntensity
+        self.holofoilRareScanlineDensity = store.holofoilRareScanlineDensity
+        self.holofoilRareBeamStrength = store.holofoilRareBeamStrength
+        self.holofoilRareGlare = store.holofoilRareGlare
     }
 
     /// The card-specific snapshot. The background is always randomized
