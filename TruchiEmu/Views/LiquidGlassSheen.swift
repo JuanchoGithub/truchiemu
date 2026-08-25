@@ -31,6 +31,7 @@ struct LiquidGlassSheen: ViewModifier {
                         .opacity(pointer == nil ? 0 : 1)
                         .blendMode(.softLight)
                         .animation(.easeOut(duration: 0.25), value: pointer != nil)
+                        .allowsHitTesting(false)
                 }
             )
             .onContinuousHover { phase in

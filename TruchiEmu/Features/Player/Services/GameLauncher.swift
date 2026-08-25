@@ -145,6 +145,7 @@ func launchGame(
             #if LOG_EXTREME
             LoggerService.extreme(category: "GameLauncher", "Already launching, ignoring duplicate request")
             #endif
+            completion?(nil)
             return
         }
 
