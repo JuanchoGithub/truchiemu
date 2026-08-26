@@ -2,15 +2,16 @@ import SwiftUI
 import AppKit
 
 // A self-contained live preview of the holographic foil effect, used by the
-// onboarding wizard so the user can see what holo masks look like on the box
-// art for their chosen region before enabling the option.
+// onboarding wizard so the user can see what the reverse-holo looks like on the
+// box art for their chosen region before enabling the option.
 //
-// It uses the SAME native SwiftUI/Metal renderer the app uses for the
-// "Reverse Swift" variant (HoloFoilLayers + HoloSheenEffect + HoloScratchLayer),
-// and mirrors how the real grid cards confine the foil to the box art's own
-// fitted rectangle — so boxes of any aspect ratio (US / Japan / Europe previews
-// differ in size and shape) are shown without zooming or stretching, with the
-// holo effect clipped to the actual art.
+// It REUSES the exact same production renderer the app uses — `HoloWebCardView`
+// (the simeydotme `pokemon-cards-css` reverse-holo). This is the source-faithful
+// reverse holo: a rainbow sheen over an etched foil, driven by the app's own
+// pointer position. We do not re-implement the foil in SwiftUI — we host the
+// same `WKWebView` the grid cards use, mirroring `HoloGameCardView`'s
+// `holoArtworkDefault` layout (cover-fit art + cursor parallax + clip + hit-test
+// disabled) so the preview is pixel-consistent with the real cards.
 //
 // Motion: by default the pointer drifts on a slow synthetic orbit (TimelineView)
 // so the foil shimmers on its own. While the pointer is over the card the
@@ -25,49 +26,17 @@ struct HoloPreviewCard: View {
     @State private var hoverActive = false
     @State private var mouseNorm = CGPoint(x: 0.5, y: 0.5)
 
-    private func fittedBoxartSize(image: NSImage?, w: CGFloat, h: CGFloat) -> CGSize {
-        guard let img = image, img.size.width > 0, img.size.height > 0 else {
-            return CGSize(width: w, height: h)
-        }
-        let artAspect = img.size.width / img.size.height
-        let cardAspect = w / h
-        if artAspect > cardAspect {
-            return CGSize(width: w, height: w / artAspect)
-        }
-        return CGSize(width: h * artAspect, height: h)
-    }
-
-    private var snapshot: HoloSettingsSnapshot {
-        var snap = HoloSettingsSnapshot(from: HoloSettingsStore.shared)
-        // Roll the preview from the app's current variant weights (which default
-        // to .reverseSwift) with a fixed seed and full deviation chance so each
-        // zone gets its own mask/intensity/pattern. This keeps the wizard preview
-        // in sync with the app's default holo configuration.
-        snap.randomization = HoloCardRandomization(
-            seed: 1,
-            deviationChance: 1.0,
-            variantWeights: HoloSettingsStore.shared.variantWeights
-        )
-        return snap
-    }
-
     var body: some View {
         GeometryReader { geo in
             let w = geo.size.width
             let h = geo.size.height
-            let artSize = fittedBoxartSize(image: image, w: w, h: h)
+            // Same cursor-parallax shift the production card uses.
+            let artShift = min(w, h) * 0.03
 
             ZStack {
-                // Card backing fills the (possibly letterboxed) frame so the art
-                // is never shown against a transparent gap for wide/tall ratios.
+                // Card backing so any transparent web-view edge reads as a card.
                 RoundedRectangle(cornerRadius: 8)
                     .fill(AppColors.cardBackground(colorScheme))
-
-                // Box art fit to its own aspect ratio — no zoom, no stretch.
-                Image(nsImage: image)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: w, height: h)
 
                 TimelineView(.periodic(from: .now, by: 0.03)) { ctx in
                     let t = ctx.date.timeIntervalSince1970
@@ -75,20 +44,31 @@ struct HoloPreviewCard: View {
                     let autoY = 0.5 + 0.35 * cos(t * 0.6)
                     let px = hoverActive ? mouseNorm.x : autoX
                     let py = hoverActive ? mouseNorm.y : autoY
-                    holoStack(px: px, py: py, artSize: artSize, isHovered: hoverActive)
+                    let artPX = (0.5 - px) * artShift
+                    let artPY = (0.5 - py) * artShift
+
+                    // Reuse the production reverse-holo renderer (`reverse-holo`
+                    // is the simeydotme CSS variant the app renders via WebKit).
+                    HoloWebCardView(
+                        image: image,
+                        variantClass: "reverse-holo",
+                        pointerX: px,
+                        pointerY: py,
+                        heroMask: masks?.hero,
+                        frameSize: CGSize(width: w, height: h),
+                        fitMode: .cover
+                    )
+                    .offset(x: artPX, y: artPY)
+                    .clipped()
+                    .allowsHitTesting(false)
                 }
             }
             .clipShape(RoundedRectangle(cornerRadius: 8))
             .onContinuousHover { phase in
                 switch phase {
                 case .active(let loc):
-                    // `loc` is in the card's local space; normalise against the
-                    // centered fitted art rect so the foil tracks the cursor over
-                    // the actual box art (not the letterboxed frame).
-                    let artX = (w - artSize.width) / 2
-                    let artY = (h - artSize.height) / 2
-                    let nx = (loc.x - artX) / artSize.width
-                    let ny = (loc.y - artY) / artSize.height
+                    let nx = loc.x / max(w, 1)
+                    let ny = loc.y / max(h, 1)
                     mouseNorm = CGPoint(x: min(max(nx, 0), 1), y: min(max(ny, 0), 1))
                     hoverActive = true
                 case .ended:
@@ -101,25 +81,5 @@ struct HoloPreviewCard: View {
                 await MainActor.run { masks = m }
             }
         }
-    }
-
-    @ViewBuilder
-    private func holoStack(px: CGFloat, py: CGFloat, artSize: CGSize, isHovered: Bool) -> some View {
-        ZStack {
-            HoloFoilLayers(
-                masks: masks,
-                settings: snapshot,
-                w: artSize.width,
-                h: artSize.height,
-                pointerX: px,
-                pointerY: py,
-                isHovered: isHovered,
-                allowBump: false
-            )
-            HoloSheenEffect(pointerX: px, pointerY: py)
-            HoloScratchLayer(w: artSize.width, h: artSize.height)
-        }
-        .frame(width: artSize.width, height: artSize.height)
-        .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 }

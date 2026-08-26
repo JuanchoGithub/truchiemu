@@ -531,14 +531,16 @@ final class HoloSettingsStore: ObservableObject {
         return Dictionary(uniqueKeysWithValues: HoloVariant.allCases.map { ($0, share) })
     }
 
-    /// Factory default: reverseSwift is the default holo variant, so the app
-    /// (and the onboarding wizard) present the reverse-holo native foil by
-    /// default. All other variants start disabled and can be re-enabled in
-    /// HoloSettingsView.
+    /// Factory default: reverseHolo is the default holo variant, so the app (and
+    /// the onboarding wizard) present the reverse-holo effect by default. The
+    /// reverse-holo is rendered by the WebKit engine (`HoloWebCardView`, the
+    /// simeydotme `pokemon-cards-css`), which is the source-faithful reverse
+    /// holo (rainbow sheen over an etched foil). All other variants start
+    /// disabled and can be re-enabled in HoloSettingsView.
     static func defaultVariantWeights() -> [HoloVariant: Double] {
         var weights: [HoloVariant: Double] = [:]
         for variant in HoloVariant.allCases { weights[variant] = 0 }
-        weights[.reverseSwift] = 1.0
+        weights[.reverseHolo] = 1.0
         return weights
     }
 
