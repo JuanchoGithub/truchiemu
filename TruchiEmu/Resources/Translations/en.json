@@ -1716,6 +1716,8 @@
   "boxArt.downloadSheet.reDownloadDescription": "Re-downloads all box art using the current region preference. Use this if you changed region and want updated covers.",
   "boxArt.downloadSheet.cancel": "Cancel",
   "boxArt.downloadSheet.download": "Download",
+  "boxArt.downloadSheet.holoMasks": "Holo Masks",
+  "boxArt.downloadSheet.holoMasksHelp": "When enabled, holographic foil masks will be generated for all downloaded box art. This avoids the delay when first viewing a game card, but adds time to the download.",
   "systemPicker.searchPlaceholder": "Search systems...",
   "systemPicker.title": "Select System",
   "systemPicker.originalLabel": "Original",

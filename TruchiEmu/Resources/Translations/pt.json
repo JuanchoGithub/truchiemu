@@ -1715,6 +1715,8 @@
   "boxArt.downloadSheet.reDownloadDescription": "Baixa novamente todas as capas usando a preferência de região atual. Use se mudou a região e quer capas atualizadas.",
   "boxArt.downloadSheet.cancel": "Cancelar",
   "boxArt.downloadSheet.download": "Baixar",
+  "boxArt.downloadSheet.holoMasks": "Máscaras Holo",
+  "boxArt.downloadSheet.holoMasksHelp": "Quando ativado, as máscaras de foil holográfico serão geradas para todas as capas baixadas. Isso evita o atraso ao visualizar um card de jogo pela primeira vez, mas adiciona tempo ao download.",
   "systemPicker.searchPlaceholder": "Pesquisar sistemas...",
   "systemPicker.title": "Selecionar sistema",
   "systemPicker.originalLabel": "Original",

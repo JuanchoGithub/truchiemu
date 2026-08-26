@@ -98,7 +98,7 @@ struct LibraryGridView: View {
  NotificationCenter.default.post(name: .openAppSettings, object: nil)
  }
 
-    private func triggerBatchDownload(reDownload: Bool) {
+    private func triggerBatchDownload(reDownload: Bool, generateHoloMasks: Bool) {
         Task {
             guard !viewModel.displayedROMs.isEmpty else { return }
 
@@ -142,6 +142,28 @@ struct LibraryGridView: View {
                     }
                 }
             )
+
+            // Phase 4-style: generate holo masks for downloaded box art if requested
+            if generateHoloMasks {
+                let holoTargets = viewModel.displayedROMs.filter { !$0.isHidden && $0.hasBoxArt }
+                let batchSize = 20
+                for i in stride(from: 0, to: holoTargets.count, by: batchSize) {
+                    guard isDownloading else { break }
+                    let batch = Array(holoTargets[i..<min(i + batchSize, holoTargets.count)])
+                    await withTaskGroup(of: Void.self) { group in
+                        for rom in batch {
+                            group.addTask { [rom] in
+                                let artPath = rom.boxArtLocalPath
+                                if let img = await ImageCache.shared.thumbnail(for: artPath, preferredSize: .large) {
+                                    _ = await HoloSaliencyService.shared.holoMasks(romID: rom.id.uuidString, image: img)
+                                }
+                            }
+                        }
+                        for await _ in group { }
+                    }
+                    await Task.yield()
+                }
+            }
 
             isDownloading = false
             currentDownloadGameName = nil
@@ -571,8 +593,8 @@ struct LibraryGridView: View {
     .sheet(isPresented: $showBoxArtDownloadSheet) {
         BoxArtDownloadSheet(
             isPresented: $showBoxArtDownloadSheet,
-            onDownload: { reDownload in
-                triggerBatchDownload(reDownload: reDownload)
+            onDownload: { reDownload, generateHoloMasks in
+                triggerBatchDownload(reDownload: reDownload, generateHoloMasks: generateHoloMasks)
             }
         )
     }

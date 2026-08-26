@@ -1709,6 +1709,8 @@
   "boxArt.downloadSheet.reDownloadDescription": "Redescarga todas las carátulas usando la preferencia de región actual. Úsalo si cambiaste la región y quieres portadas actualizadas.",
   "boxArt.downloadSheet.cancel": "Cancelar",
   "boxArt.downloadSheet.download": "Descargar",
+  "boxArt.downloadSheet.holoMasks": "Máscaras Holo",
+  "boxArt.downloadSheet.holoMasksHelp": "Cuando está activado, las máscaras de foil holográfico se generarán para todas las carátulas descargadas. Esto evita el retraso al ver por primera vez una tarjeta de juego, pero añade tiempo a la descarga.",
   "systemPicker.searchPlaceholder": "Buscar sistemas...",
   "systemPicker.title": "Seleccionar sistema",
   "systemPicker.originalLabel": "Original",

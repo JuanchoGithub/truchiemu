@@ -1714,6 +1714,8 @@
   "boxArt.downloadSheet.reDownloadDescription": "現在の地域設定を使用してすべてのボックスアートを再ダウンロードします。地域を変更して新しいカバーが欲しい場合に使用します。",
   "boxArt.downloadSheet.cancel": "キャンセル",
   "boxArt.downloadSheet.download": "ダウンロード",
+  "boxArt.downloadSheet.holoMasks": "ホロマスク",
+  "boxArt.downloadSheet.holoMasksHelp": "有効にすると、ダウンロードしたすべてのボックスアートのホログラム箔マスクが生成されます。ゲームカードを初めて表示する際の遅延を防ぎますが、ダウンロード時間が増加します。",
   "systemPicker.searchPlaceholder": "システムを検索...",
   "systemPicker.title": "システムを選択",
   "systemPicker.originalLabel": "元",

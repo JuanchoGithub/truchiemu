@@ -2,12 +2,13 @@ import SwiftUI
 
 struct BoxArtDownloadSheet: View {
     @Binding var isPresented: Bool
-    let onDownload: (Bool) -> Void
+    let onDownload: (Bool, Bool) -> Void
 
     @Environment(\.colorScheme) private var colorScheme
     @ObservedObject private var prefs = SystemPreferences.shared
     @ObservedObject private var loc = LocalizationManager.shared
     @State private var selectedOption: DownloadOption = .missingOnly
+    @State private var generateHoloMasks: Bool = AppSettings.getBool("auto_generate_holo_masks", defaultValue: false)
 
     private enum DownloadOption {
         case missingOnly
@@ -107,6 +108,20 @@ struct BoxArtDownloadSheet: View {
 
             Divider()
 
+            VStack(alignment: .leading, spacing: AppSpacing.lg) {
+                Text(loc.localized("boxArt.downloadSheet.holoMasks"))
+                    .font(.headline)
+
+                Toggle(loc.localized("boxArt.autoGenerateHoloMasks"), isOn: $generateHoloMasks)
+                    .help(loc.localized("boxArt.downloadSheet.holoMasksHelp"))
+
+                Text(loc.localized("boxArt.downloadSheet.holoMasksHelp"))
+                    .font(.caption)
+                    .foregroundStyle(AppColors.textSecondary(colorScheme))
+            }
+
+            Divider()
+
             HStack {
                 Button(loc.localized("boxArt.downloadSheet.cancel")) {
                     isPresented = false
@@ -117,7 +132,7 @@ struct BoxArtDownloadSheet: View {
 
                 Button {
                     isPresented = false
-                    onDownload(selectedOption == .reDownload)
+                    onDownload(selectedOption == .reDownload, generateHoloMasks)
                 } label: {
                     Text(loc.localized("boxArt.downloadSheet.download"))
                 }
