@@ -429,6 +429,20 @@ extension SetupWizardView {
         return NSImage(contentsOf: url)
     }
 
+    /// Returns a container size that matches the sample image's aspect ratio.
+    /// US/EU are landscape (~1.4:1), Japan is portrait (~0.73:1).
+    private func previewContainerSize(for region: EmulatorLanguage, image: NSImage) -> CGSize {
+        let aspect = image.size.width / image.size.height
+        let baseHeight: CGFloat = 200
+        if aspect > 1.0 {
+            // Landscape (US, EU, Brazil, Spain) — wider container
+            return CGSize(width: baseHeight * aspect, height: baseHeight)
+        } else {
+            // Portrait (Japan) — taller container
+            return CGSize(width: baseHeight, height: baseHeight / aspect)
+        }
+    }
+
     private func pickFolder() {
         let panel = NSOpenPanel()
         panel.canChooseDirectories = true
@@ -505,12 +519,13 @@ extension SetupWizardView {
                     // Live preview using the box art for the user's chosen region.
                     if let previewImage = boxArtSample(for: wizard.selectedRegion)
                         ?? boxArtSample(for: .northAmerica) {
+                        let previewSize = previewContainerSize(for: wizard.selectedRegion, image: previewImage)
                         HoloPreviewCard(
                             image: previewImage,
                             heroMask: heroMaskSample(for: wizard.selectedRegion)
                                 ?? heroMaskSample(for: .northAmerica)
                         )
-                        .frame(width: 200, height: 280)
+                        .frame(width: previewSize.width, height: previewSize.height)
                         .cornerRadius(8)
                         .shadow(color: Color.black.opacity(0.2), radius: 6, y: 3)
                     }
