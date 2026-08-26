@@ -453,10 +453,10 @@ final class HoloSettingsStore: ObservableObject {
         self.parallaxStrength = AppSettings.getDouble(Self.parallaxStrengthKey, defaultValue: 1.0)
         self.showPlayButton = AppSettings.getBool(Self.showPlayButtonKey, defaultValue: false)
         self.hueCycles = AppSettings.getDouble(Self.hueCyclesKey, defaultValue: 4.0)
-        self.reverseColorMode = HoloReverseColorMode(rawValue: AppSettings.getString(Self.reverseColorModeKey, defaultValue: HoloReverseColorMode.solid.rawValue) ?? "") ?? .solid
+        self.reverseColorMode = HoloReverseColorMode(rawValue: AppSettings.getString(Self.reverseColorModeKey, defaultValue: HoloReverseColorMode.rainbow.rawValue) ?? "") ?? .rainbow
         self.reverseSolidColor = holoDecodeColor(AppSettings.getString(Self.reverseSolidColorKey))
         self.reverseRainbowIntensity = AppSettings.getDouble(Self.reverseRainbowIntensityKey, defaultValue: 1.0)
-        self.reverseTextureMode = HoloReverseTextureMode(rawValue: AppSettings.getString(Self.reverseTextureModeKey, defaultValue: HoloReverseTextureMode.generated.rawValue) ?? "") ?? .generated
+        self.reverseTextureMode = HoloReverseTextureMode(rawValue: AppSettings.getString(Self.reverseTextureModeKey, defaultValue: HoloReverseTextureMode.random.rawValue) ?? "") ?? .random
         self.reverseTextureVariation = AppSettings.getBool(Self.reverseTextureVariationKey, defaultValue: true)
         self.holofoilRareIntensity = AppSettings.getDouble(Self.holofoilRareIntensityKey, defaultValue: 1.0)
         self.holofoilRareScanlineDensity = AppSettings.getDouble(Self.holofoilRareScanlineDensityKey, defaultValue: 1.0)

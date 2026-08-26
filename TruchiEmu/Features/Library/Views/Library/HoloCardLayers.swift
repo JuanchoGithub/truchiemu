@@ -234,7 +234,7 @@ struct HoloFoilLayers: View, Equatable {
     var allowBump: Bool = true
 
     var body: some View {
-        let isReverse = (settings.randomization?.variant == .reverseHolo)
+        let isReverse = (settings.randomization?.variant == .reverseSwift)
         let isRegularHolo = (settings.randomization?.variant == .regularHolo)
         let isRadiant = (settings.randomization?.variant == .radiantHolo)
         let revRainbow = isReverse && settings.reverseColorMode == .rainbow
@@ -403,7 +403,7 @@ struct HoloFoilLayers: View, Equatable {
         // Reverse Holo / Holofoil Rare have their own internal parallax (the
         // rainbow/beam slide in `reverseShine` / `regularHoloShine`); adding
         // the global shear would double the motion.
-        if variant == .reverseHolo || variant == .regularHolo { return .zero }
+        if variant == .reverseSwift || variant == .regularHolo { return .zero }
         let cx = (pointerX - 0.5) * 2.6
         let cy = (pointerY - 0.5) * 3.5
         // Tilt contributes ~0.05× the rotation in degrees → points. At max
@@ -486,7 +486,7 @@ struct HoloFoilLayers: View, Equatable {
     @MainActor
     @ViewBuilder
     private func regionLayer(_ pattern: HoloPattern, variant: HoloVariant?, intensity: Double, mask: NSImage, w: CGFloat, h: CGFloat) -> some View {
-        let isReverse = (variant == .reverseHolo)
+        let isReverse = (variant == .reverseSwift)
         // Holofoil Rare (regularHolo) is also a live, pointer-driven shine
         // (`regularHoloShine`), so it shares Reverse Holo's "no baked tile"
         // treatment. Every other variant uses the pre-rendered tile.
@@ -530,7 +530,7 @@ struct HoloFoilLayers: View, Equatable {
     /// and unconditionally for Reverse Holo.
     @ViewBuilder
     private func parallaxLayer(pattern: HoloPattern, variant: HoloVariant?, intensity: Double, mask: NSImage, w: CGFloat, h: CGFloat, textureTile: NSImage?, bandWidth: CGFloat) -> some View {
-        if let variant, variant == .reverseHolo {
+        if let variant, variant == .reverseSwift {
             // Live, pointer-driven Reverse Holo shine (reverse-holo.css).
             reverseShine(w: w, h: h)
                 .frame(width: w * 2, height: h * 2)
@@ -550,7 +550,7 @@ struct HoloFoilLayers: View, Equatable {
         // Sweep band for the rainbow variants (subtle gloss). Suppressed for
         // Reverse Holo and Holofoil Rare — their moving highlight comes from
         // their live shines (the rainbow slide / the vertical beam bars).
-        let isReverse = (variant == .reverseHolo)
+        let isReverse = (variant == .reverseSwift)
         let bandPeak: Double = (isReverse || variant == .regularHolo) ? 0.0 : 0.7
         let bandW: CGFloat = bandWidth
         if bandPeak > 0 {
