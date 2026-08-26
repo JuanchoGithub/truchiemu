@@ -146,10 +146,17 @@ struct LibraryGridView: View {
             // Phase 4-style: generate holo masks for downloaded box art if requested
             if generateHoloMasks {
                 let holoTargets = viewModel.displayedROMs.filter { !$0.isHidden && $0.hasBoxArt }
+                let total = holoTargets.count
+                await MainActor.run {
+                    holoGenerating = true
+                    holoProgress = (0, total)
+                    currentDownloadGameName = nil
+                }
                 let batchSize = 20
-                for i in stride(from: 0, to: holoTargets.count, by: batchSize) {
+                var done = 0
+                for i in stride(from: 0, to: total, by: batchSize) {
                     guard isDownloading else { break }
-                    let batch = Array(holoTargets[i..<min(i + batchSize, holoTargets.count)])
+                    let batch = Array(holoTargets[i..<min(i + batchSize, total)])
                     await withTaskGroup(of: Void.self) { group in
                         for rom in batch {
                             group.addTask { [rom] in
@@ -161,7 +168,14 @@ struct LibraryGridView: View {
                         }
                         for await _ in group { }
                     }
+                    done += batch.count
+                    await MainActor.run { holoProgress = (done, total) }
                     await Task.yield()
+                }
+                await MainActor.run {
+                    holoGenerating = false
+                    holoProgress = (0, 0)
+                    currentDownloadGameName = nil
                 }
             }
 
@@ -169,6 +183,8 @@ struct LibraryGridView: View {
             currentDownloadGameName = nil
             carouselBoxArtURLs = []
             marqueeOffset = 0
+            holoGenerating = false
+            holoProgress = (0, 0)
         }
     }
 
@@ -227,6 +243,8 @@ struct LibraryGridView: View {
     @State private var currentDownloadGameName: String? = nil
     @State private var carouselBoxArtURLs: [URL] = []
     @State private var marqueeOffset: CGFloat = 0
+    @State private var holoGenerating: Bool = false
+    @State private var holoProgress: (current: Int, total: Int) = (0, 0)
     private enum ViewMode: String { case grid, list, holo, tv }
     private var previousViewMode: ViewMode { get { _previousViewMode } set { _previousViewMode = newValue } }
     @State private var _previousViewMode: ViewMode = .grid
@@ -1316,6 +1334,17 @@ viewModel.updateFilters(
 
     private var boxArtDownloadOverlay: some View {
         VStack(spacing: 20) {
+            HStack(spacing: 8) {
+                Image(systemName: holoGenerating ? "wand.and.stars" : "arrow.down.circle")
+                    .foregroundStyle(AppColors.brandAccent)
+                Text(holoGenerating
+                     ? loc.localized("library.boxArtPhaseHolo")
+                     : loc.localized("library.boxArtPhaseDownload"))
+                    .font(.headline)
+                    .foregroundStyle(AppColors.textPrimary(colorScheme))
+            }
+            .contentTransition(.numericText())
+
             if carouselBoxArtURLs.isEmpty {
                 ZStack {
                     RoundedRectangle(cornerRadius: 14)
@@ -1353,31 +1382,56 @@ viewModel.updateFilters(
                     )
             }
 
-            if downloadProgress.total > 0 {
-                ProgressView(value: boxArtDownloadProgress)
-                    .progressViewStyle(.linear)
-                    .tint(AppColors.brandAccent)
-                    .frame(width: 280)
+            if holoGenerating {
+                // Phase 2: holo mask generation
+                if holoProgress.total > 0 {
+                    ProgressView(value: Double(holoProgress.current), total: Double(holoProgress.total))
+                        .progressViewStyle(.linear)
+                        .tint(AppColors.brandAccent)
+                        .frame(width: 280)
 
-                Text("\(downloadProgress.current)/\(downloadProgress.total)")
-                    .font(.caption)
-                    .foregroundStyle(AppColors.textSecondary(colorScheme))
-                    .contentTransition(.numericText())
+                    Text("\(holoProgress.current)/\(holoProgress.total)")
+                        .font(.caption)
+                        .foregroundStyle(AppColors.textSecondary(colorScheme))
+                        .contentTransition(.numericText())
+                } else {
+                    BouncingProgressBar()
+                        .frame(width: 280)
+                }
+
+                Group {
+                    Text(loc.localized("library.boxArtGeneratingHolo"))
+                        .foregroundColor(AppColors.textSecondary(colorScheme))
+                        .contentTransition(.numericText())
+                }
+                .font(.body)
             } else {
-                BouncingProgressBar()
-                    .frame(width: 280)
-            }
+                if downloadProgress.total > 0 {
+                    ProgressView(value: boxArtDownloadProgress)
+                        .progressViewStyle(.linear)
+                        .tint(AppColors.brandAccent)
+                        .frame(width: 280)
 
-            Group {
-                Text(boxArtDownloadMessages[boxArtDownloadMessageIndex])
-                    .foregroundColor(AppColors.textSecondary(colorScheme))
-                    .contentTransition(.numericText())
-            }
-            .font(.body)
-            .onReceive(Timer.publish(every: 3, on: .main, in: .common).autoconnect()) { _ in
-                if isDownloading {
-                    withAnimation(.easeInOut(duration: 0.45)) {
-                        boxArtDownloadMessageIndex = (boxArtDownloadMessageIndex + 1) % boxArtDownloadMessages.count
+                    Text("\(downloadProgress.current)/\(downloadProgress.total)")
+                        .font(.caption)
+                        .foregroundStyle(AppColors.textSecondary(colorScheme))
+                        .contentTransition(.numericText())
+                } else {
+                    BouncingProgressBar()
+                        .frame(width: 280)
+                }
+
+                Group {
+                    Text(boxArtDownloadMessages[boxArtDownloadMessageIndex])
+                        .foregroundColor(AppColors.textSecondary(colorScheme))
+                        .contentTransition(.numericText())
+                }
+                .font(.body)
+                .onReceive(Timer.publish(every: 3, on: .main, in: .common).autoconnect()) { _ in
+                    if isDownloading {
+                        withAnimation(.easeInOut(duration: 0.45)) {
+                            boxArtDownloadMessageIndex = (boxArtDownloadMessageIndex + 1) % boxArtDownloadMessages.count
+                        }
                     }
                 }
             }
@@ -1398,6 +1452,8 @@ viewModel.updateFilters(
                 currentDownloadGameName = nil
                 carouselBoxArtURLs = []
                 marqueeOffset = 0
+                holoGenerating = false
+                holoProgress = (0, 0)
             } label: {
                 Label("Stop", systemImage: "stop.fill")
             }
