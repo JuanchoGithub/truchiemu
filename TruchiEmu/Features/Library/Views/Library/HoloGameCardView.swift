@@ -814,13 +814,17 @@ private func holoArtworkDefault(allowBump: Bool = true) -> some View {
             .overlay(
                 Group {
                     if useWebHolo, let nsImage = image {
+                        // Quantize frameSize to 0.5pt buckets to prevent WKWebView
+                        // reloads on sub-pixel layout fluctuations during scroll.
+                        let holoW = (w * 2).rounded() / 2
+                        let holoH = (h * 2).rounded() / 2
                         HoloWebCardView(
                             image: nsImage,
                             variantClass: webVariant.cssClass,
                             pointerX: normalizedMouseX,
                             pointerY: normalizedMouseY,
                             heroMask: holoMasks?.hero,
-                            frameSize: CGSize(width: w, height: h),
+                            frameSize: CGSize(width: holoW, height: holoH),
                             fitMode: .cover
                         )
                         .offset(x: artPX, y: artPY)
@@ -988,16 +992,20 @@ private func holoArtworkDefault(allowBump: Bool = true) -> some View {
             // Sized to artSize and centered to match the contained image,
             // so holo effects only appear on the actual box art (not blurred bg).
             if useWebHolo, let nsImage = image {
+                // Quantize to 0.5pt buckets to prevent WKWebView reloads on
+                // sub-pixel layout fluctuations during scroll.
+                let holoW = (artSize.width * 2).rounded() / 2
+                let holoH = (artSize.height * 2).rounded() / 2
                 HoloWebCardView(
                     image: nsImage,
                     variantClass: webVariant.cssClass,
                     pointerX: normalizedMouseX,
                     pointerY: normalizedMouseY,
                     heroMask: holoMasks?.hero,
-                    frameSize: artSize,
+                    frameSize: CGSize(width: holoW, height: holoH),
                     fitMode: .contain
                 )
-                .frame(width: artSize.width, height: artSize.height)
+                .frame(width: holoW, height: holoH)
                 .position(x: w/2, y: h/2)
                 .allowsHitTesting(false)
             }
@@ -1051,16 +1059,19 @@ private func holoArtworkDefault(allowBump: Bool = true) -> some View {
                 // app's own cursor position. Hit-testing is disabled so the
                 // card underneath keeps its hover/click behaviour.
                 if useWebHolo, let nsImage = image {
+                    // Quantize to 0.5pt buckets to prevent WKWebView reloads on
+                    // sub-pixel layout fluctuations during scroll.
+                    let holoSide = (side * 2).rounded() / 2
                     HoloWebCardView(
                         image: nsImage,
                         variantClass: webVariant.cssClass,
                         pointerX: normalizedMouseX,
                         pointerY: normalizedMouseY,
                         heroMask: holoMasks?.hero,
-                        frameSize: CGSize(width: side, height: side),
+                        frameSize: CGSize(width: holoSide, height: holoSide),
                         fitMode: .contain
                     )
-                    .frame(width: side, height: side)
+                    .frame(width: holoSide, height: holoSide)
                     .position(x: w/2, y: h/2)
                     .allowsHitTesting(false)
                 }
