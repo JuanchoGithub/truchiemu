@@ -350,6 +350,11 @@ struct HoloWebCardView: NSViewRepresentable {
         }
 
         deinit {
+            // Properly clean up WKWebView to avoid memory leaks
+            webView?.navigationDelegate = nil
+            webView?.stopLoading()
+            webView?.loadHTMLString("", baseURL: nil)
+            webView = nil
             try? FileManager.default.removeItem(at: baseDir)
         }
 

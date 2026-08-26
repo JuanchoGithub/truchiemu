@@ -57,6 +57,8 @@ final class HoloFoilTileCache {
     static let shared = HoloFoilTileCache()
 
     private var tiles: [TileKey: NSImage] = [:]
+    private var cacheOrder: [TileKey] = []
+    private let cacheLimit = 32
 
     struct TileKey: Hashable {
         let pattern: HoloPattern
@@ -80,7 +82,11 @@ final class HoloFoilTileCache {
         let bh = Int((h * 2).rounded())
         guard bw > 0, bh > 0 else { return nil }
         let key = TileKey(pattern: pattern, variantKey: variant?.rawValue ?? "default", width: bw, height: bh)
-        if let cached = tiles[key] { return cached }
+        if let cached = tiles[key] {
+            cacheOrder.removeAll { $0 == key }
+            cacheOrder.append(key)
+            return cached
+        }
 
         guard let tex = HoloPatternStore.shared.alphaMask(
             for: pattern,
@@ -131,6 +137,10 @@ final class HoloFoilTileCache {
         guard let cg = renderer.cgImage else { return nil }
         let img = NSImage(cgImage: cg, size: NSSize(width: CGFloat(bw), height: CGFloat(bh)))
         tiles[key] = img
+        cacheOrder.append(key)
+        if cacheOrder.count > cacheLimit {
+            tiles[cacheOrder.removeFirst()] = nil
+        }
         return img
     }
 }

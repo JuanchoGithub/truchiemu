@@ -72,6 +72,8 @@ final class HoloPatternStore: ObservableObject {
     // region masks as the pointer moves (source `background-position`); we
     // cache a few buckets instead of re-scaling per frame.
     private var scaledAlphaMasks: [ScaledAlphaKey: NSImage] = [:]
+    private var scaledAlphaMasksOrder: [ScaledAlphaKey] = []
+    private let scaledAlphaMasksLimit = 64
 
     struct ScaledAlphaKey: Hashable {
         let pattern: HoloPattern
@@ -113,7 +115,11 @@ final class HoloPatternStore: ObservableObject {
     func alphaMask(for pattern: HoloPattern, scaledTo size: NSSize) -> NSImage? {
         guard size.width > 0, size.height > 0 else { return nil }
         let key = ScaledAlphaKey(pattern: pattern, width: Int(size.width), height: Int(size.height))
-        if let cached = scaledAlphaMasks[key] { return cached }
+        if let cached = scaledAlphaMasks[key] {
+            scaledAlphaMasksOrder.removeAll { $0 == key }
+            scaledAlphaMasksOrder.append(key)
+            return cached
+        }
 
         guard let base = alphaMask(for: pattern),
               let cg = base.cgImage(forProposedRect: nil, context: nil, hints: nil) else { return nil }
@@ -145,6 +151,10 @@ final class HoloPatternStore: ObservableObject {
             return true
         }
         scaledAlphaMasks[key] = out
+        scaledAlphaMasksOrder.append(key)
+        if scaledAlphaMasksOrder.count > scaledAlphaMasksLimit {
+            scaledAlphaMasks[scaledAlphaMasksOrder.removeFirst()] = nil
+        }
         return out
     }
 
@@ -174,6 +184,8 @@ final class HoloPatternStore: ObservableObject {
     /// rather than one stretched copy. Cached per (pattern, scale-bucket, size)
     /// so it's drawn once per card, not every cursor frame.
     private var tiledImages: [TiledImageKey: NSImage] = [:]
+    private var tiledImagesOrder: [TiledImageKey] = []
+    private let tiledImagesLimit = 32
     struct TiledImageKey: Hashable {
         let pattern: HoloPattern
         let scaleBucket: Int
@@ -189,7 +201,11 @@ final class HoloPatternStore: ObservableObject {
             width: Int(size.width),
             height: Int(size.height)
         )
-        if let cached = tiledImages[key] { return cached }
+        if let cached = tiledImages[key] {
+            tiledImagesOrder.removeAll { $0 == key }
+            tiledImagesOrder.append(key)
+            return cached
+        }
         guard let base = image(for: pattern),
               let cg = base.cgImage(forProposedRect: nil, context: nil, hints: nil) else { return nil }
         let cellW = max(1.0, size.width * scale)
@@ -212,7 +228,11 @@ final class HoloPatternStore: ObservableObject {
             }
             return true
         }
-            tiledImages[key] = out
+        tiledImages[key] = out
+        tiledImagesOrder.append(key)
+        if tiledImagesOrder.count > tiledImagesLimit {
+            tiledImages[tiledImagesOrder.removeFirst()] = nil
+        }
         return out
     }
 
@@ -222,6 +242,8 @@ final class HoloPatternStore: ObservableObject {
     /// the Reverse Holo rainbow is gated by. Cached so it is built once per card,
     /// not on every cursor frame.
     private var tiledAlphaMasks: [TiledImageKey: NSImage] = [:]
+    private var tiledAlphaMasksOrder: [TiledImageKey] = []
+    private let tiledAlphaMasksLimit = 32
     func tiledAlphaMask(for pattern: HoloPattern, size: NSSize, scale: CGFloat) -> NSImage? {
         guard size.width > 0, size.height > 0 else { return nil }
         let key = TiledImageKey(
@@ -230,7 +252,11 @@ final class HoloPatternStore: ObservableObject {
             width: Int(size.width),
             height: Int(size.height)
         )
-        if let cached = tiledAlphaMasks[key] { return cached }
+        if let cached = tiledAlphaMasks[key] {
+            tiledAlphaMasksOrder.removeAll { $0 == key }
+            tiledAlphaMasksOrder.append(key)
+            return cached
+        }
         guard let tiled = tiledImage(for: pattern, size: size, scale: scale) else { return nil }
         // `tiledImage` is a block-drawn NSImage, which does NOT reliably vend a
         // CGImage via `cgImage(forProposedRect:)` (unlike the bundle PNGs). If we
@@ -246,6 +272,10 @@ final class HoloPatternStore: ObservableObject {
         guard let out = context.createCGImage(ci, from: ci.extent) else { return nil }
         let mask = NSImage(cgImage: out, size: NSSize(width: cg.width, height: cg.height))
         tiledAlphaMasks[key] = mask
+        tiledAlphaMasksOrder.append(key)
+        if tiledAlphaMasksOrder.count > tiledAlphaMasksLimit {
+            tiledAlphaMasks[tiledAlphaMasksOrder.removeFirst()] = nil
+        }
         return mask
     }
 }

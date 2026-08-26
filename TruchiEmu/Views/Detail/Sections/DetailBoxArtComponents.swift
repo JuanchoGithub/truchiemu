@@ -128,6 +128,9 @@ struct DetailZoomableFullScreenView: View {
                 let availableHeight = geo.size.height * 0.98
                 let fittedWidth = min(availableWidth, availableHeight * aspect)
                 let fittedHeight = min(availableHeight, availableWidth / aspect)
+                // Stabilize to 0.5pt buckets to prevent cache fragmentation from floating-point variance
+                let holoW = (fittedWidth * 2).rounded() / 2
+                let holoH = (fittedHeight * 2).rounded() / 2
 
                 ZStack {
                     Image(nsImage: fullResImage ?? image)
@@ -215,10 +218,10 @@ struct DetailZoomableFullScreenView: View {
                                 pointerX: normalizedMouseX,
                                 pointerY: normalizedMouseY,
                                 heroMask: masks.hero,
-                                frameSize: CGSize(width: fittedWidth, height: fittedHeight),
+                                frameSize: CGSize(width: holoW, height: holoH),
                                 fitMode: .contain
                             )
-                            .frame(width: fittedWidth, height: fittedHeight)
+                            .frame(width: holoW, height: holoH)
                             .scaleEffect(scale)
                             .offset(offset)
                             .rotation3DEffect(
@@ -232,8 +235,8 @@ struct DetailZoomableFullScreenView: View {
                             HoloFoilLayers(
                                 masks: masks,
                                 settings: snapshot,
-                                w: fittedWidth,
-                                h: fittedHeight,
+                                w: holoW,
+                                h: holoH,
                                 pointerX: normalizedMouseX,
                                 pointerY: normalizedMouseY,
                                 tiltX: tiltRotationX,
@@ -241,7 +244,7 @@ struct DetailZoomableFullScreenView: View {
                                 isHovered: isOverArtwork,
                                 allowBump: true
                             )
-                            .frame(width: fittedWidth, height: fittedHeight)
+                            .frame(width: holoW, height: holoH)
                             .scaleEffect(scale)
                             .offset(offset)
                             .rotation3DEffect(
@@ -253,7 +256,7 @@ struct DetailZoomableFullScreenView: View {
                             .allowsHitTesting(false)
 
                             HoloSheenEffect(pointerX: normalizedMouseX, pointerY: normalizedMouseY)
-                                .frame(width: fittedWidth, height: fittedHeight)
+                                .frame(width: holoW, height: holoH)
                                 .scaleEffect(scale)
                                 .offset(offset)
                                 .rotation3DEffect(
@@ -264,8 +267,8 @@ struct DetailZoomableFullScreenView: View {
                                 )
                                 .allowsHitTesting(false)
 
-                            HoloScratchLayer(w: fittedWidth, h: fittedHeight)
-                                .frame(width: fittedWidth, height: fittedHeight)
+                            HoloScratchLayer(w: holoW, h: holoH)
+                                .frame(width: holoW, height: holoH)
                                 .scaleEffect(scale)
                                 .offset(offset)
                                 .rotation3DEffect(

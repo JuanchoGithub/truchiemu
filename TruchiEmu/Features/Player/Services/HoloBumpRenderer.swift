@@ -33,6 +33,7 @@ final class HoloBumpRenderer {
     private var cacheOrder: [String] = []
     private let cacheLimit = 48
     private var foilTextureCache: [String: MTLTexture] = [:]
+    private var foilTextureOrder: [String] = []
     private let foilCacheLimit = 16
 
     private init() {
@@ -171,12 +172,17 @@ final class HoloBumpRenderer {
         let foilKeyStr = "\(foilKey)|\(width)x\(height)"
         let foilTexture: MTLTexture?
         if let cachedFoil = foilTextureCache[foilKeyStr] {
+            foilTextureOrder.removeAll { $0 == foilKeyStr }
+            foilTextureOrder.append(foilKeyStr)
             foilTexture = cachedFoil
         } else {
             guard let foilCG = foilNSImage.cgImage(forProposedRect: nil, context: nil, hints: nil),
                   let tex = makeTexture(from: foilCG, device: device) else { return nil }
-            if foilTextureCache.count >= foilCacheLimit { foilTextureCache.removeAll() }
             foilTextureCache[foilKeyStr] = tex
+            foilTextureOrder.append(foilKeyStr)
+            if foilTextureOrder.count > foilCacheLimit {
+                foilTextureCache[foilTextureOrder.removeFirst()] = nil
+            }
             foilTexture = tex
         }
         guard let foilTexture else { return nil }
