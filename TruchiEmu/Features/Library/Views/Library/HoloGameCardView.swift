@@ -785,16 +785,18 @@ private func holoArtworkDefault(allowBump: Bool = true) -> some View {
             // Colored foil — proximity-driven. Barely visible at rest,
             // ramps to full color as the cursor approaches the card.
             // Hidden while the web holo is active (it draws the full
-            // card image + foil itself).
-            holoLayers(width: w, height: h, allowBump: allowBump)
-                .opacity(useWebHolo ? 0 : holoIntensity)
+            // card image + foil itself). Only render when effects are active
+            // to avoid expensive holo layer computation during scroll.
+            if effectsActive && !useWebHolo {
+                holoLayers(width: w, height: h, allowBump: allowBump)
+            }
 
             // Cursor spotlight — hover-binary. Small radial highlight
             // that tracks the cursor while inside the card, off when
-            // not hovering. This is the "light the mouse shines on the
-            // card" from the simeydotme pokemon-cards-css example.
-            holoGlare(width: w, height: h)
-                .opacity(useWebHolo ? 0 : (effectsActive ? glareIntensity : 0))
+            // not hovering. Only render when effects are active.
+            if effectsActive && !useWebHolo {
+                holoGlare(width: w, height: h)
+            }
 
             // Web-rendered holo on top (image + foil), driven by the
             // app's own cursor position. Hit-testing is disabled so the
@@ -968,18 +970,19 @@ private func holoArtworkDefault(allowBump: Bool = true) -> some View {
                         .scaleEffect(isPressed ? 1.05 : 1)
                 }
             }
-            .frame(width: w, height: h)
-            .overlay(
+.frame(width: w, height: h)
+            // Holo layers & glare — only render when effects are active to avoid
+            // expensive computation during scroll. Use conditional rendering
+            // instead of opacity(0) so the view tree isn't built at all.
+            if effectsActive && !useWebHolo {
                 holoLayers(width: artSize.width, height: artSize.height)
-                    .opacity(useWebHolo ? 0 : holoIntensity)
                     .frame(width: artSize.width, height: artSize.height)
-            )
-            .overlay(
+            }
+            if effectsActive && !useWebHolo {
                 holoGlare(width: artSize.width, height: artSize.height)
-                    .opacity(useWebHolo ? 0 : (effectsActive ? glareIntensity : 0))
                     .frame(width: artSize.width, height: artSize.height)
-            )
-// Web-rendered holo on top (image + foil), driven by the
+            }
+            // Web-rendered holo on top (image + foil), driven by the
             // app's own cursor position. Hit-testing is disabled so the
             // card underneath keeps its hover/click behaviour.
             // Sized to artSize and centered to match the contained image,
@@ -1035,11 +1038,14 @@ private func holoArtworkDefault(allowBump: Bool = true) -> some View {
                         .scaleEffect(isPressed ? 1.05 : 1)
                 }
                 
-                // Holo effect layers blend with the box art
-                holoLayers(width: side, height: side)
-                    .opacity(useWebHolo ? 0 : holoIntensity)
-                holoGlare(width: side, height: side)
-                    .opacity(useWebHolo ? 0 : (effectsActive ? glareIntensity : 0))
+                // Holo effect layers blend with the box art — only render when
+                // effects are active to avoid expensive computation during scroll.
+                if effectsActive && !useWebHolo {
+                    holoLayers(width: side, height: side)
+                }
+                if effectsActive && !useWebHolo {
+                    holoGlare(width: side, height: side)
+                }
                 
                 // Web-rendered holo on top (image + foil), driven by the
                 // app's own cursor position. Hit-testing is disabled so the
