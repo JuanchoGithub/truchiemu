@@ -92,7 +92,7 @@ final class HoloSaliencyService: @unchecked Sendable, ObservableObject {
     // can't even schedule). An async semaphore suspends waiters instead, so a
     // cancelled waiter releases its slot immediately when signalled and the
     // pool is never blocked.
-    private static let decomposeLimiter = AsyncSemaphore(maxConcurrent: 3)
+    private static let decomposeLimiter = AsyncSemaphore(maxConcurrent: 1)
 
     private static let failureTTL: TimeInterval = 24 * 60 * 60
 
@@ -173,21 +173,36 @@ final class HoloSaliencyService: @unchecked Sendable, ObservableObject {
             // 4b. Decompose. Bounded to a few concurrent Vision runs by the
             //     limiter so a page of cards can't pin the machine; a system
             //     switch cancels the waiters/batch via `cancelAll()`.
-            // Downscale to 512px max for Vision — masks are just alpha shapes
+            // Downscale to 256px max for Vision — masks are just alpha shapes
             // scaled to fit at render time, so low-res masks work fine.
-            let maxVisionDim: CGFloat = 512
-            let scale = min(1.0, maxVisionDim / max(image.size.width, image.size.height))
+            let maxVisionDim: CGFloat = 256
+            let origW = image.size.width
+            let origH = image.size.height
+            let scale = min(1.0, maxVisionDim / max(origW, origH))
             let visionSize = CGSize(
-                width: image.size.width * scale,
-                height: image.size.height * scale
+                width: origW * scale,
+                height: origH * scale
             )
-            let visionImage = NSImage(size: visionSize, flipped: false) { rect in
-                image.draw(in: rect)
-                return true
-            }
-            guard let cgImage = visionImage.cgImage(forProposedRect: nil, context: nil, hints: nil) else {
+            #if LOG_DEBUG
+            LoggerService.debug("HoloSaliency: orig=\(Int(origW))x\(Int(origH)) vision=\(Int(visionSize.width))x\(Int(visionSize.height)) scale=\(String(format: "%.2f", scale))")
+            #endif
+            guard let origCG = image.cgImage(forProposedRect: nil, context: nil, hints: nil) else {
                 return nil
             }
+            // Downscale via CGContext for reliable CGImage output
+            let colorSpace = CGColorSpaceCreateDeviceRGB()
+            guard let ctx = CGContext(
+                data: nil,
+                width: Int(visionSize.width),
+                height: Int(visionSize.height),
+                bitsPerComponent: 8,
+                bytesPerRow: 0,
+                space: colorSpace,
+                bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
+            ) else { return nil }
+            ctx.interpolationQuality = .high
+            ctx.draw(origCG, in: CGRect(origin: .zero, size: visionSize))
+            guard let cgImage = ctx.makeImage() else { return nil }
             guard await Self.decomposeLimiter.wait() else {
                 // Cancelled before acquiring a slot — no defer to release.
                 return nil
@@ -197,6 +212,7 @@ final class HoloSaliencyService: @unchecked Sendable, ObservableObject {
             defer { self.setGenerating(romID, on: false) }
             if Task.isCancelled { return nil }
             let bundle: LayerBundle
+            let decomposeStart = CFAbsoluteTimeGetCurrent()
             do {
                 bundle = try await BoxArtDecomposer().decompose(cgImage)
             } catch is CancellationError {
@@ -208,10 +224,17 @@ final class HoloSaliencyService: @unchecked Sendable, ObservableObject {
                 Self.writeFailureMarker(romID: romID)
                 return nil
             }
+            #if LOG_DEBUG
+            LoggerService.debug("HoloSaliency: Vision decompose took \(String(format: "%.2f", (CFAbsoluteTimeGetCurrent() - decomposeStart) * 1000))ms")
+            #endif
             if Task.isCancelled { return nil }
 
             // 4c. Convert + persist. Off-main.
+            let persistStart = CFAbsoluteTimeGetCurrent()
             let masks = await Self.buildAndPersistMaskSet(bundle: bundle, romID: romID)
+            #if LOG_DEBUG
+            LoggerService.debug("HoloSaliency: persist took \(String(format: "%.2f", (CFAbsoluteTimeGetCurrent() - persistStart) * 1000))ms")
+            #endif
             if let masks {
                 self.cache.withLock { $0[romID] = masks }
             } else {
