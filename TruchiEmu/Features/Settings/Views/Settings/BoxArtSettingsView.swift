@@ -16,6 +16,7 @@ struct BoxArtSettingsView: View {
     @State private var useLaunchBox = false
     @State private var launchBoxDownloadAfterScan = true
     @State private var launchBoxLastSync: Date?
+    @State private var autoGenerateHoloMasks = false
     
     @EnvironmentObject var library: ROMLibrary
     @Binding var searchText: String
@@ -119,6 +120,18 @@ struct BoxArtSettingsView: View {
                 .id("section-priority")
             }
 
+            // Holo Masks Auto-Generation
+            if (!isSearching || matchesSearch("holo mask generation automatic post-scan holographic foil")) && sectionVisible("section-holoMasks") {
+                Section {
+                    Toggle(loc.localized("boxArt.autoGenerateHoloMasks"), isOn: $autoGenerateHoloMasks)
+                } header: {
+                    Label { Text(loc.localized("boxArt.holoMasks")) } icon: { Image(systemName: "sparkles.rectangle.stack") }
+                } footer: {
+                    Text(loc.localized("boxArt.autoGenerateHoloMasksDescription"))
+                }
+                .id("section-holoMasks")
+            }
+
             // Maintenance Section
             if (!isSearching || matchesSearch("performance indexing manifest refresh repository library URL 404 check")) && sectionVisible("section-performance") {
                 Section {
@@ -199,6 +212,7 @@ struct BoxArtSettingsView: View {
             useLaunchBox = LaunchBoxGamesDBService.shared.isEnabled
             launchBoxDownloadAfterScan = LaunchBoxGamesDBService.shared.downloadAfterScan
             launchBoxLastSync = LaunchBoxGamesDBService.shared.lastSyncDate
+            autoGenerateHoloMasks = AppSettings.getBool("auto_generate_holo_masks", defaultValue: false)
             thumbnailBaseURLString = thumbnailServerURLStorage.isEmpty
                 ? LibretroThumbnailResolver.defaultBaseURL.absoluteString
                 : thumbnailServerURLStorage
@@ -226,6 +240,7 @@ struct BoxArtSettingsView: View {
             if !newVal { launchBoxLastSync = nil }
         }
         .onChange(of: launchBoxDownloadAfterScan) { _, newVal in LaunchBoxGamesDBService.shared.downloadAfterScan = newVal; AppSettings.setBool("launchbox_download_after_scan", value: newVal) }
+        .onChange(of: autoGenerateHoloMasks) { _, newVal in AppSettings.setBool("auto_generate_holo_masks", value: newVal) }
     }
     
     @ViewBuilder
@@ -268,7 +283,8 @@ struct BoxArtSettingsView: View {
         matchesSearch("launchbox gamesdb metadata enrichment box art download scan") ||
         matchesSearch("screenscraper account credentials box art free account username password") ||
         matchesSearch("priority CRC matching filename fallback HTTP head check box art matching") ||
-        matchesSearch("performance indexing manifest refresh repository library URL 404 check")
+        matchesSearch("performance indexing manifest refresh repository library URL 404 check") ||
+        matchesSearch("holo mask generation automatic post-scan holographic foil")
     }
 
     private func sectionVisible(_ id: String) -> Bool {

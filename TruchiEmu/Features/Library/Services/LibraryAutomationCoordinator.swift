@@ -11,6 +11,7 @@ final class LibraryAutomationCoordinator: ObservableObject {
         case identifying
         case enriching
         case downloadingArt
+        case generatingHoloMasks
     }
 
     @Published private(set) var phase: Phase = .idle
@@ -468,6 +469,58 @@ final class LibraryAutomationCoordinator: ObservableObject {
                     )
                     LoggerService.info(category: "LibraryAutomation", "Phase 3b (LaunchBox fallback, background) finished in \(String(format: "%.2f", Date().timeIntervalSince(lbStart)))s")
                 }
+            }
+
+            // Phase 4: Generate holo masks for newly downloaded box art
+            // This runs in the background so the user doesn't wait when browsing cards
+            let holoTargets = scope.filter {
+                !$0.isHidden && $0.hasBoxArt
+            }
+
+            if !holoTargets.isEmpty && AppSettings.getBool("auto_generate_holo_masks", defaultValue: false) {
+                let holoStart = Date()
+                await MainActor.run {
+                    self.isActive = true
+                    self.phase = .generatingHoloMasks
+                    self.progress = 0
+                    self.statusLine = self.loc.localized("library.automation.generatingHoloMasksStart")
+                }
+
+                LoggerService.info(category: "LibraryAutomation", "Phase 4 (holo masks, background) started for \(holoTargets.count) targets")
+
+                // Process in batches to avoid overwhelming the system
+                let batchSize = 20
+                var completedCount = 0
+                let total = Double(holoTargets.count)
+
+                for i in stride(from: 0, to: holoTargets.count, by: batchSize) {
+                    let batch = Array(holoTargets[i..<min(i + batchSize, holoTargets.count)])
+
+                    await withTaskGroup(of: Void.self) { group in
+                        for rom in batch {
+                            group.addTask { [rom] in
+                                // Load the box art image
+                                let artPath = rom.boxArtLocalPath
+                                if let img = await ImageCache.shared.thumbnail(for: artPath, preferredSize: .large) {
+                                    // Generate masks - this will cache them to disk
+                                    _ = await HoloSaliencyService.shared.holoMasks(romID: rom.id.uuidString, image: img)
+                                }
+                            }
+                        }
+                        for await _ in group { }
+                    }
+
+                    completedCount += batch.count
+                    let frac = Double(completedCount) / total
+                    await MainActor.run {
+                        self.progress = frac
+                        self.statusLine = self.localizedStatus("library.automation.generatingHoloMasks", "\(Int(frac * 100))")
+                    }
+
+                    await Task.yield()
+                }
+
+                LoggerService.info(category: "LibraryAutomation", "Phase 4 (holo masks, background) finished in \(String(format: "%.2f", Date().timeIntervalSince(holoStart)))s")
             }
 
             // RetroAchievements matching is intentionally NOT part of the scan pipeline.
