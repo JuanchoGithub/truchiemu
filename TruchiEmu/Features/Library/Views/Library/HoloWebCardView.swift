@@ -39,43 +39,46 @@ struct HoloWebCardView: NSViewRepresentable {
     let frameSize: CGSize
     /// How the artwork should fit in the card frame.
     let fitMode: FitMode
+    /// When true, the WKWebView is mounted and active. When false, it's
+    /// unmounted and cleaned up to save memory/CPU during scroll/rest.
+    let isActive: Bool
 
     func makeCoordinator() -> Coordinator { Coordinator() }
 
     func makeNSView(context: Context) -> NSView {
         let container = HoloContainerView(frame: .zero)
         container.wantsLayer = true
-        // Belt-and-suspenders: even if a priority is missed, the zero
-        // intrinsic content size above keeps SwiftUI from growing this to the
-        // web view's content size.
         container.setContentHuggingPriority(.defaultLow, for: .horizontal)
         container.setContentHuggingPriority(.defaultLow, for: .vertical)
         container.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         container.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
-        let config = WKWebViewConfiguration()
-        let web = WKWebView(frame: container.bounds, configuration: config)
-        web.navigationDelegate = context.coordinator
-        web.setValue(false, forKey: "drawsBackground")
-        web.layer?.backgroundColor = .clear
-        web.alphaValue = 1
-        // Size via autoresizing mask (not Auto Layout) so the web view simply
-        // fills the container. Pinning it with constraints against a container
-        // whose intrinsicContentSize is .zero can raise a layout exception
-        // during window layout.
-        web.autoresizingMask = [.width, .height]
-        container.addSubview(web)
-        context.coordinator.webView = web
+        context.coordinator.container = container
+        
+        // Only create WebView if active
+        if isActive {
+            context.coordinator.mountWebView()
+        }
         return container
     }
 
     func updateNSView(_ nsView: NSView, context: Context) {
-        guard let webView = context.coordinator.webView else { return }
+        guard let container = context.coordinator.container else { return }
+        
+        // Mount/unmount WebView based on isActive
+        if isActive && context.coordinator.webView == nil {
+            context.coordinator.mountWebView()
+        } else if !isActive && context.coordinator.webView != nil {
+            context.coordinator.unmountWebView()
+            return
+        }
+        
+        guard let webView = context.coordinator.webView, isActive else { return }
+        
         // Force the web view to the exact SwiftUI frame size (frameSize).
-        // The container/web were rendering 2× larger (winScale), so we clamp them
-        // to the correct point size here.
         let targetSize = self.frameSize
         if nsView.frame.size != targetSize { nsView.setFrameSize(targetSize) }
         if webView.frame.size != targetSize { webView.frame = NSRect(origin: .zero, size: targetSize) }
+        
         // The mask is loaded asynchronously, so include it in the load key: when
         // it transitions nil -> present the HTML is rebuilt with the foil mask.
         let maskKey = heroMask.map { String(describing: ObjectIdentifier($0)) } ?? "nomask"
@@ -332,6 +335,7 @@ struct HoloWebCardView: NSViewRepresentable {
 
     final class Coordinator: NSObject, WKNavigationDelegate {
         var webView: WKWebView?
+        var container: HoloContainerView?
         var loadKey: String?
         var loaded = false
         let baseDir: URL
@@ -349,12 +353,30 @@ struct HoloWebCardView: NSViewRepresentable {
             }
         }
 
-        deinit {
-            // Properly clean up WKWebView to avoid memory leaks
+        func mountWebView() {
+            guard webView == nil, let container else { return }
+            let config = WKWebViewConfiguration()
+            let web = WKWebView(frame: container.bounds, configuration: config)
+            web.navigationDelegate = self
+            web.setValue(false, forKey: "drawsBackground")
+            web.layer?.backgroundColor = .clear
+            web.alphaValue = 1
+            web.autoresizingMask = [.width, .height]
+            container.addSubview(web)
+            self.webView = web
+        }
+
+        func unmountWebView() {
             webView?.navigationDelegate = nil
             webView?.stopLoading()
             webView?.loadHTMLString("", baseURL: nil)
+            webView?.removeFromSuperview()
             webView = nil
+            loaded = false
+        }
+
+        deinit {
+            unmountWebView()
             try? FileManager.default.removeItem(at: baseDir)
         }
 

@@ -825,7 +825,8 @@ private func holoArtworkDefault(allowBump: Bool = true) -> some View {
                             pointerY: normalizedMouseY,
                             heroMask: holoMasks?.hero,
                             frameSize: CGSize(width: holoW, height: holoH),
-                            fitMode: .cover
+                            fitMode: .cover,
+                            isActive: useWebHolo
                         )
                         .offset(x: artPX, y: artPY)
                         .clipped()
@@ -1003,7 +1004,8 @@ private func holoArtworkDefault(allowBump: Bool = true) -> some View {
                     pointerY: normalizedMouseY,
                     heroMask: holoMasks?.hero,
                     frameSize: CGSize(width: holoW, height: holoH),
-                    fitMode: .contain
+                    fitMode: .contain,
+                    isActive: useWebHolo
                 )
                 .frame(width: holoW, height: holoH)
                 .position(x: w/2, y: h/2)
@@ -1069,7 +1071,8 @@ private func holoArtworkDefault(allowBump: Bool = true) -> some View {
                         pointerY: normalizedMouseY,
                         heroMask: holoMasks?.hero,
                         frameSize: CGSize(width: holoSide, height: holoSide),
-                        fitMode: .contain
+                        fitMode: .contain,
+                        isActive: useWebHolo
                     )
                     .frame(width: holoSide, height: holoSide)
                     .position(x: w/2, y: h/2)

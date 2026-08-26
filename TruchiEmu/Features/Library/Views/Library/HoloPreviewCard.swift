@@ -82,7 +82,8 @@ struct HoloPreviewCard: View {
                             pointerY: py,
                             heroMask: heroMask,
                             frameSize: CGSize(width: artSize.width * 1.06, height: artSize.height * 1.06),
-                            fitMode: .cover
+                            fitMode: .cover,
+                            isActive: true
                         )
                         .frame(width: artSize.width * 1.06, height: artSize.height * 1.06)
                         .offset(x: artPX, y: artPY)

@@ -219,7 +219,8 @@ struct DetailZoomableFullScreenView: View {
                                 pointerY: normalizedMouseY,
                                 heroMask: masks.hero,
                                 frameSize: CGSize(width: holoW, height: holoH),
-                                fitMode: .contain
+                                fitMode: .contain,
+                                isActive: true
                             )
                             .frame(width: holoW, height: holoH)
                             .scaleEffect(scale)
