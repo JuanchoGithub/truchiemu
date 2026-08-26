@@ -61,8 +61,11 @@ struct HoloGameCardView: View {
     @EnvironmentObject private var categoryManager: CategoryManager
     @ObservedObject private var scrollState = LibraryScrollState.shared
     @ObservedObject private var holoSaliency = HoloSaliencyService.shared
-    @State private var lastDecomposedROMID: UUID?
-
+@State private var lastDecomposedROMID: UUID?
+    // Trigger for lazy holo mask decomposition — only runs when user actually
+    // hovers the card (effectsActive becomes true), not on card appearance.
+    @State private var holoMaskTrigger: Bool = false
+    
     // Inside-the-card mouse position from `.onContinuousHover`. Drives the
     // small 3D tilt and the cursor spotlight. Only valid while the cursor
     // is on the card (SwiftUI fires .onContinuousHover only inside the
@@ -382,6 +385,14 @@ struct HoloGameCardView: View {
                     glareIntensity = 0
                 }
             }
+            .onChange(of: effectsActive) { _, active in
+                // Only start holo mask decomposition when user actually hovers
+                // (effectsActive becomes true). This avoids pre-computing masks
+                // for all grid cards when they're just visible but not interacted with.
+                if active {
+                    holoMaskTrigger = true
+                }
+            }
             // 3D tilt toward the cursor is applied to the ARTWORK ONLY (see
             // cardContent) so only the boxart pivots around its own center —
             // the title text below stays flat, matching simeydotme's
@@ -436,12 +447,16 @@ struct HoloGameCardView: View {
                     self.image = img
                 }
             }
-            .task(id: "\(rom.id)-holoMask-\(zoomReloadToken)-\(boxArtService.boxArtUpdated)") {
+            .task(id: "\(rom.id)-holoMask-\(zoomReloadToken)-\(boxArtService.boxArtUpdated)-\(holoMaskTrigger)") {
                 guard rom.hasBoxArt else {
                     if holoMasks != nil { holoMasks = nil }
                     lastDecomposedROMID = nil
                     return
                 }
+                // Wait for hover trigger — only decompose when user actually
+                // hovers this card. This avoids pre-computing masks for all
+                // visible cards in the grid when they're not interacted with.
+                guard holoMaskTrigger else { return }
                 // Defer the (CPU-heavy) Vision decompose until the grid is not
                 // actively scrolling. Generating masks mid-scroll pins cores and
                 // stalls the scroll; the holo FX are suppressed during scroll
