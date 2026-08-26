@@ -147,13 +147,12 @@ struct LibraryGridView: View {
             if generateHoloMasks {
                 let holoTargets = viewModel.displayedROMs.filter { !$0.isHidden && $0.hasBoxArt }
                 let total = holoTargets.count
+                var done = 0
                 await MainActor.run {
                     holoGenerating = true
                     holoProgress = (0, total)
-                    currentDownloadGameName = nil
                 }
                 let batchSize = 20
-                var done = 0
                 for i in stride(from: 0, to: total, by: batchSize) {
                     guard isDownloading else { break }
                     let batch = Array(holoTargets[i..<min(i + batchSize, total)])
@@ -161,15 +160,23 @@ struct LibraryGridView: View {
                         for rom in batch {
                             group.addTask { [rom] in
                                 let artPath = rom.boxArtLocalPath
-                                if let img = await ImageCache.shared.thumbnail(for: artPath, preferredSize: .large) {
-                                    _ = await HoloSaliencyService.shared.holoMasks(romID: rom.id.uuidString, image: img)
+                                guard let img = await ImageCache.shared.thumbnail(for: artPath, preferredSize: .large) else {
+                                    await MainActor.run {
+                                        done += 1
+                                        holoProgress = (done, total)
+                                    }
+                                    return
+                                }
+                                await MainActor.run { currentDownloadGameName = rom.displayName }
+                                _ = await HoloSaliencyService.shared.holoMasks(romID: rom.id.uuidString, image: img)
+                                await MainActor.run {
+                                    done += 1
+                                    holoProgress = (done, total)
                                 }
                             }
                         }
                         for await _ in group { }
                     }
-                    done += batch.count
-                    await MainActor.run { holoProgress = (done, total) }
                     await Task.yield()
                 }
                 await MainActor.run {
