@@ -39,14 +39,14 @@ struct HoloPreviewCard: View {
 
     private var snapshot: HoloSettingsSnapshot {
         var snap = HoloSettingsSnapshot(from: HoloSettingsStore.shared)
-        // Force the native reverse-holo ("Reverse Swift") look for the preview.
-        // HoloCardRandomization has no memberwise init, so roll it with variant
-        // weights that always pick .reverseSwift and a full deviation chance so
-        // each zone gets its own mask/intensity/pattern.
+        // Roll the preview from the app's current variant weights (which default
+        // to .reverseSwift) with a fixed seed and full deviation chance so each
+        // zone gets its own mask/intensity/pattern. This keeps the wizard preview
+        // in sync with the app's default holo configuration.
         snap.randomization = HoloCardRandomization(
             seed: 1,
             deviationChance: 1.0,
-            variantWeights: [.reverseSwift: 1.0]
+            variantWeights: HoloSettingsStore.shared.variantWeights
         )
         return snap
     }

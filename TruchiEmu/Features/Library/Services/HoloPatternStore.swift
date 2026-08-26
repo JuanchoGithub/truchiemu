@@ -496,7 +496,7 @@ final class HoloSettingsStore: ObservableObject {
     /// comma-separated `variant.rawValue:weight` string so the format stays
     /// stable across new variants being added.
     private static func loadVariantWeights() -> [HoloVariant: Double] {
-        let defaults = equalWeights()
+        let defaults = defaultVariantWeights()
         guard let raw = AppSettings.getString(variantWeightsKey) else { return defaults }
         var result: [HoloVariant: Double] = [:]
         for entry in raw.split(separator: ",") {
@@ -506,9 +506,10 @@ final class HoloSettingsStore: ObservableObject {
                   let weight = Double(parts[1]) else { continue }
             result[variant] = weight
         }
-        // Fill in any new variants not yet in storage with the equal default.
+        // Fill in any new variants not yet in storage with an equal share so
+        // they remain visible, while the overall default stays reverseSwift.
         for variant in HoloVariant.allCases where result[variant] == nil {
-            result[variant] = defaults[variant] ?? 0
+            result[variant] = equalWeights()[variant] ?? 0
         }
         return result
     }
@@ -528,6 +529,17 @@ final class HoloSettingsStore: ObservableObject {
         guard n > 0 else { return [:] }
         let share = 1.0 / Double(n)
         return Dictionary(uniqueKeysWithValues: HoloVariant.allCases.map { ($0, share) })
+    }
+
+    /// Factory default: reverseSwift is the default holo variant, so the app
+    /// (and the onboarding wizard) present the reverse-holo native foil by
+    /// default. All other variants start disabled and can be re-enabled in
+    /// HoloSettingsView.
+    static func defaultVariantWeights() -> [HoloVariant: Double] {
+        var weights: [HoloVariant: Double] = [:]
+        for variant in HoloVariant.allCases { weights[variant] = 0 }
+        weights[.reverseSwift] = 1.0
+        return weights
     }
 
     /// Adjust one variant's weight to `newValue` (0...1) and redistribute the
