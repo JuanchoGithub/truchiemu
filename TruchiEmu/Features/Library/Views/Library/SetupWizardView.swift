@@ -43,6 +43,7 @@ struct SetupWizardView: View {
             }
             .padding()
             .frame(maxWidth: 720)
+            .onAppear { wizard.loadExistingLibraryFolders(library.libraryFolders) }
             .background(Color(nsColor: .controlBackgroundColor))
             .cornerRadius(12)
             .shadow(color: Color(nsColor: .shadowColor).opacity(0.15), radius: 20, y: 4)
@@ -138,6 +139,15 @@ Button(loc.localized("wizard.skip")) {
             ThemeManager.shared.applyTheme(wizard.selectedTheme)
         }
 
+        // Reconcile library folders: remove any DB folders the user dropped from
+        // the list in the wizard, then add the ones still present.
+        let wizardFolderPaths = Set(wizard.libraryFolders.map { $0.path })
+        let dbFolders = library.repository.loadLibraryFolders()
+            .filter { $0.parentPath == nil }
+            .map { $0.urlPath }
+        for urlPath in dbFolders where !wizardFolderPaths.contains(urlPath) {
+            library.removePrimaryFolder(url: URL(fileURLWithPath: urlPath))
+        }
         for folder in wizard.libraryFolders {
             library.addLibraryFolder(url: folder)
         }
@@ -322,32 +332,38 @@ extension SetupWizardView {
             }
 
             if !wizard.libraryFolders.isEmpty {
-                List {
-                    ForEach(wizard.libraryFolders.indices, id: \.self) { idx in
-                        HStack {
-                            Image(systemName: "folder.fill")
-                                .foregroundColor(AppColors.brandAccent)
-                            VStack(alignment: .leading) {
-                                Text(wizard.libraryFolders[idx].lastPathComponent)
-                                    .lineLimit(1)
-Text(wizard.libraryFolders[idx].path)
-                        .font(.caption)
-                        .monospaced()
-                        .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
-                                    .lineLimit(1)
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 6) {
+                        ForEach(wizard.libraryFolders.indices, id: \.self) { idx in
+                            HStack {
+                                Image(systemName: "folder.fill")
+                                    .foregroundColor(AppColors.brandAccent)
+                                VStack(alignment: .leading) {
+                                    Text(wizard.libraryFolders[idx].lastPathComponent)
+                                        .lineLimit(1)
+                                    Text(wizard.libraryFolders[idx].path)
+                                        .font(.caption)
+                                        .monospaced()
+                                        .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
+                                        .lineLimit(1)
+                                }
+                                Spacer()
+                                Button {
+                                    wizard.removeLibraryFolder(at: idx)
+                                } label: {
+                                    Image(systemName: "trash")
+                                        .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
+                                }
+                                .buttonStyle(.plain)
                             }
-                            Spacer()
-                            Button {
-                                wizard.removeLibraryFolder(at: idx)
-                            } label: {
-Image(systemName: "trash")
-                            .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
-                            }
-                            .buttonStyle(.plain)
+                            .padding(8)
+                            .background(AppColors.cardBackgroundSubtle(colorScheme))
+                            .cornerRadius(8)
                         }
                     }
+                    .padding(4)
                 }
-                .frame(maxHeight: 200)
+                .frame(minHeight: 52, maxHeight: 300)
             }
 
             Button {

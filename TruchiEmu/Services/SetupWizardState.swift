@@ -217,10 +217,27 @@ final class SetupWizardState: ObservableObject {
         // Accessibility
         featureAccessibility = InputCaptureManager.shared.hasAccessibilityPermissions
     }
+
+    /// Seed the wizard's folder list with folders already registered in the
+    /// database (passed in from `ROMLibrary`). Called once when the wizard
+    /// appears. This lets the user remove folders they no longer want; the
+    /// removal is reconciled with the DB in `finishSetup`.
+    func loadExistingLibraryFolders(_ urls: [URL]) {
+        guard !didLoadExistingFolders else { return }
+        didLoadExistingFolders = true
+        var merged = libraryFolders
+        for url in urls where !merged.contains(url) {
+            merged.append(url)
+        }
+        libraryFolders = merged
+    }
+    private var didLoadExistingFolders = false
     
     /// Reset wizard state for a re-run from Settings. Resets step and re-prefills.
     func resetForReRun() {
         currentStep = .getStarted
+        libraryFolders = []
+        didLoadExistingFolders = false
         prefillFromExistingSettings()
     }
 

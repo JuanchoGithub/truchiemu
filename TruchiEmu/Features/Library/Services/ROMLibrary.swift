@@ -971,6 +971,11 @@ let idsToPurge = orphans.map { $0.id }
         }
     }
 
+    @MainActor func removePrimaryFolder(url: URL) {
+        guard let index = primaryFolders.firstIndex(where: { $0.url.path == url.path }) else { return }
+        removePrimaryFolder(at: index)
+    }
+
     @MainActor func removePrimaryFolder(at index: Int) {
         guard index < primaryFolders.count else { return }
         let folder = primaryFolders[index]
