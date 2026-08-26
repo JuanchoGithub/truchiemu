@@ -74,6 +74,10 @@ final class HoloSaliencyService: @unchecked Sendable, ObservableObject {
     /// main thread so the sidebar can show a "generating holo FX" indicator.
     @Published private(set) var activeDecomposeCount: Int = 0
 
+    /// Set of romIDs currently generating holo masks. Published on the main
+    /// thread so individual cards can show per-card progress indicators.
+    @Published private(set) var generatingROMIDs: Set<String> = []
+
     // Vision decomposition is CPU-heavy. A full page of 50 cards would
     // otherwise spawn 50 concurrent Vision runs and pin every core, stalling
     // the UI while masks generate. Limit to a few at a time; system switches
@@ -268,12 +272,13 @@ final class HoloSaliencyService: @unchecked Sendable, ObservableObject {
     /// `on` flag toggles romID membership; the resulting count is republished
     /// on the main thread so SwiftUI observes the change.
     nonisolated private func setGenerating(_ romID: String, on: Bool) {
-        let count = generating.withLock { set in
+        let (count, genSet) = generating.withLock { set in
             if on { set.insert(romID) } else { set.remove(romID) }
-            return set.count
+            return (set.count, set)
         }
         DispatchQueue.main.async { [weak self] in
             self?.activeDecomposeCount = count
+            self?.generatingROMIDs = genSet
         }
     }
 

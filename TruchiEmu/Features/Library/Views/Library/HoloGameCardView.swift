@@ -60,6 +60,7 @@ struct HoloGameCardView: View {
     @EnvironmentObject private var library: ROMLibrary
     @EnvironmentObject private var categoryManager: CategoryManager
     @ObservedObject private var scrollState = LibraryScrollState.shared
+    @ObservedObject private var holoSaliency = HoloSaliencyService.shared
     @State private var lastDecomposedROMID: UUID?
 
     // Inside-the-card mouse position from `.onContinuousHover`. Drives the
@@ -614,6 +615,18 @@ struct HoloGameCardView: View {
                             }
                     }
                 )
+                .overlay(alignment: .center) {
+                    if holoSaliency.generatingROMIDs.contains(rom.id.uuidString) {
+                        ProgressView()
+                            .controlSize(.regular)
+                            .tint(brandAccent)
+                            .frame(width: 40, height: 40)
+                            .background(
+                                Circle()
+                                    .fill(Color.black.opacity(0.6))
+                            )
+                    }
+                }
             }
             
             Spacer()
