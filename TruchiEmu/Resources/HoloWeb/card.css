@@ -53,13 +53,6 @@ html, body {
   transform: none !important;
   background: #6b7280;
 }
-.card.regular-holo,
-.card.radiant-holo {
-  left: 25% !important;
-  top: 25% !important;
-  width: 50% !important;
-  height: 50% !important;
-}
 .card__translater,
 .card__rotator,
 .card__front,
@@ -86,6 +79,39 @@ html, body {
   width: 100% !important;
   height: 100% !important;
   object-fit: cover !important;
+}
+
+/* Fit mode: contain (for "all games" mixed-aspect group view).
+   Shows full artwork with letterboxing, plus blurred background fill. */
+.card.fit-contain .card__front > img {
+  object-fit: contain !important;
+}
+.card.fit-contain .card__bg-blur {
+  display: block !important;
+}
+
+/* Fit mode: cover (for system view, uniform aspect ratio).
+   Fills card completely, no blur background needed. */
+.card.fit-cover .card__front > img {
+  object-fit: cover !important;
+}
+.card.fit-cover .card__bg-blur {
+  display: none !important;
+}
+
+/* Blurred background layer - fills entire card frame behind the contained image.
+   Matches SwiftUI's fillBlurred mode: blurred scaledToFill background + sharp contained foreground. */
+.card__bg-blur {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  background-size: cover !important;
+  background-position: center !important;
+  filter: blur(20px) brightness(0.7) !important;
+  z-index: -1 !important;
+  pointer-events: none !important;
+  display: none !important; /* hidden by default, enabled via fit-contain */
 }
 /*
 

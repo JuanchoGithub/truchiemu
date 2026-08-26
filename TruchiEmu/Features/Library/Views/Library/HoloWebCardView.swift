@@ -37,6 +37,8 @@ struct HoloWebCardView: NSViewRepresentable {
     /// The on-screen card frame size. Used to crop the square hero mask to the
     /// real card aspect so the foil exclusion lines up with the box art.
     let frameSize: CGSize
+    /// How the artwork should fit in the card frame.
+    let fitMode: FitMode
 
     func makeCoordinator() -> Coordinator { Coordinator() }
 
@@ -93,8 +95,10 @@ struct HoloWebCardView: NSViewRepresentable {
             : Self.cardAspect
         // Quantised aspect + absolute width in the key so the HTML rebuilds if the
         // real (post-layout) web-view size differs from the initial frame size.
+        // Include fitMode so cover/contain modes don't share cached HTML.
         let aspectKey = String(format: "%.3f", frameAspect)
-        let key = "\(variantClass):\(ObjectIdentifier(image)):\(maskKey):\(aspectKey):\(Int(effectiveSize.width))"
+        let fitKey = fitMode == .cover ? "c" : "n"
+        let key = "\(variantClass):\(ObjectIdentifier(image)):\(maskKey):\(aspectKey):\(Int(effectiveSize.width)):\(fitKey)"
         if context.coordinator.loadKey != key {
             context.coordinator.loadKey = key
             context.coordinator.loaded = false
@@ -106,7 +110,7 @@ struct HoloWebCardView: NSViewRepresentable {
             // is never cross-origin, so it always applies.
             // The mask is cropped to the card's real aspect (this view's
             // rendered bounds) so it reproduces `object-fit: cover` exactly.
-            try? Self.html(variantClass: variantClass, image: image, heroMask: heroMask, frameSize: effectiveSize)
+            try? Self.html(variantClass: variantClass, image: image, heroMask: heroMask, frameSize: effectiveSize, fitMode: fitMode)
                 .write(to: htmlURL, atomically: true, encoding: .utf8)
             webView.loadFileURL(htmlURL, allowingReadAccessTo: context.coordinator.baseDir)
         }
@@ -117,13 +121,16 @@ struct HoloWebCardView: NSViewRepresentable {
         }
     }
 
-    static func html(variantClass: String, image: NSImage, heroMask: NSImage?, frameSize: NSSize) -> String {
+    static func html(variantClass: String, image: NSImage, heroMask: NSImage?, frameSize: NSSize, fitMode: FitMode = .cover) -> String {
         guard let url = Bundle.main.url(forResource: "card", withExtension: "html"),
               var tpl = try? String(contentsOf: url, encoding: .utf8) else {
             return "<html><body style='color:red'>card.html missing</body></html>"
         }
-        tpl = tpl.replacingOccurrences(of: "{{IMAGE_URL}}", with: Self.dataURL(image))
+        let imageDataURL = Self.dataURL(image)
+        tpl = tpl.replacingOccurrences(of: "{{IMAGE_URL}}", with: imageDataURL)
+        tpl = tpl.replacingOccurrences(of: "{{BLUR_IMAGE_URL}}", with: imageDataURL)
         tpl = tpl.replacingOccurrences(of: "{{VARIANT_CLASS}}", with: variantClass)
+        tpl = tpl.replacingOccurrences(of: "{{FIT_MODE_CLASS}}", with: fitMode.cssClass)
         // Pin the card to the exact web-view pixel size so the holo never
         // renders larger than the frame (the WKWebView layout viewport on macOS
         // does not equal the view bounds, so percentage/fixed sizing alone
@@ -142,7 +149,7 @@ struct HoloWebCardView: NSViewRepresentable {
             ? frameSize.width / frameSize.height
             : Self.cardAspect
         if let heroMask,
-           let png = Self.pngData(Self.inverseHeroMask(heroMask, sourceSize: image.size, maskAspect: frameAspect)) {
+           let png = Self.pngData(Self.inverseHeroMask(heroMask, sourceSize: image.size, maskAspect: frameAspect, fitMode: fitMode)) {
             let dataURI = "data:image/png;base64,\(png.base64EncodedString())"
             let svg = """
             <svg width="0" height="0" style="position:absolute" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
@@ -221,27 +228,59 @@ struct HoloWebCardView: NSViewRepresentable {
     /// naive "fill white, then `draw` with `.destinationOut`" leaves the mask
     /// fully opaque (hero never erased). We must erase via the underlying
     /// `CGContext.draw(..., blendMode: .destinationOut)` instead.
-    static func inverseHeroMask(_ hero: NSImage, sourceSize: NSSize, maskAspect: CGFloat) -> NSImage {
+    static func inverseHeroMask(_ hero: NSImage, sourceSize: NSSize, maskAspect: CGFloat, fitMode: FitMode = .cover) -> NSImage {
         let srcW = sourceSize.width
         let srcH = sourceSize.height
         guard srcW > 0, srcH > 0 else { return hero }
-        // Cover-crop the box-art-aspect mask to the frame aspect (centred, same
-        // as `object-fit: cover`).
+        
+        var canvas: NSSize
+        var drawRect: NSRect
+        
         let srcAspect = srcW / srcH
-        var cropW = srcW, cropH = srcH
-        if srcAspect > maskAspect { cropW = srcH * maskAspect }
-        else { cropH = srcW / maskAspect }
-        let cropX = (srcW - cropW) / 2
-        let cropY = (srcH - cropH) / 2
-        let canvas = NSSize(width: cropW, height: cropH)
-
-        // Draw the (square) hero mask stretched to the box-art aspect and offset
-        // by the cover-crop, upright. `NSImage.draw(in:)` honours orientation,
-        // unlike raw `CGContext.draw(cgImage:)`, which silently flips the result.
+        
+        switch fitMode {
+        case .cover:
+            // Cover-crop the box-art-aspect mask to the frame aspect (centred, same
+            // as `object-fit: cover`). Canvas = frame aspect (cropped).
+            var cropW = srcW, cropH = srcH
+            if srcAspect > maskAspect { cropW = srcH * maskAspect }
+            else { cropH = srcW / maskAspect }
+            let cropX = (srcW - cropW) / 2
+            let cropY = (srcH - cropH) / 2
+            canvas = NSSize(width: cropW, height: cropH)
+            drawRect = NSRect(x: -cropX, y: -cropY, width: srcW, height: srcH)
+            
+        case .contain:
+            // Match `object-fit: contain`:
+            // 1. Stretch square hero mask to box-art aspect (srcW x srcH) — same as cover
+            // 2. Fit that into frame aspect (maskAspect) with letterbox/pillarbox
+            // Canvas = full frame aspect (uncropped). Hero drawn at box-art coords,
+            // then offset by letterbox/pillarbox to align with contained image.
+            let refWidth: CGFloat = 1000
+            let refHeight = refWidth / maskAspect
+            canvas = NSSize(width: refWidth, height: refHeight)
+            
+            if srcAspect > maskAspect {
+                // Pillarbox: box art wider than frame. Image fills height, centered horizontally.
+                let displayedW = refHeight * srcAspect
+                let offsetX = (refWidth - displayedW) / 2
+                // Draw hero at box-art coords (srcW x srcH), positioned at offsetX, 0
+                drawRect = NSRect(x: offsetX, y: 0, width: displayedW, height: refHeight)
+            } else {
+                // Letterbox: box art taller than frame. Image fills width, centered vertically.
+                let displayedH = refWidth / srcAspect
+                let offsetY = (refHeight - displayedH) / 2
+                drawRect = NSRect(x: 0, y: offsetY, width: refWidth, height: displayedH)
+            }
+        }
+        
+        // Draw the (square) hero mask stretched to the box-art aspect and offset,
+        // upright. `NSImage.draw(in:)` honours orientation, unlike raw
+        // `CGContext.draw(cgImage:)`, which silently flips the result.
         guard let rep = NSBitmapImageRep(
                 bitmapDataPlanes: nil,
-                pixelsWide: Int(cropW),
-                pixelsHigh: Int(cropH),
+                pixelsWide: Int(canvas.width),
+                pixelsHigh: Int(canvas.height),
                 bitsPerSample: 8,
                 samplesPerPixel: 4,
                 hasAlpha: true,
@@ -253,8 +292,9 @@ struct HoloWebCardView: NSViewRepresentable {
         rep.size = canvas
         NSGraphicsContext.saveGraphicsState()
         NSGraphicsContext.current = NSGraphicsContext(bitmapImageRep: rep)
-        hero.draw(in: NSRect(x: -cropX, y: -cropY, width: srcW, height: srcH),
-                  from: .zero, operation: .copy, fraction: 1)
+        // Draw hero mask on transparent background (opaque where hero IS).
+        // Core Image color matrix below will invert: opaque->transparent, transparent->opaque.
+        hero.draw(in: drawRect, from: .zero, operation: .copy, fraction: 1)
         NSGraphicsContext.restoreGraphicsState()
 
         // Invert the alpha so the result is opaque (foil) everywhere EXCEPT the
@@ -324,5 +364,17 @@ extension HoloVariant {
             else { out += String(ch) }
         }
         return out
+    }
+}
+
+public enum FitMode {
+    case cover  // System view: uniform aspect, fill card (original behavior)
+    case contain // All games view: mixed aspect, show full image + blur bg
+    
+    var cssClass: String {
+        switch self {
+        case .cover: return "fit-cover"
+        case .contain: return "fit-contain"
+        }
     }
 }
