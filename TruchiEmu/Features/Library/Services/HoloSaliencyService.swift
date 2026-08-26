@@ -67,8 +67,13 @@ extension HoloMaskSet: Equatable {
 final class HoloSaliencyService: @unchecked Sendable, ObservableObject {
     static let shared = HoloSaliencyService()
 
-    private let cache: OSAllocatedUnfairLock<[String: HoloMaskSet]> = .init(initialState: [:])
-    private let cacheOrderLock = OSAllocatedUnfairLock<[String]>(initialState: [])
+    // Single lock protects both the cache and LRU order - avoids lock ordering deadlocks
+    // between main thread (cachedMasksSync) and background (holoMasks cache update)
+    private struct CacheState {
+        var entries: [String: HoloMaskSet] = [:]
+        var order: [String] = []
+    }
+    private let cacheLock = OSAllocatedUnfairLock<CacheState>(initialState: CacheState())
     private let cacheLimit = 100
     private let inFlight: OSAllocatedUnfairLock<[String: Task<HoloMaskSet?, Never>]> = .init(initialState: [:])
     private let generating: OSAllocatedUnfairLock<Set<String>> = .init(initialState: [])
@@ -126,14 +131,14 @@ final class HoloSaliencyService: @unchecked Sendable, ObservableObject {
     /// the masks are already loaded in memory, without awaiting the actor
     /// (or in the new model, without even dispatching a Task).
     nonisolated func cachedMasksSync(for romID: String) -> HoloMaskSet? {
-        let cached = cache.withLock { $0[romID] }
-        if cached != nil {
-            cacheOrderLock.withLock { order in
-                order.removeAll { $0 == romID }
-                order.append(romID)
+        cacheLock.withLock { state in
+            let cached = state.entries[romID]
+            if cached != nil {
+                state.order.removeAll { $0 == romID }
+                state.order.append(romID)
             }
+            return cached
         }
-        return cached
     }
 
     /// Primary entry point. Returns the mask set for the romID, loading from
@@ -174,7 +179,17 @@ final class HoloSaliencyService: @unchecked Sendable, ObservableObject {
 
             // 4a. Disk-cache hit. Decode four PNGs off-main.
             if let onDisk = await Self.loadMaskSetOffMain(romID: romID) {
-                self.cache.withLock { $0[romID] = onDisk }
+                cacheLock.withLock { state in
+                    state.entries[romID] = onDisk
+                    state.order.removeAll { $0 == romID }
+                    state.order.append(romID)
+                    if state.order.count > self.cacheLimit {
+                        if let evict = state.order.first {
+                            state.entries.removeValue(forKey: evict)
+                            state.order.removeFirst()
+                        }
+                    }
+                }
                 return onDisk
             }
             if Task.isCancelled { return nil }
@@ -246,14 +261,14 @@ final class HoloSaliencyService: @unchecked Sendable, ObservableObject {
             LoggerService.debug("HoloSaliency: persist took \(String(format: "%.2f", (CFAbsoluteTimeGetCurrent() - persistStart) * 1000))ms")
             #endif
             if let masks {
-                self.cache.withLock { $0[romID] = masks }
-                self.cacheOrderLock.withLock { order in
-                    order.removeAll { $0 == romID }
-                    order.append(romID)
-                    if order.count > self.cacheLimit {
-                        if let evict = order.first {
-                            self.cache.withLock { $0.removeValue(forKey: evict) }
-                            order.removeFirst()
+                cacheLock.withLock { state in
+                    state.entries[romID] = masks
+                    state.order.removeAll { $0 == romID }
+                    state.order.append(romID)
+                    if state.order.count > self.cacheLimit {
+                        if let evict = state.order.first {
+                            state.entries.removeValue(forKey: evict)
+                            state.order.removeFirst()
                         }
                     }
                 }
@@ -278,14 +293,18 @@ final class HoloSaliencyService: @unchecked Sendable, ObservableObject {
     /// Drop the in-memory cache entry for a romID. Used by debug / menu paths
     /// that want to force re-decompose after editing the mask files by hand.
     nonisolated func invalidate(romID: String) {
-        cache.withLock { $0.removeValue(forKey: romID) }
-        cacheOrderLock.withLock { $0.removeAll { $0 == romID } }
+        cacheLock.withLock { state in
+            state.entries.removeValue(forKey: romID)
+            state.order.removeAll { $0 == romID }
+        }
     }
 
     /// Drop everything. Heavy; only useful for tests.
     nonisolated func invalidateAll() {
-        cache.withLock { $0.removeAll() }
-        cacheOrderLock.withLock { $0.removeAll() }
+        cacheLock.withLock { state in
+            state.entries.removeAll()
+            state.order.removeAll()
+        }
     }
 
     /// Fully reset the masks for a romID: drop the in-memory cache entry,
@@ -296,8 +315,10 @@ final class HoloSaliencyService: @unchecked Sendable, ObservableObject {
     /// image. Call this from the box-art replacement flow so the next
     /// `holoMasks` call re-decomposes the new image.
     nonisolated func resetMasks(romID: String) {
-        cache.withLock { $0.removeValue(forKey: romID) }
-        cacheOrderLock.withLock { $0.removeAll { $0 == romID } }
+        cacheLock.withLock { state in
+            state.entries.removeValue(forKey: romID)
+            state.order.removeAll { $0 == romID }
+        }
         if let task = inFlight.withLock({ $0.removeValue(forKey: romID) }) {
             task.cancel()
         }
