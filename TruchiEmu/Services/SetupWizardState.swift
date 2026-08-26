@@ -76,6 +76,7 @@ final class SetupWizardState: ObservableObject {
     @Published var libraryFolders: [URL] = []
     @Published var downloadBezels: Bool = false
     @Published var selectedShaderPresetID: String = ""
+    @Published var generateHoloMasks: Bool = false
     @Published var selectedRegion: EmulatorLanguage = .northAmerica
     @Published var selectedTheme: AccentColorTheme = .megaMan {
         didSet {
@@ -194,6 +195,9 @@ final class SetupWizardState: ObservableObject {
         
         // LaunchBox
         featureLaunchBox = AppSettings.getBool("launchbox_use_for_boxart", defaultValue: false)
+
+        // Holo masks (visual box art preference)
+        generateHoloMasks = AppSettings.getBool("auto_generate_holo_masks", defaultValue: false)
 
         // Time Machine (defaults to on at runtime)
         featureTimeMachine = AppSettings.getBool("timeMachine_enabled", defaultValue: true)
@@ -399,6 +403,9 @@ final class SetupWizardState: ObservableObject {
         }
         if downloadBezels {
             items.append("wizard.summary.bezels")
+        }
+        if generateHoloMasks {
+            items.append("wizard.summary.holoMasks")
         }
         return items
     }

@@ -149,6 +149,9 @@ Button(loc.localized("wizard.skip")) {
             AppSettings.setBool("launchbox_download_after_scan", value: true)
         }
 
+        // Holo masks (visual box art preference; always write so the wizard choice takes effect)
+        AppSettings.setBool("auto_generate_holo_masks", value: wizard.generateHoloMasks)
+
         // Cheats master toggle (download handled separately)
         if wizard.featureCheats {
             AppSettings.setBool("cheats_enabled", value: true)
@@ -474,6 +477,38 @@ extension SetupWizardView {
                             }
                         }
                     }
+                }
+                .padding(.leading, 4)
+            }
+
+            Divider()
+
+            // Holo Masks
+            VStack(alignment: .leading, spacing: 12) {
+                Label(loc.localized("wizard.holoMasks"), systemImage: "sparkles")
+                    .font(.headline)
+
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("wizard.holoMasksDescription")
+                        .foregroundColor(AppColors.textSecondary(colorScheme))
+                        .font(.callout)
+
+                    Toggle(loc.localized("wizard.holoMasksToggle"), isOn: $wizard.generateHoloMasks)
+                        .toggleStyle(.switch)
+                        .tint(AppColors.brandAccentSecondary)
+
+                    HStack(alignment: .top, spacing: 8) {
+                        Image(systemName: "exclamationmark.triangle")
+                            .foregroundColor(AppColors.textTertiary(colorScheme))
+                            .font(.callout)
+                        Text("wizard.holoMasksWarning")
+                            .foregroundColor(AppColors.textSecondary(colorScheme))
+                            .font(.caption)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                    .padding(10)
+                    .background(AppColors.cardBackgroundSubtle(colorScheme))
+                    .cornerRadius(8)
                 }
                 .padding(.leading, 4)
             }
