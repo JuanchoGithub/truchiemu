@@ -1619,6 +1619,8 @@
   "celebration.firstSaveSubtitle": "You can pick up right here anytime.",
   "boxArt.pinchToZoom": "Pinch to zoom",
   "boxArt.changeBoxArt": "Change Box Art",
+  "boxArt.holoEnable": "Enable holo effects (randomized)",
+  "boxArt.holoDisable": "Disable holo effects",
   "header.gameTitle": "Game Title",
   "header.play": "Play",
   "header.continue": "Continue",

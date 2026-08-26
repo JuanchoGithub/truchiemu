@@ -1617,6 +1617,8 @@
   "celebration.firstSaveSubtitle": "いつでもここから続きをプレイできます。",
   "boxArt.pinchToZoom": "ピンチでズーム",
   "boxArt.changeBoxArt": "ボックスアートを変更",
+  "boxArt.holoEnable": "ホロ効果を有効化 (ランダム)",
+  "boxArt.holoDisable": "ホロ効果を無効化",
   "header.gameTitle": "ゲームタイトル",
   "header.play": "プレイ",
   "header.continue": "続行",

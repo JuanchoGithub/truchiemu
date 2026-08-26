@@ -1618,6 +1618,8 @@
   "celebration.firstSaveSubtitle": "Podes continuar exatamente aqui a qualquer momento.",
   "boxArt.pinchToZoom": "Faça movimento de pinça para zoom",
   "boxArt.changeBoxArt": "Alterar Capa",
+  "boxArt.holoEnable": "Ativar efeitos holo (aleatórios)",
+  "boxArt.holoDisable": "Desativar efeitos holo",
   "header.gameTitle": "Título do Jogo",
   "header.play": "Jogar",
   "header.continue": "Continuar",

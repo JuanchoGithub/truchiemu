@@ -838,6 +838,8 @@ struct HoloSettingsSnapshot: Equatable {
     // mask chance, intensity, and pattern (see `HoloCardRandomization`).
     var randomization: HoloCardRandomization?
 
+    var renderingEngine: [HoloVariant: HoloSettingsStore.HoloRenderingEngine] = [:]
+
     // Holofoil Rare (regular-holo) tunables, copied from the settings store.
     var holofoilRareIntensity: Double = 1.0
     var holofoilRareScanlineDensity: Double = 1.0
@@ -877,6 +879,7 @@ struct HoloSettingsSnapshot: Equatable {
         self.reverseTextureBlend2 = cfg.blend2
         self.backgroundMedianRGB = nil
         self.randomization = nil
+        self.renderingEngine = store.renderingEngine
         self.holofoilRareIntensity = store.holofoilRareIntensity
         self.holofoilRareScanlineDensity = store.holofoilRareScanlineDensity
         self.holofoilRareBeamStrength = store.holofoilRareBeamStrength
@@ -912,6 +915,29 @@ struct HoloSettingsSnapshot: Equatable {
         )
     }
 
+    /// Custom seed snapshot for one-off views (e.g. detail zoom).
+    @MainActor
+    init(from store: HoloSettingsStore, romID: String, seed: UInt64) {
+        self.init(from: store)
+        let cardSeed = seed &+ stableSeed(romID)
+        let cfg = Self.resolveReverseFoilConfig(
+            mode: self.reverseTextureMode,
+            variation: store.reverseTextureVariation,
+            seed: cardSeed
+        )
+        self.reverseTexturePattern = cfg.pattern
+        self.reverseTextureScale = cfg.scale
+        self.reverseTexturePattern2 = cfg.pattern2
+        self.reverseTextureScale2 = cfg.scale2
+        self.reverseTextureBlend2 = cfg.blend2
+        self.randomization = HoloCardRandomization(
+            seed: cardSeed,
+            deviationChance: Float(store.maskDeviationChance),
+            variantWeights: store.variantWeights
+        )
+        self.renderingEngine = store.renderingEngine
+    }
+
     func regionIsActive(_ region: HoloRegion, maskPresent: Bool) -> Bool {
         guard maskPresent else { return false }
         switch region {
@@ -920,6 +946,40 @@ struct HoloSettingsSnapshot: Equatable {
         case .hero: return heroIntensity > 0.001
         case .background: return backgroundIntensity > 0.001
         }
+    }
+
+    static func == (lhs: HoloSettingsSnapshot, rhs: HoloSettingsSnapshot) -> Bool {
+        lhs.titleIntensity == rhs.titleIntensity &&
+        lhs.chromeIntensity == rhs.chromeIntensity &&
+        lhs.heroIntensity == rhs.heroIntensity &&
+        lhs.backgroundIntensity == rhs.backgroundIntensity &&
+        lhs.titlePattern == rhs.titlePattern &&
+        lhs.chromePattern == rhs.chromePattern &&
+        lhs.heroPattern == rhs.heroPattern &&
+        lhs.backgroundPattern == rhs.backgroundPattern &&
+        lhs.maskDeviationChance == rhs.maskDeviationChance &&
+        lhs.depthMode == rhs.depthMode &&
+        lhs.specularPower == rhs.specularPower &&
+        lhs.cursorInfluence == rhs.cursorInfluence &&
+        lhs.tiltInfluence == rhs.tiltInfluence &&
+        lhs.parallaxStrength == rhs.parallaxStrength &&
+        lhs.hueCycles == rhs.hueCycles &&
+        lhs.reverseColorMode == rhs.reverseColorMode &&
+        lhs.reverseSolidColor == rhs.reverseSolidColor &&
+        lhs.reverseRainbowIntensity == rhs.reverseRainbowIntensity &&
+        lhs.reverseTextureMode == rhs.reverseTextureMode &&
+        lhs.reverseTexturePattern == rhs.reverseTexturePattern &&
+        lhs.reverseTextureScale == rhs.reverseTextureScale &&
+        lhs.reverseTexturePattern2 == rhs.reverseTexturePattern2 &&
+        lhs.reverseTextureScale2 == rhs.reverseTextureScale2 &&
+        lhs.reverseTextureBlend2 == rhs.reverseTextureBlend2 &&
+        lhs.backgroundMedianRGB == rhs.backgroundMedianRGB &&
+        lhs.randomization == rhs.randomization &&
+        lhs.holofoilRareIntensity == rhs.holofoilRareIntensity &&
+        lhs.holofoilRareScanlineDensity == rhs.holofoilRareScanlineDensity &&
+        lhs.holofoilRareBeamStrength == rhs.holofoilRareBeamStrength &&
+        lhs.holofoilRareGlare == rhs.holofoilRareGlare &&
+        lhs.renderingEngine == rhs.renderingEngine
     }
 
     /// Resolve the full Reverse Holo foil config for `.random` mode. All
