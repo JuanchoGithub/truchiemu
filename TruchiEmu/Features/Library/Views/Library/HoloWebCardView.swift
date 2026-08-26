@@ -70,9 +70,6 @@ struct HoloWebCardView: NSViewRepresentable {
 
     func updateNSView(_ nsView: NSView, context: Context) {
         guard let webView = context.coordinator.webView else { return }
-        #if LOG_DEBUG
-        print("[HoloWeb] container=\(nsView.bounds.size) web=\(webView.bounds.size) frameSize=\(frameSize) winScale=\(nsView.window?.screen?.backingScaleFactor ?? -1) frame=\(nsView.frame.size)")
-        #endif
         // Force the web view to the exact SwiftUI frame size (frameSize).
         // The container/web were rendering 2× larger (winScale), so we clamp them
         // to the correct point size here.
@@ -173,8 +170,22 @@ struct HoloWebCardView: NSViewRepresentable {
     /// Encode an `NSImage` as PNG `Data`. Used to write the foil mask to disk
     /// (referenced by relative URL from the generated HTML) so it never has to
     /// be inlined as a data URL that WebKit's CSS parser would truncate.
+    /// The image's real pixel dimensions, ignoring DPI scaling. `NSImage.size`
+    /// reports the DPI-scaled point size (e.g. a 348-DPI 512×357 box art reports
+    /// 105.9×73.9), which would otherwise rasterise the card at ¼ resolution.
+    static func pixelSize(_ img: NSImage) -> CGSize {
+        if let rep = img.representations.first,
+           rep.pixelsWide > 0, rep.pixelsHigh > 0 {
+            return CGSize(width: rep.pixelsWide, height: rep.pixelsHigh)
+        }
+        if let cg = img.cgImage(forProposedRect: nil, context: nil, hints: nil) {
+            return CGSize(width: cg.width, height: cg.height)
+        }
+        return img.size
+    }
+
     static func pngData(_ img: NSImage) -> Data? {
-        let size = img.size
+        let size = Self.pixelSize(img)
         guard size.width > 0, size.height > 0,
               let rep = NSBitmapImageRep(
                 bitmapDataPlanes: nil,

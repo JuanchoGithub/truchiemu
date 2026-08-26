@@ -89,6 +89,7 @@
 		0DDFBDCB92DA4D0DF256D6D9 /* input_coreOverrides_nxengine.json in Resources */ = {isa = PBXBuildFile; fileRef = 118C3C476FA18F110E167B39 /* input_coreOverrides_nxengine.json */; };
 		0EC966AB34C9316BEB777009 /* StandaloneGameWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F6FCC4037CB225E511FD3F5 /* StandaloneGameWindowController.swift */; };
 		0F7D9FF0D51CF611A7BC83B1 /* ATARI800.png in Resources */ = {isa = PBXBuildFile; fileRef = 028968D965BBF8007BE1DC73 /* ATARI800.png */; };
+		0F89504CF8C7F21B1BD67C9F /* zelda_oot_europe_hero.png in Resources */ = {isa = PBXBuildFile; fileRef = F670C04EC19DA343B4D0E920 /* zelda_oot_europe_hero.png */; };
 		0FBBD16D1BC4F6442F8ED6F8 /* input_systemLabels_cpc.json in Resources */ = {isa = PBXBuildFile; fileRef = 5803663F2F57F8B8212A8444 /* input_systemLabels_cpc.json */; };
 		103E5E29437831047C298031 /* 3ds@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 7A59464C7503827DB2909A95 /* 3ds@132w.png */; };
 		104D7496A5BF50D24818AE3E /* HelpSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CAB488D81605318420F701F /* HelpSheetView.swift */; };
@@ -242,6 +243,7 @@
 		296767A74F56EB5FFD1CD0C5 /* NotationMetrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35831ECE292261C14E2A05FE /* NotationMetrics.swift */; };
 		299AF31762CE1C344C738BDC /* fightdata_daraku.json in Resources */ = {isa = PBXBuildFile; fileRef = 60E9D4F25604E1D8BD311933 /* fightdata_daraku.json */; };
 		29CE32FC2F6F901B6183456D /* SATURN.png in Resources */ = {isa = PBXBuildFile; fileRef = F6BC2D971B660ACD5CC70339 /* SATURN.png */; };
+		2A410DC310789ACB0C64F510 /* zelda_oot_japan_hero.png in Resources */ = {isa = PBXBuildFile; fileRef = 806042BD2577F89D91AFAF00 /* zelda_oot_japan_hero.png */; };
 		2A4C1FDA0C8991B98B6E9CBA /* NDS.png in Resources */ = {isa = PBXBuildFile; fileRef = 1F755B4BB35962969772AE5B /* NDS.png */; };
 		2A50A46038AEC931AF677648 /* fightdata_cvsgd.json in Resources */ = {isa = PBXBuildFile; fileRef = B6FF84899910D3F6FAD36B4C /* fightdata_cvsgd.json */; };
 		2AB42E1F6D46FB04C3519B83 /* HoloVariantRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2040211263BC01B0D3C0F77 /* HoloVariantRenderer.swift */; };
@@ -919,6 +921,7 @@
 		ACF656245360AE90F2155F02 /* fightdata_sfa2.json in Resources */ = {isa = PBXBuildFile; fileRef = 959697A919B91A825E7E7DD8 /* fightdata_sfa2.json */; };
 		AD20195D6FF2759B752AA199 /* 32x-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = EAE5F38271292610D94313D6 /* 32x-cheats.zip */; };
 		ADAAC616676FE9F7F52D297C /* CelebrationOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D0DDCC64C1B31C45D418074 /* CelebrationOverlay.swift */; };
+		ADB685BCE6B067EACB492C02 /* zelda_oot_usa_hero.png in Resources */ = {isa = PBXBuildFile; fileRef = A46C7165C848074FC91A8B26 /* zelda_oot_usa_hero.png */; };
 		ADC5AA77F50EECA68E54E8C7 /* sameboy_libretro_default.json in Resources */ = {isa = PBXBuildFile; fileRef = EA1AE08A9B777549FF2AE9CC /* sameboy_libretro_default.json */; };
 		AE0718BCC3CC72F4FC8413BF /* VIDEOTON.png in Resources */ = {isa = PBXBuildFile; fileRef = C25C27746F28191394C4D999 /* VIDEOTON.png */; };
 		AE3C8C27D0E5677524695ADF /* GB.png in Resources */ = {isa = PBXBuildFile; fileRef = 2E4A84332074065FDE10275B /* GB.png */; };
@@ -2029,6 +2032,7 @@
 		7FE2570126C33B65ED8FBC84 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		7FF70D4A7B4D28317A001C28 /* fightdata_vf.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_vf.json; sourceTree = "<group>"; };
 		8029174DA9405A8D803E9139 /* fightdata_mshvsf.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_mshvsf.json; sourceTree = "<group>"; };
+		806042BD2577F89D91AFAF00 /* zelda_oot_japan_hero.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = zelda_oot_japan_hero.png; sourceTree = "<group>"; };
 		806BE1821C31A13BF1B1177D /* RAGameCacheEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RAGameCacheEntry.swift; sourceTree = "<group>"; };
 		80E1DACC2C55E59F5BB62473 /* input_coreLabels_gearcoleco.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_gearcoleco.json; sourceTree = "<group>"; };
 		812B950A5FCB555990A28D2A /* GameGuideSidebar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameGuideSidebar.swift; sourceTree = "<group>"; };
@@ -2210,6 +2214,7 @@
 		A3FAC1959347AEA3B5972F5A /* input_systemLabels_ep128.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_ep128.json; sourceTree = "<group>"; };
 		A44B26B8EE68C310F60A6D4E /* GameContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameContainerView.swift; sourceTree = "<group>"; };
 		A45AB6F6F56F5EAC6991C29E /* fightdata_sfa3.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_sfa3.json; sourceTree = "<group>"; };
+		A46C7165C848074FC91A8B26 /* zelda_oot_usa_hero.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = zelda_oot_usa_hero.png; sourceTree = "<group>"; };
 		A46DC124EACC3CBF27EEA315 /* ShaderManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShaderManager.swift; sourceTree = "<group>"; };
 		A47516431097E29AD293A7B5 /* CorePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CorePickerView.swift; sourceTree = "<group>"; };
 		A487B63C4BA991FFD20139C0 /* input_coreOverrides_gam4980.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_gam4980.json; sourceTree = "<group>"; };
@@ -2636,6 +2641,7 @@
 		F64B6D88E1726561C28BB368 /* fightdata_savagere.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_savagere.json; sourceTree = "<group>"; };
 		F655939548263F218C5B75DC /* mame_libretro_default.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = mame_libretro_default.json; sourceTree = "<group>"; };
 		F65A972093C6A03CF4512269 /* Overview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Overview.swift; sourceTree = "<group>"; };
+		F670C04EC19DA343B4D0E920 /* zelda_oot_europe_hero.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = zelda_oot_europe_hero.png; sourceTree = "<group>"; };
 		F6AC9D71CF30D6A8EC6BB1EA /* reicast_libretro_default.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = reicast_libretro_default.json; sourceTree = "<group>"; };
 		F6BC2D971B660ACD5CC70339 /* SATURN.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SATURN.png; sourceTree = "<group>"; };
 		F6CFC52641BA0B6FB051708D /* fightdata_ggx15.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_ggx15.json; sourceTree = "<group>"; };
@@ -4318,8 +4324,11 @@
 		D0CDC1D3C0773FC9C8698346 /* BoxArtSamples */ = {
 			isa = PBXGroup;
 			children = (
+				F670C04EC19DA343B4D0E920 /* zelda_oot_europe_hero.png */,
 				A0C5FCB3FF56DD20AC65678B /* zelda_oot_europe.png */,
+				806042BD2577F89D91AFAF00 /* zelda_oot_japan_hero.png */,
 				4AFB6438D35AED5F2F6B318F /* zelda_oot_japan.png */,
+				A46C7165C848074FC91A8B26 /* zelda_oot_usa_hero.png */,
 				D74F5E8A10EE90C1CAAF9C7D /* zelda_oot_usa.png */,
 			);
 			path = BoxArtSamples;
@@ -5843,8 +5852,11 @@
 				15C423B679CB7656D667C51D /* xbox.ico in Resources */,
 				25AA217D9B455BBE6C01A754 /* xbox360.ico in Resources */,
 				DC99BD2F868611CE28B49E80 /* zelda_oot_europe.png in Resources */,
+				0F89504CF8C7F21B1BD67C9F /* zelda_oot_europe_hero.png in Resources */,
 				50C01002372D1C1EEB123631 /* zelda_oot_japan.png in Resources */,
+				2A410DC310789ACB0C64F510 /* zelda_oot_japan_hero.png in Resources */,
 				9CCD7E647F3D97C79FDFAFF5 /* zelda_oot_usa.png in Resources */,
+				ADB685BCE6B067EACB492C02 /* zelda_oot_usa_hero.png in Resources */,
 				683ACAE70B7A63365CD21520 /* zxs@132w.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

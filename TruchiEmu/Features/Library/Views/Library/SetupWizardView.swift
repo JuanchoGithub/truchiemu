@@ -394,6 +394,25 @@ Image(systemName: "trash")
         return NSImage(contentsOf: url)
     }
 
+    /// Pre-bundled hero mask (alpha channel: opaque where the subject is) for the
+    /// sample box art, generated offline via the BoxArtLayers decomposer and
+    /// shipped in `Resources/BoxArtSamples/`. The wizard never generates masks at
+    /// runtime — it loads these built-in assets.
+    private func heroMaskSample(for region: EmulatorLanguage) -> NSImage? {
+        let name: String
+        switch region {
+        case .northAmerica, .world: name = "zelda_oot_usa_hero"
+        case .japan: name = "zelda_oot_japan_hero"
+        case .europe: name = "zelda_oot_europe_hero"
+        case .brazil: name = "zelda_oot_europe_hero"
+        case .spain: name = "zelda_oot_europe_hero"
+        }
+        guard let url = Bundle.main.url(forResource: name, withExtension: "png") else {
+            return nil
+        }
+        return NSImage(contentsOf: url)
+    }
+
     private func pickFolder() {
         let panel = NSOpenPanel()
         panel.canChooseDirectories = true
@@ -472,7 +491,8 @@ extension SetupWizardView {
                         ?? boxArtSample(for: .northAmerica) {
                         HoloPreviewCard(
                             image: previewImage,
-                            romID: "wizard_holo_zelda_\(wizard.selectedRegion.rawValue)"
+                            heroMask: heroMaskSample(for: wizard.selectedRegion)
+                                ?? heroMaskSample(for: .northAmerica)
                         )
                         .frame(width: 200, height: 280)
                         .cornerRadius(8)
