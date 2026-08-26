@@ -11,7 +11,13 @@ import AppKit
 /// happen on the main runloop, so no actor isolation is needed.
 final class LibraryScrollState: ObservableObject {
     static let shared = LibraryScrollState()
-    @Published var isScrolling: Bool = false
+    
+    var isScrolling: Bool = false {
+        willSet {
+            guard newValue != isScrolling else { return }
+            objectWillChange.send()
+        }
+    }
 }
 
 // MARK: - NSCollectionViewItem wrapping HoloGameCardView
