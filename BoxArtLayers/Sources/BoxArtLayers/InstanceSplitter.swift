@@ -7,7 +7,6 @@ enum InstanceSplitter {
         _ scene: SceneAnalysis,
         configuration: BoxArtDecomposer.Configuration
     ) -> [InstanceCandidate] {
-        let titleHint = LayerAssigner.rasterizeTitle(scene: scene, configuration: configuration)
         let minPixels = max(16, Int(Double(scene.width * scene.height) * 0.006))
         var nextID = (scene.instances.map(\.id).max() ?? 0) + 1
         var output: [InstanceCandidate] = []
@@ -15,7 +14,6 @@ enum InstanceSplitter {
         for instance in scene.instances {
             let remainder = instance.mask
                 .subtracting(scene.chromeHint)
-                .subtracting(titleHint)
 
             let parts: [MaskBuffer]
             if instance.areaRatio > configuration.heroMaxAreaRatio {
