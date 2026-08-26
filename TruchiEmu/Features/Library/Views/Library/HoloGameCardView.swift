@@ -614,88 +614,95 @@ struct HoloGameCardView: View {
                             }
                     }
                 )
+            }
+            
+            Spacer()
+                .frame(height: textBlockFixedPadding)
+            
+            VStack(alignment: .leading, spacing: 2) {
+                Text(rom.displayName)
+                    .font(.system(size: titleFontSize, weight: .semibold, design: .rounded))
+                    .lineLimit(2)
+                    .multilineTextAlignment(.center)
+                    .foregroundColor(isHiddenItem ? .gray : AppColors.textPrimary(colorScheme))
+                    .frame(maxWidth: .infinity, alignment: .center)
                 
-                Spacer(minLength: textBlockFixedPadding)
-                
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(rom.displayName)
-                        .font(.system(size: titleFontSize, weight: .semibold, design: .rounded))
-                        .lineLimit(2)
-                        .multilineTextAlignment(.center)
-                        .foregroundColor(isHiddenItem ? .gray : AppColors.textPrimary(colorScheme))
+                if let systemName = systemSubtitle {
+                    Text(systemName)
+                        .font(.system(size: subtitleFontSize, weight: .regular, design: .rounded))
+                        .foregroundColor(AppColors.textMuted(colorScheme))
+                        .lineLimit(1)
                         .frame(maxWidth: .infinity, alignment: .center)
-                    
-                    if let systemName = systemSubtitle {
-                        Text(systemName)
-                            .font(.system(size: subtitleFontSize, weight: .regular, design: .rounded))
+                }
+                
+                if isHiddenItem, let mameType = rom.mameRomType {
+                    HStack(spacing: 4) {
+                        Image(systemName: "eye.slash")
+                            .font(.system(size: 9))
                             .foregroundColor(AppColors.textMuted(colorScheme))
-                            .lineLimit(1)
-                            .frame(maxWidth: .infinity, alignment: .center)
-                    }
-                    
-                    if isHiddenItem, let mameType = rom.mameRomType {
-                        HStack(spacing: 4) {
-                            Image(systemName: "eye.slash")
-                                .font(.system(size: 9))
-                                .foregroundColor(AppColors.textMuted(colorScheme))
-                            Text(mameType.capitalized)
-                                .font(.system(size: 9))
-                                .foregroundColor(AppColors.textMuted(colorScheme))
-                        }
+                        Text(mameType.capitalized)
+                            .font(.system(size: 9))
+                            .foregroundColor(AppColors.textMuted(colorScheme))
                     }
                 }
-                .padding(.horizontal, 8)
-                .padding(.bottom, 6)
-                .frame(maxWidth: .infinity, alignment: .leading)
             }
             .padding(.horizontal, 8)
-            .padding(.top, 8)
-            .padding(.bottom, 8)
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: isSingleBoxTypeView ? .top : .center)
-            .background(
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(cardBackground)
-            )
-            .overlay(alignment: .center) {
-                if isLaunching {
-                    ProgressView()
-                        .scaleEffect(0.8)
-                        .tint(brandAccent)
-                }
+            .padding(.bottom, 6)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            
+            if isSingleBoxTypeView {
+                Spacer(minLength: 0)
+            } else {
+                Spacer()
             }
-            .overlay(alignment: .center) {
-                if holoSettings.showPlayButton, effectsActive, !isLaunching {
-                    GlassOrbPlayButton(
-                        content: { holoArtworkView(allowBump: false) },
-                        accent: brandAccent,
-                        action: { onDoubleClick?() },
-                        diameter: playButtonDiameter,
-                        externalPointer: CGSize(
-                            width: (normalizedMouseX - 0.5) * 2,
-                            height: (normalizedMouseY - 0.5) * 2
-                        ),
-                        artworkFrame: artworkFrameInCard,
-                        coordinateSpaceName: "holoCard",
-                        tiltRotationX: tiltRotationX,
-                        tiltRotationY: tiltRotationY,
-                        tiltPerspective: tiltPerspective
-                    )
-                    .transition(.opacity)
-                    .accessibilityLabel(Text("Launch " + rom.displayName))
-                }
-            }
-            .shadow(
-                color: isLaunching
-                    ? brandAccent.opacity(0.4)
-                    : isSelected
-                    ? brandAccent.opacity(0.30)
-                    : effectsActive
-                    ? brandAccent.opacity(0.28)
-                    : Color.black.opacity(0.14),
-                radius: isLaunching ? 14 : isSelected ? 9 : isHovered ? 12 : 7,
-                y: isLaunching ? 0 : isHovered ? 6 : 3
-            )
         }
+        .padding(.horizontal, 8)
+        .padding(.top, 8)
+        .padding(.bottom, 8)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: isSingleBoxTypeView ? .top : .center)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(cardBackground)
+        )
+        .overlay(alignment: .center) {
+            if isLaunching {
+                ProgressView()
+                    .scaleEffect(0.8)
+                    .tint(brandAccent)
+            }
+        }
+        .overlay(alignment: .center) {
+            if holoSettings.showPlayButton, effectsActive, !isLaunching {
+                GlassOrbPlayButton(
+                    content: { holoArtworkView(allowBump: false) },
+                    accent: brandAccent,
+                    action: { onDoubleClick?() },
+                    diameter: playButtonDiameter,
+                    externalPointer: CGSize(
+                        width: (normalizedMouseX - 0.5) * 2,
+                        height: (normalizedMouseY - 0.5) * 2
+                    ),
+                    artworkFrame: artworkFrameInCard,
+                    coordinateSpaceName: "holoCard",
+                    tiltRotationX: tiltRotationX,
+                    tiltRotationY: tiltRotationY,
+                    tiltPerspective: tiltPerspective
+                )
+                .transition(.opacity)
+                .accessibilityLabel(Text("Launch " + rom.displayName))
+            }
+        }
+        .shadow(
+            color: isLaunching
+                ? brandAccent.opacity(0.4)
+                : isSelected
+                ? brandAccent.opacity(0.30)
+                : effectsActive
+                ? brandAccent.opacity(0.28)
+                : Color.black.opacity(0.14),
+            radius: isLaunching ? 14 : isSelected ? 9 : isHovered ? 12 : 7,
+            y: isLaunching ? 0 : isHovered ? 6 : 3
+        )
     }
     
     private var cardBackground: Color {
