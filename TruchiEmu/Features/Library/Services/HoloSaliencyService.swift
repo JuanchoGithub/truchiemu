@@ -173,7 +173,19 @@ final class HoloSaliencyService: @unchecked Sendable, ObservableObject {
             // 4b. Decompose. Bounded to a few concurrent Vision runs by the
             //     limiter so a page of cards can't pin the machine; a system
             //     switch cancels the waiters/batch via `cancelAll()`.
-            guard let cgImage = image.cgImage(forProposedRect: nil, context: nil, hints: nil) else {
+            // Downscale to 512px max for Vision — masks are just alpha shapes
+            // scaled to fit at render time, so low-res masks work fine.
+            let maxVisionDim: CGFloat = 512
+            let scale = min(1.0, maxVisionDim / max(image.size.width, image.size.height))
+            let visionSize = CGSize(
+                width: image.size.width * scale,
+                height: image.size.height * scale
+            )
+            let visionImage = NSImage(size: visionSize, flipped: false) { rect in
+                image.draw(in: rect)
+                return true
+            }
+            guard let cgImage = visionImage.cgImage(forProposedRect: nil, context: nil, hints: nil) else {
                 return nil
             }
             guard await Self.decomposeLimiter.wait() else {
