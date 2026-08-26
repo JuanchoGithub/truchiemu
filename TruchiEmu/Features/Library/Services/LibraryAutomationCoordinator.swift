@@ -477,7 +477,9 @@ final class LibraryAutomationCoordinator: ObservableObject {
                 !$0.isHidden && $0.hasBoxArt
             }
 
-            if !holoTargets.isEmpty && AppSettings.getBool("auto_generate_holo_masks", defaultValue: false) {
+            let shouldGenerateHoloMasks = AppSettings.getBool("auto_generate_holo_masks", defaultValue: false)
+
+            if !holoTargets.isEmpty && shouldGenerateHoloMasks {
                 let holoStart = Date()
                 await MainActor.run {
                     self.isActive = true
