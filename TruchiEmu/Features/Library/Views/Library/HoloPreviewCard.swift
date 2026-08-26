@@ -97,7 +97,7 @@ struct HoloPreviewCard: View {
             }
         }
         .task(id: romID) {
-            if let m = await HoloSaliencyService.shared.holoMasks(romID: romID, image: image) {
+            if let m = await HoloSaliencyService.shared.holoMasks(romID: romID, image: image, maxVisionDim: 640) {
                 await MainActor.run { masks = m }
             }
         }

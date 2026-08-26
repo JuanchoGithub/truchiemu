@@ -132,7 +132,7 @@ final class HoloSaliencyService: @unchecked Sendable, ObservableObject {
     /// SwiftUI .task that owns the card view) is cancelled — important when
     /// the user switches systems mid-decompose, so 50 in-flight decomposes
     /// don't keep the OS pinned.
-    func holoMasks(romID: String, image: NSImage) async -> HoloMaskSet? {
+    func holoMasks(romID: String, image: NSImage, maxVisionDim: CGFloat = 256) async -> HoloMaskSet? {
         // 1. In-memory cache hit — instantly return.
         if let cached = cachedMasksSync(for: romID) { return cached }
 
@@ -173,9 +173,10 @@ final class HoloSaliencyService: @unchecked Sendable, ObservableObject {
             // 4b. Decompose. Bounded to a few concurrent Vision runs by the
             //     limiter so a page of cards can't pin the machine; a system
             //     switch cancels the waiters/batch via `cancelAll()`.
-            // Downscale to 256px max for Vision — masks are just alpha shapes
-            // scaled to fit at render time, so low-res masks work fine.
-            let maxVisionDim: CGFloat = 256
+            // Downscale to `maxVisionDim` max for Vision — masks are just alpha
+            // shapes scaled to fit at render time, so low-res masks work fine.
+            // Callers that show a large/static preview (e.g. the wizard holo
+            // preview) pass a higher value to keep more of the source detail.
             let origW = image.size.width
             let origH = image.size.height
             let scale = min(1.0, maxVisionDim / max(origW, origH))

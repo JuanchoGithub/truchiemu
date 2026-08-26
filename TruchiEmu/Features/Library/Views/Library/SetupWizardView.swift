@@ -382,11 +382,11 @@ Image(systemName: "trash")
     private func boxArtSample(for region: EmulatorLanguage) -> NSImage? {
         let name: String
         switch region {
-        case .northAmerica, .world: name = "super_mario_64_usa"
-        case .japan: name = "super_mario_64_japan"
-        case .europe: name = "super_mario_64_europe"
-        case .brazil: name = "super_mario_64_europe"
-        case .spain: name = "super_mario_64_europe"
+        case .northAmerica, .world: name = "zelda_oot_usa"
+        case .japan: name = "zelda_oot_japan"
+        case .europe: name = "zelda_oot_europe"
+        case .brazil: name = "zelda_oot_europe"
+        case .spain: name = "zelda_oot_europe"
         }
         guard let url = Bundle.main.url(forResource: name, withExtension: "png") else {
             return nil
@@ -472,7 +472,7 @@ extension SetupWizardView {
                         ?? boxArtSample(for: .northAmerica) {
                         HoloPreviewCard(
                             image: previewImage,
-                            romID: "wizard_holo_\(wizard.selectedRegion.rawValue)"
+                            romID: "wizard_holo_zelda_\(wizard.selectedRegion.rawValue)"
                         )
                         .frame(width: 200, height: 280)
                         .cornerRadius(8)
