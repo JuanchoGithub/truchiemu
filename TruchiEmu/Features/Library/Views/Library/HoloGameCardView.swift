@@ -53,18 +53,20 @@ struct HoloGameCardView: View {
     // faster than the foil so the spotlight tracks the cursor crisply.
     @State private var glareIntensity: Double = 0
     @Environment(\.colorScheme) private var colorScheme
-    @ObservedObject private var prefs = SystemPreferences.shared
+@ObservedObject private var prefs = SystemPreferences.shared
     @ObservedObject private var dragState = GameDragState.shared
     @ObservedObject private var boxArtService = BoxArtService.shared
     @ObservedObject private var holoSettings = HoloSettingsStore.shared
     @EnvironmentObject private var library: ROMLibrary
     @EnvironmentObject private var categoryManager: CategoryManager
     @ObservedObject private var scrollState = LibraryScrollState.shared
-    @ObservedObject private var holoSaliency = HoloSaliencyService.shared
-@State private var lastDecomposedROMID: UUID?
+    @State private var lastDecomposedROMID: UUID?
     // Trigger for lazy holo mask decomposition — only runs when user actually
     // hovers the card (effectsActive becomes true), not on card appearance.
     @State private var holoMaskTrigger: Bool = false
+    // Local generation state — avoids observing global HoloSaliencyService
+    // which would cause all cards to re-render when ANY card generates masks.
+    @State private var isGeneratingMasks: Bool = false
     
     // Inside-the-card mouse position from `.onContinuousHover`. Drives the
     // small 3D tilt and the cursor spotlight. Only valid while the cursor
@@ -466,6 +468,11 @@ struct HoloGameCardView: View {
                     try? await Task.sleep(nanoseconds: 150_000_000)
                 }
                 if Task.isCancelled { return }
+                // Mark local generation state for progress indicator (avoids
+                // observing global HoloSaliencyService which causes all cards
+                // to re-render when any card generates masks).
+                await MainActor.run { isGeneratingMasks = true }
+                defer { Task { @MainActor in isGeneratingMasks = false } }
                 // Fast path: if the saliency service already has the masks in
                 // memory for this romID, take them immediately and skip the
                 // whole async pipeline. Avoids touching the actor at all when
@@ -631,7 +638,7 @@ struct HoloGameCardView: View {
                     }
                 )
                 .overlay(alignment: .center) {
-                    if holoSaliency.generatingROMIDs.contains(rom.id.uuidString) {
+                    if isGeneratingMasks {
                         ProgressView()
                             .controlSize(.regular)
                             .tint(brandAccent)
