@@ -1788,6 +1788,8 @@
   "wizard.feature.streamingDesc": "ゲームプレイを Twitch、YouTube、またはカスタム RTMP 宛先にライブ配信。",
   "wizard.feature.cheats": "チート",
   "wizard.feature.cheatsDesc": "ゲームのチートコードをダウンロード。プレイ中に個別に有効または無効にします。",
+  "wizard.feature.bezels": "ベゼル",
+  "wizard.feature.bezelsDesc": "ゲーム画面を囲む装飾フレームで、本物のテレビやアーケード筐体のような外観になります。",
   "wizard.feature.launchbox": "LaunchBox メタデータ",
   "wizard.feature.launchboxDesc": "ゲームの説明、開発元情報、発売元、ジャンル、レーティングを自動取得。",
   "wizard.feature.timeMachine": "Time Machine",

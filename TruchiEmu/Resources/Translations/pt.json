@@ -1790,6 +1790,8 @@
   "wizard.feature.streamingDesc": "Transmita o jogo ao vivo para Twitch, YouTube ou um destino RTMP personalizado.",
   "wizard.feature.cheats": "Truques",
   "wizard.feature.cheatsDesc": "Baixe códigos de truques para os jogos. Ative ou desative individualmente enquanto joga.",
+  "wizard.feature.bezels": "Bezels",
+  "wizard.feature.bezelsDesc": "Molduras decorativas que cercam a tela do jogo, dando a aparência de uma televisão ou arcade real.",
   "wizard.feature.launchbox": "Metadados LaunchBox",
   "wizard.feature.launchboxDesc": "Obtenha automaticamente descrições, desenvolvedor, distribuidor, gêneros e classificações.",
   "wizard.feature.timeMachine": "Máquina do Tempo",

@@ -130,7 +130,6 @@ Button(loc.localized("wizard.skip")) {
         library.hasCompletedOnboarding = true
         AppSettings.setBool("has_completed_onboarding", value: true)
 
-        AppSettings.set("display_default_shader_preset", value: wizard.selectedShaderPresetID)
         SystemPreferences.shared.systemLanguage = wizard.selectedRegion
 
         // Persist theme (only if different from current — no restart here, user is prompted at Settings if they want one)
@@ -413,7 +412,7 @@ Image(systemName: "trash")
     }
 }
 
-// MARK: - Step 2: Look & Feel (Theme + Bezels + Shaders)
+// MARK: - Step 2: Look & Feel (Theme + Holo Masks)
 
 extension SetupWizardView {
     private var stepLookAndFeel: some View {
@@ -432,48 +431,6 @@ extension SetupWizardView {
                         HStack(spacing: 8) {
                             ForEach(AccentColorTheme.allCases, id: \.self) { theme in
                                 themeButton(theme)
-                            }
-                        }
-                    }
-                }
-                .padding(.leading, 4)
-            }
-
-            Divider()
-
-            // Bezels
-            VStack(alignment: .leading, spacing: 12) {
-                Label(loc.localized("bezel.title"), systemImage: "rectangle.on.rectangle")
-                    .font(.headline)
-
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("wizard.bezelsDescription")
-                        .foregroundColor(AppColors.textSecondary(colorScheme))
-                        .font(.callout)
-
-                    Toggle(loc.localized("wizard.downloadBezelsToggle"), isOn: $wizard.downloadBezels)
-                        .toggleStyle(.switch)
-                        .tint(AppColors.brandAccentSecondary)
-                }
-                .padding(.leading, 4)
-            }
-
-            Divider()
-
-            // Shaders
-            VStack(alignment: .leading, spacing: 12) {
-                Label(loc.localized("wizard.defaultShader"), systemImage: "tv")
-                    .font(.headline)
-
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("wizard.shaderDescription")
-                        .foregroundColor(AppColors.textSecondary(colorScheme))
-                        .font(.callout)
-
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 8) {
-                            ForEach(ShaderPreset.allPresets, id: \.id) { preset in
-                                shaderPill(preset: preset)
                             }
                         }
                     }
@@ -509,6 +466,18 @@ extension SetupWizardView {
                     .padding(10)
                     .background(AppColors.cardBackgroundSubtle(colorScheme))
                     .cornerRadius(8)
+
+                    // Live preview using the box art for the user's chosen region.
+                    if let previewImage = boxArtSample(for: wizard.selectedRegion)
+                        ?? boxArtSample(for: .northAmerica) {
+                        HoloPreviewCard(
+                            image: previewImage,
+                            romID: "wizard_holo_\(wizard.selectedRegion.rawValue)"
+                        )
+                        .frame(width: 200, height: 280)
+                        .cornerRadius(8)
+                        .shadow(color: Color.black.opacity(0.2), radius: 6, y: 3)
+                    }
                 }
                 .padding(.leading, 4)
             }
@@ -543,34 +512,6 @@ extension SetupWizardView {
         .buttonStyle(.plain)
     }
 
-    private func shaderPill(preset: ShaderPreset) -> some View {
-        let isSelected = wizard.selectedShaderPresetID == preset.id
-        return Button {
-            wizard.selectedShaderPresetID = preset.id
-        } label: {
-            Label(preset.name, systemImage: shaderIcon(for: preset.shaderType))
-                .padding(.horizontal, 12)
-                .padding(.vertical, 6)
-                .background(isSelected ? AppColors.brandAccent.opacity(0.15) : AppColors.cardBackgroundSubtle(colorScheme))
-                .cornerRadius(8)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 8)
-                        .stroke(isSelected ? AppColors.brandAccent : Color.clear, lineWidth: 1)
-                )
-                .foregroundColor(isSelected ? AppColors.brandAccent : .primary)
-        }
-        .buttonStyle(.plain)
-    }
-
-    private func shaderIcon(for type: ShaderType) -> String {
-        switch type {
-        case .crt: return "tv"
-        case .lcd: return "iphone"
-        case .smoothing: return "sparkles"
-        case .composite: return "waveform.path"
-        case .custom: return "wrench"
-        }
-    }
 }
 
 // MARK: - Step 3: Feature Catalog (checklist of optional features)
@@ -624,6 +565,27 @@ extension SetupWizardView {
                         }
                         .toggleStyle(.switch)
                         .tint(AppColors.brandAccentSecondary)
+                        Spacer()
+                    }
+                    .padding(.leading, 8)
+                }
+
+                Divider()
+
+                featureRow(
+                    icon: "rectangle.on.rectangle",
+                    title: loc.localized("wizard.feature.bezels"),
+                    description: loc.localized("wizard.feature.bezelsDesc"),
+                    isOn: $wizard.downloadBezels
+                )
+
+                if wizard.downloadBezels {
+                    HStack(spacing: 12) {
+                        Image(systemName: "arrow.down.circle")
+                            .frame(width: 24)
+                            .foregroundColor(AppColors.textSecondary(colorScheme))
+                        Text(loc.localized("wizard.downloadBezelsToggle"))
+                            .font(.caption)
                         Spacer()
                     }
                     .padding(.leading, 8)

@@ -75,7 +75,6 @@ final class SetupWizardState: ObservableObject {
     @Published var currentStep: WizardStep = .getStarted
     @Published var libraryFolders: [URL] = []
     @Published var downloadBezels: Bool = false
-    @Published var selectedShaderPresetID: String = ""
     @Published var generateHoloMasks: Bool = false
     @Published var selectedRegion: EmulatorLanguage = .northAmerica
     @Published var selectedTheme: AccentColorTheme = .megaMan {
@@ -176,10 +175,6 @@ final class SetupWizardState: ObservableObject {
         if let lang = EmulatorLanguage(rawValue: langRaw) {
             selectedRegion = lang
         }
-        if let shader = AppSettings.getString("display_default_shader_preset"), !shader.isEmpty {
-            selectedShaderPresetID = shader
-        }
-        
         // Bezels download state — assume already downloaded if any bezel storage is set up
         let bezelSetupDone = AppSettings.getBool("BezelInitialSetupComplete", defaultValue: false)
         downloadBezels = bezelSetupDone ? false : false  // default to off; user can re-check

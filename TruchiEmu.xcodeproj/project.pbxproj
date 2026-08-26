@@ -474,6 +474,7 @@
 		5CCA8A76C394B27D842BC125 /* input_systemLabels_wonderswan.json in Resources */ = {isa = PBXBuildFile; fileRef = 83F1EFBDD0AE4C0DBA2E5821 /* input_systemLabels_wonderswan.json */; };
 		5D4A0EE8D24A2A693A5EE662 /* Nintendo - Game Boy.dat in Resources */ = {isa = PBXBuildFile; fileRef = 074916D3C0FF2424FCF1538D /* Nintendo - Game Boy.dat */; };
 		5D81D37905BC64A04BF3C375 /* X1.png in Resources */ = {isa = PBXBuildFile; fileRef = 1DCE75DA4DD552F3028186F8 /* X1.png */; };
+		5D9003D6126A6EC6F86E0985 /* HoloPreviewCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18E3B2C2AAEBE710CD150599 /* HoloPreviewCard.swift */; };
 		5DA8EFD4B3320A3CE91D1009 /* input_coreLabels_snes9x_2002.json in Resources */ = {isa = PBXBuildFile; fileRef = 6175B877BC872BA3246D8388 /* input_coreLabels_snes9x_2002.json */; };
 		5DC85C85056E986328B9BC36 /* GenreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34377D9B77D3186AEB2B669A /* GenreManager.swift */; };
 		5E214FFE9AF0A387BCEE4609 /* TVModeEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6134273171A1D67C5727EC2A /* TVModeEntry.swift */; };
@@ -1462,6 +1463,7 @@
 		1890BB84189BD9447665BA03 /* BoxArtDownloadSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoxArtDownloadSheet.swift; sourceTree = "<group>"; };
 		18973687527A0FA4A857468A /* input_coreLabels_bsnes_balanced.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_bsnes_balanced.json; sourceTree = "<group>"; };
 		1898126C5EF4999C1CE14CC2 /* input_coreLabels_snes9x_2005_plus.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_snes9x_2005_plus.json; sourceTree = "<group>"; };
+		18E3B2C2AAEBE710CD150599 /* HoloPreviewCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HoloPreviewCard.swift; sourceTree = "<group>"; };
 		18FB8DBEC0B88BDDE5768B78 /* mupen64plus_next_libretro_default.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = mupen64plus_next_libretro_default.json; sourceTree = "<group>"; };
 		193ACA41987FBBE48BD98028 /* AnalogMouseSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalogMouseSettingsView.swift; sourceTree = "<group>"; };
 		19BE5184F223C9FB5AAB7A18 /* DINOTHAWR.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = DINOTHAWR.png; sourceTree = "<group>"; };
@@ -3693,6 +3695,7 @@
 				1E1F8977ED21416EA5C44A5C /* HoloCardLayers.swift */,
 				421CBFE4EB42D273FCE87B34 /* HoloGameCardView.swift */,
 				4D3B5D16F868D592F38DD258 /* HoloGridCollectionView.swift */,
+				18E3B2C2AAEBE710CD150599 /* HoloPreviewCard.swift */,
 				E2040211263BC01B0D3C0F77 /* HoloVariantRenderer.swift */,
 				48CD6D977DCA38ED6A7DC895 /* HoloVariants.swift */,
 				3BF537C6CBE2A78FC9F6A945 /* HoloWebCardView.swift */,
@@ -6127,6 +6130,7 @@
 				360E85B47542945CD6FE2D16 /* HoloGameCardView.swift in Sources */,
 				45EE5A222618B1A5B72A1EFD /* HoloGridCollectionView.swift in Sources */,
 				09FD8E39FF58D9B6B33EFAE7 /* HoloPatternStore.swift in Sources */,
+				5D9003D6126A6EC6F86E0985 /* HoloPreviewCard.swift in Sources */,
 				F554BFFDE3B73BE6C45D014F /* HoloSaliencyService.swift in Sources */,
 				9931AAD078367371520605C3 /* HoloSettingsView.swift in Sources */,
 				2AB42E1F6D46FB04C3519B83 /* HoloVariantRenderer.swift in Sources */,

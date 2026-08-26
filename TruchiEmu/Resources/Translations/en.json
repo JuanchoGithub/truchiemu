@@ -1791,6 +1791,8 @@
   "wizard.feature.streamingDesc": "Stream gameplay live to Twitch, YouTube, or a custom RTMP destination.",
   "wizard.feature.cheats": "Cheats",
   "wizard.feature.cheatsDesc": "Download cheat codes for games. Enable or disable them individually while playing.",
+  "wizard.feature.bezels": "Bezels",
+  "wizard.feature.bezelsDesc": "Decorative frames that surround the game screen, giving it the look of a real television or arcade cabinet.",
   "wizard.feature.launchbox": "LaunchBox Metadata",
   "wizard.feature.launchboxDesc": "Auto-fetch game descriptions, developer info, publisher, genres, and ratings.",
   "wizard.feature.timeMachine": "Time Machine",
