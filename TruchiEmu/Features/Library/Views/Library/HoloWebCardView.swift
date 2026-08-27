@@ -399,6 +399,13 @@ struct HoloWebCardView: NSViewRepresentable {
             web.alphaValue = 0
             let work = DispatchWorkItem { [weak self, weak web] in
                 guard let web else { return }
+                // Never tear down while the user is mid-scroll — the WebKit
+                // IPC teardown would block the main thread and the buffered
+                // deltas would dump at once. Wait for the scroll to settle.
+                if LibraryScrollState.shared.isScrolling {
+                    self?.scheduleUnmount()
+                    return
+                }
                 web.navigationDelegate = nil
                 web.stopLoading()
                 web.removeFromSuperview()
@@ -411,6 +418,24 @@ struct HoloWebCardView: NSViewRepresentable {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.35, execute: work)
         }
 
+        /// Final destruction (deinit). Entirely async: WKWebView's
+        /// removeFromSuperview + stopLoading both talk to the WebContent
+        /// process over XPC and can stall the main thread mid-scroll.
+        private static func destroyWhenIdle(_ web: WKWebView, tempDir: URL) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                if LibraryScrollState.shared.isScrolling {
+                    destroyWhenIdle(web, tempDir: tempDir)
+                    return
+                }
+                web.navigationDelegate = nil
+                web.stopLoading()
+                web.removeFromSuperview()
+                DispatchQueue.global(qos: .utility).async {
+                    try? FileManager.default.removeItem(at: tempDir)
+                }
+            }
+        }
+
         /// Immediate teardown for final destruction only (deinit / dismantle).
         func unmountWebViewNow() {
             unmountWork?.cancel()
@@ -418,16 +443,8 @@ struct HoloWebCardView: NSViewRepresentable {
             guard let web = webView else { return }
             webView = nil
             loaded = false
-            web.navigationDelegate = nil
             web.alphaValue = 0
-            web.removeFromSuperview()
-            let dir = baseDir
-            // The WebKit XPC teardown itself runs off the calling frame so the
-            // main thread never blocks on it mid-scroll.
-            DispatchQueue.main.async {
-                web.stopLoading()
-                try? FileManager.default.removeItem(at: dir)
-            }
+            Self.destroyWhenIdle(web, tempDir: baseDir)
         }
 
         deinit {
