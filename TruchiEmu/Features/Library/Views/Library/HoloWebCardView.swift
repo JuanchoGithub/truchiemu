@@ -64,11 +64,16 @@ struct HoloWebCardView: NSViewRepresentable {
     func updateNSView(_ nsView: NSView, context: Context) {
         guard let container = context.coordinator.container else { return }
         
-        // Mount/unmount WebView based on isActive
-        if isActive && context.coordinator.webView == nil {
-            context.coordinator.mountWebView()
-        } else if !isActive && context.coordinator.webView != nil {
-            context.coordinator.unmountWebView()
+        // Mount/unmount WebView based on isActive. Unmount is DEBOUNCED
+        // (scheduleUnmount) so a scroll starting mid-hover never blocks the
+        // main thread on WebKit teardown — that freeze is what buffered the
+        // trackpad deltas and caused the "extreme bounce" on unfreeze.
+        if isActive {
+            if context.coordinator.webView == nil {
+                context.coordinator.mountWebView()
+            }
+        } else if context.coordinator.webView != nil {
+            context.coordinator.scheduleUnmount()
             return
         }
         
@@ -353,9 +358,26 @@ struct HoloWebCardView: NSViewRepresentable {
             }
         }
 
+        // All holo webviews share ONE process pool → one WebContent process
+        // total, instead of one per webview (~100+ MB each).
+        private static let sharedProcessPool = WKProcessPool()
+
+        /// Cancelled when the card is re-hovered before the debounce fires,
+        /// so rapid hover-on/off during scroll never tears the webview down.
+        private var unmountWork: DispatchWorkItem?
+
         func mountWebView() {
-            guard webView == nil, let container else { return }
+            // Fast path: a pending unmount means the webview is still alive —
+            // just cancel the teardown and un-hide. No reload needed.
+            if let web = webView {
+                unmountWork?.cancel()
+                unmountWork = nil
+                web.alphaValue = 1
+                return
+            }
+            guard let container else { return }
             let config = WKWebViewConfiguration()
+            config.processPool = Self.sharedProcessPool
             let web = WKWebView(frame: container.bounds, configuration: config)
             web.navigationDelegate = self
             web.setValue(false, forKey: "drawsBackground")
@@ -366,18 +388,50 @@ struct HoloWebCardView: NSViewRepresentable {
             self.webView = web
         }
 
-        func unmountWebView() {
-            webView?.navigationDelegate = nil
-            webView?.stopLoading()
-            webView?.loadHTMLString("", baseURL: nil)
-            webView?.removeFromSuperview()
+        /// Hides the webview instantly but defers the expensive WebKit
+        /// teardown (stopLoading + WebContent XPC shutdown) by a debounce
+        /// period. Synchronous teardown here freezes the main thread ~1s mid
+        /// scroll-gesture, and the buffered scroll deltas then apply at once
+        /// (the "extreme bounce" symptom).
+        func scheduleUnmount() {
+            guard let web = webView else { return }
+            unmountWork?.cancel()
+            web.alphaValue = 0
+            let work = DispatchWorkItem { [weak self, weak web] in
+                guard let web else { return }
+                web.navigationDelegate = nil
+                web.stopLoading()
+                web.removeFromSuperview()
+                if let self {
+                    self.webView = nil
+                    self.loaded = false
+                }
+            }
+            unmountWork = work
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.35, execute: work)
+        }
+
+        /// Immediate teardown for final destruction only (deinit / dismantle).
+        func unmountWebViewNow() {
+            unmountWork?.cancel()
+            unmountWork = nil
+            guard let web = webView else { return }
             webView = nil
             loaded = false
+            web.navigationDelegate = nil
+            web.alphaValue = 0
+            web.removeFromSuperview()
+            let dir = baseDir
+            // The WebKit XPC teardown itself runs off the calling frame so the
+            // main thread never blocks on it mid-scroll.
+            DispatchQueue.main.async {
+                web.stopLoading()
+                try? FileManager.default.removeItem(at: dir)
+            }
         }
 
         deinit {
-            unmountWebView()
-            try? FileManager.default.removeItem(at: baseDir)
+            unmountWebViewNow()
         }
 
         func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {

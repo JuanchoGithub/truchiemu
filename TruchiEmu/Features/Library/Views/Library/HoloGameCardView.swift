@@ -10,13 +10,23 @@ fileprivate extension View {
     @ViewBuilder
     func holoHoverWhenNotScrolling(
         active: Bool,
+        isScrolling: Bool,
         onHover: @escaping (Bool) -> Void,
         onContinuous: @escaping (HoverPhase) -> Void
     ) -> some View {
         if active {
             self
-                .onHover(perform: onHover)
-                .onContinuousHover(perform: onContinuous)
+                .onHover { hovering in
+                    // Defense-in-depth: even if the modifier is attached, ignore
+                    // hover events while scrolling so rapid card crossings don't
+                    // flood the main thread with state updates.
+                    guard !isScrolling else { return }
+                    onHover(hovering)
+                }
+                .onContinuousHover { phase in
+                    guard !isScrolling else { return }
+                    onContinuous(phase)
+                }
         } else {
             self
         }
@@ -333,6 +343,7 @@ struct HoloGameCardView: View {
             // either; the cursor drives the tilt AND the glare spotlight.
             .holoHoverWhenNotScrolling(
                 active: !scrollState.isScrolling,
+                isScrolling: scrollState.isScrolling,
                 onHover: { hovering in
                     isHovered = hovering
                     if !hovering { mousePosition = nil }
