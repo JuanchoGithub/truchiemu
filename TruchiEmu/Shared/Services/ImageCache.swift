@@ -164,6 +164,37 @@ actor ImageCache {
         return origImg
     }
 
+    /// Synchronous fast path for recycled cells, used to pre-paint boxart on
+    /// scroll without flickering the placeholder. Unlike `thumbnailSync`, this
+    /// NEVER decodes the original boxart on the main thread — it only consults
+    /// the in-memory NSCache and the cheap, pre-generated `te_thumbs` JPEG
+    /// (sub-millisecond when page-cached by the prefetcher). The expensive
+    /// full-original decode path that `thumbnailSync` falls back to blocks the
+    /// main thread for cold cells and made holo-grid scrolling extremely laggy,
+    /// so it is intentionally omitted here. Cells whose thumb is genuinely not
+    /// yet generated fall back to nil and are filled by the async `.task`.
+    nonisolated func thumbnailCachedOrPregen(for url: URL, preferredSize: BoxArtThumbnailSize) -> NSImage? {
+        let sizeKey = "thumb:\(preferredSize.rawValue):\(url.path)" as NSString
+        if let cached = thumbnailCache.object(forKey: sizeKey) {
+            return cached
+        }
+        for size in BoxArtThumbnailSize.allCases where size != preferredSize {
+            let altKey = "thumb:\(size.rawValue):\(url.path)" as NSString
+            if let cached = thumbnailCache.object(forKey: altKey) {
+                return cached
+            }
+        }
+        let thumbURL = BoxArtThumbnailService.thumbnailURL(for: url, size: preferredSize)
+        if FileManager.default.fileExists(atPath: thumbURL.path),
+           let source = CGImageSourceCreateWithURL(thumbURL as CFURL, nil),
+           let cgImage = CGImageSourceCreateImageAtIndex(source, 0, [kCGImageSourceShouldCacheImmediately: true] as CFDictionary) {
+            let img = NSImage(cgImage: cgImage, size: .zero)
+            thumbnailCache.setObject(img, forKey: sizeKey, cost: cost(of: img))
+            return img
+        }
+        return nil
+    }
+
     func removeThumbnail(for url: URL) {
         let key = thumbKey(url)
         thumbnailCache.removeObject(forKey: key as NSString)

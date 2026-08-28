@@ -110,15 +110,17 @@ struct HoloGameCardView: View {
         self.contextMenu = contextMenu
         self.selectedIDsProvider = selectedIDsProvider
         
-        // Don't pre-populate the thumbnail synchronously here. On a system
-        // switch the visible cards' `init` runs 50+ times in one MainActor
-        // pass; each `thumbnailSync` does a sync NSCache lookup and, on a
-        // cold cache (e.g. first visit to a new system), a sync
-        // `CGImageSourceCreateImageAtIndex` decode. That stacks up to seconds
-        // of MainActor blocking and the new roms never get a chance to
-        // render. The `.task` below fills `image` from the async path,
-        // which is actor-serialized (fast) and never blocks the main thread.
-        _image = State(initialValue: nil)
+        // Pre-populate the thumbnail synchronously in init from the in-memory
+        // cache / pre-generated `te_thumbs` (no main-thread original decode) so
+        // recycled cells paint immediately instead of flickering the grey
+        // placeholder while the async `.task` catches up. This is what fixed the
+        // grey-on-scroll in `GameCardView`; using the decode-free fast path here
+        // avoids the scrolling lag that `thumbnailSync`'s full decode caused.
+        let preferredSize = BoxArtThumbnailSize.forGridZoom(zoomLevel)
+        let initialImage: NSImage? = rom.hasBoxArt
+            ? ImageCache.shared.thumbnailCachedOrPregen(for: rom.boxArtLocalPath, preferredSize: preferredSize)
+            : nil
+        _image = State(initialValue: initialImage)
     }
     
     private var zoomBucket: BoxArtThumbnailSize {
