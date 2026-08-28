@@ -156,8 +156,7 @@ final class HoloGridCollectionViewCoordinator: NSObject {
     fileprivate var previousZoomLevel: Double = 0.5
     fileprivate var previousBoxArtVersion: UUID = UUID()
     fileprivate var previousSelection: Set<UUID> = []
-    fileprivate var scrollResetTimer: Timer?
-    var scrollMonitor: Any?
+    fileprivate     var scrollResetTimer: Timer?
     // Observes the scroll-view bounds changing for ALL scroll sources
     // (scrollbar drag, keyboard, programmatic, trackpad/wheel). The
     // scrollWheel monitor alone misses non-wheel scrolls, which left
@@ -510,23 +509,11 @@ struct HoloGridCollectionViewRepresentable: NSViewRepresentable {
         
         let scrollView = makeHoloCollectionScrollView(coordinator: c)
         c.reloadData()
-        
-        // Track scrolling so holo cards can suppress their effects mid-scroll
-        // (they only engage once the scroll settles). Mirrors the scroll-wheel
-        // monitor used by `LibraryGridView`.
-        c.scrollMonitor = NSEvent.addLocalMonitorForEvents(matching: [.scrollWheel]) { event in
-            c.markScrolling()
-            return event
-        }
-        
+
         return scrollView
     }
     
     static func dismantleNSView(_ nsView: NSScrollView, coordinator: HoloGridCollectionViewCoordinator) {
-        if let monitor = coordinator.scrollMonitor {
-            NSEvent.removeMonitor(monitor)
-            coordinator.scrollMonitor = nil
-        }
         if let observer = coordinator.boundsObserver {
             NotificationCenter.default.removeObserver(observer)
             coordinator.boundsObserver = nil

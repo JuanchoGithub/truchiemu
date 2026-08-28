@@ -335,45 +335,18 @@ struct HoloGameCardView: View {
     }
 
     // Minimal stand-in used while the grid is scrolling. Building the full
-    // `HoloGameCardView` tree (gestures, geometry readers, tilt, tasks, holo
-    // layers) for every cell that scrolls into view saturates the main thread
-    // and freezes the whole window (sidebar included). During scroll only the
-    // box art + title are needed, so we render just that. `isScrolling` is set
-    // by the grid's scroll detection, so this engages for any scroll source.
+    // `HoloGameCardView` tree (gestures, tilt, holo tasks, frame tracker) for
+    // every cell that scrolls into view saturates the main thread. During
+    // scroll only the static box art + title are needed. We reuse the SAME
+    // `holoArtworkView` the full card renders (its foil/glare/tilt are gated
+    // on `effectsActive`, which is false while scrolling) so the artwork fills
+    // the exact same region — there is no size jump when this swaps in/out.
     private var lightweightScrollCard: some View {
-        VStack(spacing: 0) {
-            GeometryReader { geo in
-                let size = Self.fittedBoxartSize(image: image, w: geo.size.width, h: geo.size.height)
-                BoxArtBaseView(
-                    image: image,
-                    normalizedMouseX: 0.5,
-                    normalizedMouseY: 0.5,
-                    isPressed: false,
-                    w: size.width,
-                    h: size.height,
-                    tiltEnabled: false
-                )
-                .frame(width: size.width, height: size.height)
-                .clipShape(RoundedRectangle(cornerRadius: 8))
-            }
-            .frame(maxWidth: .infinity)
-            .aspectRatio(effectiveFrameAspectRatio, contentMode: .fit)
-
-            Text(rom.displayName)
-                .font(.system(size: titleFontSize, weight: .semibold, design: .rounded))
-                .lineLimit(2)
-                .multilineTextAlignment(.center)
-                .foregroundColor(AppColors.textPrimary(colorScheme))
-                .frame(maxWidth: .infinity, alignment: .center)
-                .padding(.horizontal, 4)
-
-            Spacer()
-        }
-        .shadow(color: Color.black.opacity(0.14), radius: 7, y: 3)
+        cardContent(lightweight: true)
     }
 
     private var fullCard: some View {
-        cardContent
+        cardContent(lightweight: false)
             .coordinateSpace(name: "holoCard")
             // Hover + pointer tracking attached BEFORE the scale transform
             // below. If tracked inside the transformed subtree, the scale
@@ -575,7 +548,7 @@ struct HoloGameCardView: View {
     }
 
     @ViewBuilder
-    private var cardContent: some View {
+    private func cardContent(lightweight: Bool) -> some View {
         VStack(spacing: 0) {
             ZStack(alignment: .bottomTrailing) {
                 ZStack(alignment: .topTrailing) {
@@ -604,7 +577,7 @@ struct HoloGameCardView: View {
                         .padding(.horizontal, 4)
                         .padding(.top, 4)
                     
-                    if raEnabled && rom.raMatchStatus == "matched" {
+                    if !lightweight, raEnabled && rom.raMatchStatus == "matched" {
                         Image(systemName: "trophy.fill")
                             .font(.system(size: 10, weight: .bold))
                             .foregroundColor(AppColors.textOnAccent(for: brandAccent.opacity(0.85), colorScheme: colorScheme))
@@ -616,7 +589,7 @@ struct HoloGameCardView: View {
                             .transition(.scale.combined(with: .opacity))
                     }
                     
-                    if isMultiSelected {
+                    if !lightweight, isMultiSelected {
                         Image(systemName: "checkmark.circle.fill")
                             .font(.title2)
                             .foregroundColor(brandAccent)
@@ -625,7 +598,7 @@ struct HoloGameCardView: View {
                             .transition(.scale.combined(with: .opacity))
                     }
                     
-                    if isHovered, let menuContent = contextMenu {
+                    if !lightweight, isHovered, let menuContent = contextMenu {
                         ZStack {
                             Circle()
                                 .fill(
@@ -681,7 +654,7 @@ struct HoloGameCardView: View {
                         // every visible cell and pegging the main thread. Skip it
                         // while scrolling; it re-mounts (and re-measures via
                         // `onAppear`) the moment the scroll settles.
-                        if !scrollState.isScrolling {
+                        if !lightweight, !scrollState.isScrolling {
                             GeometryReader { geo in
                                 Color.clear
                                     .onAppear {
