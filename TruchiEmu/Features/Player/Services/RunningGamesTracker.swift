@@ -27,6 +27,9 @@ class RunningGamesTracker: ObservableObject {
 
     func registerRunning(romPath: String, displayName: String) {
         runningGames[romPath] = displayName
+// Game launched — reclaim the pooled holo webview so emulation gets
+         // back the WebContent process's RAM/CPU.
+         // No longer needed after removing web engine.
     }
 
     func unregisterRunning(romPath: String) {

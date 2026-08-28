@@ -74,10 +74,7 @@ struct HoloGameCardView: View {
     // Trigger for lazy holo mask decomposition — only runs when user actually
     // hovers the card (effectsActive becomes true), not on card appearance.
     @State private var holoMaskTrigger: Bool = false
-    // Local generation state — avoids observing global HoloSaliencyService
-    // which would cause all cards to re-render when ANY card generates masks.
-    @State private var isGeneratingMasks: Bool = false
-    
+
     // Inside-the-card mouse position from `.onContinuousHover`. Drives the
     // small 3D tilt and the cursor spotlight. Only valid while the cursor
     // is on the card (SwiftUI fires .onContinuousHover only inside the
@@ -330,6 +327,52 @@ struct HoloGameCardView: View {
     }
 
     var body: some View {
+        if scrollState.isScrolling {
+            lightweightScrollCard
+        } else {
+            fullCard
+        }
+    }
+
+    // Minimal stand-in used while the grid is scrolling. Building the full
+    // `HoloGameCardView` tree (gestures, geometry readers, tilt, tasks, holo
+    // layers) for every cell that scrolls into view saturates the main thread
+    // and freezes the whole window (sidebar included). During scroll only the
+    // box art + title are needed, so we render just that. `isScrolling` is set
+    // by the grid's scroll detection, so this engages for any scroll source.
+    private var lightweightScrollCard: some View {
+        VStack(spacing: 0) {
+            GeometryReader { geo in
+                let size = Self.fittedBoxartSize(image: image, w: geo.size.width, h: geo.size.height)
+                BoxArtBaseView(
+                    image: image,
+                    normalizedMouseX: 0.5,
+                    normalizedMouseY: 0.5,
+                    isPressed: false,
+                    w: size.width,
+                    h: size.height,
+                    tiltEnabled: false
+                )
+                .frame(width: size.width, height: size.height)
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+            }
+            .frame(maxWidth: .infinity)
+            .aspectRatio(effectiveFrameAspectRatio, contentMode: .fit)
+
+            Text(rom.displayName)
+                .font(.system(size: titleFontSize, weight: .semibold, design: .rounded))
+                .lineLimit(2)
+                .multilineTextAlignment(.center)
+                .foregroundColor(AppColors.textPrimary(colorScheme))
+                .frame(maxWidth: .infinity, alignment: .center)
+                .padding(.horizontal, 4)
+
+            Spacer()
+        }
+        .shadow(color: Color.black.opacity(0.14), radius: 7, y: 3)
+    }
+
+    private var fullCard: some View {
         cardContent
             .coordinateSpace(name: "holoCard")
             // Hover + pointer tracking attached BEFORE the scale transform
@@ -479,11 +522,6 @@ struct HoloGameCardView: View {
                     try? await Task.sleep(nanoseconds: 150_000_000)
                 }
                 if Task.isCancelled { return }
-                // Mark local generation state for progress indicator (avoids
-                // observing global HoloSaliencyService which causes all cards
-                // to re-render when any card generates masks).
-                await MainActor.run { isGeneratingMasks = true }
-                defer { Task { @MainActor in isGeneratingMasks = false } }
                 // Fast path: if the saliency service already has the masks in
                 // memory for this romID, take them immediately and skip the
                 // whole async pipeline. Avoids touching the actor at all when
@@ -535,7 +573,7 @@ struct HoloGameCardView: View {
                 isLaunching = false
             }
     }
-    
+
     @ViewBuilder
     private var cardContent: some View {
         VStack(spacing: 0) {
@@ -635,31 +673,27 @@ struct HoloGameCardView: View {
                 .aspectRatio(effectiveFrameAspectRatio, contentMode: .fit)
                 .frame(maxWidth: .infinity)
                 .background(
-                    GeometryReader { geo in
-                        Color.clear
-                            .onAppear {
-                                // Frame of the box art in the card's local
-                                // ("holoCard") coordinate space — decides
-                                // whether the cursor is over the box art.
-                                artworkFrameInCard = geo.frame(in: .named("holoCard"))
+                    Group {
+                        // The frame tracks the card's position so the glare can
+                        // follow the cursor over the box art. It only matters while
+                        // hovered — and its `.onChange` fires every frame as the
+                        // card moves during a scroll, rebuilding the whole card for
+                        // every visible cell and pegging the main thread. Skip it
+                        // while scrolling; it re-mounts (and re-measures via
+                        // `onAppear`) the moment the scroll settles.
+                        if !scrollState.isScrolling {
+                            GeometryReader { geo in
+                                Color.clear
+                                    .onAppear {
+                                        artworkFrameInCard = geo.frame(in: .named("holoCard"))
+                                    }
+                                    .onChange(of: geo.frame(in: .named("holoCard"))) { _, new in
+                                        artworkFrameInCard = new
+                                    }
                             }
-                            .onChange(of: geo.frame(in: .named("holoCard"))) { _, new in
-                                artworkFrameInCard = new
-                            }
+                        }
                     }
                 )
-                .overlay(alignment: .center) {
-                    if isGeneratingMasks {
-                        ProgressView()
-                            .controlSize(.regular)
-                            .tint(brandAccent)
-                            .frame(width: 40, height: 40)
-                            .background(
-                                Circle()
-                                    .fill(Color.black.opacity(0.6))
-                            )
-                    }
-                }
             }
             
             Spacer()
@@ -774,99 +808,25 @@ private func holoArtworkDefault(allowBump: Bool = true) -> some View {
         GeometryReader { geometry in
             let w = geometry.size.width
             let h = geometry.size.height
-            
-            let artShift = min(w, h) * 0.03
-            let artPX = (0.5 - normalizedMouseX) * artShift
-                let artPY = (0.5 - normalizedMouseY) * artShift
-            
-            // Web-rendered holo (simeydotme CSS) replaces the SwiftUI foil
-            // when the card is hovered/active — faithful and far cheaper to
-            // maintain than re-implementing `background-blend-mode` in SwiftUI.
-            let webVariant = HoloSettingsSnapshot(
-                from: holoSettings, romID: rom.id.uuidString
-            ).randomization?.variant ?? .regularHolo
-            // swiftHolo always uses the native SwiftUI/Metal renderer
-            let isSwiftHolo = webVariant == .reverseSwift
-            // For other variants, check the per-variant rendering engine setting
-            let useWebHolo = effectsActive && !isSwiftHolo && (holoSettings.renderingEngine[webVariant] ?? .web) == .web
-            
+
             let scale = isPressed ? 1.08 : (effectsActive ? 1.06 : 1.0)
-            
+
             ZStack {
-                // Box art fills the entire card (base layer for blend modes).
-                // Art parallax: the artwork slides *opposite* the cursor while
-                // the holo foil above tracks it — the source's `--background-x/
-                // y` depth trick. Scale is bumped so the shift never reveals an
-                // empty edge.
-                // Hidden while the web holo is active: the WebView renders the
-                // box art itself (with foil), and leaving this layer on would
-                // show a second, parallax-shifted box art behind it.
-                if !useWebHolo {
-                    if let nsImage = image {
-                        Image(nsImage: nsImage)
-                            .resizable()
-                            .scaledToFill()
-                            .frame(width: w, height: h)
-                            .offset(x: artPX, y: artPY)
-                            .clipped()
-                    } else {
-                        placeholderArt
-                            .offset(x: artPX, y: artPY)
-                    }
-                }
-            
-            // Colored foil — proximity-driven. Barely visible at rest,
-            // ramps to full color as the cursor approaches the card.
-            // Hidden while the web holo is active (it draws the full
-            // card image + foil itself). Only render when effects are active
-            // to avoid expensive holo layer computation during scroll.
-            if effectsActive && !useWebHolo {
-                holoLayers(width: w, height: h, allowBump: allowBump)
-            }
+                // Base box art — always visible, with gentle 3D tilt matching the
+                // holo effect.
+                BoxArtBaseView(image: image, normalizedMouseX: normalizedMouseX, normalizedMouseY: normalizedMouseY, isPressed: isPressed, w: w, h: h, tiltEnabled: !scrollState.isScrolling)
 
-            // Cursor spotlight — hover-binary. Small radial highlight
-            // that tracks the cursor while inside the card, off when
-            // not hovering. Only render when effects are active.
-            if effectsActive && !useWebHolo {
-                holoGlare(width: w, height: h)
-            }
-
-            // Web-rendered holo on top (image + foil), driven by the
-            // app's own cursor position. Hit-testing is disabled so the
-            // card underneath keeps its hover/click behaviour. The
-            // framing modifiers mirror the non-holo box art above
-            // (scaledToFill + 1.06 zoom + cursor parallax + clip) so the
-            // image doesn't reframe on hover — only the foil appears.
-            }
-            .frame(width: w, height: h) // Fixed frame fills GeometryReader
-            .scaleEffect(scale, anchor: .center) // Scale from center, grows outward
-            // Web-rendered holo on top (image + foil), driven by the
-            // app's own cursor position. Hit-testing is disabled so the
-            // card underneath keeps its hover/click behaviour. Placed in
-            // overlay so it doesn't inherit the ZStack's scaleEffect.
-            .overlay(
-                Group {
-                    if useWebHolo, let nsImage = image {
-                        // Quantize frameSize to 0.5pt buckets to prevent WKWebView
-                        // reloads on sub-pixel layout fluctuations during scroll.
-                        let holoW = (w * 2).rounded() / 2
-                        let holoH = (h * 2).rounded() / 2
-                        HoloWebCardView(
-                            image: nsImage,
-                            variantClass: webVariant.cssClass,
-                            pointerX: normalizedMouseX,
-                            pointerY: normalizedMouseY,
-                            heroMask: holoMasks?.hero,
-                            frameSize: CGSize(width: holoW, height: holoH),
-                            fitMode: .cover,
-                            isActive: useWebHolo
-                        )
-                        .offset(x: artPX, y: artPY)
-                        .clipped()
-                        .allowsHitTesting(false)
-                    }
+                // Native SwiftUI/Metal holo foil + glare. Built ONLY while the card
+                // is hovered (gated on `effectsActive`): constructing them for
+                // every visible cell rendered a foil tile + median-RGB sampling on
+                // the main thread per cell, which made fast scrolling hang.
+                if effectsActive {
+                    holoLayers(width: w, height: h, allowBump: allowBump)
+                    holoGlare(width: w, height: h)
                 }
-            )
+            }
+            .frame(width: w, height: h)
+            .scaleEffect(scale, anchor: .center)
         }
         .clipShape(RoundedRectangle(cornerRadius: 8))
         .shadow(color: Color.black.opacity(isPressed ? 0.35 : 0.20), radius: isPressed ? 9 : 5, x: 0, y: isPressed ? 5 : 3)
@@ -882,7 +842,6 @@ private func holoArtworkDefault(allowBump: Bool = true) -> some View {
     // *appearance*: the rainbow hue rotates and a specular sweep band glides
     // across the masked regions, both following the cursor (see
     // `HoloFoilLayers`).
-    @ViewBuilder
     private func holoLayers(width w: CGFloat, height h: CGFloat, allowBump: Bool = true) -> some View {
         var holoSnapshot = HoloSettingsSnapshot(from: holoSettings, romID: rom.id.uuidString)
         holoSnapshot.backgroundMedianRGB = image.flatMap { HoloColorSampler.medianRGB(romID: rom.id.uuidString, image: $0) }
@@ -971,79 +930,33 @@ private func holoArtworkDefault(allowBump: Bool = true) -> some View {
             // art, not the blurred fill behind it.)
             let artSize = Self.fittedBoxartSize(image: image, w: w, h: h)
 
-            // Web-rendered holo (simeydotme CSS) replaces the SwiftUI foil
-            // when the card is hovered/active — faithful and far cheaper to
-            // maintain than re-implementing `background-blend-mode` in SwiftUI.
-            let webVariant = HoloSettingsSnapshot(
-                from: holoSettings, romID: rom.id.uuidString
-            ).randomization?.variant ?? .regularHolo
-            // swiftHolo always uses the native SwiftUI/Metal renderer
-            let isSwiftHolo = webVariant == .reverseSwift
-            // For other variants, check the per-variant rendering engine setting
-            let useWebHolo = effectsActive && !isSwiftHolo && (holoSettings.renderingEngine[webVariant] ?? .web) == .web
+              ZStack {
+                  // Blurred background fills the card
+                 if let nsImage = image {
+                     Image(nsImage: nsImage)
+                         .resizable()
+                         .scaledToFill()
+                         .frame(width: w, height: h)
+                         .clipped()
+                         .opacity(0.85)
+                         .blur(radius: max(10, min(h, 280) * 0.08))
+                 }
 
-            ZStack {
-                // Blurred background fills the card
-                if let nsImage = image {
-                    Image(nsImage: nsImage)
-                        .resizable()
-                        .scaledToFill()
-                        .frame(width: w, height: h)
-                        .clipped()
-                        .opacity(0.85)
-                        .blur(radius: max(10, min(h, 280) * 0.08))
-                }
+                 Color.black.opacity(0.25)
 
-                Color.black.opacity(0.25)
-
-                // Sharp box art on top (base for holo blend modes)
-                // Hidden while the web holo is active: the WebView renders the
-                // box art itself (with foil), and leaving this layer on would
-                // show a second, parallax-shifted box art behind it.
-                if !useWebHolo, let nsImage = image {
-                    Image(nsImage: nsImage)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: w, height: h)
-                        .scaleEffect(isPressed ? 1.05 : 1)
-                }
-            }
-.frame(width: w, height: h)
-            // Holo layers & glare — only render when effects are active to avoid
-            // expensive computation during scroll. Use conditional rendering
-            // instead of opacity(0) so the view tree isn't built at all.
-            if effectsActive && !useWebHolo {
-                holoLayers(width: artSize.width, height: artSize.height)
-                    .frame(width: artSize.width, height: artSize.height)
-            }
-            if effectsActive && !useWebHolo {
-                holoGlare(width: artSize.width, height: artSize.height)
-                    .frame(width: artSize.width, height: artSize.height)
-            }
-            // Web-rendered holo on top (image + foil), driven by the
-            // app's own cursor position. Hit-testing is disabled so the
-            // card underneath keeps its hover/click behaviour.
-            // Sized to artSize and centered to match the contained image,
-            // so holo effects only appear on the actual box art (not blurred bg).
-            if useWebHolo, let nsImage = image {
-                // Quantize to 0.5pt buckets to prevent WKWebView reloads on
-                // sub-pixel layout fluctuations during scroll.
-                let holoW = (artSize.width * 2).rounded() / 2
-                let holoH = (artSize.height * 2).rounded() / 2
-                HoloWebCardView(
-                    image: nsImage,
-                    variantClass: webVariant.cssClass,
-                    pointerX: normalizedMouseX,
-                    pointerY: normalizedMouseY,
-                    heroMask: holoMasks?.hero,
-                    frameSize: CGSize(width: holoW, height: holoH),
-                    fitMode: .contain,
-                    isActive: useWebHolo
-                )
-                .frame(width: holoW, height: holoH)
-                .position(x: w/2, y: h/2)
-                .allowsHitTesting(false)
-            }
+                 // Sharp box art on top (base for holo blend modes)
+                 BoxArtBaseView(image: image, normalizedMouseX: normalizedMouseX, normalizedMouseY: normalizedMouseY, isPressed: isPressed, w: w, h: h, tiltEnabled: !scrollState.isScrolling)
+             }
+             .frame(width: w, height: h)
+             // Native holo layers & glare. Built ONLY while hovered (gated on
+             // `effectsActive`): constructing them for every visible cell rendered
+             // a foil tile + median-RGB sampling on the main thread.
+             if effectsActive {
+                 holoLayers(width: artSize.width, height: artSize.height)
+                     .frame(width: artSize.width, height: artSize.height)
+                 holoGlare(width: artSize.width, height: artSize.height)
+                     .frame(width: artSize.width, height: artSize.height)
+             }
         }
         .clipShape(RoundedRectangle(cornerRadius: 8))
         .shadow(color: Color.black.opacity(isPressed ? 0.35 : 0.20), radius: isPressed ? 9 : 5, x: 0, y: isPressed ? 5 : 3)
@@ -1055,61 +968,18 @@ private func holoArtworkDefault(allowBump: Bool = true) -> some View {
             let side = min(geometry.size.width, geometry.size.height)
             let w = geometry.size.width
             let h = geometry.size.height
-            
-            // Web-rendered holo (simeydotme CSS) replaces the SwiftUI foil
-            // when the card is hovered/active — faithful and far cheaper to
-            // maintain than re-implementing `background-blend-mode` in SwiftUI.
-            let webVariant = HoloSettingsSnapshot(
-                from: holoSettings, romID: rom.id.uuidString
-            ).randomization?.variant ?? .regularHolo
-            // swiftHolo always uses the native SwiftUI/Metal renderer
-            let isSwiftHolo = webVariant == .reverseSwift
-            // For other variants, check the per-variant rendering engine setting
-            let useWebHolo = effectsActive && !isSwiftHolo && (holoSettings.renderingEngine[webVariant] ?? .web) == .web
-            
+
             ZStack {
-                // Box art fills the square (base for holo blend modes)
-                // Hidden while the web holo is active: the WebView renders the
-                // box art itself (with foil), and leaving this layer on would
-                // show a second box art behind it.
-                if !useWebHolo, let nsImage = image {
-                    Image(nsImage: nsImage)
-                        .resizable()
-                        .scaledToFill()
-                        .frame(width: side, height: side)
-                        .clipped()
-                        .scaleEffect(isPressed ? 1.05 : 1)
-                }
-                
-                // Holo effect layers blend with the box art — only render when
-                // effects are active to avoid expensive computation during scroll.
-                if effectsActive && !useWebHolo {
+                // Base box art for holo blend modes.
+                BoxArtBaseView(image: image, normalizedMouseX: normalizedMouseX, normalizedMouseY: normalizedMouseY, isPressed: isPressed, w: w, h: h, tiltEnabled: !scrollState.isScrolling)
+
+                // Native holo layers & glare. Built ONLY while hovered (gated on
+                // `effectsActive`): constructing them for every visible cell
+                // rendered a foil tile + median-RGB sampling on the main thread,
+                // which made fast scrolling hang.
+                if effectsActive {
                     holoLayers(width: side, height: side)
-                }
-                if effectsActive && !useWebHolo {
                     holoGlare(width: side, height: side)
-                }
-                
-                // Web-rendered holo on top (image + foil), driven by the
-                // app's own cursor position. Hit-testing is disabled so the
-                // card underneath keeps its hover/click behaviour.
-                if useWebHolo, let nsImage = image {
-                    // Quantize to 0.5pt buckets to prevent WKWebView reloads on
-                    // sub-pixel layout fluctuations during scroll.
-                    let holoSide = (side * 2).rounded() / 2
-                    HoloWebCardView(
-                        image: nsImage,
-                        variantClass: webVariant.cssClass,
-                        pointerX: normalizedMouseX,
-                        pointerY: normalizedMouseY,
-                        heroMask: holoMasks?.hero,
-                        frameSize: CGSize(width: holoSide, height: holoSide),
-                        fitMode: .contain,
-                        isActive: useWebHolo
-                    )
-                    .frame(width: holoSide, height: holoSide)
-                    .position(x: w/2, y: h/2)
-                    .allowsHitTesting(false)
                 }
             }
             .frame(width: w, height: h)

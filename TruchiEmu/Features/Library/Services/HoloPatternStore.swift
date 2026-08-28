@@ -73,7 +73,9 @@ final class HoloPatternStore: ObservableObject {
     // cache a few buckets instead of re-scaling per frame.
     private var scaledAlphaMasks: [ScaledAlphaKey: NSImage] = [:]
     private var scaledAlphaMasksOrder: [ScaledAlphaKey] = []
-    private let scaledAlphaMasksLimit = 64
+    // Lowered from 64; the Swift-engine idle flush (HoloSwiftCacheCoordinator)
+    // reclaims these on idle, so a smaller cap bounds peak memory.
+    private let scaledAlphaMasksLimit = 24
 
     struct ScaledAlphaKey: Hashable {
         let pattern: HoloPattern
@@ -185,7 +187,7 @@ final class HoloPatternStore: ObservableObject {
     /// so it's drawn once per card, not every cursor frame.
     private var tiledImages: [TiledImageKey: NSImage] = [:]
     private var tiledImagesOrder: [TiledImageKey] = []
-    private let tiledImagesLimit = 32
+    private let tiledImagesLimit = 16
     struct TiledImageKey: Hashable {
         let pattern: HoloPattern
         let scaleBucket: Int
@@ -243,7 +245,7 @@ final class HoloPatternStore: ObservableObject {
     /// not on every cursor frame.
     private var tiledAlphaMasks: [TiledImageKey: NSImage] = [:]
     private var tiledAlphaMasksOrder: [TiledImageKey] = []
-    private let tiledAlphaMasksLimit = 32
+    private let tiledAlphaMasksLimit = 16
     func tiledAlphaMask(for pattern: HoloPattern, size: NSSize, scale: CGFloat) -> NSImage? {
         guard size.width > 0, size.height > 0 else { return nil }
         let key = TiledImageKey(
@@ -277,6 +279,18 @@ final class HoloPatternStore: ObservableObject {
             tiledAlphaMasks[tiledAlphaMasksOrder.removeFirst()] = nil
         }
         return mask
+    }
+
+    /// Drop all cached pattern masks/images. Called by HoloSwiftCacheCoordinator
+    /// on idle so the warmed Swift-engine caches don't persist for the app
+    /// lifetime. The single `_scratchMask` decode is retained (cheap, reused).
+    func flush() {
+        scaledAlphaMasks.removeAll()
+        scaledAlphaMasksOrder.removeAll()
+        tiledImages.removeAll()
+        tiledImagesOrder.removeAll()
+        tiledAlphaMasks.removeAll()
+        tiledAlphaMasksOrder.removeAll()
     }
 }
 
@@ -324,6 +338,7 @@ final class HoloSettingsStore: ObservableObject {
     static let holofoilRareScanlineDensityKey = "holo_holofoil_rare_scanline_density"
     static let holofoilRareBeamStrengthKey = "holo_holofoil_rare_beam_strength"
     static let holofoilRareGlareKey = "holo_holofoil_rare_glare"
+    static let randomFoilSizeKey = "holo_random_foil_size"
 
     @Published var titleIntensity: Double {
         didSet { AppSettings.setDouble(Self.titleIntensityKey, value: titleIntensity) }
@@ -423,22 +438,11 @@ final class HoloSettingsStore: ObservableObject {
     @Published var reverseTextureVariation: Bool {
         didSet { AppSettings.set(Self.reverseTextureVariationKey, value: reverseTextureVariation) }
     }
-    // Rendering engine for a holo variant: `.web` uses WKWebView (simeydotme CSS),
-    // `.swift` uses the native SwiftUI foil renderer.
-    enum HoloRenderingEngine: String, CaseIterable, Identifiable {
-        case web
-        case swift
-        var id: String { rawValue }
-        var displayName: String { rawValue.capitalized }
-    }
 
-    private static let renderingEngineKey = "holo_rendering_engine"
-
-    // Rendering engine for holo variants. `.web` uses WKWebView (simeydotme CSS),
-    // `.swift` uses the native SwiftUI foil renderer. Per-variant override.
-    @Published var renderingEngine: [HoloVariant: HoloRenderingEngine] {
-        didSet { persistRenderingEngine() }
+    @Published var randomFoilSize: Bool {
+        didSet { AppSettings.set(Self.randomFoilSizeKey, value: randomFoilSize) }
     }
+    
 
     /// Per-variant probability weight (0..1 share). A card rolls a variant
     /// against these weights; the chosen variant stays for the session.
@@ -488,39 +492,15 @@ final class HoloSettingsStore: ObservableObject {
         self.reverseRainbowIntensity = AppSettings.getDouble(Self.reverseRainbowIntensityKey, defaultValue: 1.0)
         self.reverseTextureMode = HoloReverseTextureMode(rawValue: AppSettings.getString(Self.reverseTextureModeKey, defaultValue: HoloReverseTextureMode.random.rawValue) ?? "") ?? .random
         self.reverseTextureVariation = AppSettings.getBool(Self.reverseTextureVariationKey, defaultValue: true)
+        self.randomFoilSize = AppSettings.getBool(Self.randomFoilSizeKey, defaultValue: false)
         self.holofoilRareIntensity = AppSettings.getDouble(Self.holofoilRareIntensityKey, defaultValue: 1.0)
         self.holofoilRareScanlineDensity = AppSettings.getDouble(Self.holofoilRareScanlineDensityKey, defaultValue: 1.0)
         self.holofoilRareBeamStrength = AppSettings.getDouble(Self.holofoilRareBeamStrengthKey, defaultValue: 1.0)
         self.holofoilRareGlare = AppSettings.getDouble(Self.holofoilRareGlareKey, defaultValue: 0.8)
-        self.renderingEngine = Self.loadRenderingEngine()
+        
     }
 
-    private static func loadRenderingEngine() -> [HoloVariant: HoloRenderingEngine] {
-        var defaults = HoloVariant.allCases.reduce(into: [HoloVariant: HoloRenderingEngine]()) { $0[$1] = .web }
-        // reverseHolo = web (CSS reverse-holo), reverseSwift = native SwiftUI
-        defaults[.reverseHolo] = .web
-        defaults[.reverseSwift] = .swift
-        guard let raw = AppSettings.getString(Self.renderingEngineKey) else { return defaults }
-        var result: [HoloVariant: HoloRenderingEngine] = [:]
-        for entry in raw.split(separator: ",") {
-            let parts = entry.split(separator: ":")
-            guard parts.count == 2,
-                  let variant = HoloVariant(rawValue: String(parts[0])),
-                  let engine = HoloRenderingEngine(rawValue: String(parts[1])) else { continue }
-            result[variant] = engine
-        }
-        for variant in HoloVariant.allCases where result[variant] == nil {
-            result[variant] = defaults[variant] ?? .web
-        }
-        return result
-    }
-
-    private func persistRenderingEngine() {
-        let raw = renderingEngine
-            .map { "\($0.key.rawValue):\($0.value.rawValue)" }
-            .joined(separator: ",")
-        AppSettings.set(Self.renderingEngineKey, value: raw)
-    }
+    
 
     /// Load the per-variant weight dictionary from AppSettings. Stored as a
     /// comma-separated `variant.rawValue:weight` string so the format stays
@@ -563,10 +543,8 @@ final class HoloSettingsStore: ObservableObject {
 
     /// Factory default: reverseHolo is the default holo variant, so the app (and
     /// the onboarding wizard) present the reverse-holo effect by default. The
-    /// reverse-holo is rendered by the WebKit engine (`HoloWebCardView`, the
-    /// simeydotme `pokemon-cards-css`), which is the source-faithful reverse
-    /// holo (rainbow sheen over an etched foil). All other variants start
-    /// disabled and can be re-enabled in HoloSettingsView.
+    /// reverse-holo is rendered by the native SwiftUI engine. All other variants
+    /// start disabled and can be re-enabled in HoloSettingsView.
     static func defaultVariantWeights() -> [HoloVariant: Double] {
         var weights: [HoloVariant: Double] = [:]
         for variant in HoloVariant.allCases { weights[variant] = 0 }
@@ -665,6 +643,7 @@ enum HoloReverseColorMode: String, CaseIterable, Identifiable {
     case solid
     case rainbow
     case background
+    case random
 
     var id: String { rawValue }
 
@@ -673,6 +652,7 @@ enum HoloReverseColorMode: String, CaseIterable, Identifiable {
         case .solid:      return "holo.reverse.colorMode.solid"
         case .rainbow:    return "holo.reverse.colorMode.rainbow"
         case .background: return "holo.reverse.colorMode.background"
+        case .random:     return "holo.reverse.colorMode.random"
         }
     }
 }
@@ -686,6 +666,7 @@ enum HoloReverseColorMode: String, CaseIterable, Identifiable {
 enum HoloReverseTextureMode: String, CaseIterable, Identifiable {
     case generated
     case random
+    case any
 
     var id: String { rawValue }
 
@@ -693,6 +674,7 @@ enum HoloReverseTextureMode: String, CaseIterable, Identifiable {
         switch self {
         case .generated: return "holo.reverse.textureMode.generated"
         case .random:    return "holo.reverse.textureMode.random"
+        case .any:       return "holo.reverse.textureMode.any"
         }
     }
 }
@@ -819,6 +801,10 @@ enum HoloSettings {
         get { HoloSettingsStore.shared.reverseTextureVariation }
         set { HoloSettingsStore.shared.reverseTextureVariation = newValue }
     }
+    static var randomFoilSize: Bool {
+        get { HoloSettingsStore.shared.randomFoilSize }
+        set { HoloSettingsStore.shared.randomFoilSize = newValue }
+    }
     static var holofoilRareIntensity: Double {
         get { HoloSettingsStore.shared.holofoilRareIntensity }
         set { HoloSettingsStore.shared.holofoilRareIntensity = newValue }
@@ -882,8 +868,6 @@ struct HoloSettingsSnapshot: Equatable {
     // mask chance, intensity, and pattern (see `HoloCardRandomization`).
     var randomization: HoloCardRandomization?
 
-    var renderingEngine: [HoloVariant: HoloSettingsStore.HoloRenderingEngine] = [:]
-
     // Holofoil Rare (regular-holo) tunables, copied from the settings store.
     var holofoilRareIntensity: Double = 1.0
     var holofoilRareScanlineDensity: Double = 1.0
@@ -923,7 +907,6 @@ struct HoloSettingsSnapshot: Equatable {
         self.reverseTextureBlend2 = cfg.blend2
         self.backgroundMedianRGB = nil
         self.randomization = nil
-        self.renderingEngine = store.renderingEngine
         self.holofoilRareIntensity = store.holofoilRareIntensity
         self.holofoilRareScanlineDensity = store.holofoilRareScanlineDensity
         self.holofoilRareBeamStrength = store.holofoilRareBeamStrength
@@ -979,7 +962,6 @@ struct HoloSettingsSnapshot: Equatable {
             deviationChance: Float(store.maskDeviationChance),
             variantWeights: store.variantWeights
         )
-        self.renderingEngine = store.renderingEngine
     }
 
     func regionIsActive(_ region: HoloRegion, maskPresent: Bool) -> Bool {
@@ -1022,8 +1004,7 @@ struct HoloSettingsSnapshot: Equatable {
         lhs.holofoilRareIntensity == rhs.holofoilRareIntensity &&
         lhs.holofoilRareScanlineDensity == rhs.holofoilRareScanlineDensity &&
         lhs.holofoilRareBeamStrength == rhs.holofoilRareBeamStrength &&
-        lhs.holofoilRareGlare == rhs.holofoilRareGlare &&
-        lhs.renderingEngine == rhs.renderingEngine
+        lhs.holofoilRareGlare == rhs.holofoilRareGlare
     }
 
     /// Resolve the full Reverse Holo foil config for `.random` mode. All
@@ -1041,11 +1022,13 @@ struct HoloSettingsSnapshot: Equatable {
         variation: Bool,
         seed: UInt64
     ) -> (pattern: HoloPattern?, scale: CGFloat, pattern2: HoloPattern?, scale2: CGFloat, blend2: HoloTextureBlend) {
-        guard mode == .random else { return (nil, 1.0, nil, 1.0, .overlay) }
+        guard mode == .random || mode == .any else { return (nil, 1.0, nil, 1.0, .overlay) }
         let all = HoloPattern.allCases
         guard !all.isEmpty else { return (nil, 1.0, nil, 1.0, .overlay) }
         let p1 = all[Int(seed % UInt64(all.count))]
-        let s1: CGFloat = variation ? CGFloat(0.1 + Double(seed % 1000) / 1000.0 * 0.9) : 1.0
+        // Tighter tile scale (0.5…1.0×) so the per-card etch isn't blown up tiny
+        // or stretched — subtler than the old 0.1…1.0× wild swing.
+        let s1: CGFloat = variation ? CGFloat(0.5 + Double(seed % 1000) / 1000.0 * 0.5) : 1.0
         var p2: HoloPattern? = nil
         var s2: CGFloat = 1.0
         var blend2: HoloTextureBlend = .overlay
@@ -1056,11 +1039,13 @@ struct HoloSettingsSnapshot: Equatable {
         //     glitter).
         //   - galaxy / glitter NEVER get a second pattern, so if p1 is one of
         //     them, p2 stays nil.
+        // The second-etch chance is lowered (35% -> 15%) so the "merge two
+        // textures" richness is occasional rather than the default look.
         let whitelist = HoloPattern.secondPatternWhitelist
         let p1IsWhitelisted = whitelist.contains(p1)
-        if variation, !p1IsWhitelisted, !whitelist.isEmpty, Int((seed >> 20) % 100) < 35 {
+        if variation, !p1IsWhitelisted, !whitelist.isEmpty, Int((seed >> 20) % 100) < 15 {
             p2 = whitelist[Int((seed >> 40) % UInt64(whitelist.count))]
-            s2 = CGFloat(0.1 + Double((seed >> 10) % 1000) / 1000.0 * 0.9)
+            s2 = CGFloat(0.5 + Double((seed >> 10) % 1000) / 1000.0 * 0.5)
             blend2 = HoloTextureBlend.allCases[Int((seed >> 50) % UInt64(HoloTextureBlend.allCases.count))]
         }
         return (p1, s1, p2, s2, blend2)
@@ -1079,13 +1064,12 @@ struct HoloSettingsSnapshot: Equatable {
 // Hero is the exception: it never gets holo for now (0% mask chance, and it
 // never inherits the background).
 //
-// When a section rolls its own mask, per user spec:
-//   zone        mask chance  intensity range
-//   background  100%         50–100%
-//   chrome      100%         50–100%
-//   title       80%          50–100%
-//   hero        0%           20–60%
-// A failed mask chance means the zone shows no holo at all (intensity 0).
+// The native (swift) path used to randomise each zone's intensity (50–100%)
+// and pick a random foil pattern per card. It now pins the foil to the
+// variant's `sourceFoilPattern` and centres intensity on the variant's
+// `sourceIntensity`, with only a small per-card jitter (scaled by
+// `maskDeviationChance`) — matching the WKWebView CSS path, which is fully
+// deterministic per variant. Hero stays un-foiled.
 struct HoloCardRandomization: Equatable {
     struct Zone: Equatable {
         let active: Bool
@@ -1105,35 +1089,34 @@ struct HoloCardRandomization: Equatable {
     init(seed: UInt64, deviationChance: Float, variantWeights: [HoloVariant: Double]) {
         var rng = SplitMix64(seed: seed)
 
-        func roll(chance: Float, range: ClosedRange<Double>) -> Zone {
-            let active = rng.nextFloat() < chance
+        // The variant is rolled first so its source-faithful foil + baseline
+        // strength drive the whole card. The WKWebView CSS path is fully
+        // deterministic per variant; we keep only a subtle per-card variance so
+        // the swift render reads like the web render instead of swinging wildly.
+        let variant = HoloVariantRoller.pick(rng: &rng, weights: variantWeights)
+        let foilPattern = variant.sourceFoilPattern
+        let baseIntensity = variant.sourceIntensity
+        // `maskDeviationChance` now scales the per-card intensity jitter rather
+        // than re-randomising the foil pattern: 0 = near-identical cards of a
+        // variant, 1 = the widest (still subtle) spread. The pattern stays fixed.
+        let jitterAmp = 0.03 + Double(deviationChance) * 0.10
+
+        func zone(active: Bool) -> Zone {
             let intensity = active
-                ? range.lowerBound + Double(rng.nextFloat()) * (range.upperBound - range.lowerBound)
+                ? min(1.0, max(0, baseIntensity + (Double(rng.nextFloat()) * 2 - 1) * jitterAmp))
                 : 0
-            let all = HoloPattern.allCases
-            let pattern = all[Int(rng.next() % UInt64(all.count))]
-            return Zone(active: active, intensity: intensity, pattern: pattern)
+            return Zone(active: active, intensity: intensity, pattern: foilPattern)
         }
 
-        // The background always rolls its own mask.
-        let background = roll(chance: 1.00, range: 0.50...1.00)
-        self.background = background
-
-        // Each other section rolls `deviationChance` to get its own mask;
-        // otherwise it inherits the background's mask.
-        func deviated(_ chance: Float, _ range: ClosedRange<Double>) -> Zone {
-            if rng.nextFloat() < deviationChance {
-                return roll(chance: chance, range: range)
-            }
-            return background
-        }
-
-        self.chrome = deviated(1.00, 0.50...1.00)
-        self.title = deviated(0.80, 0.50...1.00)
-        // Hero never gets holo for now: always rolled with 0% mask chance, and
-        // never inherits the background's mask.
-        self.hero = roll(chance: 0.00, range: 0.20...0.60)
-        self.variant = HoloVariantRoller.pick(rng: &rng, weights: variantWeights)
+        // Background always foils (the CSS foils the whole card uniformly).
+        self.background = zone(active: true)
+        // Every other region uses the SAME fixed foil + baseline strength; only a
+        // small independent jitter keeps cards of one variant from looking
+        // pixel-identical. Hero stays un-foiled (matches CSS hero exclusion).
+        self.chrome = zone(active: true)
+        self.title = zone(active: true)
+        self.hero = zone(active: false)
+        self.variant = variant
     }
 
     func active(_ region: HoloRegion) -> Bool {

@@ -74,7 +74,7 @@ final class HoloSaliencyService: @unchecked Sendable, ObservableObject {
         var order: [String] = []
     }
     private let cacheLock = OSAllocatedUnfairLock<CacheState>(initialState: CacheState())
-    private let cacheLimit = 100
+    private let cacheLimit = 24
     private let inFlight: OSAllocatedUnfairLock<[String: Task<HoloMaskSet?, Never>]> = .init(initialState: [:])
     private let generating: OSAllocatedUnfairLock<Set<String>> = .init(initialState: [])
     /// Number of romIDs currently running a Vision decompose. Published on the
@@ -345,6 +345,18 @@ final class HoloSaliencyService: @unchecked Sendable, ObservableObject {
     nonisolated func cancelAll() {
         let tasks = inFlight.withLock { Array($0.values) }
         for task in tasks { task.cancel() }
+    }
+
+    /// Drop every in-memory mask set. The mask NSImages are large (one per
+    /// region, full box-art resolution), so a page of cached cards can cost
+    /// hundreds of MB. Called when the grid starts scrolling (effects are
+    /// suppressed anyway) and by the idle cache coordinator so memory doesn't
+    /// climb across a long session of hovering different cards.
+    nonisolated func flush() {
+        cacheLock.withLock { state in
+            state.entries.removeAll()
+            state.order.removeAll()
+        }
     }
 
     /// Track active Vision decomposes for the sidebar progress indicator. The

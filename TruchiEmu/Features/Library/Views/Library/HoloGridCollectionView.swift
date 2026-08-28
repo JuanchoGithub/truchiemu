@@ -158,6 +158,15 @@ final class HoloGridCollectionViewCoordinator: NSObject {
     fileprivate var previousSelection: Set<UUID> = []
     fileprivate var scrollResetTimer: Timer?
     var scrollMonitor: Any?
+    // Observes the scroll-view bounds changing for ALL scroll sources
+    // (scrollbar drag, keyboard, programmatic, trackpad/wheel). The
+    // scrollWheel monitor alone misses non-wheel scrolls, which left
+    // `isScrolling` false during scrollbar drags — so holo cards kept
+    // building their foil layers (main-thread tile render) mid-scroll and
+    // the grid would eventually peg the main thread.
+    var boundsObserver: NSObjectProtocol?
+    var liveScrollStartObserver: NSObjectProtocol?
+    var liveScrollEndObserver: NSObjectProtocol?
     
     var onSelectionChanged: (([UUID]) -> Void)?
     var onPrimarySelectionChanged: ((UUID?) -> Void)?
@@ -173,7 +182,12 @@ final class HoloGridCollectionViewCoordinator: NSObject {
     // flag true for 0.3s after the last scroll event, so the holo effects
     // only resume once the scroll has genuinely stopped.
     fileprivate func markScrolling() {
+        let wasScrolling = LibraryScrollState.shared.isScrolling
         LibraryScrollState.shared.isScrolling = true
+        // The bounds notification fires every frame during scroll; only
+        // (re)arm the idle timer when we weren't already scrolling so we
+        // don't churn Timers on each frame.
+        guard !wasScrolling else { return }
         scrollResetTimer?.invalidate()
         scrollResetTimer = Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) { [weak self] _ in
             LibraryScrollState.shared.isScrolling = false
@@ -184,12 +198,50 @@ final class HoloGridCollectionViewCoordinator: NSObject {
     private weak var collectionView: NSCollectionView?
     private let itemID = NSUserInterfaceItemIdentifier("HoloGridCollectionViewItem")
     
-    func setup(collectionView: NSCollectionView) {
+    func setup(collectionView: NSCollectionView, scrollView: NSScrollView) {
         self.collectionView = collectionView
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.prefetchDataSource = self
         collectionView.collectionViewLayout = createLayout()
+
+        // Detect scroll from ALL sources (scrollbar drag, keyboard, programmatic,
+        // trackpad/wheel) so `LibraryScrollState.isScrolling` is reliably true
+        // while scrolling. Without this the holo foil layers would build their
+        // main-thread-rendered tiles during scrollbar drags and peg the main
+        // thread. The scrollView is passed explicitly (rather than relying on
+        // `collectionView.enclosingScrollView`) because that isn't guaranteed to
+        // resolve at setup time.
+        let clipView = scrollView.contentView
+        clipView.postsBoundsChangedNotifications = true
+        boundsObserver = NotificationCenter.default.addObserver(
+            forName: NSView.boundsDidChangeNotification,
+            object: clipView,
+            queue: .main
+        ) { [weak self] _ in
+            self?.markScrolling()
+        }
+        // Canonical "user is scrolling" signals — fire for wheel, scrollbar
+        // drag, keyboard, and trackpad, unlike the wheel-only monitor. These
+        // guarantee `isScrolling` is true for the whole scroll gesture so the
+        // lightweight scroll card engages.
+        liveScrollStartObserver = NotificationCenter.default.addObserver(
+            forName: NSScrollView.willStartLiveScrollNotification,
+            object: scrollView,
+            queue: .main
+        ) { [weak self] _ in
+            self?.markScrolling()
+        }
+        liveScrollEndObserver = NotificationCenter.default.addObserver(
+            forName: NSScrollView.didEndLiveScrollNotification,
+            object: scrollView,
+            queue: .main
+        ) { [weak self] _ in
+            guard let self else { return }
+            scrollResetTimer?.invalidate()
+            scrollResetTimer = nil
+            LibraryScrollState.shared.isScrolling = false
+        }
         collectionView.isSelectable = true
         collectionView.allowsMultipleSelection = true
         collectionView.backgroundColors = [.clear]
@@ -390,7 +442,7 @@ private func makeHoloCollectionScrollView(coordinator: HoloGridCollectionViewCoo
     let cv = NSCollectionView()
     scrollView.documentView = cv
     
-    coordinator.setup(collectionView: cv)
+    coordinator.setup(collectionView: cv, scrollView: scrollView)
     coordinator.updateItemSizes()
     
     return scrollView
@@ -474,6 +526,18 @@ struct HoloGridCollectionViewRepresentable: NSViewRepresentable {
         if let monitor = coordinator.scrollMonitor {
             NSEvent.removeMonitor(monitor)
             coordinator.scrollMonitor = nil
+        }
+        if let observer = coordinator.boundsObserver {
+            NotificationCenter.default.removeObserver(observer)
+            coordinator.boundsObserver = nil
+        }
+        if let observer = coordinator.liveScrollStartObserver {
+            NotificationCenter.default.removeObserver(observer)
+            coordinator.liveScrollStartObserver = nil
+        }
+        if let observer = coordinator.liveScrollEndObserver {
+            NotificationCenter.default.removeObserver(observer)
+            coordinator.liveScrollEndObserver = nil
         }
         coordinator.scrollResetTimer?.invalidate()
     }

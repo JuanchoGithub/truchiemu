@@ -31,10 +31,25 @@ final class HoloBumpRenderer {
     // Accessed only on `renderQueue`, so no extra locking is required.
     private var cache: [String: NSImage] = [:]
     private var cacheOrder: [String] = []
-    private let cacheLimit = 48
+    // Bounded LRU of rendered bump foils. Lowered from 48 to keep peak memory
+    // down; see HoloSwiftCacheCoordinator for idle reclaim.
+    private let cacheLimit = 16
     private var foilTextureCache: [String: MTLTexture] = [:]
     private var foilTextureOrder: [String] = []
-    private let foilCacheLimit = 16
+    private let foilCacheLimit = 8
+
+    /// Drop all cached bump foils and uploaded foil textures. Dispatched to
+    /// `renderQueue` because the caches are only touched there. Called by
+    /// HoloSwiftCacheCoordinator on idle, mirroring the WebView pool flush.
+    func flush() {
+        renderQueue.async { [weak self] in
+            guard let self else { return }
+            self.cache.removeAll()
+            self.cacheOrder.removeAll()
+            self.foilTextureCache.removeAll()
+            self.foilTextureOrder.removeAll()
+        }
+    }
 
     private init() {
         device = MTLCreateSystemDefaultDevice()
@@ -143,6 +158,9 @@ final class HoloBumpRenderer {
         commandQueue: MTLCommandQueue,
         pipelineState: MTLRenderPipelineState
     ) -> NSImage? {
+        // Called on every Swift-engine bump render (on renderQueue), so this
+        // keeps the idle-flush coordinator's "last active" timestamp fresh.
+        HoloSwiftCacheCoordinator.shared.noteUsage()
         // Render at the full display resolution so the foil texture (and its
         // fine rainbow/scanline relief) stays as crisp as the parallax foil it
         // sits under. The previous 200px cap made the bump blurry/low-res

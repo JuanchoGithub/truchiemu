@@ -1,5 +1,8 @@
 import SwiftUI
 import AppKit
+import Foundation
+import CoreImage
+import os.lock
 
 // MARK: - CSS Color Palette (from simeydotme/pokemon-cards-css)
 
@@ -58,7 +61,18 @@ final class HoloFoilTileCache {
 
     private var tiles: [TileKey: NSImage] = [:]
     private var cacheOrder: [TileKey] = []
-    private let cacheLimit = 32
+    // Bounded LRU of the pre-rendered foil tiles. Each tile is a full-bleed
+    // `2w × 2h` NSImage, so the limit is the dominant Swift-engine memory cost.
+    // Kept low and flushed on idle (see HoloSwiftCacheCoordinator) to mirror the
+    // WebView pool's memory behaviour.
+    private let cacheLimit = 12
+
+    /// Drop all cached tiles. Called by HoloSwiftCacheCoordinator on idle so the
+    /// warmed Swift-engine caches don't hold hundreds of MB for the app lifetime.
+    func flush() {
+        tiles.removeAll()
+        cacheOrder.removeAll()
+    }
 
     struct TileKey: Hashable {
         let pattern: HoloPattern
@@ -78,6 +92,10 @@ final class HoloFoilTileCache {
     /// pure colour-swap of the same texture-masked holographic effect.
     /// When nil, the classic `violet/blue/.../red` palette is used.
     func tile(for pattern: HoloPattern, variant: HoloVariant? = nil, w: CGFloat, h: CGFloat) -> NSImage? {
+        // Called on every Swift-engine foil render frame, so this keeps the
+        // idle-flush coordinator's "last active" timestamp fresh while a card
+        // is hovered (preventing a flush mid-hover).
+        HoloSwiftCacheCoordinator.shared.noteUsage()
         let bw = Int((w * 2).rounded())
         let bh = Int((h * 2).rounded())
         guard bw > 0, bh > 0 else { return nil }
@@ -105,11 +123,15 @@ final class HoloFoilTileCache {
             }
             return [HoloCSSColors.violet, HoloCSSColors.blue, HoloCSSColors.green, HoloCSSColors.yellow, HoloCSSColors.red]
         }()
+        // Use the variant's source-defined rainbow angle (cosmos 82°, shiny 0°,
+        // amazing 133°, …) instead of a hardcoded 110°, so the swift foil tilts
+        // like the simeydotme CSS rather than always at the regular-holo angle.
+        let paletteAngle = variant?.recipe.shineLayers.first?.palette.angle ?? 110
 
         let content = ZStack {
             RepeatingLinearGradientView(
                 colors: paletteColors,
-                angle: 110,
+                angle: paletteAngle,
                 period: w * 1.4 // one full rainbow ≈ 1.4 card widths (source: 3 rainbows across the 400% tile)
             )
             .frame(width: CGFloat(bw), height: CGFloat(bh))
@@ -133,7 +155,11 @@ final class HoloFoilTileCache {
         .frame(width: CGFloat(bw), height: CGFloat(bh))
 
         let renderer = ImageRenderer(content: content)
-        renderer.scale = 2
+        // The foil tile is a smooth rainbow gradient (plus faint 1px scanlines),
+        // so rendering at 1× and letting SwiftUI upscale on-screen is visually
+        // identical to the old 2× but uses a quarter of the tile memory. With the
+        // LRU cap at 12 this is the single largest Swift-engine memory saving.
+        renderer.scale = 1
         guard let cg = renderer.cgImage else { return nil }
         let img = NSImage(cgImage: cg, size: NSSize(width: CGFloat(bw), height: CGFloat(bh)))
         tiles[key] = img
@@ -151,10 +177,161 @@ final class HoloFoilTileCache {
 // background colour mode uses a mild, colour-preserving treatment that is
 // visible at rest (real reverse holo foils the whole card), and never rotates
 // the user's chosen hue.
+// MARK: - Per-layer shine tiles (faithful layer stack)
+
+// The web (simeydotme CSS) renders each variant as a STACK of shine layers,
+// each with its own gradient, `mix-blend-mode`, and `filter`. To match that in
+// SwiftUI without per-frame Canvas redraw (the original hover-lag source), we
+// pre-render each layer's pure gradient once into a `2w × 2h` tile and stack
+// them with their blend modes + per-layer parallax. The cursor only moves cheap
+// transforms (offset/hue), so the heavy drawing is cached.
+@MainActor
+final class HoloShineLayerTileCache {
+    static let shared = HoloShineLayerTileCache()
+
+    private var tiles: [TileKey: NSImage] = [:]
+    private var order: [TileKey] = []
+    private let limit = 18
+
+    struct TileKey: Hashable {
+        let variant: String
+        let index: Int
+        let w: Int
+        let h: Int
+    }
+
+    func tile(variant: HoloVariant, layerIndex: Int, w: CGFloat, h: CGFloat) -> NSImage? {
+        guard layerIndex >= 0, layerIndex < variant.recipe.shineLayers.count else { return nil }
+        let bw = Int((w * 2).rounded())
+        let bh = Int((h * 2).rounded())
+        guard bw > 0, bh > 0 else { return nil }
+        let key = TileKey(variant: variant.rawValue, index: layerIndex, w: bw, h: bh)
+        if let cached = tiles[key] {
+            order.removeAll { $0 == key }
+            order.append(key)
+            return cached
+        }
+        let layer = variant.recipe.shineLayers[layerIndex]
+        // `visibleWidth = w` keeps the stripe density identical to the preview
+        // swatch (which draws at the visible width) while the 2× canvas gives
+        // parallax headroom so the rainbow can slide without exposing an edge.
+        // The layer's own `filter` (brightness/contrast/saturation) is baked in
+        // here so the single-Canvas stack (which composites with the reliable
+        // `GraphicsContext.blendMode`) doesn't need per-draw filters.
+        let content = ShineLayerTileCanvas(layer: layer, size: CGSize(width: bw, height: bh), visibleWidth: w)
+            .frame(width: CGFloat(bw), height: CGFloat(bh))
+        let renderer = ImageRenderer(content: content)
+        renderer.scale = 1
+        guard let cg = renderer.cgImage else { return nil }
+        var img = NSImage(cgImage: cg, size: NSSize(width: bw, height: bh))
+        // Apply the layer's `filter` as a true CSS-style brightness/contrast/
+        // saturation (multiplicative around 0.5), NOT SwiftUI's additive
+        // `.brightness()` — additive darkens dark palettes toward black, which is
+        // what made cosmos / v-full-art / shiny render as nothing.
+        img = Self.cssFiltered(img, layer.filter)
+        tiles[key] = img
+        order.append(key)
+        if order.count > limit { tiles[order.removeFirst()] = nil }
+        return img
+    }
+
+    // CSS-accurate brightness/contrast/saturation via a Core Image color matrix.
+    // brightness & contrast are multiplicative (CSS `brightness(N)` scales RGB,
+    // `contrast(N)` pivots at 0.5); saturation is the standard luma mix. SwiftUI's
+    // `.brightness()` is additive and would clamp dark colors to black, so we avoid it.
+    private static func cssFiltered(_ img: NSImage, _ f: HoloFilterRecipe) -> NSImage {
+        guard (f.brightness != 1.0 || f.contrast != 1.0 || f.saturation != 1.0),
+              let cg = img.cgImage(forProposedRect: nil, context: nil, hints: nil) else { return img }
+        let ci = CIImage(cgImage: cg)
+        let filter = CIFilter.colorMatrix()
+        let bc = f.brightness * f.contrast
+        let s = max(0.0, f.saturation)
+        let lr: CGFloat = 0.2126, lg: CGFloat = 0.7152, lb: CGFloat = 0.0722
+        filter.rVector = CIVector(x: (lr + s * (1 - lr)) * bc, y: lg * (1 - s) * bc, z: lb * (1 - s) * bc, w: 0)
+        filter.gVector = CIVector(x: lr * (1 - s) * bc, y: (lg + s * (1 - lg)) * bc, z: lb * (1 - s) * bc, w: 0)
+        filter.bVector = CIVector(x: lr * (1 - s) * bc, y: lg * (1 - s) * bc, z: (lb + s * (1 - lb)) * bc, w: 0)
+        filter.aVector = CIVector(x: 0, y: 0, z: 0, w: 1)
+        let bias = 0.5 * (1 - f.contrast)
+        filter.biasVector = CIVector(x: bias, y: bias, z: bias, w: 0)
+        filter.inputImage = ci
+        guard let out = filter.outputImage,
+              let cgOut = CIContext(options: nil).createCGImage(out, from: out.extent) else { return img }
+        return NSImage(cgImage: cgOut, size: img.size)
+    }
+
+    func flush() {
+        tiles.removeAll()
+        order.removeAll()
+    }
+}
+
+/// One shine layer drawn to a Canvas — identical maths to `HoloShineCanvasLayer`
+/// (the preview swatch renderer) but rendered at an arbitrary size with a
+/// caller-supplied `visibleWidth` so the stripe density matches the card while
+/// the canvas is oversized for parallax.
+private struct ShineLayerTileCanvas: View {
+    let layer: HoloShineLayer
+    let size: CGSize
+    let visibleWidth: CGFloat
+
+    var body: some View {
+        Canvas { ctx, _ in
+            let rect = CGRect(origin: .zero, size: size)
+            if let radial = layer.radial {
+                let stops = radial.stops.map { Gradient.Stop(color: $0.1, location: $0.0) }
+                let radius = hypot(size.width, size.height)
+                let center = CGPoint(x: size.width * layer.basePositionX,
+                                     y: size.height * layer.basePositionY)
+                ctx.fill(
+                    Path(rect),
+                    with: .radialGradient(
+                        Gradient(stops: stops),
+                        center: center,
+                        startRadius: 0,
+                        endRadius: radius
+                    )
+                )
+            } else {
+                let palette = layer.palette
+                guard !palette.colors.isEmpty else { return }
+                let stops = palette.colors.enumerated().map {
+                    Gradient.Stop(color: $0.1, location: CGFloat($0.0) / CGFloat(max(palette.colors.count - 1, 1)))
+                }
+                let period = visibleWidth / CGFloat(max(palette.colors.count, 1))
+                let cover = hypot(size.width, size.height) + period * 4
+                let center = CGPoint(x: size.width * layer.basePositionX,
+                                     y: size.height * layer.basePositionY)
+                ctx.translateBy(x: center.x, y: center.y)
+                ctx.rotate(by: .degrees(palette.angle))
+                ctx.translateBy(x: -center.x, y: -center.y)
+                var x = -cover / 2
+                let endX = cover / 2
+                while x < endX {
+                    ctx.fill(
+                        Path(CGRect(x: x, y: -cover, width: period, height: cover * 2)),
+                        with: .linearGradient(
+                            Gradient(stops: stops),
+                            startPoint: CGPoint(x: x, y: -cover),
+                            endPoint: CGPoint(x: x + period, y: -cover)
+                        )
+                    )
+                    x += period
+                }
+            }
+        }
+    }
+}
+
 struct HoloFoilContrastModifier: ViewModifier {
     let isReverse: Bool
     let isRegularHolo: Bool
     let isRadiant: Bool
+    let isAmazingRare: Bool
+    let isShinyRare: Bool
+    let isVFullArt: Bool
+    let isCosmos: Bool
+    let isRainbowHolo: Bool
+    let isLayered: Bool
     let revRainbow: Bool
     let pfc: CGFloat
 
@@ -164,15 +341,34 @@ struct HoloFoilContrastModifier: ViewModifier {
                 .contrast(2.75)
                 .saturation(0.65)
                 .brightness(-0.4 + pfc * 0.25)
-        } else if isReverse || isRegularHolo || isRadiant {
+        } else if isCosmos {
+            // Cosmos is a live, pointer-tracking shine (`cosmosShine`): a bright
+            // 82deg rainbow + a cyan radial glow. The element-level modifier must
+            // NOT darken it (additive `.brightness()` blacked out the galaxy), so
+            // only a mild CSS-like contrast/saturation lift for the colour-dodge.
+            content
+                .contrast(1.2)
+                .saturation(1.1)
+        } else if isLayered {
+            // The layered stack already carries each layer's own CSS-accurate
+            // `filter` (brightness/contrast/saturation, now applied multiplicatively
+            // in the tile cache). The element-level modifier therefore only adds a
+            // mild CSS-like contrast/saturation lift for the colour-dodge — NO
+            // additive `.brightness()` (that darkened dark palettes to black, which
+            // made cosmos / v-full-art / shiny render as nothing).
+            content
+                .contrast(1.35)
+                .saturation(1.15)
+        } else if isReverse || isRegularHolo || isRadiant || isAmazingRare || isShinyRare || isVFullArt || isRainbowHolo {
             // Reverse Holo / Holofoil Rare bake their own source-faithful filter
             // into the live shine (`reverseShine` / `regularHoloShine`) before
-            // the colour-dodge, so the body-level modifier is a no-op here to
-            // avoid double-applying the generic high-contrast "blowout".
+            // the colour-dodge, so the body-level modifier is a no-op (brightness
+            // only) here to avoid double-applying the generic high-contrast
+            // "blowout". Only the pointer-from-center brightness lift (base.css) is kept.
             content
                 .contrast(1.0)
                 .saturation(1.0)
-                .brightness(0.0)
+                .brightness(-0.4 + pfc * 0.25)
         } else {
             content
                 .contrast(2.75)
@@ -244,9 +440,15 @@ struct HoloFoilLayers: View, Equatable {
     var allowBump: Bool = true
 
     var body: some View {
-        let isReverse = (settings.randomization?.variant == .reverseSwift)
+        let isReverse = (settings.randomization?.variant == .reverseHolo)
         let isRegularHolo = (settings.randomization?.variant == .regularHolo)
-        let isRadiant = (settings.randomization?.variant == .radiantHolo)
+        let isRadiant = false
+        let isAmazingRare = false
+        let isShinyRare = false
+        let isVFullArt = false
+        let isCosmos = false
+        let isRainbowHolo = (settings.randomization?.variant == .rainbowHolo)
+        let isLayered = false
         let revRainbow = isReverse && settings.reverseColorMode == .rainbow
         let hueDegrees = (pointerX - 0.5) * settings.hueCycles * 360 + (pointerY - 0.5) * settings.hueCycles * 360
         let regionFoil = ZStack {
@@ -347,7 +549,7 @@ struct HoloFoilLayers: View, Equatable {
         // (.65) keeps the rainbow from becoming a saturated wash.
         // SwiftUI's `.brightness` is additive (-1..1); CSS `brightness(N)`
         // is multiplicative so 0.85 → -0.15 (slight dim before dodge).
-        .modifier(HoloFoilContrastModifier(isReverse: isReverse, isRegularHolo: isRegularHolo, isRadiant: isRadiant, revRainbow: revRainbow, pfc: pointerFromCenter))
+        .modifier(HoloFoilContrastModifier(isReverse: isReverse, isRegularHolo: isRegularHolo, isRadiant: isRadiant, isAmazingRare: isAmazingRare, isShinyRare: isShinyRare, isVFullArt: isVFullArt, isCosmos: isCosmos, isRainbowHolo: isRainbowHolo, isLayered: isLayered, revRainbow: revRainbow, pfc: pointerFromCenter))
         // Blend mode. Reverse Holo uses `color-dodge` (source-faithful blowout).
         // Holofoil Rare also uses `color-dodge` in the source, but that blend
         // LIGHTENS — over our bright/white card art a bright rainbow blows
@@ -356,7 +558,7 @@ struct HoloFoilLayers: View, Equatable {
         // rainbow itself, so the full diagonal rainbow reads across the bright
         // card. Trade-off: pure-black art areas go black (no rainbow there),
         // which is acceptable since our cards are predominantly light.
-        .blendMode(isRadiant ? .screen : .colorDodge)
+                    .blendMode(.colorDodge)
         // Angular hue shift: rotate the whole rainbow as the cursor moves.
         // `settings.hueCycles` full 360° rotations occur as the cursor travels
         // from one edge to the opposite edge along each axis (both axes
@@ -365,7 +567,13 @@ struct HoloFoilLayers: View, Equatable {
         // shift; the default of 4 makes the rainbow cycle four times across the
         // card. Pure GPU color filter on the pre-rendered tiles — no re-render
         // per cursor event.
-        .hueRotation(.degrees(revRainbow || (!isReverse && !isRegularHolo) ? hueDegrees : 0))
+        // `hueRotation` rotates the WHOLE foil. For variants whose foil is a
+        // fixed rainbow (regularHolo-like) that's correct, but for variants that
+        // carry a texture (cosmos) the texture — not the rainbow — must be the
+        // colour/hue carrier (mirrors reverseSwift's `.colorMultiply`/`rainbowHue`
+        // on its texture). So cosmos is excluded here; its texture is hued inside
+        // `cosmosShine`.
+        .hueRotation(.degrees(revRainbow || (!isReverse && !isRegularHolo && !isCosmos && !isRainbowHolo && !isAmazingRare && !isShinyRare && !isVFullArt) ? hueDegrees : 0))
 
         // Glare — `.card__glare` is a SEPARATE element in the source, blended
         // `overlay` (not colour-dodge) on top of the foil. For Holofoil Rare it
@@ -377,8 +585,13 @@ struct HoloFoilLayers: View, Equatable {
                 regularHoloGlare(w: w, h: h)
                     .blendMode(.overlay)
             }
+            if isRainbowHolo {
+                rainbowHoloGlare(w: w, h: h)
+                    .blendMode(.hardLight)
+            }
             if isRadiant {
                 radiantGlare(w: w, h: h)
+                    .blendMode(.hardLight)
             }
         }
     }
@@ -413,7 +626,7 @@ struct HoloFoilLayers: View, Equatable {
         // Reverse Holo / Holofoil Rare have their own internal parallax (the
         // rainbow/beam slide in `reverseShine` / `regularHoloShine`); adding
         // the global shear would double the motion.
-        if variant == .reverseSwift || variant == .regularHolo { return .zero }
+        if variant == .reverseHolo || variant == .regularHolo { return .zero }
         let cx = (pointerX - 0.5) * 2.6
         let cy = (pointerY - 0.5) * 3.5
         // Tilt contributes ~0.05× the rotation in degrees → points. At max
@@ -473,15 +686,14 @@ struct HoloFoilLayers: View, Equatable {
     /// the art where the texture-masked foil is opaque-bright, and leaves
     /// transparent (dark-texture) areas exactly untouched.
     ///
-    ///   1. **Texture-masked rainbow tile** (`HoloFoilTileCache.tile`) —
-    ///      rainbow gradient masked by the texture PNG. Bright PNG pixels
-    ///      = opaque rainbow visible there; dark pixels = transparent (art
-    ///      shows through). Scanlines blended on top via `.overlay` inside
-    ///      the tile. When `variant` is set, its first shine-layer palette
-    ///      replaces the default `violet/blue/.../red` rainbow — this is
-    ///      the per-card variation: a pure COLOUR swap of the same
-    ///      texture-gated payoff, not a separate layer (no rainbow drawn
-    ///      outside the texture).
+    ///   1. **Per-layer shine stack** — for the layered variants (cosmos,
+    ///      rainbow, shiny, v-full-art, secret, amazing) each `HoloShineLayer`
+    ///      of the variant recipe is a cached `2w×2h` gradient tile, composited
+    ///      bottom-up with its own `blendMode` + `filter` (`layeredShine`),
+    ///      faithfully reproducing the simeydotme CSS `.card__shine` layer stack
+    ///      (and the preview swatch). The `holo_*.png` texture tile
+    ///      (`HoloFoilTileCache.tile`) is retained only as the normal map for the
+    ///      optional Metal bump relief, not as the visible foil.
     ///   2. **Specular sweep band** — a narrow white strip that follows the
     ///      cursor across the masked region. Source's specular-light feel;
     ///      LIFT ONLY at the cursor location, no darkening elsewhere.
@@ -496,11 +708,11 @@ struct HoloFoilLayers: View, Equatable {
     @MainActor
     @ViewBuilder
     private func regionLayer(_ pattern: HoloPattern, variant: HoloVariant?, intensity: Double, mask: NSImage, w: CGFloat, h: CGFloat) -> some View {
-        let isReverse = (variant == .reverseSwift)
+        let isReverse = (variant == .reverseHolo)
         // Holofoil Rare (regularHolo) is also a live, pointer-driven shine
         // (`regularHoloShine`), so it shares Reverse Holo's "no baked tile"
         // treatment. Every other variant uses the pre-rendered tile.
-        let isLiveShine = isReverse || variant == .regularHolo || variant == .radiantHolo
+        let isLiveShine = isReverse || variant == .regularHolo
         // Reverse Holo / Holofoil Rare are rendered as live, pointer-driven
         // shines — no baked tile, because the moving highlight must track the
         // cursor. Every other variant uses the pre-rendered tile.
@@ -540,7 +752,7 @@ struct HoloFoilLayers: View, Equatable {
     /// and unconditionally for Reverse Holo.
     @ViewBuilder
     private func parallaxLayer(pattern: HoloPattern, variant: HoloVariant?, intensity: Double, mask: NSImage, w: CGFloat, h: CGFloat, textureTile: NSImage?, bandWidth: CGFloat) -> some View {
-        if let variant, variant == .reverseSwift {
+        if let variant, variant == .reverseHolo {
             // Live, pointer-driven Reverse Holo shine (reverse-holo.css).
             reverseShine(w: w, h: h)
                 .frame(width: w * 2, height: h * 2)
@@ -548,9 +760,11 @@ struct HoloFoilLayers: View, Equatable {
             // Live, pointer-driven Holofoil Rare shine (regular-holo.css).
             regularHoloShine(w: w, h: h)
                 .frame(width: w * 2, height: h * 2)
-        } else if let variant, variant == .radiantHolo {
-            // Live, pointer-driven Radiant shine (radiant-holo.css).
-            radiantShine(w: w, h: h)
+        } else if let variant, variant == .rainbowHolo {
+            // Live, pointer-driven Rainbow Rare shine (rare-rainbow.css): glitter
+            // texture + 7-hue rainbow with `luminosity`/`soft-light` blends, a
+            // `:after` colour-dodge rainbow, and an illusion-mask `:before`.
+            rainbowHoloShine(w: w, h: h)
                 .frame(width: w * 2, height: h * 2)
         } else if let tile = textureTile {
             Image(nsImage: tile)
@@ -560,8 +774,8 @@ struct HoloFoilLayers: View, Equatable {
         // Sweep band for the rainbow variants (subtle gloss). Suppressed for
         // Reverse Holo and Holofoil Rare — their moving highlight comes from
         // their live shines (the rainbow slide / the vertical beam bars).
-        let isReverse = (variant == .reverseSwift)
-        let bandPeak: Double = (isReverse || variant == .regularHolo) ? 0.0 : 0.7
+        let isReverse = (variant == .reverseHolo)
+        let bandPeak: Double = (isReverse || variant == .regularHolo || variant == .rainbowHolo) ? 0.0 : 0.7
         let bandW: CGFloat = bandWidth
         if bandPeak > 0 {
             LinearGradient(
@@ -577,6 +791,8 @@ struct HoloFoilLayers: View, Equatable {
             .offset(x: (pointerX - 0.5) * w * 2)
         }
     }
+
+
 
     /// Source-faithful Reverse Holo `.card__shine` (reverse-holo.css), built
     /// LIVE (not a baked NSImage) so the highlight tracks the cursor:
@@ -781,6 +997,10 @@ struct HoloFoilLayers: View, Equatable {
                 // gaps -> transparent, so the card art shows through; no
                 // rainbow-coloured diagonals, just a hue on the bright metal).
                 rainbowHue(period: period, w: w, h: h)
+            case .random:
+                // Random per-card hue: same heightmap-gated rainbow as `.rainbow`;
+                // the per-card hue variation is applied via the outer hueRotation.
+                rainbowHue(period: period, w: w, h: h)
             case .background:
                 // Same greyscale metallic lattice as rainbow's base, but shown
                 // (no hue) so the background variant reads as neutral metal.
@@ -824,98 +1044,20 @@ struct HoloFoilLayers: View, Equatable {
     // layers a 55° spectral rainbow (hard-lighted) on top. Both are
     // `color-dodge`d onto the art. `.card__shine:before` / `.card__glare`
     // add the cursor glow (overlay / hard-light) — handled by `radiantGlare`.
-    @ViewBuilder
-    private func radiantShine(w: CGFloat, h: CGFloat) -> some View {
-        // Everything is drawn additively (`.screen`) into one canvas, then the
-        // whole canvas is `.screen`'d onto the (dark) card. `screen` keeps the
-        // colours close to their literal values — so the pastel spectrum stays
-        // pastel and the lattice reads as soft silver, unlike `color-dodge`
-        // which blows pastels into neon.
-        let glowCenter = CGPoint(x: pointerX * 0.5 + 0.25,
-                                 y: pointerY * 0.5 + 0.25)
-        let latticePeriod = w * 0.085
-        let lineWidth = max(1.0, w * 0.007)
-        let specPar = -2.5
-        let specPeriod = w * 0.5
-        // Lattice slides with the pointer (parallax).
-        let latOff = (pointerX - 0.5) * latticePeriod * 2.0
 
-        return Canvas { ctx, size in
-            let rect = CGRect(origin: .zero, size: size)
-            let cover = hypot(size.width, size.height)
 
-            // Rotate about the centre, run `body`, then undo the transform.
-            func rotate(_ angle: Double, _ body: () -> Void) {
-                ctx.translateBy(x: size.width / 2, y: size.height / 2)
-                ctx.rotate(by: .degrees(angle))
-                ctx.translateBy(x: -size.width / 2, y: -size.height / 2)
-                body()
-                ctx.translateBy(x: size.width / 2, y: size.height / 2)
-                ctx.rotate(by: .degrees(-angle))
-                ctx.translateBy(x: -size.width / 2, y: -size.height / 2)
-            }
 
-            ctx.blendMode = .screen
 
-            // 1. Cyan cursor glow (`.card__shine` radial, `--card-glow` cyan).
-            let glow = Gradient(stops: [
-                Gradient.Stop(color: Color(hue: 0.5, saturation: 0.9, brightness: 0.95).opacity(0.95), location: 0.0),
-                Gradient.Stop(color: Color(hue: 0.5, saturation: 0.8, brightness: 0.55).opacity(0.0), location: 1.0),
-            ])
-            ctx.fill(Path(rect), with: .radialGradient(glow,
-                                                     center: CGPoint(x: glowCenter.x * size.width,
-                                                                     y: glowCenter.y * size.height),
-                                                     startRadius: 0,
-                                                     endRadius: max(size.width, size.height) * 0.9))
 
-            // 2. Criss-cross silver lattice (two diagonal line families).
-            for family in [45.0, -45.0] {
-                rotate(family) {
-                    var y = -cover
-                    while y < cover {
-                        let yy = y + latOff
-                        let path = Path { p in
-                            p.move(to: CGPoint(x: -cover, y: yy))
-                            p.addLine(to: CGPoint(x: cover, y: yy))
-                        }
-                        ctx.stroke(path, with: .color(Color(white: 0.92).opacity(0.32)),
-                                   lineWidth: lineWidth)
-                        y += latticePeriod
-                    }
-                }
-            }
 
-            // 3. Pastel spectrum sheen (`.card__shine:after`, 55°, low alpha).
-            let spectrum: [Color] = [
-                Color(hue: 0.99, saturation: 0.55, brightness: 0.92).opacity(0.18),
-                Color(hue: 0.15, saturation: 0.55, brightness: 0.86).opacity(0.18),
-                Color(hue: 0.27, saturation: 0.55, brightness: 0.86).opacity(0.18),
-                Color(hue: 0.49, saturation: 0.55, brightness: 0.90).opacity(0.18),
-                Color(hue: 0.63, saturation: 0.55, brightness: 0.88).opacity(0.18),
-                Color(hue: 0.79, saturation: 0.55, brightness: 0.86).opacity(0.18),
-                Color(hue: 0.99, saturation: 0.55, brightness: 0.92).opacity(0.18),
-            ]
-            rotate(55) {
-                let span = cover * 2
-                let grad = Gradient(colors: spectrum)
-                let ox = (pointerX - 0.5) * specPar * size.width
-                let oy = (pointerY - 0.5) * specPar * size.height
-                ctx.translateBy(x: ox, y: oy)
-                var x = -span
-                while x < span {
-                    ctx.fill(Path(CGRect(x: x, y: -span, width: specPeriod, height: span * 2)),
-                             with: .linearGradient(grad,
-                                                  startPoint: CGPoint(x: x, y: -span),
-                                                  endPoint: CGPoint(x: x + specPeriod, y: -span)))
-                    x += specPeriod
-                }
-                ctx.translateBy(x: -ox, y: -oy)
-            }
-
-            ctx.blendMode = .normal
-        }
-        .frame(width: w * 2, height: h * 2)
-        .compositingGroup()
+    // Rainbow Rare foil textures, bundled in `Resources/HoloPatterns/`.
+    private static var holoPatternCache: [String: NSImage] = [:]
+    private static func holoPatternTexture(_ name: String) -> NSImage? {
+        if let cached = holoPatternCache[name] { return cached }
+        guard let path = Bundle.main.path(forResource: name, ofType: "png"),
+              let img = NSImage(contentsOfFile: path) else { return nil }
+        holoPatternCache[name] = img
+        return img
     }
 
     /// Radiant glare — `.card__shine:before` (glitter + cursor radial,
@@ -923,33 +1065,21 @@ struct HoloFoilLayers: View, Equatable {
     /// outside the colour-dodge group so each keeps its own blend.
     @ViewBuilder
     private func radiantGlare(w: CGFloat, h: CGFloat) -> some View {
-        ZStack {
-            // `.card__shine:before` — soft cursor radial (overlay).
-            RadialGradient(
-                stops: [
-                    Gradient.Stop(color: Color(white: 0.58).opacity(0.8), location: 0.10),
-                    Gradient.Stop(color: Color(white: 0.20).opacity(0.9), location: 0.20),
-                    Gradient.Stop(color: Color(white: 0.20).opacity(0.5), location: 0.50),
-                ],
-                center: UnitPoint(x: pointerX, y: pointerY),
-                startRadius: 0,
-                endRadius: max(w, h) * 0.9
-            )
-            .blendMode(.overlay)
-            .frame(width: w * 2, height: h * 2)
-            // `.card__glare` — cursor radial, `hard-light`.
-            RadialGradient(
-                stops: [
-                    Gradient.Stop(color: Color.white.opacity(0.33), location: 0.0),
-                    Gradient.Stop(color: Color(white: 0.25), location: 1.10),
-                ],
-                center: UnitPoint(x: pointerX, y: pointerY),
-                startRadius: 0,
-                endRadius: max(w, h) * 0.9
-            )
-            .blendMode(.hardLight)
-            .frame(width: w * 2, height: h * 2)
-        }
+        // Web `.card[data-rarity="radiant rare"] .card__glare`: a cursor-centred
+        // white radial, `hard-light`. (The grey `:before` glitter radial lives in
+        // `radiantShine`, not here — duplicating it here veiled the whole card.)
+        RadialGradient(
+            stops: [
+                Gradient.Stop(color: Color.white.opacity(0.33), location: 0.0),
+                Gradient.Stop(color: Color.white.opacity(0.33), location: 0.25),
+                Gradient.Stop(color: Color(white: 0.0).opacity(0.0), location: 1.10),
+            ],
+            center: UnitPoint(x: pointerX, y: pointerY),
+            startRadius: 0,
+            endRadius: max(w, h) * 0.9
+        )
+        .blendMode(.hardLight)
+        .frame(width: w * 2, height: h * 2)
     }
 
     // mirroring how `reverseShine` is done.
@@ -958,145 +1088,95 @@ struct HoloFoilLayers: View, Equatable {
         // Full spectral loop (red→…→red) so the rainbow reads as a smooth,
         // vivid spectrum across the card. High saturation is what makes it
         // "huge and beautiful" once multiplied onto bright card art.
-        let rainbowColors: [Color] = [
-            Color(hue: 0.00, saturation: 1.0, brightness: 1.0),
-            Color(hue: 0.15, saturation: 1.0, brightness: 1.0),
-            Color(hue: 0.33, saturation: 1.0, brightness: 1.0),
-            Color(hue: 0.50, saturation: 1.0, brightness: 1.0),
-            Color(hue: 0.66, saturation: 1.0, brightness: 1.0),
-            Color(hue: 0.83, saturation: 1.0, brightness: 1.0),
-            Color(hue: 1.00, saturation: 1.0, brightness: 1.0)
-        ]
-        // Source: one rainbow ≈ 1.4 card widths across the 400% tile; the
-        // 110° angle gives the diagonal holo read. A slightly tighter period
-        // makes the bands read as a large, obvious rainbow across the card.
-        let rainbowPeriod = w * 1.15
+        // Web `.card[data-rarity="rare holo"] .card__shine` — faithfully mirrored.
+        // Source rainbow stops (3 loops of 5 hues), 110deg.
+        let red    = Color(red: 0.972, green: 0.055, blue: 0.208)
+        let yellow = Color(red: 0.933, green: 0.875, blue: 0.063)
+        let green  = Color(red: 0.129, green: 0.914, blue: 0.522)
+        let blue   = Color(red: 0.051, green: 0.741, blue: 0.914)
+        let violet = Color(red: 0.788, green: 0.161, blue: 0.945)
+        let rainbowColors: [Color] = [violet, blue, green, yellow, red]
+
+        // Source `background-size: 400% 400%` with a 15-stop (3-loop) repeating
+        // gradient ⇒ one full 5-hue loop spans ≈ 1.33 card widths.
+        let rainbowPeriod = w * 1.33
         // Source `background-position`: ((50% - x) * 2.6) + 50% , ((50% - y) * 3.5) + 50%.
-        // The +50% is "centred"; we express the slide as a point offset. The
-        // rainbow layer is oversized (4w×4h) so the offset never exposes an edge
-        // (the gradient repeats).
         let rainbowOffset = CGSize(
             width: (0.5 - pointerX) * w * 2.6,
             height: (0.5 - pointerY) * h * 3.5
         )
 
-        // Scanline density: higher setting -> finer (smaller period) lines.
-        // The scanlines stay subtle so they don't stripe the rainbow away.
-        let scanlinePeriod = max(2.0, (max(3.0, w * 0.015)) / max(0.05, settings.holofoilRareScanlineDensity))
-        // Beam strength scales the bar colour's lightness (0 -> invisible).
-        // Kept low so the beam reads as a subtle moving highlight, not a set of
-        // dark bars that punch holes in the rainbow.
-        let barLightness = 0.35 * max(0.0, min(1.0, settings.holofoilRareBeamStrength))
-        // Intensity (0…2): drives the colour-dodge "blowout". The brightness /
-        // contrast / saturation below make the rainbow vivid through the dodge;
-        // values above 1 overdrive it for an even more saturated holo.
+        // Scanlines (`--scanlines-space: 1px` ⇒ 2px dark / 2px light, 90deg).
+        let scanlinePeriod = max(2.0, (w * 0.013) / max(0.05, settings.holofoilRareScanlineDensity))
+
+        // Beam bars (`--bars: 3%`, `--bar-color: hsl(0,0%,70%)`, `--bar-bg: black`).
+        let barColor = Color(white: 0.70)
+        let barBg = Color.black
         let i = settings.holofoilRareIntensity
         let over = max(0.0, i - 1.0)
-        // Multiply model (not colour-dodge): the rainbow must stay saturated and
-        // only mildly contrasted so it multiplies onto bright art as vivid colour
-        // instead of washing to grey. Values > 1 (intensity overdrive) push
-        // saturation/contrast harder for an even richer holo.
-        // colour-dodge model (same as Reverse Holo, which works on your art):
-        // keep the foil bright and saturation cranked so the dodge resolves to a
-        // vivid rainbow on dark art instead of washing out. Intensity > 1
-        // overdrives saturation/contrast for an even richer holo.
-        let shineBrightness = 0.0
-        let shineContrast = 1.5 + over * 0.5
-        let shineSaturation = 3.0 + over * 1.0
-        let shineAlpha = min(1.0, i)
 
         ZStack {
-            // `.card__shine` — rainbow + scanlines + beam bars + radial, carrying
-            // the source's brightness(1.1) contrast(1.1) saturate(1.2) filter
-            // (boosted here so the colour-dodge onto the art reads as a vivid
-            // rainbow rather than a washed-out grey).
+            // Base `.card__shine`: rainbow + scanlines, `background-blend-mode: overlay`.
             ZStack {
-                // Base `.card__shine` — rainbow + scanlines. Source `90deg`
-                // scanlines are VERTICAL bands; our `90` would render them
-                // horizontal, so we use `0` to match the source.
-                ZStack {
-                    RepeatingLinearGradientView(colors: rainbowColors, angle: 110, period: rainbowPeriod)
-                        .frame(width: w * 4, height: h * 4)
-                        .offset(rainbowOffset)
-                        // Mirror Reverse Holo's proven rainbow: `screen` so the
-                        // spectrum is bright (colour-dodge onto dark art then
-                        // reads as a vivid rainbow, not a dim wash).
-                        .blendMode(.screen)
-                        .opacity(shineAlpha)
-                        // Gate the rainbow to the holofoil's vertical-stripe
-                        // texture: it shows only in the "clear" (lit) bands
-                        // between the dark stripe lines — so it reads as a
-                        // holographic shimmer on the texture, not a flat wash
-                        // across the whole image. Mask is sized to the oversized
-                        // rainbow frame so the cursor slide never exposes an
-                        // unmasked edge.
-                        .mask(
-                            // Mostly-lit vertical-stripe mask: the rainbow shows
-                            // in ~75% of the card (the "clear" bands) and is
-                            // gated out only on the thin dark stripe lines. This
-                            // keeps the rainbow HUGE while still reading as a
-                            // holographic texture, not a flat wash.
-                            RepeatingLinearGradientView(
-                                colors: [Color(white: 1.0), Color(white: 1.0), Color(white: 1.0), Color(white: 0.0)],
-                                angle: 0,
-                                period: scanlinePeriod
-                            )
-                            .frame(width: w * 4, height: h * 4)
-                        )
-                    RepeatingLinearGradientView(
-                        colors: [Color(white: 0.15), Color(white: 0.32)],
-                        angle: 0, period: scanlinePeriod
-                    )
-                    .frame(width: w * 2, height: h * 2)
-                    .blendMode(.overlay)
-                }
-
-                // `:before` — vertical beam bars. Two `90deg` black/grey bar
-                // gradients (source `--bar-color: 70% grey`, `--bars: 3%`),
-                // screen-blended together, then the whole element `hard-light`s
-                // onto the base — the moving "beam" the source slides via
-                // background-position. Source angle is `90deg` -> vertical.
-                ZStack {
-                    RepeatingLinearGradientView(
-                        colors: [Color.black, Color(white: barLightness)],
-                        angle: 0, period: w * 0.06
-                    )
-                    .frame(width: w * 2, height: h * 2)
-                    .offset(x: (0.5 - pointerX) * w * 1.65 + pointerY * h * 0.5,
-                            y: 0)
-                    RepeatingLinearGradientView(
-                        colors: [Color.black, Color(white: barLightness)],
-                        angle: 0, period: w * 0.06
-                    )
-                    .frame(width: w * 2, height: h * 2)
-                    .offset(x: (0.5 - pointerX) * -w * 0.9 - pointerY * h * 0.75,
-                            y: 0)
-                    .blendMode(.screen)
-                }
-                .blendMode(.hardLight)
-
-                // NOTE: the source's `:after` radial uses `luminosity`, which
-                // takes the radial's (mostly dark) luminance and crushes the
-                // rainbow to near-black except a tiny centre spot. Over our
-                // darker card art that erases the rainbow entirely, so we omit
-                // it here — the glare sibling already supplies the moving
-                // highlight. Re-add subtly only if the art proves bright enough.
+                RepeatingLinearGradientView(colors: rainbowColors, angle: 110, period: rainbowPeriod)
+                    .frame(width: w * 4, height: h * 4)
+                    .offset(rainbowOffset)
+                    // Colour-dodge of a full-brightness rainbow onto bright art
+                    // blows out to white, so the rainbow itself must be dimmed
+                    // (hue/saturation preserved) before the dodge. This is the
+                    // main lever that keeps Holofoil Rare a vivid shimmer instead
+                    // of a burned wash.
+                    .brightness(0.5)
+                RepeatingLinearGradientView(
+                    colors: [barBg, barColor],
+                    angle: 90, period: scanlinePeriod
+                )
+                .frame(width: w * 4, height: h * 4)
+                .blendMode(.overlay)
             }
-            // Source `.card__shine` filter: brightness(1.1) contrast(1.1)
-            // saturate(1.2) — matched to Reverse Holo's vivid colour-dodge
-            // recipe (bright + high saturation).
-            .colorMultiply(Color(white: 0.8))
-            .brightness(shineBrightness)
-            .contrast(shineContrast)
-            .saturation(shineSaturation)
-            // Flatten the internal overlay/hardLight/screen blends into one
-            // layer so they composite among themselves (not onto the card art)
-            // before the external `.colorDodge` is applied.
-            .compositingGroup()
+            // Source `filter: brightness(1.1) contrast(1.1) saturate(1.2)`, but the
+            // rainbow is already dimmed (see above) before the colour-dodge, so we
+            // keep the element filter mild to avoid re-blowing it out.
+            .brightness(0.95)
+            .contrast(1.0)
+            .saturation(1.05 + over * 0.3)
+
+            // `:before` — two vertical beam bars, `background-blend-mode: screen`,
+            // `mix-blend-mode: hard-light`.
+            ZStack {
+                RepeatingLinearGradientView(colors: [barBg, barColor], angle: 90, period: w * 0.06)
+                    .frame(width: w * 2, height: h * 2)
+                    .offset(x: (0.5 - pointerX) * w * 1.65 + pointerY * h * 0.5, y: 0)
+                RepeatingLinearGradientView(colors: [barBg, barColor], angle: 90, period: w * 0.06)
+                    .frame(width: w * 2, height: h * 2)
+                    .offset(x: (0.5 - pointerX) * -w * 0.9 - pointerY * h * 0.75, y: 0)
+                    .blendMode(.screen)
+            }
+            .brightness(1.15)
+            .contrast(1.1)
+            .blendMode(.hardLight)
+
+            // `:after` — cursor radial, `mix-blend-mode: luminosity`,
+            // `filter: brightness(0.6) contrast(4)`. Confines the rainbow to the
+            // cursor, exactly like the web (omitting it washed the whole card in
+            // flat rainbow, which is why it never matched).
+            RadialGradient(
+                stops: [
+                    .init(color: Color(white: 0.90).opacity(0.55), location: 0.0),
+                    .init(color: Color(white: 0.78).opacity(0.08), location: 0.25),
+                    .init(color: Color(white: 0.0).opacity(1.0), location: 0.90)
+                ],
+                center: UnitPoint(x: pointerX, y: pointerY),
+                startRadius: 0,
+                endRadius: sqrt(w * w + h * h) * 0.9
+            )
+            .frame(width: w, height: h)
+            .brightness(0.4)
+            .contrast(1.5)
+            .blendMode(.luminosity)
         }
-        // User master intensity (alpha is capped at 1; the overdrive above
-        // drives the brightness/contrast/saturation instead).
-        .opacity(shineAlpha)
+        // User master intensity (alpha capped at 1; >1 overdrives saturation).
+        .opacity(min(1.0, i))
         .frame(width: w * 2, height: h * 2)
     }
 
@@ -1122,8 +1202,8 @@ struct HoloFoilLayers: View, Equatable {
         // giving the bright sweeping highlight without any darkening.
         RadialGradient(
             stops: [
-                Gradient.Stop(color: Color(hue: 0.5, saturation: 1.0, brightness: 0.95, opacity: 0.9), location: 0.0),
-                Gradient.Stop(color: Color(hue: 0.5, saturation: 0.5, brightness: 0.85, opacity: 0.25), location: 0.45),
+                Gradient.Stop(color: Color(hue: 0.5, saturation: 1.0, brightness: 0.8, opacity: 0.55), location: 0.0),
+                Gradient.Stop(color: Color(hue: 0.5, saturation: 0.5, brightness: 0.8, opacity: 0.18), location: 0.45),
                 Gradient.Stop(color: Color(hue: 0.5, saturation: 0.0, brightness: 0.7, opacity: 0.0), location: 1.0),
             ],
             center: UnitPoint(x: pointerX, y: pointerY),
@@ -1133,8 +1213,125 @@ struct HoloFoilLayers: View, Equatable {
         .blendMode(.overlay)
         .frame(width: w * 2, height: h * 2)
         // Source `.card__glare` opacity `card-opacity * .8`, scaled by the
-        // user's glare setting. No darkening filters applied.
-        .opacity(settings.holofoilRareGlare * 0.8)
+        // user's glare setting. No darkening filters applied. The 0.8 multiplier
+        // is dropped to 0.45 because the full-strength cyan glare read as a
+        // blown-out white circle on bright art.
+        .opacity(settings.holofoilRareGlare * 0.45)
+    }
+
+    /// Rainbow Rare shine — faithful to `rare-rainbow.css`:
+    ///   base `.card__shine`: linear(-45deg) 2-col gradient (bottom) +
+    ///     glitter texture (`luminosity`) + linear(-30deg) 7-col rainbow
+    ///     (`soft-light`); `filter: brightness contrast saturate`; colour-dodged
+    ///     onto the card at the layer level.
+    ///   `:before`: illusion-mask foil, `mix-blend-mode: darken`.
+    ///   `:after`:  glitter + 7-col rainbow(-60deg), `soft-light`, `colour-dodge`.
+    @ViewBuilder
+    private func rainbowHoloShine(w: CGFloat, h: CGFloat) -> some View {
+        // Source rainbow stops (r-clr-1 … r-clr-7). The web uses low lightness
+        // (~0.35) but its `brightness()` is multiplicative, so the hues survive
+        // the color-dodge. SwiftUI's additive `.brightness()` would crush these
+        // to black, so we lift the lightness here and darken multiplicatively
+        // (via `colorMultiply`) instead — keeping the rainbow visible.
+        let r1 = Color(hue: 0.000, saturation: 0.57, brightness: 0.62)
+        let r2 = Color(hue: 0.111, saturation: 0.53, brightness: 0.64)
+        let r3 = Color(hue: 0.250, saturation: 0.60, brightness: 0.60)
+        let r4 = Color(hue: 0.500, saturation: 0.60, brightness: 0.60)
+        let r5 = Color(hue: 0.500, saturation: 0.60, brightness: 0.60)
+        let r6 = Color(hue: 0.583, saturation: 0.57, brightness: 0.64)
+        let r7 = Color(hue: 0.778, saturation: 0.55, brightness: 0.56)
+        let rainbowColors: [Color] = [r1, r2, r3, r4, r5, r6, r7]
+
+        let pfc = pointerFromCenter
+        let glitter = Self.holoPatternTexture("holo_glitter")
+        let foil = Self.holoPatternTexture("holo_illusion-mask")
+
+        let rainbowPeriod = w * 1.27
+        // Source `background-position` for the -30deg rainbow:
+        //   calc(25% + (pointer-x / 2)), calc(25% + (pointer-y / 2)).
+        let rainbowOffset = CGSize(
+            width: (0.25 + pointerX * 0.5 - 0.5) * w * 2,
+            height: (0.25 + pointerY * 0.5 - 0.5) * h * 2
+        )
+        // Source `background-position` for the -45deg gradient:
+        //   calc(25% + 50%*fromLeft), calc(25% + 50%*fromTop).
+        let grad45Offset = CGSize(
+            width: (pointerX - 0.5) * w,
+            height: (pointerY - 0.5) * h
+        )
+
+        ZStack {
+            // Base `.card__shine`.
+            ZStack {
+                // bg1: -45deg 2-col gradient (bottom layer; normal blend).
+                RepeatingLinearGradientView(colors: [r1, r5], angle: -45, period: w * 2)
+                    .frame(width: w * 4, height: h * 4)
+                    .offset(grad45Offset)
+                // bg2: glitter, `luminosity` onto bg1.
+                if let glitter {
+                    Image(nsImage: glitter)
+                        .resizable(resizingMode: .tile)
+                        .frame(width: w * 4, height: h * 4)
+                        .blendMode(.luminosity)
+                }
+                // bg3: -30deg 7-col rainbow, `soft-light` onto the result.
+                RepeatingLinearGradientView(colors: rainbowColors, angle: -30, period: rainbowPeriod)
+                    .frame(width: w * 4, height: h * 4)
+                    .offset(rainbowOffset)
+                    .blendMode(.softLight)
+            }
+            // CSS `brightness(N)` is multiplicative, so use `colorMultiply` (not
+            // additive `.brightness()`, which would crush the rainbow to black).
+            .colorMultiply(Color(white: 0.8 + pfc * 0.2))
+            .contrast(1.6)
+            .saturation(1.15)
+
+            // `:before`: illusion-mask foil, `mix-blend-mode: darken`.
+            if let foil {
+                Image(nsImage: foil)
+                    .resizable()
+                    .frame(width: w * 2, height: h * 2)
+                    .brightness(0.3)
+                    .opacity((pfc + 0.4) * 0.6)
+                    .blendMode(.darken)
+            }
+
+            // `:after`: glitter + 7-col rainbow(-60deg), `soft-light`, `colour-dodge`.
+            ZStack {
+                if let glitter {
+                    Image(nsImage: glitter)
+                        .resizable(resizingMode: .tile)
+                        .frame(width: w * 2, height: h * 2)
+                }
+                RepeatingLinearGradientView(colors: rainbowColors, angle: -60, period: rainbowPeriod)
+                    .frame(width: w * 2, height: h * 2)
+                    .blendMode(.softLight)
+            }
+            .colorMultiply(Color(white: 0.75 + pfc * 0.25))
+            .contrast(1.8)
+            .saturation(1.2)
+            .blendMode(.colorDodge)
+        }
+        .frame(width: w * 2, height: h * 2)
+    }
+
+    /// Rainbow Rare glare — `.card[data-rarity="rare rainbow"] .card__glare`:
+    /// cursor radial, `mix-blend-mode: hard-light`, `filter: brightness(.9)
+    /// contrast(1.75)`, `opacity: var(--pointer-from-center) * 0.9`.
+    private func rainbowHoloGlare(w: CGFloat, h: CGFloat) -> some View {
+        RadialGradient(
+            stops: [
+                .init(color: Color(white: 0.80), location: 0.0),
+                .init(color: Color(hue: 0.519, saturation: 0.10, brightness: 0.85, opacity: 0.25), location: 0.30),
+                .init(color: Color(hue: 0.547, saturation: 0.06, brightness: 0.25), location: 1.0),
+            ],
+            center: UnitPoint(x: pointerX, y: pointerY),
+            startRadius: 0,
+            endRadius: max(w, h) * 1.2
+        )
+        .brightness(-0.1)
+        .contrast(1.75)
+        .opacity(pointerFromCenter * 0.9)
     }
 
     /// Bump layer — Metal-rendered. Synthesizes a mask-only base image
@@ -1385,5 +1582,54 @@ struct SplitMix64 {
 
     mutating func nextFloat() -> Float {
         Float(next() >> 40) / Float(1 << 24)
+    }
+}
+
+// MARK: - Swift-engine cache coordinator
+
+// Mirrors the WebView pool's idle-flush behaviour for the *native* Swift holo
+// engine (HoloFoilTileCache, HoloBumpRenderer, HoloPatternStore). Those caches
+// are bounded singletons, but unlike the WebView pool they otherwise hold their
+// warmed contents for the app's lifetime — the foil tiles alone can reach
+// hundreds of MB. This drops them after a short idle window so peak memory
+// returns to near-zero when the user isn't hovering holo cards.
+final class HoloSwiftCacheCoordinator {
+    static let shared = HoloSwiftCacheCoordinator()
+
+    private let lock = OSAllocatedUnfairLock<Date>(initialState: .distantPast)
+    private var timer: DispatchSourceTimer?
+    private let checkInterval: TimeInterval = 5
+    private let idleThreshold: TimeInterval = 8
+
+    private init() {
+        let t = DispatchSource.makeTimerSource(queue: DispatchQueue.main)
+        t.schedule(deadline: .now() + checkInterval, repeating: checkInterval)
+        t.setEventHandler { [weak self] in self?.tick() }
+        t.resume()
+        timer = t
+    }
+
+    // Called from the Swift-engine render hot paths (HoloFoilTileCache.tile and
+    // HoloBumpRenderer.render) so the "last active" timestamp stays fresh while
+    // a card is hovered — preventing a flush mid-hover.
+    func noteUsage() {
+        lock.withLock { $0 = Date() }
+    }
+
+    private func tick() {
+        guard Date().timeIntervalSince(lock.withLock { $0 }) >= idleThreshold else { return }
+        flushAll()
+    }
+
+    // Reclaim every Swift-engine cache. Safe to call from the main thread (the
+    // idle timer and the game-launch hook both run there).
+    func flushAll() {
+        MainActor.assumeIsolated {
+            HoloFoilTileCache.shared.flush()
+            HoloPatternStore.shared.flush()
+        }
+        HoloBumpRenderer.shared.flush()
+        // Largest native-engine footprint: full-res region mask NSImages.
+        HoloSaliencyService.shared.flush()
     }
 }

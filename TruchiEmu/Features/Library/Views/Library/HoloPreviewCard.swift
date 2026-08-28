@@ -5,17 +5,16 @@ import AppKit
 // onboarding wizard so the user can see what the reverse-holo looks like on the
 // box art for their chosen region before enabling the option.
 //
-// It REUSES the exact same production renderer the app uses — `HoloWebCardView`
-// (the simeydotme `pokemon-cards-css` reverse-holo). This is the source-faithful
-// reverse holo: a rainbow sheen over an etched foil, driven by the app's own
-// pointer position. We do not re-implement the foil in SwiftUI — we host the
-// same `WKWebView` the grid cards use, mirroring `HoloGameCardView`'s
-// `holoArtworkDefault` layout (cursor parallax + clip + hit-test disabled) so the
-// preview is pixel-consistent with the real cards.
+// It reuses the exact same production renderer the grid cards use — the native
+// SwiftUI/Metal `HoloFoilLayers` (the source-faithful simeydotme
+// reverse-holo shine). The legacy WKWebView renderer has been removed, so this
+// preview is now pixel-consistent with the real cards without hosting a web
+// view. `HoloGameCardView.holoArtworkDefault` mirrors this layout (cursor
+// parallax + clip + hit-test disabled).
 //
 // Aspect ratio: the three region samples have different shapes (US/EU are
 // landscape, JP is portrait). The card is sized to the image's own aspect ratio,
-// centred inside the 200×280 area, so no region is cropped or stretched — just
+// centred inside the available area, so no region is cropped or stretched — just
 // like real box-art cards keep their shape in the grid.
 //
 // Motion: by default the pointer drifts on a slow synthetic orbit (TimelineView)
@@ -44,14 +43,43 @@ struct HoloPreviewCard: View {
         return CGSize(width: h * artAspect, height: h)
     }
 
+    /// Masks for the preview foil. A solid white mask lets the reverse-holo foil
+    /// cover the whole card (the region split is irrelevant for a single demo
+    /// card); `hero` uses the supplied mask when available.
+    private func previewMasks() -> HoloMaskSet {
+        let white = NSImage(size: NSSize(width: 8, height: 8))
+        white.lockFocus()
+        NSColor.white.drawSwatch(in: NSRect(x: 0, y: 0, width: 8, height: 8))
+        white.unlockFocus()
+        return HoloMaskSet(
+            hero: heroMask ?? white,
+            title: white,
+            chrome: white,
+            background: white,
+            heroHolo: false,
+            titleBackgroundHolo: false,
+            chromeBackgroundHolo: false
+        )
+    }
+
+    /// Snapshot pinned to the reverse-holo (native) variant, so the preview
+    /// always shows the reverse-holo shine regardless of the user's roll
+    /// weights.
+    private func previewSnapshot() -> HoloSettingsSnapshot {
+        var snapshot = HoloSettingsSnapshot(from: HoloSettingsStore.shared, romID: "holo-preview")
+        snapshot.randomization = HoloCardRandomization(
+            seed: 1,
+            deviationChance: 0,
+            variantWeights: [.reverseHolo: 1.0]
+        )
+        return snapshot
+    }
+
     var body: some View {
         GeometryReader { geo in
             let w = geo.size.width
             let h = geo.size.height
             let artSize = fittedBoxartSize(image: image, w: w, h: h)
-            // Same cursor-parallax shift the production card uses (scaled to the
-            // actual art size so the foil tracks consistently across ratios).
-            let artShift = min(artSize.width, artSize.height) * 0.03
 
             ZStack {
                 // Card backing fills the (possibly letterboxed) frame so the art
@@ -65,28 +93,35 @@ struct HoloPreviewCard: View {
                     let autoY = 0.5 + 0.35 * cos(t * 0.6)
                     let px = hoverActive ? mouseNorm.x : autoX
                     let py = hoverActive ? mouseNorm.y : autoY
-                    let artPX = (0.5 - px) * artShift
-                    let artPY = (0.5 - py) * artShift
 
-                    // Reuse the production reverse-holo renderer. The web view is
-                    // sized to the art's own aspect ratio, so `cover` never crops.
-                    // Render the web view 6% LARGER than the display frame and
-                    // clip to `artSize`. This hides the parallax edge (same goal
-                    // as the grid card's offset+clipped) WITHOUT upscaling the
-                    // rendered raster — `.scaleEffect` here would blur the art.
                     ZStack {
-                        HoloWebCardView(
+                        BoxArtBaseView(
                             image: image,
-                            variantClass: "reverse-holo",
+                            normalizedMouseX: px,
+                            normalizedMouseY: py,
+                            isPressed: false,
+                            w: artSize.width,
+                            h: artSize.height,
+                            tiltEnabled: false
+                        )
+
+                        HoloFoilLayers(
+                            masks: previewMasks(),
+                            settings: previewSnapshot(),
+                            w: artSize.width,
+                            h: artSize.height,
                             pointerX: px,
                             pointerY: py,
-                            heroMask: heroMask,
-                            frameSize: CGSize(width: artSize.width * 1.06, height: artSize.height * 1.06),
-                            fitMode: .cover,
-                            isActive: true
+                            isHovered: true,
+                            allowBump: false
                         )
-                        .frame(width: artSize.width * 1.06, height: artSize.height * 1.06)
-                        .offset(x: artPX, y: artPY)
+                        .frame(width: artSize.width, height: artSize.height)
+
+                        HoloScratchLayer(w: artSize.width, h: artSize.height)
+                            .frame(width: artSize.width, height: artSize.height)
+
+                        HoloSheenEffect(pointerX: px, pointerY: py)
+                            .frame(width: artSize.width, height: artSize.height)
                     }
                     .frame(width: artSize.width, height: artSize.height)
                     .clipped()

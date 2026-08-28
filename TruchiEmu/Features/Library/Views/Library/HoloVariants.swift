@@ -14,31 +14,17 @@ import AppKit
 // HoloSettingsStore.variantWeights. Each weight is a 0..1 share; per-card
 // the variant is chosen by rolling against the weight distribution.
 enum HoloVariant: String, CaseIterable, Identifiable {
-    case regularHolo     // regular-holo.css — diagonal rainbow stripes
-    case cosmosHolo      // cosmos-holo.css — radial rainbow galaxy, 3 stacked layers
-    case rainbowHolo     // rainbow-holo.css — rainbow + glitter, 2 layers
-    case radiantHolo     // radiant-holo.css — starburst from cursor, dark gradient
-    case amazingRare     // amazing-rare.css — vertical prismatic + radial darken
-    case shinyRare       // shiny-rare.css — silver holographic, 2 layers
-    case vFullArt        // v-full-art.css — textured + 0deg rainbow + 133deg metallic
-    case secretRare      // secret-rare.css — pixelated rainbow + glitter
-    case reverseHolo     // reverse-holo.css — full-card foil, inverted mask
-    case reverseSwift    // native SwiftUI/Metal renderer — reverse-holo style foil
+    case regularHolo     // regular-holo.css — diagonal rainbow stripes (Holofoil Rare)
+    case rainbowHolo     // rainbow-holo.css — rainbow + glitter, 2 layers (Rainbow Rare)
+    case reverseHolo     // reverse-holo.css — full-card foil, inverted mask (Reverse Holo)
 
     var id: String { rawValue }
 
     var displayName: String {
         switch self {
         case .regularHolo: return "Holofoil Rare"
-        case .cosmosHolo:  return "Cosmos"
         case .rainbowHolo: return "Rainbow Rare"
-        case .radiantHolo: return "Radiant"
-        case .amazingRare: return "Amazing Rare"
-        case .shinyRare:   return "Shiny"
-        case .vFullArt:    return "V / Full Art"
-        case .secretRare:  return "Secret Rare"
         case .reverseHolo: return "Reverse Holo"
-        case .reverseSwift: return "Reverse Swift"
         }
     }
 
@@ -64,15 +50,8 @@ enum HoloVariant: String, CaseIterable, Identifiable {
     private var defaultDescription: String {
         switch self {
         case .regularHolo: return "Diagonal rainbow stripe holo foil (Regular Holo)."
-        case .cosmosHolo:  return "Radial rainbow galaxy with centered glare."
         case .rainbowHolo: return "Rainbow + glitter, two stacked layers."
-        case .radiantHolo: return "Starburst from cursor, dark gradient edges."
-        case .amazingRare: return "Vertical prismatic stripes with radial darken."
-        case .shinyRare:   return "Silver holographic, two layers."
-        case .vFullArt:    return "Textured + 0deg rainbow + 133deg metallic."
-        case .secretRare:  return "Pixelated rainbow with glitter overlay."
         case .reverseHolo: return "Full-card pattern foil with a moving silver/coloured sheen."
-        case .reverseSwift: return "Native SwiftUI/Metal renderer — reverse-holo style full-card foil with moving sheen."
         }
     }
 }
@@ -353,43 +332,6 @@ extension HoloVariant {
                 glare: .regularGlare
             )
 
-        case .cosmosHolo:
-            // Source cosmos uses three stacked shine layers, each with the
-            // same 82deg rainbow but a different blend mode (multiply,
-            // overlay, multiply) and a different parallax depth.
-            return HoloVariantRecipe(
-                shineLayers: [
-                    HoloShineLayer(
-                        palette: .cosmosRainbow,
-                        filter: .cosmosBase,
-                        blendMode: .multiply,
-                        sizeX: 4.0, sizeY: 9.0,
-                        basePositionX: 0.5, basePositionY: 0.5,
-                        parallaxX: 0.8, parallaxY: 0.8,
-                        radial: HoloRadialRecipe.cosmosCenterGlow
-                    ),
-                    HoloShineLayer(
-                        palette: .cosmosRainbow,
-                        filter: .cosmosMid,
-                        blendMode: .overlay,
-                        sizeX: 4.0, sizeY: 9.0,
-                        basePositionX: 0.5, basePositionY: 0.5,
-                        parallaxX: 0.7, parallaxY: 0.7,
-                        radial: nil
-                    ),
-                    HoloShineLayer(
-                        palette: .cosmosRainbow,
-                        filter: .cosmosTop,
-                        blendMode: .multiply,
-                        sizeX: 4.0, sizeY: 9.0,
-                        basePositionX: 0.5, basePositionY: 0.5,
-                        parallaxX: 0.6, parallaxY: 0.6,
-                        radial: nil
-                    ),
-                ],
-                glare: .cosmosGlare
-            )
-
         case .rainbowHolo:
             // Rainbow-rare: a -45deg linear gradient at the top, glitter
             // texture in the middle, and a -30deg repeating rainbow at the
@@ -412,129 +354,6 @@ extension HoloVariant {
                         palette: .rainbowRare,
                         filter: HoloFilterRecipe(
                             brightness: 1.0, contrast: 2.2, saturation: 0.75
-                        ),
-                        blendMode: .softLight,
-                        sizeX: 4.0, sizeY: 4.0,
-                        basePositionX: 0.5, basePositionY: 0.5,
-                        parallaxX: 0.5, parallaxY: 0.5,
-                        radial: nil
-                    ),
-                ],
-                glare: .regularGlare
-            )
-
-        case .radiantHolo:
-            // Radiant: a radial cursor-centered glow + two cross-hatched
-            // bar gradients (45deg and -45deg) using grayscale stops. The
-            // source's grayscale bar recipe (10%-50% gray) is rendered via a
-            // dedicated palette below.
-            return HoloVariantRecipe(
-                shineLayers: [
-                    HoloShineLayer(
-                        palette: HoloStripePalette(colors: [], angle: 0),
-                        filter: .radiantBase,
-                        blendMode: .colorDodge,
-                        sizeX: 2.1, sizeY: 2.1,
-                        basePositionX: 0.5, basePositionY: 0.5,
-                        parallaxX: 1.5, parallaxY: 1.5,
-                        radial: HoloRadialRecipe.radiantGlow
-                    ),
-                ],
-                glare: .radiantGlare
-            )
-
-        case .amazingRare:
-            // Amazing: a vertical prismatic rainbow + a radial cursor
-            // darken. The 133deg rainbow with sunpillar colors is rendered
-            // as a linear gradient with strong parallax.
-            return HoloVariantRecipe(
-                shineLayers: [
-                    HoloShineLayer(
-                        palette: HoloStripePalette(colors: HoloStripePalette.regularRainbow.colors, angle: 133),
-                        filter: HoloFilterRecipe(
-                            brightness: 0.75, contrast: 1.0, saturation: 1.0
-                        ),
-                        blendMode: .saturation,
-                        sizeX: 4.0, sizeY: 8.0,
-                        basePositionX: 0.5, basePositionY: 0.5,
-                        parallaxX: 3.0, parallaxY: 3.0,
-                        radial: nil
-                    ),
-                ],
-                glare: .regularGlare
-            )
-
-        case .shinyRare:
-            // Shiny: 0deg rainbow + 133deg metallic silver stacked, both with
-            // hard-light / hue / soft-light blend modes per the source.
-            return HoloVariantRecipe(
-                shineLayers: [
-                    HoloShineLayer(
-                        palette: HoloStripePalette(colors: HoloStripePalette.regularRainbow.colors, angle: 0),
-                        filter: HoloFilterRecipe(
-                            brightness: 0.4, contrast: 1.4, saturation: 2.25
-                        ),
-                        blendMode: .hardLight,
-                        sizeX: 2.0, sizeY: 7.0,
-                        basePositionX: 0.0, basePositionY: 0.5,
-                        parallaxX: 0.5, parallaxY: 0.5,
-                        radial: nil
-                    ),
-                    HoloShineLayer(
-                        palette: .metallicSilver,
-                        filter: HoloFilterRecipe(
-                            brightness: 0.4, contrast: 1.4, saturation: 1.0
-                        ),
-                        blendMode: .hue,
-                        sizeX: 3.0, sizeY: 1.0,
-                        basePositionX: 0.5, basePositionY: 0.5,
-                        parallaxX: 0.5, parallaxY: 0.5,
-                        radial: nil
-                    ),
-                ],
-                glare: .shinyGlare
-            )
-
-        case .vFullArt:
-            // V / Full Art: very similar to shiny but with a textured foil
-            // overlay and a brighter radial darken at the cursor.
-            return HoloVariantRecipe(
-                shineLayers: [
-                    HoloShineLayer(
-                        palette: HoloStripePalette(colors: HoloStripePalette.regularRainbow.colors, angle: 0),
-                        filter: HoloFilterRecipe(
-                            brightness: 0.4, contrast: 1.4, saturation: 2.25
-                        ),
-                        blendMode: .hardLight,
-                        sizeX: 2.0, sizeY: 7.0,
-                        basePositionX: 0.0, basePositionY: 0.5,
-                        parallaxX: 0.5, parallaxY: 0.5,
-                        radial: nil
-                    ),
-                    HoloShineLayer(
-                        palette: .metallicSilver,
-                        filter: HoloFilterRecipe(
-                            brightness: 0.4, contrast: 1.4, saturation: 1.0
-                        ),
-                        blendMode: .hue,
-                        sizeX: 3.0, sizeY: 1.0,
-                        basePositionX: 0.5, basePositionY: 0.5,
-                        parallaxX: 0.5, parallaxY: 0.5,
-                        radial: nil
-                    ),
-                ],
-                glare: .vFullArtGlare
-            )
-
-        case .secretRare:
-            // Secret rare: similar to rainbow-rare but with stronger contrast
-            // and a glitter texture overlay.
-            return HoloVariantRecipe(
-                shineLayers: [
-                    HoloShineLayer(
-                        palette: .rainbowRare,
-                        filter: HoloFilterRecipe(
-                            brightness: 1.0, contrast: 2.2, saturation: 1.0
                         ),
                         blendMode: .softLight,
                         sizeX: 4.0, sizeY: 4.0,
@@ -576,32 +395,32 @@ extension HoloVariant {
                 )
             )
 
-        case .reverseSwift:
-            // Reverse Swift: native SwiftUI/Metal renderer — full-card foil with
-            // moving specular sheen (reverse-holo style). Uses the native
-            // SwiftUI foil renderer instead of WKWebView CSS.
-            return HoloVariantRecipe(
-                shineLayers: [
-                    HoloShineLayer(
-                        palette: .metallicSilver,
-                        filter: HoloFilterRecipe(brightness: 0.5, contrast: 1.6, saturation: 1.0),
-                        blendMode: .hardLight,
-                        sizeX: 3.0, sizeY: 3.0,
-                        basePositionX: 0.5, basePositionY: 0.5,
-                        parallaxX: 1.0, parallaxY: 1.0,
-                        radial: nil
-                    ),
-                ],
-                glare: HoloGlareRecipe(
-                    stops: [
-                        (0.0, Color.white.opacity(0.8)),
-                        (1.0, Color.white.opacity(0.0)),
-                    ],
-                    filter: HoloFilterRecipe(brightness: 0.9, contrast: 1.5, saturation: 1.0),
-                    blendMode: .overlay,
-                    opacity: .reverseGlare
-                )
-            )
+        }
+    }
+
+    /// Fixed, source-faithful foil texture for this variant. The WKWebView CSS
+    /// path is deterministic — every card of a variant foils identically — but
+    /// the native SwiftUI path used to pick a RANDOM `HoloPattern` per zone per
+    /// card. Pinning the pattern here removes that per-card randomness so the
+    /// swift render reads like the web render. Stands in for the CSS
+    /// `--foil`/grating of each rarity.
+    var sourceFoilPattern: HoloPattern {
+        switch self {
+        case .regularHolo:  return .wave
+        case .rainbowHolo:  return .glitter
+        case .reverseHolo:  return .stylish
+        }
+    }
+
+    /// Deterministic baseline holo strength (0…1) for this variant, approximating
+    /// the CSS variant's overall foil brightness. The native path used to roll a
+    /// fully random 0.5…1.0 intensity per card; centering on this baseline with a
+    /// small ±jitter keeps a subtle per-card variance without the wild swing.
+    var sourceIntensity: Double {
+        switch self {
+        case .regularHolo:  return 0.70
+        case .rainbowHolo:  return 0.60
+        case .reverseHolo:  return 0.70
         }
     }
 }
@@ -623,12 +442,4 @@ enum HoloVariantRoller {
     }
 }
 
-// Variants with only one native engine (no engine dropdown in settings).
-extension HoloVariant {
-    var hasSingleNativeEngine: Bool {
-        switch self {
-        case .reverseHolo, .reverseSwift: return true
-        default: return false
-        }
-    }
-}
+

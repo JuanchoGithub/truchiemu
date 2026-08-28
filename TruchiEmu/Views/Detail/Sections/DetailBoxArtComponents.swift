@@ -201,86 +201,64 @@ struct DetailZoomableFullScreenView: View {
                             }
                         }
 
-                    if holoEnabled, let masks = holoMasks {
-                        let snapshot = HoloSettingsSnapshot(
-                            from: HoloSettingsStore.shared,
-                            romID: romID,
-                            seed: holoSeed
-                        )
-                        let variant = snapshot.randomization?.variant ?? .regularHolo
-                        let isSwiftHolo = variant == .reverseSwift
-                        let useWebHolo = !isSwiftHolo && (snapshot.renderingEngine[variant] ?? .web) == .web
+if holoEnabled, let masks = holoMasks {
+                         let snapshot = HoloSettingsSnapshot(
+                             from: HoloSettingsStore.shared,
+                             romID: romID,
+                             seed: holoSeed
+                         )
+                         let variant = snapshot.randomization?.variant ?? .regularHolo
+                         // Always use SwiftUI holo layers (web engine removed)
+                         let holoW = (fittedWidth * 2).rounded() / 2
+                         let holoH = (fittedHeight * 2).rounded() / 2
 
-                        if useWebHolo {
-                            HoloWebCardView(
-                                image: fullResImage ?? image,
-                                variantClass: variant.cssClass,
-                                pointerX: normalizedMouseX,
-                                pointerY: normalizedMouseY,
-                                heroMask: masks.hero,
-                                frameSize: CGSize(width: holoW, height: holoH),
-                                fitMode: .contain,
-                                isActive: true
-                            )
-                            .frame(width: holoW, height: holoH)
-                            .scaleEffect(scale)
-                            .offset(offset)
-                            .rotation3DEffect(
-                                .degrees(tiltCombinedAngle),
-                                axis: tiltCombinedAxis,
-                                anchor: .center,
-                                perspective: tiltPerspective
-                            )
-                            .allowsHitTesting(false)
-                        } else {
-                            HoloFoilLayers(
-                                masks: masks,
-                                settings: snapshot,
-                                w: holoW,
-                                h: holoH,
-                                pointerX: normalizedMouseX,
-                                pointerY: normalizedMouseY,
-                                tiltX: tiltRotationX,
-                                tiltY: tiltRotationY,
-                                isHovered: isOverArtwork,
-                                allowBump: true
-                            )
-                            .frame(width: holoW, height: holoH)
-                            .scaleEffect(scale)
-                            .offset(offset)
-                            .rotation3DEffect(
-                                .degrees(tiltCombinedAngle),
-                                axis: tiltCombinedAxis,
-                                anchor: .center,
-                                perspective: tiltPerspective
-                            )
-                            .allowsHitTesting(false)
+                         HoloFoilLayers(
+                             masks: masks,
+                             settings: snapshot,
+                             w: holoW,
+                             h: holoH,
+                             pointerX: normalizedMouseX,
+                             pointerY: normalizedMouseY,
+                             tiltX: tiltRotationX,
+                             tiltY: tiltRotationY,
+                             isHovered: isOverArtwork,
+                             allowBump: true
+                         )
+                         .frame(width: holoW, height: holoH)
+                         .scaleEffect(scale)
+                         .offset(offset)
+                         .rotation3DEffect(
+                             .degrees(tiltCombinedAngle),
+                             axis: tiltCombinedAxis,
+                             anchor: .center,
+                             perspective: tiltPerspective
+                         )
+                         .allowsHitTesting(false)
 
-                            HoloSheenEffect(pointerX: normalizedMouseX, pointerY: normalizedMouseY)
-                                .frame(width: holoW, height: holoH)
-                                .scaleEffect(scale)
-                                .offset(offset)
-                                .rotation3DEffect(
-                                    .degrees(tiltCombinedAngle),
-                                    axis: tiltCombinedAxis,
-                                    anchor: .center,
-                                    perspective: tiltPerspective
-                                )
-                                .allowsHitTesting(false)
+                         HoloSheenEffect(pointerX: normalizedMouseX, pointerY: normalizedMouseY)
+                             .frame(width: holoW, height: holoH)
+                             .scaleEffect(scale)
+                             .offset(offset)
+                             .rotation3DEffect(
+                                 .degrees(tiltCombinedAngle),
+                                 axis: tiltCombinedAxis,
+                                 anchor: .center,
+                                 perspective: tiltPerspective
+                             )
+                             .allowsHitTesting(false)
 
-                            HoloScratchLayer(w: holoW, h: holoH)
-                                .frame(width: holoW, height: holoH)
-                                .scaleEffect(scale)
-                                .offset(offset)
-                                .rotation3DEffect(
-                                    .degrees(tiltCombinedAngle),
-                                    axis: tiltCombinedAxis,
-                                    anchor: .center,
-                                    perspective: tiltPerspective
-                                )
-                                .allowsHitTesting(false)
-                        }
-                    }
+                         HoloScratchLayer(w: holoW, h: holoH)
+                             .frame(width: holoW, height: holoH)
+                             .scaleEffect(scale)
+                             .offset(offset)
+                             .rotation3DEffect(
+                                 .degrees(tiltCombinedAngle),
+                                 axis: tiltCombinedAxis,
+                                 anchor: .center,
+                                 perspective: tiltPerspective
+                             )
+                             .allowsHitTesting(false)
+                     }
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .onContinuousHover { phase in
