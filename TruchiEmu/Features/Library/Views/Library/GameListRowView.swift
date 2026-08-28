@@ -17,6 +17,7 @@ struct GameListRowView: View {
     @State private var isHovered = false
     @State private var raProgress: (earned: Int, total: Int)?
     @ObservedObject private var boxArtService = BoxArtService.shared
+    @ObservedObject private var loc = LocalizationManager.shared
     @EnvironmentObject var library: ROMLibrary
     @EnvironmentObject var categoryManager: CategoryManager
     
@@ -28,8 +29,22 @@ struct GameListRowView: View {
         9 + zoomLevel * 5
     }
     
-    private var thumbSize: CGFloat {
-        36 + zoomLevel * 24
+    private var boxType: BoxType {
+        SystemPreferences.shared.boxType(for: rom.systemID ?? "")
+    }
+
+    private var artExtent: CGFloat {
+        64 + zoomLevel * 72
+    }
+
+    private var thumbWidth: CGFloat {
+        let aspect = boxType.aspectRatio
+        return aspect >= 1 ? artExtent : artExtent * aspect
+    }
+
+    private var thumbHeight: CGFloat {
+        let aspect = boxType.aspectRatio
+        return aspect >= 1 ? artExtent / aspect : artExtent
     }
     
     private var categoryBadges: [GameCategory] {
@@ -57,6 +72,25 @@ struct GameListRowView: View {
         } else {
             return "\(rom.timesPlayed) plays"
         }
+    }
+
+    private func summarizedLastPlayed(_ date: Date) -> String {
+        let interval = Date().timeIntervalSince(date)
+        guard interval >= 0 else { return loc.localized("library.stat.justNow") }
+        let sec = Int(interval)
+        if sec < 60 { return loc.localized("library.stat.justNow") }
+        let min = sec / 60
+        if min < 60 { return String(format: loc.localized("library.stat.minutes"), min) }
+        let hr = min / 60
+        if hr < 24 { return String(format: loc.localized("library.stat.hours"), hr) }
+        let day = hr / 24
+        if day < 7 { return String(format: loc.localized("library.stat.days"), day) }
+        let week = day / 7
+        if week < 5 { return String(format: loc.localized("library.stat.weeks"), week) }
+        let month = day / 30
+        if month < 12 { return String(format: loc.localized("library.stat.months"), month) }
+        let year = day / 365
+        return String(format: loc.localized("library.stat.years"), year)
     }
     
     private var metadataLine1: String? {
@@ -151,49 +185,73 @@ Text(sys.name)
                     HStack(spacing: 3) {
                         Image(systemName: "clock.fill")
                             .font(.system(size: subtitleFontSize - 0.5))
+                        if isHovered {
+                            Text(loc.localized("library.stat.time"))
+                                .font(.system(size: subtitleFontSize - 1))
+                                .foregroundColor(AppColors.textSecondaryNeutral(colorScheme).opacity(0.7))
+                        }
                         Text(playtime)
                             .font(.system(size: subtitleFontSize))
                             .fontWeight(.medium)
-}
-                .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
-            }
-
-            // Times played
-            if let timesPlayed = timesPlayedLabel {
-                Text(timesPlayed)
-                    .font(.system(size: subtitleFontSize))
+                    }
                     .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
-            }
+                }
 
-            // Last played
-            if let played = rom.lastPlayed {
-                Text(played, style: .relative)
-                .font(.system(size: subtitleFontSize - 0.5))
-                .foregroundColor(AppColors.textSecondaryNeutral(colorScheme).opacity(0.7))
-            }
-
-            // RetroAchievements
-            if raEnabled && rom.raMatchStatus == "matched" {
-                HStack(spacing: 3) {
-                    Image(systemName: "trophy.fill")
-                        .font(.system(size: subtitleFontSize - 0.5))
-                    if let progress = raProgress {
-                        Text("\(progress.earned)/\(progress.total)")
+                // Times played
+                if let timesPlayed = timesPlayedLabel {
+                    HStack(spacing: 3) {
+                        if isHovered {
+                            Text(loc.localized("library.stat.plays"))
+                                .font(.system(size: subtitleFontSize - 1))
+                                .foregroundColor(AppColors.textSecondaryNeutral(colorScheme).opacity(0.7))
+                        }
+                        Text(timesPlayed)
                             .font(.system(size: subtitleFontSize))
-                            .fontWeight(.medium)
-                            .monospacedDigit()
+                            .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
                     }
                 }
-                .foregroundColor(AppColors.brandAccent)
-            }
 
-            // Favorite indicator
-                if rom.isFavorite {
-                    Image(systemName: "heart.fill")
-                        .foregroundColor(.pink)
-                        .font(.system(size: subtitleFontSize))
+                // Last played
+                if let played = rom.lastPlayed {
+                    HStack(spacing: 3) {
+                        if isHovered {
+                            Text(loc.localized("library.stat.lastPlayed"))
+                                .font(.system(size: subtitleFontSize - 1))
+                                .foregroundColor(AppColors.textSecondaryNeutral(colorScheme).opacity(0.7))
+                        }
+                        Text(summarizedLastPlayed(played))
+                            .font(.system(size: subtitleFontSize - 0.5))
+                            .foregroundColor(AppColors.textSecondaryNeutral(colorScheme).opacity(0.7))
+                    }
                 }
-            }
+
+                // RetroAchievements
+                if raEnabled && rom.raMatchStatus == "matched" {
+                    HStack(spacing: 3) {
+                        Image(systemName: "trophy.fill")
+                            .font(.system(size: subtitleFontSize - 0.5))
+                        if isHovered {
+                            Text(loc.localized("library.stat.achievements"))
+                                .font(.system(size: subtitleFontSize - 1))
+                                .foregroundColor(AppColors.brandAccent.opacity(0.8))
+                        }
+                        if let progress = raProgress {
+                            Text("\(progress.earned)/\(progress.total)")
+                                .font(.system(size: subtitleFontSize))
+                                .fontWeight(.medium)
+                                .monospacedDigit()
+                        }
+                    }
+                    .foregroundColor(AppColors.brandAccent)
+                }
+
+                // Favorite indicator
+                    if rom.isFavorite {
+                        Image(systemName: "heart.fill")
+                            .foregroundColor(.pink)
+                            .font(.system(size: subtitleFontSize))
+                    }
+                }
 
             if isHovered, let menuContent = contextMenu {
                 ZStack {
@@ -256,9 +314,9 @@ Text(sys.name)
             // main-thread I/O. Art-less ROMs show the system placeholder.
             if rom.hasBoxArt {
                 let artPath = rom.boxArtLocalPath
-                if let cached = ImageCache.shared.thumbnailSync(for: artPath, preferredSize: .tiny) {
+                if let cached = ImageCache.shared.thumbnailSync(for: artPath, preferredSize: .small) {
                     self.thumb = cached
-                } else if let thumb = await ImageCache.shared.thumbnail(for: artPath, preferredSize: .tiny) {
+                } else if let thumb = await ImageCache.shared.thumbnail(for: artPath, preferredSize: .small) {
                     self.thumb = thumb
                 }
             } else {
@@ -290,7 +348,7 @@ Text(sys.name)
                 }
             }
         }
-        .frame(width: thumbSize, height: thumbSize)
+        .frame(width: thumb != nil ? thumbWidth : min(thumbWidth, thumbHeight), height: thumb != nil ? thumbHeight : min(thumbWidth, thumbHeight))
         .clipShape(RoundedRectangle(cornerRadius: AppRadius.sm))
         .shadow(color: AppColors.brandAccent.opacity(0.12), radius: 3, x: 0, y: 1)
     }
