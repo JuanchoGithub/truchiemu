@@ -1101,7 +1101,7 @@ viewModel.updateFilters(
             ForEach(Array(viewModel.displayedROMs.enumerated()), id: \.element.id) { index, rom in
                 let isSelected = selectedROMs.contains(rom.id) || selectedROM?.id == rom.id
                 let isGamepadFocused = gamepadNav.activeZone == .content && gamepadNav.contentIndex == index
-                GameListRowView(rom: rom, isSelected: isSelected, isEvenRow: index.isMultiple(of: 2), zoomLevel: zoomLevel, filter: filter, raEnabled: raService.isEnabled, contextMenu: { contextMenu(for: rom) }, isScrolling: isScrolling)
+                GameListRowView(rom: rom, isSelected: isSelected, isEvenRow: index.isMultiple(of: 2), zoomLevel: zoomLevel, filter: filter, raEnabled: raService.isEnabled, contextMenu: { contextMenu(for: rom) }, isScrolling: isScrolling, onPlay: { Task { await launchGame(rom) } })
                 .tag(rom)
                 .listRowBackground(Color.clear)
                 .contentShape(Rectangle())

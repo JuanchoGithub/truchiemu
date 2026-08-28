@@ -12,6 +12,7 @@ struct GameListRowView: View {
     let raEnabled: Bool
     var contextMenu: (() -> AnyView)?
     let isScrolling: Bool
+    var onPlay: (() -> Void)?
     @Environment(\.colorScheme) private var colorScheme
     @State private var thumb: NSImage?
     @State private var isHovered = false
@@ -351,5 +352,25 @@ Text(sys.name)
         .frame(width: thumb != nil ? thumbWidth : min(thumbWidth, thumbHeight), height: thumb != nil ? thumbHeight : min(thumbWidth, thumbHeight))
         .clipShape(RoundedRectangle(cornerRadius: AppRadius.sm))
         .shadow(color: AppColors.brandAccent.opacity(0.12), radius: 3, x: 0, y: 1)
+        .overlay(alignment: .center) {
+            if isHovered, onPlay != nil {
+                GlassOrbPlayButton(
+                    content: {
+                        if let nsImage = thumb {
+                            Image(nsImage: nsImage)
+                                .resizable()
+                                .scaledToFill()
+                        } else {
+                            Color.secondary.opacity(0.3)
+                        }
+                    },
+                    accent: AppColors.brandAccent,
+                    action: { onPlay?() },
+                    diameter: min(thumbWidth, thumbHeight) * 0.5
+                )
+                .transition(.opacity)
+                .accessibilityLabel(Text("Launch " + rom.displayName))
+            }
+        }
     }
 }
