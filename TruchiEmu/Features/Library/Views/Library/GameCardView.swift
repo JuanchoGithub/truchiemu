@@ -644,8 +644,9 @@ struct GameCardView: View {
                 if let nsImage = image {
                     Image(nsImage: nsImage)
                         .resizable()
-                        .scaledToFit()
+                        .scaledToFill()
                         .frame(width: geometry.size.width, height: geometry.size.height)
+                        .clipped()
                         .scaleEffect(isPressed ? 1.05 : 1)
                 } else {
                     placeholderArt
