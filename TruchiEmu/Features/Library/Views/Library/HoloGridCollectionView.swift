@@ -24,9 +24,8 @@ final class LibraryScrollState: ObservableObject {
 
 final class HoloGridCollectionViewItem: NSCollectionViewItem {
     private let hostingView = NSHostingView<AnyView>(rootView: AnyView(EmptyView()))
-    
+
     private var rom: ROM?
-    private var romID: UUID?
     private var isMultiSelectedCached: Bool = false
     private var zoomLevelCached: Double = 0.5
     private var filterCached: LibraryFilter?
@@ -37,16 +36,18 @@ final class HoloGridCollectionViewItem: NSCollectionViewItem {
     private var selectedIDsProviderCached: (() -> Set<UUID>)?
     private var libraryCached: ROMLibrary?
     private var categoryManagerCached: CategoryManager?
-    
-    override func loadView() {
-        view = NSView()
-        view.wantsLayer = true
-        view.layer?.contentsScale = NSScreen.main?.backingScaleFactor ?? 2.0
-    }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.wantsLayer = true
+        view.layer?.contentsScale = NSScreen.main?.backingScaleFactor ?? 2.0
         hostingView.translatesAutoresizingMaskIntoConstraints = false
+        if #available(macOS 13.0, *) {
+            // Prevent the hosting view from feeding intrinsic size back into the
+            // collection-view layout (which caused a measure → relayout →
+            // re-measure feedback loop).
+            hostingView.sizingOptions = []
+        }
         view.addSubview(hostingView)
         NSLayoutConstraint.activate([
             hostingView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -55,23 +56,20 @@ final class HoloGridCollectionViewItem: NSCollectionViewItem {
             hostingView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
     }
-    
-    func configure(
-        with rom: ROM,
-        isSelected: Bool,
-        isMultiSelected: Bool,
-        zoomLevel: Double,
-        filter: LibraryFilter?,
-        raEnabled: Bool,
-        onTap: (() -> Void)?,
-        onDoubleClick: (() -> Void)?,
-        contextMenuProvider: (() -> AnyView)?,
-        selectedIDsProvider: @escaping () -> Set<UUID>,
-        library: ROMLibrary,
-        categoryManager: CategoryManager
-    ) {
+
+    func configure(with rom: ROM,
+                   isSelected: Bool,
+                   isMultiSelected: Bool,
+                   zoomLevel: Double,
+                   filter: LibraryFilter?,
+                   raEnabled: Bool,
+                   onTap: (() -> Void)?,
+                   onDoubleClick: (() -> Void)?,
+                   contextMenuProvider: (() -> AnyView)?,
+                   selectedIDsProvider: @escaping () -> Set<UUID>,
+                   library: ROMLibrary?,
+                   categoryManager: CategoryManager?) {
         self.rom = rom
-        self.romID = rom.id
         self.isMultiSelectedCached = isMultiSelected
         self.zoomLevelCached = zoomLevel
         self.filterCached = filter
@@ -82,28 +80,21 @@ final class HoloGridCollectionViewItem: NSCollectionViewItem {
         self.selectedIDsProviderCached = selectedIDsProvider
         self.libraryCached = library
         self.categoryManagerCached = categoryManager
-        // `rebuildRootView` sets `.id(rom.id)` on the SwiftUI root, so
-        // SwiftUI tears down the previous card's @State (image, holoMasks,
-        // hover position) and rebuilds clean. No need to swap in an
-        // EmptyView first — that just delays the diff and gives the old
-        // state a window to remain visible during the very next runloop.
         rebuildRootView(isSelectedOverride: isSelected)
     }
-    
+
+    /// Apply a selection-state change to the currently displayed card without
+    /// re-running the data-source `configure` path (used by `updateNSView`).
     func updateSelectionState(isSelected: Bool, isMultiSelected: Bool) {
-        guard rom != nil else { return }
-        isMultiSelectedCached = isMultiSelected
+        self.isMultiSelectedCached = isMultiSelected
         rebuildRootView(isSelectedOverride: isSelected)
     }
-    
+
     private func rebuildRootView(isSelectedOverride: Bool? = nil) {
-        guard let rom = rom,
-              let libraryCached = libraryCached,
-              let categoryManagerCached = categoryManagerCached else { return }
-        let isSelected = isSelectedOverride ?? isMultiSelectedCached
+        guard let rom = rom else { return }
         let card = HoloGameCardView(
             rom: rom,
-            isSelected: isSelected,
+            isSelected: isSelectedOverride ?? false,
             isMultiSelected: isMultiSelectedCached,
             zoomLevel: zoomLevelCached,
             filter: filterCached,
@@ -111,31 +102,18 @@ final class HoloGridCollectionViewItem: NSCollectionViewItem {
             onTap: onTapCached,
             onDoubleClick: onDoubleClickCached,
             contextMenu: contextMenuProviderCached,
-            selectedIDsProvider: selectedIDsProviderCached
+            selectedIDsProvider: selectedIDsProviderCached ?? { [] }
         )
-        .environmentObject(libraryCached)
-        .environmentObject(categoryManagerCached)
-        // `.id(rom.id)` forces SwiftUI to treat each rom as a distinct view
-        // identity. When an NSCollectionViewItem slot is reused for a
-        // different rom, SwiftUI tears down the old card's @State
-        // (image / holoMasks / hover / cardBounds) and runs the new card's
-        // .task bodies from clean defaults. Without this, AnyView erases the
-        // rom identity and SwiftUI diff-matches old↔new state, so the new
-        // card inherits the previous rom's already-loaded image/masks and the
-        // task bodies bail out — the "stuck card" bug.
-        .id(rom.id)
+        .environmentObject(libraryCached ?? ROMLibrary())
+        .environmentObject(categoryManagerCached ?? CategoryManager())
         hostingView.rootView = AnyView(card)
+        hostingView.needsLayout = true
     }
-    
+
     override func prepareForReuse() {
         super.prepareForReuse()
-        // Drop SwiftUI state when the slot is recycled. The next configure()
-        // will rebuild the rootView from a fresh HoloGameCardView, and bailing
-        // here lets SwiftUI discard the previous card's @State immediately
-        // instead of leaking it into the new rom.
-        rom = nil
-        romID = nil
-        hostingView.rootView = AnyView(EmptyView())
+        // Keep `rom` set so a late `rebuildRootView` (from a pending selection
+        // update) doesn't early-return; `configure` always re-sets rom on reuse.
     }
 }
 
@@ -181,12 +159,19 @@ final class HoloGridCollectionViewCoordinator: NSObject {
     // flag true for 0.3s after the last scroll event, so the holo effects
     // only resume once the scroll has genuinely stopped.
     fileprivate func markScrolling() {
-        let wasScrolling = LibraryScrollState.shared.isScrolling
-        LibraryScrollState.shared.isScrolling = true
-        // The bounds notification fires every frame during scroll; only
-        // (re)arm the idle timer when we weren't already scrolling so we
-        // don't churn Timers on each frame.
-        guard !wasScrolling else { return }
+        if !LibraryScrollState.shared.isScrolling {
+            LibraryScrollState.shared.isScrolling = true
+        }
+        // Re-arm the idle timer on EVERY scroll event so `isScrolling` stays
+        // true for the whole gesture. The previous code only armed the timer
+        // on the first event, so during a continuous (momentum) scroll the
+        // timer fired ~0.3s in and flipped `isScrolling` false mid-gesture,
+        // then true again on the next frame — a flicker. That flicker
+        // defeated `cardContent`'s `!scrollState.isScrolling` guard on the
+        // per-frame frame-tracking GeometryReader, mounting it mid-scroll and
+        // rebuilding every visible cell each frame (pegging the main thread
+        // into the permanent lock-up). Re-arming per event keeps `isScrolling`
+        // high until 0.3s after the LAST scroll event.
         scrollResetTimer?.invalidate()
         scrollResetTimer = Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) { [weak self] _ in
             LibraryScrollState.shared.isScrolling = false
@@ -195,10 +180,15 @@ final class HoloGridCollectionViewCoordinator: NSObject {
     }
     
     private weak var collectionView: NSCollectionView?
-    private let itemID = NSUserInterfaceItemIdentifier("HoloGridCollectionViewItem")
+    fileprivate let itemID = NSUserInterfaceItemIdentifier("HoloGridCollectionViewItem")
     
     func setup(collectionView: NSCollectionView, scrollView: NSScrollView) {
         self.collectionView = collectionView
+        // Register the custom item subclass for reuse. `itemForRepresentedObjectAt`
+        // also registers defensively before `makeItem` (AppKit can drop the
+        // registration if it recreates the view layer, which otherwise makes
+        // `makeItem` fail with "must register a nib or a class").
+        collectionView.register(HoloGridCollectionViewItem.self, forItemWithIdentifier: itemID)
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.prefetchDataSource = self
@@ -358,8 +348,12 @@ extension HoloGridCollectionViewCoordinator: NSCollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: NSCollectionView, itemForRepresentedObjectAt indexPath: IndexPath) -> NSCollectionViewItem {
-        let item = HoloGridCollectionViewItem()
-        item.identifier = itemID
+        // Register defensively every dequeue: a prior registration can be
+        // invalidated if AppKit recreates the underlying view-layer, and an
+        // unregistered identifier makes `makeItem` fall back to a nib lookup and
+        // abort ("must register a nib or a class").
+        collectionView.register(HoloGridCollectionViewItem.self, forItemWithIdentifier: itemID)
+        let item = collectionView.makeItem(withIdentifier: itemID, for: indexPath) as! HoloGridCollectionViewItem
         let rom = roms[indexPath.item]
         let selected = collectionView.selectionIndexPaths.contains(indexPath)
         let selectedIDsProvider: () -> Set<UUID> = { [weak self] in
@@ -375,12 +369,10 @@ extension HoloGridCollectionViewCoordinator: NSCollectionViewDataSource {
             raEnabled: raEnabled,
             onTap: { [weak self] in self?.onTap?(rom, indexPath.item) },
             onDoubleClick: { [weak self] in self?.onDoubleClick?(rom) },
-            contextMenuProvider: { [weak self] in
-                self?.contextMenuProvider?(rom) ?? AnyView(EmptyView())
-            },
+            contextMenuProvider: { [weak self] in self?.contextMenuProvider?(rom) ?? AnyView(EmptyView()) },
             selectedIDsProvider: selectedIDsProvider,
-            library: library ?? ROMLibrary(),
-            categoryManager: categoryManager ?? CategoryManager()
+            library: library,
+            categoryManager: categoryManager
         )
         return item
     }
@@ -438,10 +430,21 @@ private func makeHoloCollectionScrollView(coordinator: HoloGridCollectionViewCoo
     scrollView.autohidesScrollers = true
     scrollView.drawsBackground = false
     
-    let cv = NSCollectionView()
-    scrollView.documentView = cv
-    
-    coordinator.setup(collectionView: cv, scrollView: scrollView)
+        let cv = NSCollectionView()
+        scrollView.documentView = cv
+
+        // Register the item class so the collection view RECYCLES a bounded
+        // pool of items instead of instantiating a fresh `NSHostingView`
+        // (with its own SwiftUI view tree + `.task`s) for every index path it
+        // scrolls into view. Without registration `itemForRepresentedObjectAt`
+        // creates a new item each call and none are ever recycled, so on a
+        // large system the grid accumulates thousands of retained hosting
+        // views + in-flight tasks, pegging memory/CPU until the whole holo
+        // view is torn down — the "scroll freeze that only clears on view
+        // change" symptom.
+        cv.register(HoloGridCollectionViewItem.self, forItemWithIdentifier: coordinator.itemID)
+
+        coordinator.setup(collectionView: cv, scrollView: scrollView)
     coordinator.updateItemSizes()
     
     return scrollView

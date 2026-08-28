@@ -329,10 +329,67 @@ struct HoloGameCardView: View {
     }
 
     var body: some View {
-        if scrollState.isScrolling {
-            lightweightScrollCard
-        } else {
-            fullCard
+        Group {
+            if scrollState.isScrolling {
+                lightweightScrollCard
+            } else {
+                fullCard
+            }
+        }
+        // These loads live on `body` (always mounted), NOT on `fullCard`, so
+        // they run while the lightweight scroll card is showing too. Otherwise
+        // cold/evicted thumbs never load during a scroll and the grid flashes
+        // grey until the gesture ends. The loads are async (background actor),
+        // so they never block the main thread the way the old synchronous
+        // `thumbnailSync` pre-pop did.
+        .task(id: "\(rom.id)-\(rom.hasBoxArt)-\(zoomReloadToken)-\(boxArtService.boxArtUpdated)") {
+            guard rom.hasBoxArt else {
+                if self.image != nil { self.image = nil }
+                return
+            }
+            let artPath = rom.boxArtLocalPath
+            let thumbSize = zoomBucket
+            if thumbSize != .tiny {
+                if let tiny = await ImageCache.shared.thumbnail(for: artPath, preferredSize: .tiny) {
+                    self.image = tiny
+                }
+            }
+            if Task.isCancelled { return }
+            if let img = await ImageCache.shared.thumbnail(for: artPath, preferredSize: thumbSize) {
+                self.image = img
+            }
+        }
+        .task(id: "\(rom.id)-holoMask-\(zoomReloadToken)-\(boxArtService.boxArtUpdated)-\(holoMaskTrigger)") {
+            guard rom.hasBoxArt else {
+                if holoMasks != nil { holoMasks = nil }
+                lastDecomposedROMID = nil
+                return
+            }
+            guard holoMaskTrigger else { return }
+            while scrollState.isScrolling {
+                if Task.isCancelled { return }
+                try? await Task.sleep(nanoseconds: 150_000_000)
+            }
+            if Task.isCancelled { return }
+            if let inMemory = HoloSaliencyService.shared.cachedMasksSync(for: rom.id.uuidString) {
+                holoMasks = inMemory
+                lastDecomposedROMID = rom.id
+                return
+            }
+            if lastDecomposedROMID != rom.id {
+                holoMasks = nil
+                lastDecomposedROMID = rom.id
+            }
+            let artPath = rom.boxArtLocalPath
+            guard let img = await ImageCache.shared.thumbnail(for: artPath, preferredSize: .large) else {
+                return
+            }
+            if Task.isCancelled { return }
+            if let masks = await HoloSaliencyService.shared.holoMasks(romID: rom.id.uuidString, image: img) {
+                if Task.isCancelled { return }
+                holoMasks = masks
+                lastDecomposedROMID = rom.id
+            }
         }
     }
 
@@ -452,85 +509,6 @@ struct HoloGameCardView: View {
             .accessibilityLabel(rom.displayName)
             .accessibilityHint(Text("Double-click or press Enter to launch"))
             .accessibilityAddTraits(.isButton)
-            .task(id: "\(rom.id)-\(rom.hasBoxArt)-\(zoomReloadToken)-\(boxArtService.boxArtUpdated)") {
-                guard rom.hasBoxArt else {
-                    if self.image != nil { self.image = nil }
-                    return
-                }
-                let artPath = rom.boxArtLocalPath
-                let thumbSize = zoomBucket
-
-                // No `thumbnailSync` here: on a system switch the NSCache is
-                // cold for the new system's roms, and the synchronous fast
-                // path does disk I/O + image decode on MainActor — for 50+
-                // visible cards that stacks up to multi-second main-thread
-                // blocks and the new roms never appear. The async path is
-                // near-instant for warmed caches (single actor hop) and
-                // acceptable on the cold path (one MainActor yield).
-                if thumbSize != .tiny {
-                    if let tiny = await ImageCache.shared.thumbnail(for: artPath, preferredSize: .tiny) {
-                        self.image = tiny
-                    }
-                }
-                if Task.isCancelled { return }
-
-                if let img = await ImageCache.shared.thumbnail(for: artPath, preferredSize: thumbSize) {
-                    self.image = img
-                }
-            }
-            .task(id: "\(rom.id)-holoMask-\(zoomReloadToken)-\(boxArtService.boxArtUpdated)-\(holoMaskTrigger)") {
-                guard rom.hasBoxArt else {
-                    if holoMasks != nil { holoMasks = nil }
-                    lastDecomposedROMID = nil
-                    return
-                }
-                // Wait for hover trigger — only decompose when user actually
-                // hovers this card. This avoids pre-computing masks for all
-                // visible cards in the grid when they're not interacted with.
-                guard holoMaskTrigger else { return }
-                // Defer the (CPU-heavy) Vision decompose until the grid is not
-                // actively scrolling. Generating masks mid-scroll pins cores and
-                // stalls the scroll; the holo FX are suppressed during scroll
-                // anyway, so there's no reason to pay the cost until it settles.
-                while scrollState.isScrolling {
-                    if Task.isCancelled { return }
-                    try? await Task.sleep(nanoseconds: 150_000_000)
-                }
-                if Task.isCancelled { return }
-                // Fast path: if the saliency service already has the masks in
-                // memory for this romID, take them immediately and skip the
-                // whole async pipeline. Avoids touching the actor at all when
-                // revisiting a system whose cards have already been decomposed.
-                if let inMemory = HoloSaliencyService.shared.cachedMasksSync(for: rom.id.uuidString) {
-                    holoMasks = inMemory
-                    lastDecomposedROMID = rom.id
-                    return
-                }
-                // Defensive: if `.id(rom.id)` ever stops resetting @State
-                // (e.g. if this view is reused elsewhere), drop stale masks
-                // pinned to the previous rom so the task re-runs clean.
-                if lastDecomposedROMID != rom.id {
-                    holoMasks = nil
-                    lastDecomposedROMID = rom.id
-                }
-                let artPath = rom.boxArtLocalPath
-                // Feed a larger image to the decomposer for better segmentation.
-                // Use the async path *only* — never `thumbnailSync` here. The
-                // previous code's sync-cached-thumbnail fast path looked safe
-                // but ran disk I/O on MainActor for cold cards, and on every
-                // system switch the 50+ visible cards all hit it in the same
-                // main-thread runloop, stacking up hundreds of ms of UI block
-                // and preventing the new roms from appearing.
-                guard let img = await ImageCache.shared.thumbnail(for: artPath, preferredSize: .large) else {
-                    return
-                }
-                if Task.isCancelled { return }
-                if let masks = await HoloSaliencyService.shared.holoMasks(romID: rom.id.uuidString, image: img) {
-                    if Task.isCancelled { return }
-                    holoMasks = masks
-                    lastDecomposedROMID = rom.id
-                }
-            }
             .onChange(of: zoomBucket) { _, _ in
                 Task { @MainActor in
                     try? await Task.sleep(nanoseconds: 150_000_000)
