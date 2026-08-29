@@ -947,11 +947,16 @@ struct HoloFoilLayers: View, Equatable {
     }
 
     /// Generated foil etch: a fine diamond lattice (two crossed repeating
-    /// gradients multiplied). Greyscale so that, after colour-dodge onto the
-    /// card, bright cells blow to white and dark cells resolve to a *darker
-    /// shade of the card's own colour*. `Solid` tints it; `Rainbow` and
-    /// `Background` keep it greyscale — rainbow's hue is added separately (in
-    /// `reverseShine`) only to the lit areas.
+    /// gradients multiplied). The foil is alpha-masked by its own luminance
+    /// so the etched pattern's dark valleys fade to transparent and only the
+    /// bright cells remain visible — proportional to luminance, not a binary
+    /// gate. This is what makes the reverse holo read as a metallic lattice
+    /// instead of a dark mesh printed on the card. The hue / tint / colour
+    /// character is layered on top of this luminance-masked shape.
+    ///   • `Rainbow` and `Random` only show the hue (added in `rainbowHue`),
+    ///     already gated by the same luminance mask.
+    ///   • `Background` keeps the lattice greyscale.
+    ///   • `Solid` tints the lattice to the chosen colour.
     @ViewBuilder
     private func reverseFoil(period: CGFloat, w: CGFloat, h: CGFloat) -> some View {
         let mode = settings.reverseColorMode
@@ -987,6 +992,12 @@ struct HoloFoilLayers: View, Equatable {
                     }
                 }
                 .frame(width: w * 2, height: h * 2)
+                // Mask the foil by its own luminance so dark cells fade to
+                // transparent (linear, proportional). Before this the dark
+                // valleys of the foil survived the contrast/dodge pass as
+                // near-opaque black, which read as a black mesh instead of a
+                // metallic holo pattern.
+                .mask(foilLuminanceMask(period: period, w: w, h: h))
                 .colorMultiply(mode == .solid ? settings.reverseSolidColor : Color.white)
             }
         } else {
@@ -1002,21 +1013,26 @@ struct HoloFoilLayers: View, Equatable {
                 // the per-card hue variation is applied via the outer hueRotation.
                 rainbowHue(period: period, w: w, h: h)
             case .background:
-                // Same greyscale metallic lattice as rainbow's base, but shown
-                // (no hue) so the background variant reads as neutral metal.
+                // Greyscale metallic lattice. The two crossed gradients use
+                // `[.white, .clear]` so the gaps are already alpha 0, and the
+                // whole stack is then masked by its own luminance (proportional
+                // to luminance) so the transition from bright cells to dark
+                // gaps is smooth instead of a hard line.
                 ZStack {
-                    RepeatingLinearGradientView(colors: [.white, Color(white: 0.3)], angle: 45, period: period)
-                    RepeatingLinearGradientView(colors: [.white, Color(white: 0.3)], angle: -45, period: period)
+                    RepeatingLinearGradientView(colors: [.white, .clear], angle: 45, period: period)
+                    RepeatingLinearGradientView(colors: [.white, .clear], angle: -45, period: period)
                         .blendMode(.multiply)
                 }
                 .frame(width: w * 2, height: h * 2)
+                .mask(foilLuminanceMask(period: period, w: w, h: h))
             case .solid:
                 ZStack {
-                    RepeatingLinearGradientView(colors: [.white, Color(white: 0.3)], angle: 45, period: period)
-                    RepeatingLinearGradientView(colors: [.white, Color(white: 0.3)], angle: -45, period: period)
+                    RepeatingLinearGradientView(colors: [.white, .clear], angle: 45, period: period)
+                    RepeatingLinearGradientView(colors: [.white, .clear], angle: -45, period: period)
                         .blendMode(.multiply)
                 }
                 .frame(width: w * 2, height: h * 2)
+                .mask(foilLuminanceMask(period: period, w: w, h: h))
                 .colorMultiply(settings.reverseSolidColor)
             }
         }
