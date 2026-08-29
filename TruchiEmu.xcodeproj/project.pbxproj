@@ -231,6 +231,7 @@
 		27D84DD0993CEDD46E16E0A2 /* ControllerHotkeyCaptureCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = AED4234BBEB8FF8BF9F4214E /* ControllerHotkeyCaptureCoordinator.swift */; };
 		27DF582134423C81176134CB /* sms.ico in Resources */ = {isa = PBXBuildFile; fileRef = 0DC555CD50C720E046ECC55C /* sms.ico */; };
 		27F9277272450FDAE20B690D /* GameOverlayToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9258394F027EC5364CFCE39 /* GameOverlayToolbar.swift */; };
+		28065669ED8837941C1570A4 /* HowLongToBeatService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EC5CE5C95784128C316B133 /* HowLongToBeatService.swift */; };
 		2811FBD9D258AEF2FBCF4933 /* SFX.png in Resources */ = {isa = PBXBuildFile; fileRef = 46F6462CAACE85FBE4E9A152 /* SFX.png */; };
 		28369A531757A82F734AA1E0 /* ResourceCacheInterceptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9769C4055F2EEF4740C52157 /* ResourceCacheInterceptor.swift */; };
 		286F3AEEC4774BA3AA6D8ACE /* msx-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = 875C3871473865C0E8D6E88C /* msx-cheats.zip */; };
@@ -842,6 +843,7 @@
 		9DD091FE2E6381261DCC7DE0 /* gambatte_libretro_default.json in Resources */ = {isa = PBXBuildFile; fileRef = 8B01022A1A95EC0DBDED4308 /* gambatte_libretro_default.json */; };
 		9DD29FB1CA463EB914DE6264 /* N64DD.png in Resources */ = {isa = PBXBuildFile; fileRef = BE8AAC49E7AC25911394118F /* N64DD.png */; };
 		9DE28F1217D98546AF6B394A /* fightdata_umk3.json in Resources */ = {isa = PBXBuildFile; fileRef = B8318BEFB9179398D58BC2F5 /* fightdata_umk3.json */; };
+		9DF8CAD44768455B2895F2A7 /* HLTBWebSearchSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A724358BB48D830090A6FD /* HLTBWebSearchSheet.swift */; };
 		9E0E1EB96CD993ECBD2873AE /* HelpWindowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E52D92C70B40646EE074703 /* HelpWindowView.swift */; };
 		9E5D49ECDFC7033FC9928625 /* BezelStorageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13A112551790EB584A91B3F6 /* BezelStorageManager.swift */; };
 		9E665E0D819B7AFFF5D8AC04 /* input_coreLabels_imageviewer.json in Resources */ = {isa = PBXBuildFile; fileRef = 27D53A2C5249F274B10FB5A2 /* input_coreLabels_imageviewer.json */; };
@@ -888,6 +890,7 @@
 		A4CFBA4745B8CE087F6DD5AC /* input_systemLabels_quake_1.json in Resources */ = {isa = PBXBuildFile; fileRef = 20627723E258BDC7071EB84A /* input_systemLabels_quake_1.json */; };
 		A50E7CAE481BBA4B17A3D864 /* gamegear.ico in Resources */ = {isa = PBXBuildFile; fileRef = 4CB8D85B3EE52977B0324896 /* gamegear.ico */; };
 		A54EFE23441F6BBCF4064341 /* input_coreLabels_tic80.json in Resources */ = {isa = PBXBuildFile; fileRef = 2C4A4654AF2B17B77AFD6D82 /* input_coreLabels_tic80.json */; };
+		A56157FD0F4EC79DBCF7EDD8 /* HowLongToBeatCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5109A11C4631112553810222 /* HowLongToBeatCard.swift */; };
 		A5917D46BE3772B7057EBAF0 /* mupen64plus_libretro_default.json in Resources */ = {isa = PBXBuildFile; fileRef = 286915B3854F9B12D1840B8E /* mupen64plus_libretro_default.json */; };
 		A5A5700F7C1AA1D70851F6DE /* pcsx_rearmed_libretro_default.json in Resources */ = {isa = PBXBuildFile; fileRef = 5AE2907879D793D5504FE9FC /* pcsx_rearmed_libretro_default.json */; };
 		A5E261D1DE62A6A64ACA240E /* dolphin_libretro_default.json in Resources */ = {isa = PBXBuildFile; fileRef = A227DD8C889C0589D944D5B2 /* dolphin_libretro_default.json */; };
@@ -1435,6 +1438,7 @@
 		0E0E926B0FB414011DA6CE78 /* StreamingDestinationSections.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamingDestinationSections.swift; sourceTree = "<group>"; };
 		0E6B12634B8DE1E6D75BAD86 /* SwiftDataModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftDataModels.swift; sourceTree = "<group>"; };
 		0E8ED11C4AC892345874C43D /* gb@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "gb@132w.png"; sourceTree = "<group>"; };
+		0EC5CE5C95784128C316B133 /* HowLongToBeatService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HowLongToBeatService.swift; sourceTree = "<group>"; };
 		0EE25E0C9CAB59C6A0BE2AAD /* fightdata_martmast.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_martmast.json; sourceTree = "<group>"; };
 		0EE57078526B72B1E8B48919 /* input_coreLabels_microw8.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_microw8.json; sourceTree = "<group>"; };
 		0F2066334C134C974D580BB6 /* fightdata_tekken.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_tekken.json; sourceTree = "<group>"; };
@@ -1791,6 +1795,7 @@
 		50C7DB253E3316EA31A3A1EC /* OtherFiltersPopover.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OtherFiltersPopover.swift; sourceTree = "<group>"; };
 		50DEB95008CC61A8B0A51DAB /* fightdata_powerins.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_powerins.json; sourceTree = "<group>"; };
 		50F0C395AC7AC42E3144C256 /* CoreSettingsViewGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreSettingsViewGroup.swift; sourceTree = "<group>"; };
+		5109A11C4631112553810222 /* HowLongToBeatCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HowLongToBeatCard.swift; sourceTree = "<group>"; };
 		51263C6312EA58D2A15F8917 /* RAConsole.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RAConsole.swift; sourceTree = "<group>"; };
 		512CBDD71A4FCF28803691E0 /* SaveDirectoryBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveDirectoryBridge.swift; sourceTree = "<group>"; };
 		5148AE5A90969F2EF92C6546 /* NotificationHistoryManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationHistoryManager.swift; sourceTree = "<group>"; };
@@ -2367,6 +2372,7 @@
 		B94E70E2B12D7C50F36C7881 /* ICloudMaterializer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICloudMaterializer.swift; sourceTree = "<group>"; };
 		B97569865BB977C5BABB542B /* GG.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = GG.png; sourceTree = "<group>"; };
 		B9794CEF174D51BA54194D9A /* holo_angular_alpha.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = holo_angular_alpha.png; sourceTree = "<group>"; };
+		B9A724358BB48D830090A6FD /* HLTBWebSearchSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HLTBWebSearchSheet.swift; sourceTree = "<group>"; };
 		BA0C225C9BB1C6E426B0E6F0 /* input_systemLabels_epochcv.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_epochcv.json; sourceTree = "<group>"; };
 		BA1C6E7ABF7218A2B1BF591B /* fightdata_kbash.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_kbash.json; sourceTree = "<group>"; };
 		BA603A983EC0142860E6BAEA /* gbc.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = gbc.ico; sourceTree = "<group>"; };
@@ -3074,6 +3080,8 @@
 				5C0861586830102C1E785A85 /* DetailSection.swift */,
 				D9DD356AFB297E7357F9435E /* DOSJoystick.swift */,
 				312DD29D6B77A5CC9B13F942 /* Header.swift */,
+				B9A724358BB48D830090A6FD /* HLTBWebSearchSheet.swift */,
+				5109A11C4631112553810222 /* HowLongToBeatCard.swift */,
 				EE3376B3A01ADAEEAA96F108 /* ManualActionStatus.swift */,
 				3012D0236F04C7A549F9A098 /* ManualStatusController.swift */,
 				76A50CEAE48F1F659CE03FFC /* MetadataRow.swift */,
@@ -3808,6 +3816,7 @@
 				EB775F5E7D4CB3DFCACA89A5 /* GameDragState.swift */,
 				3785C1F47A9C4D765D471039 /* GameModeManager.swift */,
 				8BA1C0AA362D511F3CD87919 /* HardcoreModeManager.swift */,
+				0EC5CE5C95784128C316B133 /* HowLongToBeatService.swift */,
 				B57968ED5BE5EC0BF7BE93EB /* JaguarBIOSService.swift */,
 				51CC71BA94F2F723F61276A2 /* LaunchBoxGamesDBService.swift */,
 				3EB954899F92CE8016C887B3 /* LaunchBoxMetadataService.swift */,
@@ -6188,6 +6197,7 @@
 				A699B8997F87105490413BC8 /* GlassOrb.metal in Sources */,
 				CCF3EE1346F3B310A58EA263 /* GlassOrbPlayButton.swift in Sources */,
 				40235C6A5048EAABFCDA1EB0 /* GridCollectionView.swift in Sources */,
+				9DF8CAD44768455B2895F2A7 /* HLTBWebSearchSheet.swift in Sources */,
 				DA7758EF636546C3E8211BFF /* HaishinKitLogger.swift in Sources */,
 				BCF6E7FD69063759D0607C29 /* HardcoreModeManager.swift in Sources */,
 				4596D0538A126CE340A86004 /* Header.swift in Sources */,
@@ -6211,6 +6221,8 @@
 				714D657AEDB409F1DFA924E8 /* HotkeyActionRow.swift in Sources */,
 				FDE92E115DEE8FE3BE7318EF /* HotkeyConfig.swift in Sources */,
 				C89D895A0684B41688FF2FD4 /* HotkeyConfigSettingsView.swift in Sources */,
+				A56157FD0F4EC79DBCF7EDD8 /* HowLongToBeatCard.swift in Sources */,
+				28065669ED8837941C1570A4 /* HowLongToBeatService.swift in Sources */,
 				A73CD8FC11A30FE6195AC14F /* ICloudMaterializer.swift in Sources */,
 				4C5E02094A7A7692B2C1EC6A /* IOSurfaceVideoManager.swift in Sources */,
 				13909F17DF2385136F4273B8 /* IconPickerView.swift in Sources */,

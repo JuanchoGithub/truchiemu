@@ -150,6 +150,17 @@ final class ROMMetadataEntry {
     var customCoreID: String?
     var customName: String?
 
+    // HowLongToBeat (how long to beat) completion-time estimates, in hours.
+    var hltbGameID: Int?
+    var hltbMatchedTitle: String?
+    var hltbMainStoryHours: Double?
+    var hltbMainPlusExtrasHours: Double?
+    var hltbCompletionistHours: Double?
+    var hltbAllStylesHours: Double?
+    // When the most recent HowLongToBeat search returned no results. Used to throttle
+    // re-searches for games HLTB doesn't have (15-day freshness).
+    var hltbLastNotFoundAt: Date?
+
     // Note: inverse relationship disabled to avoid circular reference
     var romID: UUID?
 
@@ -171,7 +182,14 @@ final class ROMMetadataEntry {
         titleScreenPath: String? = nil,
         screenshotPathsJSON: String? = nil,
         customCoreID: String? = nil,
-        customName: String? = nil
+        customName: String? = nil,
+        hltbGameID: Int? = nil,
+        hltbMatchedTitle: String? = nil,
+        hltbMainStoryHours: Double? = nil,
+        hltbMainPlusExtrasHours: Double? = nil,
+        hltbCompletionistHours: Double? = nil,
+        hltbAllStylesHours: Double? = nil,
+        hltbLastNotFoundAt: Date? = nil
     ) {
         self.pathKey = pathKey
         self.crc32 = crc32
@@ -191,6 +209,13 @@ final class ROMMetadataEntry {
         self.screenshotPathsJSON = screenshotPathsJSON
         self.customCoreID = customCoreID
         self.customName = customName
+        self.hltbGameID = hltbGameID
+        self.hltbMatchedTitle = hltbMatchedTitle
+        self.hltbMainStoryHours = hltbMainStoryHours
+        self.hltbMainPlusExtrasHours = hltbMainPlusExtrasHours
+        self.hltbCompletionistHours = hltbCompletionistHours
+        self.hltbAllStylesHours = hltbAllStylesHours
+        self.hltbLastNotFoundAt = hltbLastNotFoundAt
     }
 }
 

@@ -13,6 +13,8 @@ extension GameDetailView {
 
             playtimeCard
 
+            howLongToBeatCard
+
             recentSaveStatesPreview
 
             if achievementsService.isEnabled && !gameAchievements.isEmpty {
@@ -142,6 +144,10 @@ extension GameDetailView {
     }
 
     // MARK: - Playtime
+
+    private var howLongToBeatCard: some View {
+        HowLongToBeatCard(rom: currentROM)
+    }
 
     @ViewBuilder
     private var playtimeCard: some View {

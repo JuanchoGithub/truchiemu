@@ -36,6 +36,16 @@ struct ROMMetadataRecord: Codable, Hashable {
     // User-set player count override — nil means no override.
     var userPlayerOverride: Int?
 
+    // HowLongToBeat (how long to beat) completion-time estimates, in hours.
+    var hltbGameID: Int?
+    var hltbMatchedTitle: String?
+    var hltbMainStoryHours: Double?
+    var hltbMainPlusExtrasHours: Double?
+    var hltbCompletionistHours: Double?
+    var hltbAllStylesHours: Double?
+    // When the most recent HowLongToBeat search returned no results.
+    var hltbLastNotFoundAt: Date?
+
     init() {
         hasBoxArt = false
     }
@@ -58,6 +68,13 @@ struct ROMMetadataRecord: Codable, Hashable {
         screenshotPaths = rom.screenshotPaths.map { $0.path }
         customName = rom.customName
         userPlayerOverride = rom.metadata?.userPlayerOverride
+        hltbGameID = rom.metadata?.hltbGameID
+        hltbMatchedTitle = rom.metadata?.hltbMatchedTitle
+        hltbMainStoryHours = rom.metadata?.hltbMainStoryHours
+        hltbMainPlusExtrasHours = rom.metadata?.hltbMainPlusExtrasHours
+        hltbCompletionistHours = rom.metadata?.hltbCompletionistHours
+        hltbAllStylesHours = rom.metadata?.hltbAllStylesHours
+        hltbLastNotFoundAt = rom.metadata?.hltbLastNotFoundAt
     }
 
     func applying(to rom: ROM) -> ROM {
@@ -75,6 +92,13 @@ struct ROMMetadataRecord: Codable, Hashable {
         if let cooperative { meta.cooperative = cooperative }
         if let esrbRating { meta.esrbRating = esrbRating }
         if let userPlayerOverride { meta.userPlayerOverride = userPlayerOverride }
+        if let hltbGameID { meta.hltbGameID = hltbGameID }
+        if let hltbMatchedTitle { meta.hltbMatchedTitle = hltbMatchedTitle }
+        if let hltbMainStoryHours { meta.hltbMainStoryHours = hltbMainStoryHours }
+        if let hltbMainPlusExtrasHours { meta.hltbMainPlusExtrasHours = hltbMainPlusExtrasHours }
+        if let hltbCompletionistHours { meta.hltbCompletionistHours = hltbCompletionistHours }
+        if let hltbAllStylesHours { meta.hltbAllStylesHours = hltbAllStylesHours }
+        if let hltbLastNotFoundAt { meta.hltbLastNotFoundAt = hltbLastNotFoundAt }
         r.metadata = meta
         if let t = thumbnailLookupSystemID { r.thumbnailLookupSystemID = t }
         r.hasBoxArt = hasBoxArt
@@ -109,7 +133,14 @@ extension ROMMetadataEntry {
             hasBoxArt: record.hasBoxArt,
             titleScreenPath: record.titleScreenPath,
             customCoreID: record.customCoreID,
-            customName: record.customName
+            customName: record.customName,
+            hltbGameID: record.hltbGameID,
+            hltbMatchedTitle: record.hltbMatchedTitle,
+            hltbMainStoryHours: record.hltbMainStoryHours,
+            hltbMainPlusExtrasHours: record.hltbMainPlusExtrasHours,
+            hltbCompletionistHours: record.hltbCompletionistHours,
+            hltbAllStylesHours: record.hltbAllStylesHours,
+            hltbLastNotFoundAt: record.hltbLastNotFoundAt
         )
         
         if !record.screenshotPaths.isEmpty,
@@ -139,6 +170,13 @@ extension ROMMetadataEntry {
         record.titleScreenPath = titleScreenPath
         record.customCoreID = customCoreID
         record.customName = customName
+        record.hltbGameID = hltbGameID
+        record.hltbMatchedTitle = hltbMatchedTitle
+        record.hltbMainStoryHours = hltbMainStoryHours
+        record.hltbMainPlusExtrasHours = hltbMainPlusExtrasHours
+        record.hltbCompletionistHours = hltbCompletionistHours
+        record.hltbAllStylesHours = hltbAllStylesHours
+        record.hltbLastNotFoundAt = hltbLastNotFoundAt
         if let json = screenshotPathsJSON,
            let data = json.data(using: .utf8),
            let paths = try? JSONDecoder().decode([String].self, from: data) {
@@ -270,6 +308,13 @@ final class LibraryMetadataStore: ObservableObject {
         entry.hasBoxArt = record.hasBoxArt
         entry.titleScreenPath = record.titleScreenPath
         entry.customCoreID = record.customCoreID
+        entry.hltbGameID = record.hltbGameID
+        entry.hltbMatchedTitle = record.hltbMatchedTitle
+        entry.hltbMainStoryHours = record.hltbMainStoryHours
+        entry.hltbMainPlusExtrasHours = record.hltbMainPlusExtrasHours
+        entry.hltbCompletionistHours = record.hltbCompletionistHours
+        entry.hltbAllStylesHours = record.hltbAllStylesHours
+        entry.hltbLastNotFoundAt = record.hltbLastNotFoundAt
         if !record.screenshotPaths.isEmpty,
            let data = try? JSONEncoder().encode(record.screenshotPaths),
            let str = String(data: data, encoding: .utf8) {

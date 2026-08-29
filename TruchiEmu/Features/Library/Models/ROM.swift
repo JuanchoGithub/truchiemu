@@ -306,6 +306,17 @@ struct ROMMetadata: Codable, Hashable {
     var cpuClock: Double?
     // Audio chip names
     var audioChips: [String]?
+
+    // HowLongToBeat (how long to beat) completion-time estimates, in hours.
+    var hltbGameID: Int?
+    var hltbMatchedTitle: String?
+    var hltbMainStoryHours: Double?
+    var hltbMainPlusExtrasHours: Double?
+    var hltbCompletionistHours: Double?
+    var hltbAllStylesHours: Double?
+    // When the most recent HowLongToBeat search returned no results. Used to throttle
+    // re-searches for games HLTB doesn't have (15-day freshness).
+    var hltbLastNotFoundAt: Date?
 }
 
 
