@@ -11,6 +11,7 @@ struct GameDetailView: View {
     @Environment(\.dismiss) var dismiss
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.openWindow) var openWindow
+    @Environment(\.openSettings) var openSettings
 	var rom: ROM
 	var initialSection: DetailSection?
 
@@ -73,8 +74,11 @@ struct GameDetailView: View {
 @State var isFindingRAGame = false
 @State var raComparisonError: String?
 @State var raComparisonNameMatches: [RAHashComparisonContent.NameMatchItem] = []
-@StateObject var raVerification = ManualStatusController()
-@State var raComparisonShowDownloadOption = false
+    @StateObject var raVerification = ManualStatusController()
+    @State var raComparisonShowDownloadOption = false
+
+    @State var openCriticFetching: Bool = false
+    @State var openCriticErrorMessage: String? = nil
 
     var currentROM: ROM {
         library.roms.first { $0.id == rom.id } ?? rom
@@ -155,6 +159,8 @@ struct GameDetailView: View {
             if achievementsService.isEnabled {
                 achievementsSection
             }
+        case .openCritic:
+            openCriticSection
         }
     }
 
@@ -310,6 +316,24 @@ struct GameDetailView: View {
         .sheet(isPresented: $showRAHashComparison) { raHashComparisonSheet
             .gamepadDismissable { showRAHashComparison = false }
         }
+        .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("OpenCriticDataFetched"))) { note in
+            guard let romID = note.userInfo?["romID"] as? UUID, romID == currentROM.id else { return }
+            guard let score = note.userInfo?["score"] as? Double,
+                  let tier = note.userInfo?["tier"] as? String,
+                  let pct = note.userInfo?["percentRecommended"] as? Double,
+                  let gameID = note.userInfo?["gameID"] as? Int else { return }
+            var updated = currentROM
+            if updated.metadata == nil { updated.metadata = ROMMetadata() }
+            updated.metadata?.openCriticScore = Int(score.rounded())
+            updated.metadata?.openCriticTier = tier
+            updated.metadata?.openCriticPercentRecommended = Int(pct.rounded())
+            updated.metadata?.openCriticID = gameID
+            updated.metadata?.openCriticFetchAttempted = true
+            if let numReviews = note.userInfo?["numReviews"] as? Int {
+                updated.metadata?.openCriticReviewCount = numReviews
+            }
+            library.updateROM(updated)
+        }
         .sheet(isPresented: $showSystemPicker) {
             SystemPickerView(roms: [currentROM], library: library) {
                 showSystemPicker = false
@@ -325,6 +349,9 @@ struct GameDetailView: View {
             sections.append(.achievements)
         }
         sections.append(contentsOf: [.cheats, .shader, .bezels, .controls])
+        if OpenCriticService.shared.apiKey != nil, !OpenCriticService.shared.apiKey!.isEmpty {
+            sections.append(.openCritic)
+        }
         if let sysID = currentROM.systemID, sysID == "dos" || sysID == "scummvm" {
             sections.append(.analogMouse)
         }

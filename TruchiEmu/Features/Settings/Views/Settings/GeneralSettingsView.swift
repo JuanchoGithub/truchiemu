@@ -7,6 +7,7 @@ struct GeneralSettingsView: View {
     @State private var notificationsEnabled: Bool = false
     @State private var boxArtPivotingEnabled: Bool = true
     @State private var hltbEnabled: Bool = true
+    @State private var openCriticAPIKey: String = ""
 
     @State private var pending = PendingThemeSettings()
     @State private var showRestartConfirmation = false
@@ -24,6 +25,7 @@ struct GeneralSettingsView: View {
     @ObservedObject private var loc = LocalizationManager.shared
     @ObservedObject private var themeManager = ThemeManager.shared
     @ObservedObject var prefs = SystemPreferences.shared
+    @ObservedObject private var openCritic = OpenCriticService.shared
 
     init(searchText: Binding<String> = .constant(""),
          focusedSectionID: Binding<String?> = .constant(nil),
@@ -246,6 +248,58 @@ LazyVGrid(columns: [GridItem(.adaptive(minimum: 60))], spacing: 2) {
                 .id("section-application")
             }
 
+            // ★ OpenCritic Section
+            if (!isSearching || matchesSearch("OpenCritic API key truchiemu reviews scores")) && sectionVisible("section-openCritic") {
+                Section(header: Label(loc.localized("settings.openCritic"), systemImage: "star")) {
+                    SecureField(loc.localized("settings.openCritic.apiKey"), text: $openCriticAPIKey)
+                        .textFieldStyle(.roundedBorder)
+                        .font(.system(size: 12))
+                    HStack(alignment: .firstTextBaseline, spacing: AppSpacing.xl) {
+                        Text(loc.localized("settings.openCritic.apiKeyDescription"))
+                            .font(.caption)
+                            .foregroundStyle(AppColors.textSecondary(colorScheme))
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        if openCritic.isTestingConnection {
+                            ProgressView()
+                                .controlSize(.small)
+                        }
+                        Button(openCritic.isTestingConnection
+                               ? loc.localized("settings.openCritic.testing")
+                               : loc.localized("settings.openCritic.testConnection")) {
+                            Task {
+                                await OpenCriticService.shared.testAPIConnection()
+                            }
+                        }
+                        .buttonStyle(.bordered)
+                        .controlSize(.small)
+                        .disabled(openCritic.isTestingConnection)
+                    }
+                    if let msg = openCritic.connectionTestMessage {
+                        HStack(alignment: .firstTextBaseline, spacing: 6) {
+                            Image(systemName: openCritic.connectionTestSuccess == true
+                                  ? "checkmark.circle.fill" : "xmark.circle.fill")
+                                .foregroundStyle(openCritic.connectionTestSuccess == true ? .green : .red)
+                            Text(msg)
+                                .font(.caption2)
+                        }
+                        .foregroundStyle(AppColors.textTertiary(colorScheme))
+                    }
+                    if let attributed = try? AttributedString(
+                        markdown: loc.localized("settings.openCritic.apiKeyWarning"),
+                        options: .init(interpretedSyntax: .inlineOnlyPreservingWhitespace)
+                    ) {
+                        Text(attributed)
+                            .font(.caption2)
+                            .foregroundStyle(AppColors.textTertiary(colorScheme))
+                    } else {
+                        Text(loc.localized("settings.openCritic.apiKeyWarning"))
+                            .font(.caption2)
+                            .foregroundStyle(AppColors.textTertiary(colorScheme))
+                    }
+                }
+                .id("section-openCritic")
+            }
+
             // No results message
             if isSearching && !hasMatchingSections {
                 Section {
@@ -282,6 +336,7 @@ LazyVGrid(columns: [GridItem(.adaptive(minimum: 60))], spacing: 2) {
         notificationsEnabled = NotificationService.shared.isAuthorized
         boxArtPivotingEnabled = prefs.boxArtPivotingEnabled()
         hltbEnabled = AppSettings.getBool("hltbEnabled", defaultValue: true)
+        openCriticAPIKey = OpenCriticService.shared.apiKey ?? ""
             pending.theme = themeManager.currentTheme
             pending.appearanceMode = themeManager.appearanceMode
             pending.customColor = themeManager.customAccentColor
@@ -301,6 +356,9 @@ LazyVGrid(columns: [GridItem(.adaptive(minimum: 60))], spacing: 2) {
         }
         .onChange(of: hltbEnabled) { _, newValue in
             AppSettings.setBool("hltbEnabled", value: newValue)
+        }
+        .onChange(of: openCriticAPIKey) { _, newValue in
+            OpenCriticService.shared.apiKey = newValue.isEmpty ? nil : newValue
         }
         .onChange(of: pending.theme) { _, _ in
             activePending.theme = pending.theme

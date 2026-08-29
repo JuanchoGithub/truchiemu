@@ -528,6 +528,7 @@
 		667975EF2750F253A19162FB /* GameListRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07A377CFF1945DD917DC921B /* GameListRowView.swift */; };
 		66C987B41A3E926DFEBD78CA /* fightdata_aof2.json in Resources */ = {isa = PBXBuildFile; fileRef = B05BA07B177F750792D78E4A /* fightdata_aof2.json */; };
 		6709589B4CB4AC79F3C17278 /* input_coreOverrides_mkxp-z.json in Resources */ = {isa = PBXBuildFile; fileRef = 48C98C7FCED4E670B826D7E7 /* input_coreOverrides_mkxp-z.json */; };
+		674D4683BC0F2CDAA199CF4B /* OpenCritic.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF4E53391BFE3DECE7B3CA42 /* OpenCritic.swift */; };
 		67638C1B3F4CF9B3EAB21AFD /* input_coreLabels_anarch.json in Resources */ = {isa = PBXBuildFile; fileRef = 40C08D7F3031AF1A55ADB404 /* input_coreLabels_anarch.json */; };
 		677E565E4FE7FA4E55160101 /* WhatsNewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B868CBCF190918C4BD72EA68 /* WhatsNewView.swift */; };
 		67C4E846328F50A505396923 /* fightdata_breakrev.json in Resources */ = {isa = PBXBuildFile; fileRef = 3E1A5AE9D789E89EA50E41CB /* fightdata_breakrev.json */; };
@@ -2399,6 +2400,7 @@
 		BE1D21745D47B366C16D8F00 /* fightdata_rvschool.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_rvschool.json; sourceTree = "<group>"; };
 		BE8AAC49E7AC25911394118F /* N64DD.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = N64DD.png; sourceTree = "<group>"; };
 		BF4D3CED7C7C18FB8375C015 /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
+		BF4E53391BFE3DECE7B3CA42 /* OpenCritic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenCritic.swift; sourceTree = "<group>"; };
 		BF5AE1A4D1424CE50BD0AE2D /* input_coreLabels_lutro.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_lutro.json; sourceTree = "<group>"; };
 		BF7A3D8D17275C396BE21173 /* DotMatrixLCD.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = DotMatrixLCD.metal; sourceTree = "<group>"; };
 		BF992D170DE90C459EFC58C2 /* fightdata_pwrinst2.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_pwrinst2.json; sourceTree = "<group>"; };
@@ -3096,6 +3098,7 @@
 				76A50CEAE48F1F659CE03FFC /* MetadataRow.swift */,
 				AE88DE36C63C7988B726B538 /* ModernSaveStateSlotView.swift */,
 				7071672F4855616C9D2564D6 /* ModernSectionCard.swift */,
+				BF4E53391BFE3DECE7B3CA42 /* OpenCritic.swift */,
 				F65A972093C6A03CF4512269 /* Overview.swift */,
 				C94E2C81D0A16F3F9DCA9E6B /* RAHashComparisonSheet.swift */,
 				37C4859B682A869506B406B2 /* SavedStates.swift */,
@@ -6320,6 +6323,7 @@
 				2D61E69C106B977772B1D173 /* NotificationPopoverView.swift in Sources */,
 				C859879DFE4BE2B0AC1E85D9 /* NotificationRowView.swift in Sources */,
 				87B10EFAD98B1F06174C53D9 /* NotificationService.swift in Sources */,
+				674D4683BC0F2CDAA199CF4B /* OpenCritic.swift in Sources */,
 				A8DCE8C53D9F78C6ED48AF6A /* OpenCriticService.swift in Sources */,
 				27AAD6EBD24C3A463A413FD8 /* OtherFiltersPopover.swift in Sources */,
 				0156A555D87ABB90781E2ED0 /* Overview.swift in Sources */,

@@ -12,6 +12,7 @@ enum DetailSection: String, CaseIterable {
     case cheats = "Cheats"
     case core = "Core"
     case achievements = "Achievements"
+    case openCritic = "OpenCritic"
     case technical = "Technical"
 
     var localizedTitle: String {
@@ -27,6 +28,7 @@ enum DetailSection: String, CaseIterable {
         case .cheats: return LocalizationManager.shared.localized("gameDetail.cheats")
         case .core: return LocalizationManager.shared.localized("gameDetail.core")
         case .achievements: return LocalizationManager.shared.localized("gameDetail.achievements")
+        case .openCritic: return LocalizationManager.shared.localized("gameDetail.openCritic")
         case .technical: return LocalizationManager.shared.localized("gameDetail.technical")
         }
     }
@@ -55,6 +57,8 @@ enum DetailSection: String, CaseIterable {
             return LocalizationManager.shared.localized("gameDetail.coreHelp")
         case .achievements:
             return LocalizationManager.shared.localized("gameDetail.achievementsHelp")
+        case .openCritic:
+            return LocalizationManager.shared.localized("gameDetail.openCriticHelp")
         case .technical:
             return LocalizationManager.shared.localized("gameDetail.technicalHelp")
         }
@@ -77,6 +81,7 @@ enum DetailSection: String, CaseIterable {
         case .cheats: return "wand.and.stars"
         case .core: return "cpu"
         case .achievements: return "trophy"
+        case .openCritic: return "star.fill"
         case .technical: return "doc.text.magnifyingglass"
         }
     }

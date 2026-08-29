@@ -317,6 +317,14 @@ struct ROMMetadata: Codable, Hashable {
     // When the most recent HowLongToBeat search returned no results. Used to throttle
     // re-searches for games HLTB doesn't have (15-day freshness).
     var hltbLastNotFoundAt: Date?
+    var openCriticScore: Int?
+    var openCriticTier: String?
+    var openCriticPercentRecommended: Int?
+    var openCriticReviewCount: Int?
+    var openCriticID: Int?
+    // Set true once a fetch has been attempted for this ROM, so we never
+    // auto-refetch (and burn API quota) on every detail-view open.
+    var openCriticFetchAttempted: Bool = false
 }
 
 
