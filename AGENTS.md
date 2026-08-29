@@ -174,7 +174,7 @@ The `TruchiEmuCoreHost` XPC target additionally excludes (`project.yml:165-178`)
 
 | Feature | Path | Responsibility |
 |---|---|---|
-| Library | `Features/Library/` | ROM library management, scanning, categories, genres |
+| Library | `Features/Library/` | ROM library management, scanning, categories, genres. Sort orders live in `Models/LibrarySortOrder.swift`; the macOS Sort menu and the filter-chip bar both consume `Views/Library/LibrarySortPicker.swift` — add a new sort by appending an enum case (and to `.primary` or `.other`). Do not add a third call site. |
 | MAME | `Features/MAME/` | MAME-specific ROM handling, dependency management, verification |
 | Player | `Features/Player/` | Game launching, shaders, cheats, bezels, achievements, input |
 | Settings | `Features/Settings/` | Controller config, core options, input descriptors, all settings UI |

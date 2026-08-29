@@ -11,10 +11,9 @@ final class TVModeViewModel: ObservableObject {
     @Published var page: Page = .row1
     @Published var theme: TVModeSettings.Theme
 
-    /// Sort mode applied to the games row. Mirrors the main library's
-    /// two-value sort (`sortByLastPlayed` / `sortByLastAdded` AppSettings
-    /// booleans) but as a single tri-state so the L3 rotate action can
-    /// cycle through them. Reset by pressing L3+R3.
+    /// Sort mode applied to the games row. Mirrors `LibrarySortOrder` in the
+    /// main library but as a single source-of-truth state for the L3 rotate
+    /// action to cycle through. Reset by pressing L3+R3.
     @Published var sortMode: SortMode = .alphabetical
 
     /// Brief HUD overlay shown after `cycleSortMode()` / `resetSortMode()`.
@@ -25,12 +24,16 @@ final class TVModeViewModel: ObservableObject {
         case alphabetical
         case lastPlayed
         case lastAdded
+        case playtime
+        case timeToBeat
 
         var localizationKey: String {
             switch self {
             case .alphabetical: return "tvMode.sortHUD.alphabetical"
             case .lastPlayed:    return "app.lastPlayed"
             case .lastAdded:     return "app.lastAdded"
+            case .playtime:      return "app.sortByPlaytime"
+            case .timeToBeat:    return "app.sortByTimeToBeat"
             }
         }
     }
@@ -403,6 +406,23 @@ final class TVModeViewModel: ObservableObject {
             }
         case .lastAdded:
             return roms.sorted { $0.dateAdded > $1.dateAdded }
+        case .playtime:
+            return roms.sorted { a, b in
+                if a.totalPlaytimeSeconds != b.totalPlaytimeSeconds {
+                    return a.totalPlaytimeSeconds > b.totalPlaytimeSeconds
+                }
+                return a.displayName.localizedCaseInsensitiveCompare(b.displayName) == .orderedAscending
+            }
+        case .timeToBeat:
+            return roms.sorted { a, b in
+                let aHours = a.metadata?.hltbMainStoryHours ?? 0
+                let bHours = b.metadata?.hltbMainStoryHours ?? 0
+                let aHasData = a.metadata?.hltbMainStoryHours != nil && a.metadata!.hltbMainStoryHours! > 0
+                let bHasData = b.metadata?.hltbMainStoryHours != nil && b.metadata!.hltbMainStoryHours! > 0
+                if aHasData != bHasData { return aHasData }
+                if aHours != bHours { return aHours > bHours }
+                return a.displayName.localizedCaseInsensitiveCompare(b.displayName) == .orderedAscending
+            }
         }
     }
 

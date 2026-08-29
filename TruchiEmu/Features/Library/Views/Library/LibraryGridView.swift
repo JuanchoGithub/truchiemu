@@ -2,8 +2,8 @@ import SwiftUI
 import AppKit
 
 private struct GamepadCycleStep: Equatable {
-    let sortByLastPlayed: Bool
-    let sortByLastAdded: Bool
+    let sortOrder: LibrarySortOrder
+    let sortAscending: Bool
     let filter: GameFilterOption?
     let genre: String?
 }
@@ -234,8 +234,8 @@ struct LibraryGridView: View {
     
     // Filter chips
     @State private var activeFilters: Set<String> = []
-    @State private var sortByLastPlayed: Bool = false
-    @State private var sortByLastAdded: Bool = false
+    @State private var sortOrder: LibrarySortOrder = .name
+    @State private var sortAscending: Bool = false
     @State private var selectedGenres: Set<String> = []
     @State private var showGenrePicker: Bool = false
     @State private var showOtherFilters: Bool = false
@@ -640,23 +640,24 @@ struct LibraryGridView: View {
     .onAppear {
             // Recompute columns from saved zoom level
             updateColumnCountFromZoom()
-            sortByLastPlayed = AppSettings.getBool("sortByLastPlayed", defaultValue: false)
-            sortByLastAdded = AppSettings.getBool("sortByLastAdded", defaultValue: false)
-            
+            let sort = LibrarySortOrder.load()
+            sortOrder = sort.order
+            sortAscending = sort.ascending
+
             // Initialize view mode from settings
             if let savedMode = AppSettings.getString("gridViewMode"),
                let parsed = ViewMode(rawValue: savedMode),
                parsed != .tv {
                 viewMode = parsed
             }
-            
+
             // Sync view model with restored sort settings
 viewModel.updateFilters(
                 filter: effectiveFilter,
                 searchText: searchText,
                 activeFilters: activeFilters,
-                sortByLastPlayed: sortByLastPlayed,
-                sortByLastAdded: sortByLastAdded,
+                sortOrder: sortOrder,
+                sortAscending: sortAscending,
                 selectedGenres: selectedGenres
             )
 
@@ -681,14 +682,15 @@ viewModel.updateFilters(
             }
         }
         .onReceive(NotificationCenter.default.publisher(for: .sortChanged)) { _ in
-            sortByLastPlayed = AppSettings.getBool("sortByLastPlayed", defaultValue: false)
-            sortByLastAdded = AppSettings.getBool("sortByLastAdded", defaultValue: false)
+            let sort = LibrarySortOrder.load()
+            sortOrder = sort.order
+            sortAscending = sort.ascending
             viewModel.updateFilters(
                 filter: effectiveFilter,
                 searchText: searchText,
                 activeFilters: activeFilters,
-                sortByLastPlayed: sortByLastPlayed,
-                sortByLastAdded: sortByLastAdded,
+                sortOrder: sortOrder,
+                sortAscending: sortAscending,
                 selectedGenres: selectedGenres
             )
         }
@@ -703,8 +705,8 @@ viewModel.updateFilters(
                     filter: effectiveFilter,
                     searchText: searchText,
                     activeFilters: activeFilters,
-                    sortByLastPlayed: sortByLastPlayed,
-                    sortByLastAdded: sortByLastAdded,
+                    sortOrder: sortOrder,
+                    sortAscending: sortAscending,
                     selectedGenres: selectedGenres
                 )
             }
@@ -747,8 +749,8 @@ viewModel.updateFilters(
                 filter: newFilter,
                 searchText: searchText,
                 activeFilters: activeFilters,
-                sortByLastPlayed: sortByLastPlayed,
-                sortByLastAdded: sortByLastAdded,
+                sortOrder: sortOrder,
+                sortAscending: sortAscending,
                 selectedGenres: selectedGenres
             )
         }
@@ -757,8 +759,8 @@ viewModel.updateFilters(
                 filter: effectiveFilter,
                 searchText: newValue,
                 activeFilters: activeFilters,
-                sortByLastPlayed: sortByLastPlayed,
-                sortByLastAdded: sortByLastAdded,
+                sortOrder: sortOrder,
+                sortAscending: sortAscending,
                 selectedGenres: selectedGenres
             )
         }
@@ -931,18 +933,20 @@ viewModel.updateFilters(
         let genres = GenreManager.shared.getAllDisplayGenres(from: library.roms)
 
         let allSteps: [GamepadCycleStep] = [
-            GamepadCycleStep(sortByLastPlayed: false, sortByLastAdded: false, filter: nil, genre: nil),
-            GamepadCycleStep(sortByLastPlayed: true,  sortByLastAdded: false, filter: nil, genre: nil),
-            GamepadCycleStep(sortByLastPlayed: false, sortByLastAdded: true,  filter: nil, genre: nil),
-            GamepadCycleStep(sortByLastPlayed: false, sortByLastAdded: false, filter: .noBoxArt, genre: nil),
-            GamepadCycleStep(sortByLastPlayed: false, sortByLastAdded: false, filter: .neverPlayed, genre: nil),
-            GamepadCycleStep(sortByLastPlayed: false, sortByLastAdded: false, filter: .unscanned, genre: nil),
-            GamepadCycleStep(sortByLastPlayed: false, sortByLastAdded: false, filter: .multiplayer, genre: nil),
-        ] + genres.map { GamepadCycleStep(sortByLastPlayed: false, sortByLastAdded: false, filter: nil, genre: $0) }
+            GamepadCycleStep(sortOrder: .name, sortAscending: false, filter: nil, genre: nil),
+            GamepadCycleStep(sortOrder: .lastPlayed, sortAscending: false, filter: nil, genre: nil),
+            GamepadCycleStep(sortOrder: .lastAdded, sortAscending: false, filter: nil, genre: nil),
+            GamepadCycleStep(sortOrder: .playtime, sortAscending: false, filter: nil, genre: nil),
+            GamepadCycleStep(sortOrder: .timeToBeat, sortAscending: false, filter: nil, genre: nil),
+            GamepadCycleStep(sortOrder: .name, sortAscending: false, filter: .noBoxArt, genre: nil),
+            GamepadCycleStep(sortOrder: .name, sortAscending: false, filter: .neverPlayed, genre: nil),
+            GamepadCycleStep(sortOrder: .name, sortAscending: false, filter: .unscanned, genre: nil),
+            GamepadCycleStep(sortOrder: .name, sortAscending: false, filter: .multiplayer, genre: nil),
+        ] + genres.map { GamepadCycleStep(sortOrder: .name, sortAscending: false, filter: nil, genre: $0) }
 
         let currentStep = GamepadCycleStep(
-            sortByLastPlayed: sortByLastPlayed,
-            sortByLastAdded: sortByLastAdded,
+            sortOrder: sortOrder,
+            sortAscending: sortAscending,
             filter: activeFilters.compactMap { GameFilterOption(rawValue: $0) }.first,
             genre: selectedGenres.count == 1 ? selectedGenres.first : nil
         )
@@ -954,21 +958,21 @@ viewModel.updateFilters(
     }
 
     private func applyCycleStep(_ step: GamepadCycleStep) {
-        sortByLastPlayed = step.sortByLastPlayed
-        sortByLastAdded = step.sortByLastAdded
+        sortOrder = step.sortOrder
+        sortAscending = step.sortAscending
         activeFilters.removeAll()
         if let f = step.filter { activeFilters.insert(f.rawValue) }
         selectedGenres.removeAll()
         if let g = step.genre { selectedGenres.insert(g) }
 
-        AppSettings.setBool("sortByLastPlayed", value: sortByLastPlayed)
-        AppSettings.setBool("sortByLastAdded", value: sortByLastAdded)
+        AppSettings.setString(LibrarySortOrder.orderKey, value: sortOrder.rawValue)
+        AppSettings.setBool(LibrarySortOrder.ascendingKey, value: sortAscending)
         viewModel.updateFilters(
             filter: filter,
             searchText: searchText,
             activeFilters: activeFilters,
-            sortByLastPlayed: sortByLastPlayed,
-            sortByLastAdded: sortByLastAdded,
+            sortOrder: sortOrder,
+            sortAscending: sortAscending,
             selectedGenres: selectedGenres
         )
     }
@@ -1882,100 +1886,14 @@ viewModel.updateFilters(
 
     // MARK: - Search & Filters
 
-    @State private var isLastPlayedHovered = false
-    @State private var isLastAddedHovered = false
-    
     private var filterChips: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 6) {
-                // Last Played sort toggle chip
-                Button {
-                    sortByLastPlayed.toggle()
-                    AppSettings.setBool("sortByLastPlayed", value: sortByLastPlayed)
-                    viewModel.updateFilters(
-                        filter: effectiveFilter,
-                        searchText: searchText,
-                        activeFilters: activeFilters,
-                        sortByLastPlayed: sortByLastPlayed,
-                        sortByLastAdded: sortByLastAdded
-                    )
-                } label: {
-
-                    HStack(spacing: 4) {
-                        Image(systemName: sortByLastPlayed ? "clock.fill" : "clock")
-                            .font(.system(size: 10, weight: .medium))
-                            .scaleEffect(sortByLastPlayed ? 1.1 : 1)
-                        Text(loc.localized("library.lastPlayed"))
-                            .font(.system(size: 11, weight: .medium))
-                    }
-.foregroundColor(sortByLastPlayed ? AppColors.textOnAccent(colorScheme) : (isLastPlayedHovered ? AppColors.brandAccent : AppColors.textSecondaryNeutral(colorScheme)))
-	.padding(.horizontal, 10)
-	.padding(.vertical, 6)
-	.frame(minHeight: 30)
-	.background(
-		Capsule()
-		.fill(sortByLastPlayed ? AppColors.brandAccent : (isLastPlayedHovered ? AppColors.brandAccent.opacity(0.12) : AppColors.cardBackgroundSubtle(colorScheme)))
-		.scaleEffect(isLastPlayedHovered ? 1.05 : 1)
-		.shadow(color: sortByLastPlayed ? AppColors.brandAccent.opacity(0.3) : (isLastPlayedHovered ? AppColors.brandAccent.opacity(0.2) : .clear), radius: isLastPlayedHovered ? 4 : 0, y: 2)
-	)
-                }
-                .buttonStyle(.plain)
-                .help(sortByLastPlayed ? "Sorting by Last Played — click to sort by Name" : "Sorting by Name — click to sort by Last Played")
-                .onHover { hovering in
-                    let shouldAnimate = !NSWorkspace.shared.accessibilityDisplayShouldReduceMotion
-                    if shouldAnimate {
-                        withAnimation(.easeOut(duration: 0.15)) {
-                            isLastPlayedHovered = hovering
-                        }
-                    } else {
-                        isLastPlayedHovered = hovering
-                    }
-                }
-                .animation(.easeOut(duration: 0.2), value: sortByLastPlayed)
-
-                // Last Added sort toggle chip
-                Button {
-                    sortByLastAdded.toggle()
-                    AppSettings.setBool("sortByLastAdded", value: sortByLastAdded)
-                    viewModel.updateFilters(
-                        filter: effectiveFilter,
-                        searchText: searchText,
-                        activeFilters: activeFilters,
-                        sortByLastPlayed: sortByLastPlayed,
-                        sortByLastAdded: sortByLastAdded
-                    )
-                } label: {
-                    HStack(spacing: 4) {
-                        Image(systemName: sortByLastAdded ? "calendar" : "calendar")
-                            .font(.system(size: 10, weight: .medium))
-                            .scaleEffect(sortByLastAdded ? 1.1 : 1)
-                        Text(loc.localized("library.lastAdded"))
-                            .font(.system(size: 11, weight: .medium))
-                    }
-.foregroundColor(sortByLastAdded ? AppColors.textOnAccent(colorScheme) : (isLastAddedHovered ? AppColors.brandAccent : AppColors.textSecondaryNeutral(colorScheme)))
-	.padding(.horizontal, 10)
-	.padding(.vertical, 6)
-	.frame(minHeight: 30)
-	.background(
-		Capsule()
-		.fill(sortByLastAdded ? AppColors.brandAccent : (isLastAddedHovered ? AppColors.brandAccent.opacity(0.12) : AppColors.cardBackgroundSubtle(colorScheme)))
-		.scaleEffect(isLastAddedHovered ? 1.05 : 1)
-		.shadow(color: sortByLastAdded ? AppColors.brandAccent.opacity(0.3) : (isLastAddedHovered ? AppColors.brandAccent.opacity(0.2) : .clear), radius: isLastAddedHovered ? 4 : 0, y: 2)
-	)
-                }
-                .buttonStyle(.plain)
-                .help(sortByLastAdded ? "Sorting by Last Added — click to sort by Name" : "Sorting by Name — click to sort by Last Added")
-                .onHover { hovering in
-                    let shouldAnimate = !NSWorkspace.shared.accessibilityDisplayShouldReduceMotion
-                    if shouldAnimate {
-                        withAnimation(.easeOut(duration: 0.15)) {
-                            isLastAddedHovered = hovering
-                        }
-                    } else {
-                        isLastAddedHovered = hovering
-                    }
-                }
-                .animation(.easeOut(duration: 0.2), value: sortByLastAdded)
+                LibrarySortPicker(
+                    currentOrder: $sortOrder,
+                    ascending: $sortAscending,
+                    style: .chips
+                )
 
                 ForEach(GameFilterOption.primaryFilters) { option in
                     FilterChipView(
@@ -1985,31 +1903,37 @@ viewModel.updateFilters(
                     )
                 }
 
+                // Single "Other" popover trigger — non-primary filter chips
+                // and the Last Added sort row both live inside.
                 let otherActiveCount = GameFilterOption.otherFilters.filter { activeFilters.contains($0.rawValue) }.count
+                let otherSortActive = LibrarySortOrder.other.contains(sortOrder)
+                let otherBadgeCount = otherActiveCount + (otherSortActive ? 1 : 0)
                 Button {
                     showOtherFilters.toggle()
                 } label: {
                     HStack(spacing: 4) {
-                        Image(systemName: otherActiveCount > 0 ? "line.3.horizontal.decrease.circle.fill" : "line.3.horizontal.decrease.circle")
+                        Image(systemName: otherBadgeCount > 0 ? "line.3.horizontal.decrease.circle.fill" : "line.3.horizontal.decrease.circle")
                             .font(.system(size: 10, weight: .medium))
                         Text(loc.localized("library.otherFilters"))
                             .font(.system(size: 11, weight: .medium))
-                        if otherActiveCount > 0 {
-                            Text("(\(otherActiveCount))")
+                        if otherBadgeCount > 0 {
+                            Text("(\(otherBadgeCount))")
                                 .font(.system(size: 10))
                         }
                     }
-                    .foregroundColor(otherActiveCount > 0 ? AppColors.textOnAccent(colorScheme) : .secondary)
+                    .foregroundColor(otherBadgeCount > 0 ? AppColors.textOnAccent(colorScheme) : .secondary)
                     .padding(.horizontal, 10)
                     .padding(.vertical, 6)
                     .frame(minHeight: 30)
-                    .background(Capsule().fill(otherActiveCount > 0 ? AppColors.brandAccent : AppColors.cardBackgroundSubtle(colorScheme)))
+                    .background(Capsule().fill(otherBadgeCount > 0 ? AppColors.brandAccent : AppColors.cardBackgroundSubtle(colorScheme)))
                 }
                 .buttonStyle(.plain)
                 .popover(isPresented: $showOtherFilters) {
                     OtherFiltersPopover(
                         activeFilters: $activeFilters,
-                        onToggle: { toggleFilter($0) }
+                        onToggle: { toggleFilter($0) },
+                        sortOrder: $sortOrder,
+                        sortAscending: $sortAscending
                     )
                     .gamepadDismissable { showOtherFilters = false }
                 }
@@ -2051,8 +1975,8 @@ viewModel.updateFilters(
                                 filter: effectiveFilter,
                                 searchText: searchText,
                                 activeFilters: activeFilters,
-                                sortByLastPlayed: sortByLastPlayed,
-                                sortByLastAdded: sortByLastAdded,
+                                sortOrder: sortOrder,
+                                sortAscending: sortAscending,
                                 selectedGenres: selectedGenres
                             )
                         }
@@ -2068,8 +1992,8 @@ viewModel.updateFilters(
                             filter: effectiveFilter,
                             searchText: searchText,
                             activeFilters: activeFilters,
-                            sortByLastPlayed: sortByLastPlayed,
-                            sortByLastAdded: sortByLastAdded,
+                            sortOrder: sortOrder,
+                            sortAscending: sortAscending,
                             selectedGenres: selectedGenres
                         )
                     } label: {
@@ -2118,13 +2042,13 @@ viewModel.updateFilters(
         } else {
             activeFilters.insert(option.rawValue)
         }
-        
+
         viewModel.updateFilters(
             filter: filter,
             searchText: searchText,
             activeFilters: activeFilters,
-            sortByLastPlayed: sortByLastPlayed,
-            sortByLastAdded: sortByLastAdded
+            sortOrder: sortOrder,
+            sortAscending: sortAscending
         )
     }
 

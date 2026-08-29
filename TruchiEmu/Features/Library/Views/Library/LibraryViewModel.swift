@@ -16,8 +16,10 @@ class LibraryViewModel: ObservableObject {
     var currentFilter: LibraryFilter = .all
     var currentSearchText: String = ""
     var activeFilters: Set<String> = []
-var sortByLastPlayed: Bool = false
-    var sortByLastAdded: Bool = false
+    var sortOrder: LibrarySortOrder = .name
+    /// True for ascending (A→Z, 0→9, oldest first); false for descending
+    /// (Z→A, 9→0, most recent / longest first). Ignored when `sortOrder == .name`.
+    var sortAscending: Bool = false
     var selectedGenres: Set<String> = []
 
     private var cancellables = Set<AnyCancellable>()
@@ -30,16 +32,16 @@ var sortByLastPlayed: Bool = false
         initialFilter: LibraryFilter = .all,
         initialSearchText: String = "",
         initialActiveFilters: Set<String> = [],
-        initialSortByLastPlayed: Bool = false,
-        initialSortByLastAdded: Bool = false
+        initialSortOrder: LibrarySortOrder = .name,
+        initialSortAscending: Bool = false
     ) {
         self.library = library
         self.categoryManager = categoryManager
         self.currentFilter = initialFilter
         self.currentSearchText = initialSearchText
         self.activeFilters = initialActiveFilters
-        self.sortByLastPlayed = initialSortByLastPlayed
-        self.sortByLastAdded = initialSortByLastAdded
+        self.sortOrder = initialSortOrder
+        self.sortAscending = initialSortAscending
 
         // Observe the library for changes. Debounced + deduplicated so a single
         // system switch triggers one filter pass instead of one per ROM mutation
@@ -84,8 +86,8 @@ var sortByLastPlayed: Bool = false
         hasher.combine(currentFilter)
         hasher.combine(currentSearchText)
         hasher.combine(activeFilters)
-        hasher.combine(sortByLastPlayed)
-        hasher.combine(sortByLastAdded)
+        hasher.combine(sortOrder)
+        hasher.combine(sortAscending)
         hasher.combine(selectedGenres)
         hasher.combine(library.roms.count)
         hasher.combine(library.lastChangeDate)
@@ -96,12 +98,12 @@ var sortByLastPlayed: Bool = false
     /// background work started in `handleFilterChange`.
     var currentFilterID: String { currentFilter.id }
 
-    func updateFilters(filter: LibraryFilter, searchText: String, activeFilters: Set<String>, sortByLastPlayed: Bool, sortByLastAdded: Bool, selectedGenres: Set<String> = []) {
+    func updateFilters(filter: LibraryFilter, searchText: String, activeFilters: Set<String>, sortOrder: LibrarySortOrder, sortAscending: Bool, selectedGenres: Set<String> = []) {
         self.currentFilter = filter
         self.currentSearchText = searchText
         self.activeFilters = activeFilters
-        self.sortByLastPlayed = sortByLastPlayed
-        self.sortByLastAdded = sortByLastAdded
+        self.sortOrder = sortOrder
+        self.sortAscending = sortAscending
         self.selectedGenres = selectedGenres
 
         refreshData()
@@ -112,8 +114,8 @@ var sortByLastPlayed: Bool = false
             filter: currentFilter,
             searchText: currentSearchText,
             activeFilters: activeFilters,
-            sortByLastPlayed: sortByLastPlayed,
-            sortByLastAdded: sortByLastAdded,
+            sortOrder: sortOrder,
+            sortAscending: sortAscending,
             selectedGenres: selectedGenres,
             romsCount: library.roms.count,
             lastChangeDate: library.lastChangeDate
@@ -162,8 +164,8 @@ var sortByLastPlayed: Bool = false
                 filter: self.currentFilter,
                 searchText: self.currentSearchText,
                 activeFilters: self.activeFilters,
-                sortByLastPlayed: self.sortByLastPlayed,
-                sortByLastAdded: self.sortByLastAdded,
+                sortOrder: self.sortOrder,
+                sortAscending: self.sortAscending,
                 selectedGenres: self.selectedGenres,
                 mameRunnableSet: mameRunnableSet,
                 genreLookup: genreLookup,
@@ -259,36 +261,58 @@ var sortByLastPlayed: Bool = false
         }
 
         // 5. Sorting
-        return applySorting(
-            to: filtered,
-            sortByLastPlayed: inputs.sortByLastPlayed,
-            sortByLastAdded: inputs.sortByLastAdded
-        )
+        return applySorting(to: filtered, sortOrder: inputs.sortOrder, ascending: inputs.sortAscending)
     }
 
-    nonisolated private static func applySorting(to roms: [ROM], sortByLastPlayed: Bool, sortByLastAdded: Bool) -> [ROM] {
+    nonisolated private static func applySorting(to roms: [ROM], sortOrder: LibrarySortOrder, ascending: Bool) -> [ROM] {
         guard !roms.isEmpty else { return [] }
 
-        if sortByLastPlayed {
-            return roms.sorted { a, b in
-                switch (a.lastPlayed, b.lastPlayed) {
-                case (nil, nil):
-                    return a.displayName.localizedCaseInsensitiveCompare(b.displayName) == .orderedAscending
-                case (_, nil):
-                    return true
-                case (nil, _):
-                    return false
-                case let (dateA?, dateB?):
-                    return dateA > dateB
-                }
-            }
-        } else if sortByLastAdded {
-            return roms.sorted { $0.dateAdded > $1.dateAdded }
-        } else {
+        // `name` is always A→Z; direction is ignored.
+        if sortOrder == .name {
             return roms
                 .map { (rom: $0, key: $0.displayName) }
                 .sorted { $0.key.localizedCaseInsensitiveCompare($1.key) == .orderedAscending }
                 .map { $0.rom }
+        }
+
+        // For every other order, compute a per-ROM sort key, then sort.
+        return roms.sorted { a, b in
+            let cmp = Self.compare(a, b, by: sortOrder)
+            return ascending ? cmp < 0 : cmp > 0
+        }
+    }
+
+    /// Returns a `ComparisonResult`-like sign: negative if `a` should come
+    /// before `b`, positive if after, zero if equal. Nil ranks sort last in
+    /// descending mode (= best first) and first in ascending mode (= worst
+    /// first); the picker flips them via the direction flag.
+    nonisolated private static func compare(_ a: ROM, _ b: ROM, by order: LibrarySortOrder) -> Int {
+        switch order {
+        case .name:
+            return a.displayName.localizedCaseInsensitiveCompare(b.displayName).rawValue
+        case .lastPlayed:
+            // Nil-last semantics: when one is nil, it ranks "after" the
+            // non-nil value in ascending mode (oldest first ⇒ nil = no data
+            // is treated as oldest). Direction flag flips it.
+            switch (a.lastPlayed, b.lastPlayed) {
+            case (nil, nil): return 0
+            case (_, nil):   return 1
+            case (nil, _):   return -1
+            case let (dA?, dB?): return dA.compare(dB).rawValue
+            }
+        case .lastAdded:
+            return a.dateAdded.compare(b.dateAdded).rawValue
+        case .playtime:
+            if a.totalPlaytimeSeconds == b.totalPlaytimeSeconds { return 0 }
+            return a.totalPlaytimeSeconds < b.totalPlaytimeSeconds ? -1 : 1
+        case .timeToBeat:
+            let aHours = a.metadata?.hltbMainStoryHours ?? 0
+            let bHours = b.metadata?.hltbMainStoryHours ?? 0
+            let aHas = (a.metadata?.hltbMainStoryHours ?? 0) > 0
+            let bHas = (b.metadata?.hltbMainStoryHours ?? 0) > 0
+            if aHas != bHas { return aHas ? -1 : 1 }
+            if aHours == bHours { return 0 }
+            return aHours < bHours ? -1 : 1
         }
     }
 }
@@ -301,8 +325,8 @@ struct FilterInputs: Sendable {
     let filter: LibraryFilter
     let searchText: String
     let activeFilters: Set<String>
-    let sortByLastPlayed: Bool
-    let sortByLastAdded: Bool
+    let sortOrder: LibrarySortOrder
+    let sortAscending: Bool
     let selectedGenres: Set<String>
     let mameRunnableSet: Set<String>
     let genreLookup: [String: [String]]
@@ -316,8 +340,8 @@ struct FilterSignature: Equatable {
     let filter: LibraryFilter
     let searchText: String
     let activeFilters: Set<String>
-    let sortByLastPlayed: Bool
-    let sortByLastAdded: Bool
+    let sortOrder: LibrarySortOrder
+    let sortAscending: Bool
     let selectedGenres: Set<String>
     let romsCount: Int
     let lastChangeDate: Date
@@ -326,8 +350,8 @@ struct FilterSignature: Equatable {
         lhs.filter == rhs.filter
             && lhs.searchText == rhs.searchText
             && lhs.activeFilters == rhs.activeFilters
-            && lhs.sortByLastPlayed == rhs.sortByLastPlayed
-            && lhs.sortByLastAdded == rhs.sortByLastAdded
+            && lhs.sortOrder == rhs.sortOrder
+            && lhs.sortAscending == rhs.sortAscending
             && lhs.selectedGenres == rhs.selectedGenres
             && lhs.romsCount == rhs.romsCount
             && lhs.lastChangeDate == rhs.lastChangeDate

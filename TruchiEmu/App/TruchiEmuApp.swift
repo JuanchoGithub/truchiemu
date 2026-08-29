@@ -84,6 +84,8 @@ LoggerService.debug(category: category, message)
     @StateObject private var controllerService = ControllerService.shared
     @StateObject private var mameVerification = MAMEVerificationService.shared
     @State private var systemDatabase = SystemDatabaseWrapper.shared
+    @State private var sortOrder: LibrarySortOrder = LibrarySortOrder.load().order
+    @State private var sortAscending: Bool = LibrarySortOrder.load().ascending
     
     // NOTE: NSApp is NOT available in init() for @main App structs.
     // Activation policy is set in AppDelegate.applicationWillFinishLaunching instead.
@@ -254,6 +256,11 @@ var body: some Scene {
           // Pause verification when leaving the app
           MAMEVerificationService.shared.pause()
         }
+        .onReceive(NotificationCenter.default.publisher(for: .sortChanged)) { _ in
+            let sort = LibrarySortOrder.load()
+            sortOrder = sort.order
+            sortAscending = sort.ascending
+        }
     }
     .windowStyle(.hiddenTitleBar)
     .windowToolbarStyle(.unified(showsTitle: false))
@@ -348,19 +355,15 @@ var body: some Scene {
                     
                     // Sort
                     Menu {
-                        Button(loc.localized("app.lastPlayed"), systemImage: "clock") {
-                            let current = AppSettings.getBool("sortByLastPlayed", defaultValue: false)
-                            AppSettings.setBool("sortByLastPlayed", value: !current)
-                            NotificationCenter.default.post(name: .sortChanged, object: nil)
-                        }
-                        .keyboardShortcut("P", modifiers: [.command, .shift])
-
-                        Button(loc.localized("app.lastAdded"), systemImage: "calendar") {
-                            let current = AppSettings.getBool("sortByLastAdded", defaultValue: false)
-                            AppSettings.setBool("sortByLastAdded", value: !current)
-                            NotificationCenter.default.post(name: .sortChanged, object: nil)
-                        }
-                        .keyboardShortcut("A", modifiers: [.command, .shift])
+                        LibrarySortPicker(
+                            currentOrder: $sortOrder,
+                            ascending: $sortAscending,
+                            style: .menu,
+                            keyboardShortcuts: [
+                                .lastPlayed: KeyboardShortcut("P", modifiers: [.command, .shift]),
+                                .lastAdded: KeyboardShortcut("A", modifiers: [.command, .shift])
+                            ]
+                        )
                     } label: {
                         Label(loc.localized("app.sortBy"), systemImage: "arrow.up.arrow.down")
                     }

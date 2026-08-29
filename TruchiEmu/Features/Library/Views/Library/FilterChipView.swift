@@ -5,6 +5,7 @@ import SwiftUI
 struct FilterChipView: View {
     let option: GameFilterOption
     let isActive: Bool
+    var fillsWidth: Bool = false
     let action: () -> Void
     
     @Namespace private var chipAnimation
@@ -22,7 +23,7 @@ struct FilterChipView: View {
             .foregroundColor(isActive ? .white : (isHovered ? AppColors.brandAccent : .secondary))
             .padding(.horizontal, 10)
             .padding(.vertical, 6)
-            .frame(minHeight: 30)
+            .frame(maxWidth: fillsWidth ? .infinity : nil, minHeight: 30)
             .background(
                 Capsule()
                     .fill(isActive ? option.activeColor : (isHovered ? AppColors.brandAccent.opacity(0.12) : AppColors.cardBackgroundSubtle(colorScheme)))

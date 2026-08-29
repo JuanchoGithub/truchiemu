@@ -1,8 +1,15 @@
 import SwiftUI
 
+// "Other" popover for the filter-chip bar. Contains the non-primary filter
+// chips plus the non-primary sort order (Last Added). Triggered by the
+// chip-bar "Other" button. The combined content is intentional: both
+// filters and sort orders that aren't promoted to the chip-bar "main list".
+
 struct OtherFiltersPopover: View {
     @Binding var activeFilters: Set<String>
     let onToggle: (GameFilterOption) -> Void
+    @Binding var sortOrder: LibrarySortOrder
+    @Binding var sortAscending: Bool
 
     @ObservedObject private var loc = LocalizationManager.shared
     @Environment(\.colorScheme) private var colorScheme
@@ -21,11 +28,22 @@ struct OtherFiltersPopover: View {
                     FilterChipView(
                         option: option,
                         isActive: activeFilters.contains(option.rawValue),
+                        fillsWidth: true,
                         action: { onToggle(option) }
                     )
                     .help(option.tooltip)
                 }
             }
+            .padding(.horizontal, 10)
+            .padding(.bottom, 6)
+
+            // Last Added sort row — reuses the same popover so the chip bar
+            // only carries one "Other" entry.
+            LibrarySortPicker(
+                currentOrder: $sortOrder,
+                ascending: $sortAscending,
+                style: .popover
+            )
             .padding(.horizontal, 10)
             .padding(.bottom, 10)
         }
