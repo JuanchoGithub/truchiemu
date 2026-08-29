@@ -1,0 +1,58 @@
+---
+layout: default
+title: v1.11.0 - TruchiEmu Documentation
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/changelog.html' | relative_url }}">Changelog</a>
+        <span class="separator">/</span>
+        <span class="current">v1.11.0</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.11.0</h1>
+        <div class="release-meta">
+            <span class="release-date">August 28, 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>This release adds HowLongToBeat completion-time estimates to the game detail view and hardens Holo card effects for big libraries: a deadlock in the mask cache is fixed, all holo caches are LRU-bounded, and the WebKit teardown is debounced so it no longer freezes the grid mid-hover. Scrolling a 50+ card holo collection is now smooth. The setup wizard gains a live native Holo preview that matches the in-app effect, multi-folder library management with removal reconciliation, and a sharper region selector.</p>
+        <p><strong>Note:</strong> The Holo effects are still in beta testing. They are experimental and may change or be refined in future releases.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Highlights</h2>
+        <ul class="feature-list">
+            <li><strong>HowLongToBeat completion times:</strong> The game detail view shows Main, Main + Extra, and Completionist estimates from HowLongToBeat, with automatic matching for titled ROMs and a search sheet for manual selection.</li>
+            <li><strong>Holo performance pass:</strong> Holo mask decomposition only runs on actual hover, HoloSaliencyService is now protected by a single lock (fixes a scroll-time deadlock), and all holo caches are LRU-bounded.</li>
+            <li><strong>Smoother scroll in the holo grid:</strong> The library's scroll state only republishes on real change, cards no longer observe the global saliency service, and WebKit teardown is debounced and async so it never interrupts a scroll gesture.</li>
+            <li><strong>Setup wizard v2:</strong> A live native HoloPreviewCard in the region selector, multi-folder library management with DB reconciliation, bezel moved into Optional Features, and a sharper Zelda OoT-based region selector.</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Detailed Changes</h2>
+        <ul>
+            <li>HowLongToBeat integration — <code>ROMMetadataEntry</code> gains HLTB fields (game ID, matched title, completion time estimates), <code>HLTBWebSearchSheet</code> for manual selection, <code>HowLongToBeatCard</code> with auto and manual matching, and integration into the game detail view's overview.</li>
+            <li>Holo saliency deadlock fix — <code>HoloSaliencyService</code> now uses a single <code>OSAllocatedUnfairLock</code> for both entries and LRU order; the previous two-lock design could deadlock during scroll.</li>
+            <li>Holo LRU caches — <code>HoloFoilTileCache</code> (32), <code>HoloPatternStore</code> (64/32/32), <code>HoloSaliencyService</code> (100), <code>HoloBumpRenderer</code> (16); <code>DetailBoxArtComponents</code> quantizes render sizes to 0.5pt buckets to prevent fragmentation.</li>
+            <li>Holo scroll lag fixes — <code>LibraryScrollState.isScrolling</code> only republishes on real change; <code>HoloGameCardView</code> no longer observes <code>HoloSaliencyService</code> (each card uses local <code>@State</code> for its own progress); mask decomposition is gated on a hover-trigger so it does not run for all visible cards.</li>
+            <li>HoloWebCardView — <code>WKWebView</code> is only created when <code>isActive</code> is true; teardown uses a debounced <code>scheduleUnmount</code> (0.35s, cancel-on-rehover) plus fully async <code>deinit</code>; all card webviews share one <code>WKProcessPool</code>; <code>loadKey</code> uses quantized 0.5pt frame buckets to stop reload thrashing.</li>
+            <li>HoloFoilLayers — luminance masking for a more accurate metallic effect.</li>
+            <li>Wizard — <code>HoloPreviewCard</code> now uses the native <code>HoloFoilLayers</code> + <code>HoloSheenEffect</code> + <code>HoloScratchLayer</code> pipeline, ratio-aware, hover-aware; pre-bundled hero masks for the region selector; multi-folder library list with DB reconciliation; bezel moved to Optional Features.</li>
+            <li>BoxArt — <code>BoxArtLayers</code> no longer pre-subtracts the title from the hero blob (the title hint was removing a title-shaped notch at full resolution); the wizard region selector uses Zelda OoT US/EU/JP samples to exercise aspect-ratio variation.</li>
+            <li>Localization — total playtime, plays, last played, and achievements translated across en/es/pt/ja; bezel feature entries localized; new Holo translations.</li>
+            <li>GameListRowView — <code>onPlay</code> action added for launching games.</li>
+            <li>GameCardView — image scaling changed from <code>scaledToFit</code> to <code>scaledToFill</code> with clipping for a tighter cover-art presentation.</li>
+            <li>Bump marketing version to 1.11.0 and build number to 34 across <code>project.yml</code>, both <code>Info.plist</code>s, and <code>docs/_config.yml</code>.</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/changelog/v1.10.0.html' | relative_url }}" class="release-prev">&larr; v1.10.0</a>
+        <a href="{{ '/changelog.html' | relative_url }}" class="release-all">All Releases</a>
+    </nav>
+</div>

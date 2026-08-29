@@ -1,0 +1,58 @@
+---
+layout: default
+title: v1.11.0 - Documentação do TruchiEmu
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/pt/changelog.html' | relative_url }}">Registro de mudanças</a>
+        <span class="separator">/</span>
+        <span class="current">v1.11.0</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.11.0</h1>
+        <div class="release-meta">
+            <span class="release-date">28 de agosto de 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>Esta versão adiciona estimativas de tempo de conclusão do HowLongToBeat à visualização de detalhes do jogo e reforça os efeitos Holo dos cards para bibliotecas grandes: um deadlock no cache de máscaras é corrigido, todos os caches Holo têm limite LRU, e a desmontagem do WebKit é assíncrona e debounced, então não congela mais a grade durante a rolagem. Rolar por uma coleção Holo com mais de 50 cards agora é fluido. O assistente de configuração ganha uma visualização Holo nativa ao vivo que corresponde ao efeito no app, gerenciamento de biblioteca com várias pastas e reconciliação de remoções, e um seletor de região mais nítido.</p>
+        <p><strong>Observação:</strong> Os efeitos Holo ainda estão em testes beta. São experimentais e podem mudar ou ser refinados em versões futuras.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Destaques</h2>
+        <ul class="feature-list">
+            <li><strong>Tempos de conclusão do HowLongToBeat:</strong> A visualização de detalhes do jogo mostra estimativas Principal, Principal + Extras e Completista do HowLongToBeat, com correspondência automática para ROMs com título e uma folha de busca para seleção manual.</li>
+            <li><strong>Passe de desempenho Holo:</strong> A decomposição de máscaras Holo só executa no hover real, o HoloSaliencyService agora é protegido por um único lock (corrige um deadlock durante a rolagem), e todos os caches Holo têm limite LRU.</li>
+            <li><strong>Rolagem mais fluida na grade Holo:</strong> O estado de rolagem da biblioteca só é republicado em mudanças reais, os cards não observam mais o serviço global de saliência, e a desmontagem do WebKit é assíncrona e debounced para não interromper o gesto de rolagem.</li>
+            <li><strong>Assistente de configuração v2:</strong> Uma HoloPreviewCard nativa ao vivo no seletor de região, gerenciamento de biblioteca com várias pastas e reconciliação com o banco de dados, bezel movido para Recursos Opcionais, e um seletor de região mais nítido baseado em Zelda OoT.</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Mudanças detalhadas</h2>
+        <ul>
+            <li>Integração HowLongToBeat — <code>ROMMetadataEntry</code> ganha campos HLTB (ID do jogo, título correspondente, estimativas de tempo de conclusão), <code>HLTBWebSearchSheet</code> para seleção manual, <code>HowLongToBeatCard</code> com correspondência automática e manual, e integração na visão geral da visualização de detalhes do jogo.</li>
+            <li>Correção de deadlock na saliência Holo — <code>HoloSaliencyService</code> agora usa um único <code>OSAllocatedUnfairLock</code> para as entradas e a ordem LRU; o design anterior com dois locks podia travar durante a rolagem.</li>
+            <li>Caches Holo com LRU — <code>HoloFoilTileCache</code> (32), <code>HoloPatternStore</code> (64/32/32), <code>HoloSaliencyService</code> (100), <code>HoloBumpRenderer</code> (16); <code>DetailBoxArtComponents</code> quantiza os tamanhos de renderização em blocos de 0.5pt para evitar fragmentação.</li>
+            <li>Correções de lag de rolagem Holo — <code>LibraryScrollState.isScrolling</code> só é republicado em mudanças reais; <code>HoloGameCardView</code> não observa mais <code>HoloSaliencyService</code> (cada card usa <code>@State</code> local para seu próprio progresso); a decomposição de máscaras é gatilhada por hover para não executar em todos os cards visíveis.</li>
+            <li>HoloWebCardView — <code>WKWebView</code> só é criado quando <code>isActive</code> é verdadeiro; a desmontagem usa um <code>scheduleUnmount</code> com debounce (0.35s, cancelável ao passar o cursor de novo) mais um <code>deinit</code> totalmente assíncrono; todas as webviews dos cards compartilham um único <code>WKProcessPool</code>; <code>loadKey</code> usa blocos de quadro quantizados a 0.5pt para parar as recargas constantes.</li>
+            <li>HoloFoilLayers — mascaramento por luminância para um efeito metálico mais preciso.</li>
+            <li>Assistente — <code>HoloPreviewCard</code> agora usa o pipeline nativo <code>HoloFoilLayers</code> + <code>HoloSheenEffect</code> + <code>HoloScratchLayer</code>, ciente da proporção de tela e do hover; máscaras de herói pré-incluídas para o seletor de região; lista de biblioteca com várias pastas e reconciliação com o banco de dados; bezel movido para Recursos Opcionais.</li>
+            <li>BoxArt — <code>BoxArtLayers</code> não subtrai mais o título do blob do herói (a dica de título removia um entalhe em forma de título em resolução total); o seletor de região do assistente usa amostras de Zelda OoT US/EU/JP para exercitar a variação de proporção de tela.</li>
+            <li>Localização — tempo total de jogo, partidas, última partida e conquistas traduzidos em en/es/pt/ja; entradas de funcionalidade de bezel localizadas; novas traduções Holo.</li>
+            <li>GameListRowView — ação <code>onPlay</code> adicionada para iniciar jogos.</li>
+            <li>GameCardView — dimensionamento de imagem alterado de <code>scaledToFit</code> para <code>scaledToFill</code> com recorte para uma apresentação mais ajustada da capa.</li>
+            <li>Versão de marketing atualizada para 1.11.0 e número de build para 34 em <code>project.yml</code>, ambos os <code>Info.plist</code> e <code>docs/_config.yml</code>.</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/pt/changelog/v1.10.0.html' | relative_url }}" class="release-prev">&larr; v1.10.0</a>
+        <a href="{{ '/pt/changelog.html' | relative_url }}" class="release-all">Todas as versões</a>
+    </nav>
+</div>

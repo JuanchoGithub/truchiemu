@@ -1,0 +1,58 @@
+---
+layout: default
+title: v1.11.0 - Documentación de TruchiEmu
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/es/changelog.html' | relative_url }}">Registro de cambios</a>
+        <span class="separator">/</span>
+        <span class="current">v1.11.0</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.11.0</h1>
+        <div class="release-meta">
+            <span class="release-date">28 de agosto de 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>Esta versión añade estimaciones de tiempo de finalización de HowLongToBeat a la vista de detalle del juego y refuerza los efectos Holo de las tarjetas para bibliotecas grandes: se corrige un interbloqueo en la caché de máscaras, todas las cachés Holo tienen límite LRU, y el desmontaje de WebKit es asíncrono y con rebote temporal, por lo que ya no congela la cuadrícula durante el desplazamiento. Desplazarse por una colección Holo de más de 50 tarjetas ahora es fluido. El asistente de configuración incorpora una vista previa Holo nativa en vivo que coincide con el efecto en la app, gestión de biblioteca con varias carpetas y reconciliación de eliminaciones, y un selector de región más nítido.</p>
+        <p><strong>Nota:</strong> Los efectos Holo siguen en fase de pruebas beta. Son experimentales y podrían cambiar o refinarse en futuras versiones.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Destacados</h2>
+        <ul class="feature-list">
+            <li><strong>Tiempos de finalización de HowLongToBeat:</strong> La vista de detalle del juego muestra estimaciones Principal, Principal + Extras y Completista de HowLongToBeat, con coincidencia automática para ROMs con título y una hoja de búsqueda para selección manual.</li>
+            <li><strong>Pase de rendimiento Holo:</strong> La descomposición de máscaras Holo solo se ejecuta en el hover real, HoloSaliencyService ahora está protegido por un único lock (corrige un interbloqueo durante el desplazamiento), y todas las cachés Holo tienen límite LRU.</li>
+            <li><strong>Desplazamiento más fluido en la cuadrícula Holo:</strong> El estado de desplazamiento de la biblioteca solo se republica en cambios reales, las tarjetas ya no observan el servicio global de saliencia, y el desmontaje de WebKit es asíncrono y con rebote temporal para no interrumpir el gesto de desplazamiento.</li>
+            <li><strong>Asistente de configuración v2:</strong> Una HoloPreviewCard nativa en vivo en el selector de región, gestión de biblioteca con varias carpetas y reconciliación con la base de datos, bezel movido a Funcionalidades Opcionales, y un selector de región más nítido basado en Zelda OoT.</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Cambios detallados</h2>
+        <ul>
+            <li>Integración de HowLongToBeat — <code>ROMMetadataEntry</code> gana campos HLTB (ID del juego, título coincidente, estimaciones de tiempo de finalización), <code>HLTBWebSearchSheet</code> para selección manual, <code>HowLongToBeatCard</code> con coincidencia automática y manual, e integración en la vista general de detalle del juego.</li>
+            <li>Corrección de interbloqueo en la saliencia Holo — <code>HoloSaliencyService</code> ahora usa un único <code>OSAllocatedUnfairLock</code> para las entradas y el orden LRU; el diseño previo con dos locks podía interbloquearse durante el desplazamiento.</li>
+            <li>Cachés Holo con LRU — <code>HoloFoilTileCache</code> (32), <code>HoloPatternStore</code> (64/32/32), <code>HoloSaliencyService</code> (100), <code>HoloBumpRenderer</code> (16); <code>DetailBoxArtComponents</code> cuantiza los tamaños de renderizado a cubos de 0.5pt para evitar la fragmentación.</li>
+            <li>Correcciones de retardo de desplazamiento Holo — <code>LibraryScrollState.isScrolling</code> solo se republica en cambios reales; <code>HoloGameCardView</code> ya no observa <code>HoloSaliencyService</code> (cada tarjeta usa <code>@State</code> local para su propio progreso); la descomposición de máscaras se activa con un disparador de hover para no ejecutarse en todas las tarjetas visibles.</li>
+            <li>HoloWebCardView — <code>WKWebView</code> solo se crea cuando <code>isActive</code> es verdadero; el desmontaje usa un <code>scheduleUnmount</code> con rebote temporal (0.35s, cancelable al volver a pasar el cursor) más un <code>deinit</code> totalmente asíncrono; todas las vistas web de las tarjetas comparten un único <code>WKProcessPool</code>; <code>loadKey</code> usa cubos de cuadro cuantizados a 0.5pt para detener las recargas constantes.</li>
+            <li>HoloFoilLayers — enmascarado por luminancia para un efecto metálico más preciso.</li>
+            <li>Asistente — <code>HoloPreviewCard</code> ahora usa el pipeline nativo <code>HoloFoilLayers</code> + <code>HoloSheenEffect</code> + <code>HoloScratchLayer</code>, consciente de la relación de aspecto y del hover; máscaras de héroe preempaquetadas para el selector de región; lista de biblioteca con varias carpetas y reconciliación con la base de datos; bezel movido a Funcionalidades Opcionales.</li>
+            <li>BoxArt — <code>BoxArtLayers</code> ya no resta el título del blob del héroe (la pista de título eliminaba una muesca con forma de título a resolución completa); el selector de región del asistente usa muestras de Zelda OoT US/EU/JP para ejercitar la variación de relación de aspecto.</li>
+            <li>Localización — tiempo total de juego, partidas, última partida y logros traducidos en en/es/pt/ja; entradas de funcionalidad de bezel localizadas; nuevas traducciones Holo.</li>
+            <li>GameListRowView — se añade la acción <code>onPlay</code> para iniciar juegos.</li>
+            <li>GameCardView — escalado de imagen cambiado de <code>scaledToFit</code> a <code>scaledToFill</code> con recorte para una presentación más ceñida de la carátula.</li>
+            <li>Versión de marketing subida a 1.11.0 y número de compilación a 34 en <code>project.yml</code>, ambos <code>Info.plist</code> y <code>docs/_config.yml</code>.</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/es/changelog/v1.10.0.html' | relative_url }}" class="release-prev">&larr; v1.10.0</a>
+        <a href="{{ '/es/changelog.html' | relative_url }}" class="release-all">Todas las versiones</a>
+    </nav>
+</div>
