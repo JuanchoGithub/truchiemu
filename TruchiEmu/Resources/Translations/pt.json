@@ -509,6 +509,7 @@
   "library.stat.time": "Tempo total",
   "library.stat.plays": "Partidas",
   "library.stat.lastPlayed": "Última vez",
+  "library.stat.hltb": "HowLongToBeat",
   "library.stat.achievements": "Conquistas",
   "library.stat.justNow": "agora mesmo",
   "library.stat.minutes": "%d min",

@@ -509,6 +509,7 @@
   "library.stat.time": "Total playtime",
   "library.stat.plays": "Plays",
   "library.stat.lastPlayed": "Last played",
+  "library.stat.hltb": "HowLongToBeat",
   "library.stat.achievements": "Achievements",
   "library.stat.justNow": "just now",
   "library.stat.minutes": "%d min",

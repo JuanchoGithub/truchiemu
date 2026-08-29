@@ -509,6 +509,7 @@
   "library.stat.time": "合計プレイ時間",
   "library.stat.plays": "プレイ回数",
   "library.stat.lastPlayed": "最終プレイ",
+  "library.stat.hltb": "HowLongToBeat",
   "library.stat.achievements": "実績",
   "library.stat.justNow": "今さっき",
   "library.stat.minutes": "%d分",

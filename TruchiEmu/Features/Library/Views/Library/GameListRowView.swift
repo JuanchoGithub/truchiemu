@@ -75,6 +75,16 @@ struct GameListRowView: View {
         }
     }
 
+    // MARK: - Formatted HowLongToBeat Main Story
+
+    private var formattedHLTBTime: String? {
+        guard let hours = rom.metadata?.hltbMainStoryHours, hours > 0 else { return nil }
+        if hours.truncatingRemainder(dividingBy: 1) == 0 {
+            return "\(Int(hours))h"
+        }
+        return String(format: "%.1fh", hours)
+    }
+
     private func summarizedLastPlayed(_ date: Date) -> String {
         let interval = Date().timeIntervalSince(date)
         guard interval >= 0 else { return loc.localized("library.stat.justNow") }
@@ -244,6 +254,24 @@ Text(sys.name)
                         }
                     }
                     .foregroundColor(AppColors.brandAccent)
+                }
+
+                // HowLongToBeat Main Story
+                if let hltb = formattedHLTBTime {
+                    HStack(spacing: 3) {
+                        Image(systemName: "hourglass")
+                            .font(.system(size: subtitleFontSize - 0.5))
+                        if isHovered {
+                            Text(loc.localized("library.stat.hltb"))
+                                .font(.system(size: subtitleFontSize - 1))
+                                .foregroundColor(AppColors.textSecondaryNeutral(colorScheme).opacity(0.7))
+                        }
+                        Text(hltb)
+                            .font(.system(size: subtitleFontSize))
+                            .fontWeight(.medium)
+                            .monospacedDigit()
+                    }
+                    .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
                 }
 
                 // Favorite indicator
