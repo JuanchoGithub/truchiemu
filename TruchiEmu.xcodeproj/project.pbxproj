@@ -397,7 +397,7 @@
 		4AB23F3CFA5D46860C322282 /* UpdateWizardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A534F2D85440714CF65708BD /* UpdateWizardView.swift */; };
 		4ABA13771D06AE503D7724CE /* LOWRESNX.png in Resources */ = {isa = PBXBuildFile; fileRef = 78131EAC3F8B4141AAFC799F /* LOWRESNX.png */; };
 		4B0455148E7C00D2645FE37F /* ppsspp_libretro_default.json in Resources */ = {isa = PBXBuildFile; fileRef = 53A454FEA006A9BC23D6D0B6 /* ppsspp_libretro_default.json */; };
-		4B23374D2E8F9007648F1065 /* TestWrite.swift in Sources */ = {isa = PBXBuildFile; fileRef = C88AC2979C466748D1C814D8 /* TestWrite.swift */; };
+		
 		4B3653D2CFD98630DAFE2B80 /* pce.ico in Resources */ = {isa = PBXBuildFile; fileRef = 957E7564C726099C45EA7659 /* pce.ico */; };
 		4B94C244C68FFB5B7611ED77 /* VECTREX.png in Resources */ = {isa = PBXBuildFile; fileRef = CE108305F82ABE87D2BE7D7D /* VECTREX.png */; };
 		4BC641474FF845851DDAD200 /* ArcadeButtonMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B58F4D64F1E5008E97CEB40F /* ArcadeButtonMapper.swift */; };
@@ -2445,7 +2445,7 @@
 		C8197A3CD7930768E84C3380 /* fightdata_sfiii.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_sfiii.json; sourceTree = "<group>"; };
 		C82BB66735423EFE27B88240 /* n64_aleck-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "n64_aleck-cheats.zip"; sourceTree = "<group>"; };
 		C8861B6D319A016F2FDA15DD /* ImageCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCache.swift; sourceTree = "<group>"; };
-		C88AC2979C466748D1C814D8 /* TestWrite.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestWrite.swift; sourceTree = "<group>"; };
+		
 		C88C0C39CBAD9A8A15731EA5 /* fightdata_sf2.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_sf2.json; sourceTree = "<group>"; };
 		C8B26D230952CE0ADCFFD5BF /* input_systemLabels_n64.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_n64.json; sourceTree = "<group>"; };
 		C94E2C81D0A16F3F9DCA9E6B /* RAHashComparisonSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RAHashComparisonSheet.swift; sourceTree = "<group>"; };
@@ -3852,7 +3852,6 @@
 				537B577BF88C9F9050CD1FCF /* SetupWizardState.swift */,
 				616B37C3C13F2D2FE25473E2 /* ShaderPresetStorageService.swift */,
 				7A119E4B19856B61DDCE4AEA /* SlangPresetDiscoveryService.swift */,
-				C88AC2979C466748D1C814D8 /* TestWrite.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -6450,7 +6449,6 @@
 				E3D7B920ADF18FBC99336236 /* TVModeViewModel.swift in Sources */,
 				03186CB22B055CEA9CB16028 /* TapeDeck.swift in Sources */,
 				2B9825A721FDA0F1C6DD4F5F /* Technical.swift in Sources */,
-				4B23374D2E8F9007648F1065 /* TestWrite.swift in Sources */,
 				A65710823C4D0A6B42F7EA87 /* ThemeManager.swift in Sources */,
 				4DD1329F99229306455B3B86 /* TimeMachineBuffer.swift in Sources */,
 				56EF78D2B7AEFAED9582F023 /* TimeMachineSettingsView.swift in Sources */,
