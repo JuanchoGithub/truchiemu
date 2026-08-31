@@ -410,23 +410,37 @@ extension SetupWizardView {
         return NSImage(contentsOf: url)
     }
 
-    /// Pre-bundled hero mask (alpha channel: opaque where the subject is) for the
-    /// sample box art, generated offline via the BoxArtLayers decomposer and
-    /// shipped in `Resources/BoxArtSamples/`. The wizard never generates masks at
-    /// runtime — it loads these built-in assets.
-    private func heroMaskSample(for region: EmulatorLanguage) -> NSImage? {
+    /// Pre-bundled per-region masks (alpha channel: opaque where the region is)
+    /// for the sample box art, generated offline via the BoxArtLayers
+    /// decomposer and shipped in `Resources/BoxArtSamples/`. The wizard never
+    /// generates masks at runtime — it loads these built-in assets so the live
+    /// preview matches how a real card foils (sky foils heavily, title/chrome
+    /// subtly, hero stays crisp).
+    private func maskSet(for region: EmulatorLanguage) -> HoloMaskSet? {
         let name: String
         switch region {
-        case .northAmerica, .world: name = "zelda_oot_usa_hero"
-        case .japan: name = "zelda_oot_japan_hero"
-        case .europe: name = "zelda_oot_europe_hero"
-        case .brazil: name = "zelda_oot_europe_hero"
-        case .spain: name = "zelda_oot_europe_hero"
+        case .northAmerica, .world: name = "zelda_oot_usa"
+        case .japan: name = "zelda_oot_japan"
+        case .europe, .brazil, .spain: name = "zelda_oot_europe"
         }
-        guard let url = Bundle.main.url(forResource: name, withExtension: "png") else {
+        func load(_ role: String) -> NSImage? {
+            guard let url = Bundle.main.url(forResource: "\(name)_\(role)", withExtension: "png") else {
+                return nil
+            }
+            return NSImage(contentsOf: url)
+        }
+        let set = HoloMaskSet(
+            hero: load("hero"),
+            title: load("title"),
+            chrome: load("chrome"),
+            background: load("background")
+        )
+        // Return nil only if nothing at all was bundled for this region, so the
+        // caller can fall back to another region's set.
+        if set.hero == nil, set.title == nil, set.chrome == nil, set.background == nil {
             return nil
         }
-        return NSImage(contentsOf: url)
+        return set
     }
 
     /// Returns a container size that matches the sample image's aspect ratio.
@@ -522,8 +536,8 @@ extension SetupWizardView {
                         let previewSize = previewContainerSize(for: wizard.selectedRegion, image: previewImage)
                         HoloPreviewCard(
                             image: previewImage,
-                            heroMask: heroMaskSample(for: wizard.selectedRegion)
-                                ?? heroMaskSample(for: .northAmerica)
+                            masks: maskSet(for: wizard.selectedRegion)
+                                ?? maskSet(for: .northAmerica)
                         )
                         .frame(width: previewSize.width, height: previewSize.height)
                         .cornerRadius(8)

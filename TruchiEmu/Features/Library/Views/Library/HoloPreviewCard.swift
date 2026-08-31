@@ -23,7 +23,12 @@ import AppKit
 // leaves, the self-driven orbit resumes.
 struct HoloPreviewCard: View {
     let image: NSImage
-    let heroMask: NSImage?
+    /// Precomputed per-region masks for the sample box art, loaded from the
+    /// bundle (see `SetupWizardView.maskSet(for:)`). The wizard never decomposes
+    /// at runtime — these are generated offline via BoxArtLayers and shipped in
+    /// `Resources/BoxArtSamples/`. When a region is missing (shouldn't happen),
+    /// the fallback below covers the whole card so the foil never disappears.
+    let masks: HoloMaskSet?
 
     @Environment(\.colorScheme) private var colorScheme
     @State private var hoverActive = false
@@ -43,32 +48,71 @@ struct HoloPreviewCard: View {
         return CGSize(width: h * artAspect, height: h)
     }
 
-    /// Masks for the preview foil. A solid white mask lets the reverse-holo foil
-    /// cover the whole card (the region split is irrelevant for a single demo
-    /// card); `hero` uses the supplied mask when available.
+    /// Masks for the preview foil. Uses the bundled per-region masks when
+    /// present. The fallback is a solid white mask so the foil still covers
+    /// the whole card rather than vanishing if a mask is missing.
     private func previewMasks() -> HoloMaskSet {
+        if let masks { return masks }
         let white = NSImage(size: NSSize(width: 8, height: 8))
         white.lockFocus()
         NSColor.white.drawSwatch(in: NSRect(x: 0, y: 0, width: 8, height: 8))
         white.unlockFocus()
         return HoloMaskSet(
-            hero: heroMask ?? white,
+            hero: white,
             title: white,
             chrome: white,
             background: white
         )
     }
 
-    /// Snapshot pinned to the reverse-holo (native) variant, so the preview
-    /// always shows the reverse-holo shine regardless of the user's roll
+    /// Snapshot pinned to the rainbow-rare (native) variant, so the preview
+    /// always shows the rainbow-rare shine regardless of the user's roll
     /// weights.
     private func previewSnapshot() -> HoloSettingsSnapshot {
         var snapshot = HoloSettingsSnapshot(from: HoloSettingsStore.shared, romID: "holo-preview")
         snapshot.randomization = HoloCardRandomization(
             seed: 1,
-            variantWeights: [.reverseHolo: 1.0]
+            variantWeights: [.rainbowHolo: 1.0]
         )
         return snapshot
+    }
+
+    // MARK: - 3D pivot (mirrors HoloGameCardView)
+    //
+    // The artwork pivots toward the cursor exactly like the grid cards
+    // (simeydotme `.card__rotator`): the box art rotates about its own centre
+    // while the backing card stays flat. rotX/rotY reach ±maxTiltAngle at the
+    // edges and are combined into a single axis-angle rotation so the
+    // perspective projection applies exactly once (see HoloGameCardView for
+    // the rationale).
+
+    private let maxTiltAngle: Double = 9
+    private let tiltPerspective: CGFloat = 0.5
+
+    private func tiltRotationX(px: Double, py: Double) -> Double {
+        (py - 0.5) * 2 * maxTiltAngle
+    }
+
+    private func tiltRotationY(px: Double, py: Double) -> Double {
+        (0.5 - px) * 2 * maxTiltAngle
+    }
+
+    private func tiltCombinedAngle(px: Double, py: Double) -> Double {
+        let ax = tiltRotationX(px: px, py: py) * .pi / 180
+        let ay = tiltRotationY(px: px, py: py) * .pi / 180
+        let qw = cos(ay / 2) * cos(ax / 2)
+        return 2 * acos(min(max(qw, -1), 1)) * 180 / .pi
+    }
+
+    private func tiltCombinedAxis(px: Double, py: Double) -> (x: CGFloat, y: CGFloat, z: CGFloat) {
+        let ax = tiltRotationX(px: px, py: py) * .pi / 180
+        let ay = tiltRotationY(px: px, py: py) * .pi / 180
+        var x = cos(ay / 2) * sin(ax / 2)
+        var y = sin(ay / 2) * cos(ax / 2)
+        var z = -sin(ay / 2) * sin(ax / 2)
+        let len = sqrt(x * x + y * y + z * z)
+        if len < 1e-6 { return (1, 0, 0) }
+        return (x / len, y / len, z / len)
     }
 
     var body: some View {
@@ -108,6 +152,8 @@ struct HoloPreviewCard: View {
                             h: artSize.height,
                             pointerX: px,
                             pointerY: py,
+                            tiltX: tiltRotationX(px: px, py: py),
+                            tiltY: tiltRotationY(px: px, py: py),
                             isHovered: true,
                             allowBump: false
                         )
@@ -121,6 +167,12 @@ struct HoloPreviewCard: View {
                     }
                     .frame(width: artSize.width, height: artSize.height)
                     .clipped()
+                    .rotation3DEffect(
+                        .degrees(tiltCombinedAngle(px: px, py: py)),
+                        axis: tiltCombinedAxis(px: px, py: py),
+                        anchor: .center,
+                        perspective: tiltPerspective
+                    )
                     .allowsHitTesting(false)
                 }
             }

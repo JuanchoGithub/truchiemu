@@ -209,6 +209,7 @@
 		235451B34A912C340CB018EE /* XRICK.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C15A2A6F35E894F51393AE9 /* XRICK.png */; };
 		235A39D4CEA4B20012CF9E5C /* LibretroBridgeSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67D8E99941A946620FF8D608 /* LibretroBridgeSwift.swift */; };
 		2398E62F6726B9FF02E793B7 /* input_coreLabels_vice.json in Resources */ = {isa = PBXBuildFile; fileRef = 50006342573EA649D4538C18 /* input_coreLabels_vice.json */; };
+		23DDBEE389B36CF647DB6199 /* zelda_oot_japan_background.png in Resources */ = {isa = PBXBuildFile; fileRef = BF3007EB11BA10C95475888A /* zelda_oot_japan_background.png */; };
 		23E19A860FC19D86418AD609 /* GameContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A44B26B8EE68C310F60A6D4E /* GameContainerView.swift */; };
 		2424758D7F2AE14258968E08 /* input_coreLabels_2048.json in Resources */ = {isa = PBXBuildFile; fileRef = 7A22B6773AC50CA6AD962E3E /* input_coreLabels_2048.json */; };
 		2474F15C5856BC63F1735299 /* InstallDragView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6DA1A056535CC2F61A60BF4 /* InstallDragView.swift */; };
@@ -238,6 +239,7 @@
 		286F3AEEC4774BA3AA6D8ACE /* msx-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = 875C3871473865C0E8D6E88C /* msx-cheats.zip */; };
 		288ABD2AEE6AAFE7A3A03021 /* input_coreLabels_beetle_lynx.json in Resources */ = {isa = PBXBuildFile; fileRef = 8A34FA18D0A44EA213D52F48 /* input_coreLabels_beetle_lynx.json */; };
 		289701A17ACB8C8BF034D959 /* CheatComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 277669A6BC99D1D9EB64F0F1 /* CheatComponents.swift */; };
+		28BC7672CDB646B9F4A7B2A2 /* zelda_oot_europe_chrome.png in Resources */ = {isa = PBXBuildFile; fileRef = 35A25361AAFCEA2CA39A818C /* zelda_oot_europe_chrome.png */; };
 		28E34086CA98978C08104975 /* ARCADE.png in Resources */ = {isa = PBXBuildFile; fileRef = EBA408AB90EB95504B2DA54F /* ARCADE.png */; };
 		28F10D0899700321590A50E4 /* fightdata_dbzhd.json in Resources */ = {isa = PBXBuildFile; fileRef = AF5178B62127C536CDCCBBF3 /* fightdata_dbzhd.json */; };
 		28F3D6B82BDBE78BD659F1CC /* input_coreLabels_px68k.json in Resources */ = {isa = PBXBuildFile; fileRef = A48CC00D6DA5A5681B74F139 /* input_coreLabels_px68k.json */; };
@@ -252,6 +254,7 @@
 		2A4C1FDA0C8991B98B6E9CBA /* NDS.png in Resources */ = {isa = PBXBuildFile; fileRef = 1F755B4BB35962969772AE5B /* NDS.png */; };
 		2A50A46038AEC931AF677648 /* fightdata_cvsgd.json in Resources */ = {isa = PBXBuildFile; fileRef = B6FF84899910D3F6FAD36B4C /* fightdata_cvsgd.json */; };
 		2AB42E1F6D46FB04C3519B83 /* HoloVariantRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2040211263BC01B0D3C0F77 /* HoloVariantRenderer.swift */; };
+		2ABC7D56DDF7045D815A08E3 /* zelda_oot_europe_background.png in Resources */ = {isa = PBXBuildFile; fileRef = 5D50869E1992FD361D9BCED5 /* zelda_oot_europe_background.png */; };
 		2AF1B55372468A96B71ED2E9 /* input_coreLabels_citra.json in Resources */ = {isa = PBXBuildFile; fileRef = 3D753FA56AF8BCFA8A0D6EF5 /* input_coreLabels_citra.json */; };
 		2AFFF2EF4EC7172112642106 /* input_coreLabels_beetle_psx.json in Resources */ = {isa = PBXBuildFile; fileRef = B8134FC42DEC42B68A323F1A /* input_coreLabels_beetle_psx.json */; };
 		2B2B0A84C8FA0EC3F94F0ADB /* InputCaptureManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E4F7172EFA2D0F141FFA63 /* InputCaptureManager.swift */; };
@@ -397,7 +400,6 @@
 		4AB23F3CFA5D46860C322282 /* UpdateWizardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A534F2D85440714CF65708BD /* UpdateWizardView.swift */; };
 		4ABA13771D06AE503D7724CE /* LOWRESNX.png in Resources */ = {isa = PBXBuildFile; fileRef = 78131EAC3F8B4141AAFC799F /* LOWRESNX.png */; };
 		4B0455148E7C00D2645FE37F /* ppsspp_libretro_default.json in Resources */ = {isa = PBXBuildFile; fileRef = 53A454FEA006A9BC23D6D0B6 /* ppsspp_libretro_default.json */; };
-		
 		4B3653D2CFD98630DAFE2B80 /* pce.ico in Resources */ = {isa = PBXBuildFile; fileRef = 957E7564C726099C45EA7659 /* pce.ico */; };
 		4B94C244C68FFB5B7611ED77 /* VECTREX.png in Resources */ = {isa = PBXBuildFile; fileRef = CE108305F82ABE87D2BE7D7D /* VECTREX.png */; };
 		4BC641474FF845851DDAD200 /* ArcadeButtonMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B58F4D64F1E5008E97CEB40F /* ArcadeButtonMapper.swift */; };
@@ -476,6 +478,7 @@
 		5B5B9D5378C64F28E2896612 /* ModernSectionCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7071672F4855616C9D2564D6 /* ModernSectionCard.swift */; };
 		5B5E7C1557B76F969352B336 /* mednafen_psx_hw_libretro_default.json in Resources */ = {isa = PBXBuildFile; fileRef = 76AA9026EF2024FE01AA7B4E /* mednafen_psx_hw_libretro_default.json */; };
 		5B95F67DF8AFA1A46068974B /* nds@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 4E981B03D04DEB0BCFF427CA /* nds@132w.png */; };
+		5BD9A2B601A4CCF318B36F72 /* zelda_oot_usa_background.png in Resources */ = {isa = PBXBuildFile; fileRef = 88BC781A10F3CB0D2A5096D7 /* zelda_oot_usa_background.png */; };
 		5BFC302A4FB924A0AEA3D581 /* openbor@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F067D5CF7451A5B6FDA1B25 /* openbor@132w.png */; };
 		5C15E6B7D2E89E337CB85B84 /* CRTFilter_multipass.metal in Sources */ = {isa = PBXBuildFile; fileRef = 62B4EE0802A69845537290E2 /* CRTFilter_multipass.metal */; };
 		5C21FC79918223E0B36912D2 /* InputParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD7F6272F74B473FA20B6E72 /* InputParser.swift */; };
@@ -717,6 +720,7 @@
 		8645542FC33DC6EE43CC8FC6 /* fightdata_aliencha.json in Resources */ = {isa = PBXBuildFile; fileRef = 3537FA7BC650C5F0D0984A76 /* fightdata_aliencha.json */; };
 		8659FD76142AA61568D6983A /* RABadgeCacheService.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC7AD157ADE1B455E153FE5 /* RABadgeCacheService.swift */; };
 		86641DD0317EBE4B920FA90B /* CheatManagerViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = F85405AF2804CF2BF04FAD6D /* CheatManagerViews.swift */; };
+		866F1C1CE56B2547C91703B7 /* zelda_oot_japan_chrome.png in Resources */ = {isa = PBXBuildFile; fileRef = 6860E85858C489AD13917F03 /* zelda_oot_japan_chrome.png */; };
 		86AE6DD966BD8829EF255FFD /* easyrpg@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 794825E4A27DACE1EB61F442 /* easyrpg@132w.png */; };
 		86E1C292EC5C940FF5103A8F /* C64.png in Resources */ = {isa = PBXBuildFile; fileRef = EBA905B7DDD743F2F782FA28 /* C64.png */; };
 		8713C99E4E0C13BA0DED064C /* input_coreLabels_bsnes_cplusplus98.json in Resources */ = {isa = PBXBuildFile; fileRef = 58D13A1BA2A086DFF84123BB /* input_coreLabels_bsnes_cplusplus98.json */; };
@@ -727,6 +731,7 @@
 		879B86AF45BD146808929EF0 /* LibretroCallbacks.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0F5DA53816F3DA50BB5CBF4 /* LibretroCallbacks.mm */; };
 		87B10EFAD98B1F06174C53D9 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6CDE91A09406AE67921521 /* NotificationService.swift */; };
 		87BC9F9B6B6E4BE3DD955941 /* Bandai - WonderSwan Color.dat in Resources */ = {isa = PBXBuildFile; fileRef = 99CCB48D405EE2849879BE24 /* Bandai - WonderSwan Color.dat */; };
+		87CCF1AFEBF4B73D71F2FF54 /* zelda_oot_europe_title.png in Resources */ = {isa = PBXBuildFile; fileRef = C63B91E4E19A666E9BEAF245 /* zelda_oot_europe_title.png */; };
 		87E784CA3A8C16662716565A /* LibretroCallbacks.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0F5DA53816F3DA50BB5CBF4 /* LibretroCallbacks.mm */; };
 		886D1903700E00DE7F11523C /* GameNameFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69E90E0201D4D8BBC6E511A2 /* GameNameFormatter.swift */; };
 		88C6209E377761122EFF7420 /* input_systemLabels_ti_83.json in Resources */ = {isa = PBXBuildFile; fileRef = 2E0EE3D213A80F69382477E8 /* input_systemLabels_ti_83.json */; };
@@ -926,6 +931,7 @@
 		AAC1B559D85A85846F19F06A /* input_systemLabels_odyssey2.json in Resources */ = {isa = PBXBuildFile; fileRef = 747C0EFB4B9531260931F3BE /* input_systemLabels_odyssey2.json */; };
 		AAC9E7CFA57447C5A74E5A0F /* input_coreLabels_gambatte.json in Resources */ = {isa = PBXBuildFile; fileRef = 60E99FC4C41B65FB9233242B /* input_coreLabels_gambatte.json */; };
 		AAF403187DECA9B53C3A0EBD /* input_coreLabels_stone_soup.json in Resources */ = {isa = PBXBuildFile; fileRef = 4CCBCE020AE481CD1A7F004F /* input_coreLabels_stone_soup.json */; };
+		AB499CF37ED79D2B531D4FFA /* zelda_oot_usa_chrome.png in Resources */ = {isa = PBXBuildFile; fileRef = 5B67918C09374C9D0B0040D3 /* zelda_oot_usa_chrome.png */; };
 		AB85F7B36B9F2A0687A33822 /* appIcon64.jpg in Resources */ = {isa = PBXBuildFile; fileRef = B3862286807DE3CF283A3152 /* appIcon64.jpg */; };
 		AB8FFE28A242061439B11C1B /* input_systemLabels_atari_st.json in Resources */ = {isa = PBXBuildFile; fileRef = 3BD38C52C8520B46C36D80C0 /* input_systemLabels_atari_st.json */; };
 		ABC142DDA913094BBD34EBDA /* input_systemLabels_nxengine.json in Resources */ = {isa = PBXBuildFile; fileRef = BAB77F37E53788B1C11CD496 /* input_systemLabels_nxengine.json */; };
@@ -941,6 +947,7 @@
 		ADC5AA77F50EECA68E54E8C7 /* sameboy_libretro_default.json in Resources */ = {isa = PBXBuildFile; fileRef = EA1AE08A9B777549FF2AE9CC /* sameboy_libretro_default.json */; };
 		AE0718BCC3CC72F4FC8413BF /* VIDEOTON.png in Resources */ = {isa = PBXBuildFile; fileRef = C25C27746F28191394C4D999 /* VIDEOTON.png */; };
 		AE3C8C27D0E5677524695ADF /* GB.png in Resources */ = {isa = PBXBuildFile; fileRef = 2E4A84332074065FDE10275B /* GB.png */; };
+		AE78AB43037156AB2708A415 /* zelda_oot_japan_title.png in Resources */ = {isa = PBXBuildFile; fileRef = 559FD1E2D07F03B2D649CB91 /* zelda_oot_japan_title.png */; };
 		AEADA54E68FCC9420CF29AFF /* gb@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 0E8ED11C4AC892345874C43D /* gb@132w.png */; };
 		AECF8DDF72216FF183BECCE6 /* fightdata_groovef.json in Resources */ = {isa = PBXBuildFile; fileRef = F4AA64C094DEC99FDACE8E85 /* fightdata_groovef.json */; };
 		AEE277BBC795CF7CED1C4C76 /* fightdata_hvnsgate.json in Resources */ = {isa = PBXBuildFile; fileRef = BFD65EF82DE36060CB9098BC /* fightdata_hvnsgate.json */; };
@@ -1152,6 +1159,7 @@
 		D98A607674395638638D3F4D /* fightdata_whp.json in Resources */ = {isa = PBXBuildFile; fileRef = 7393913655C1BCE44064D04B /* fightdata_whp.json */; };
 		D99C416661DBA5CF34E63E9C /* input_systemLabels_atari7800.json in Resources */ = {isa = PBXBuildFile; fileRef = FF3DF73DD9AF0B99F13416F8 /* input_systemLabels_atari7800.json */; };
 		D9A89ADCFC6D89C2CDA6F590 /* Bezels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58F6C2A68F840683B84E80DB /* Bezels.swift */; };
+		D9AB0849F817D586EF91BDD2 /* zelda_oot_usa_title.png in Resources */ = {isa = PBXBuildFile; fileRef = DE5E8FC521306D56820AD31A /* zelda_oot_usa_title.png */; };
 		D9EBEDBE1C035FF0C15CE20F /* input_coreLabels_handy.json in Resources */ = {isa = PBXBuildFile; fileRef = 831A585E8E178AB813D2D8FD /* input_coreLabels_handy.json */; };
 		D9F02751DFA405E5A38D309D /* input_coreLabels_melonds.json in Resources */ = {isa = PBXBuildFile; fileRef = 271083824A7E8AC2BD0F6961 /* input_coreLabels_melonds.json */; };
 		DA12CA0CE740B3B1C4A8E2D4 /* Sega - Dreamcast.dat in Resources */ = {isa = PBXBuildFile; fileRef = 380B3A9A0CDC45FD5FE88630 /* Sega - Dreamcast.dat */; };
@@ -1664,6 +1672,7 @@
 		356DA337A39EEB272E9E98D7 /* input_systemLabels_mame.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_mame.json; sourceTree = "<group>"; };
 		357A347AE1F2ED3C616BC49B /* Nintendo - Game Boy Advance.dat */ = {isa = PBXFileReference; path = "Nintendo - Game Boy Advance.dat"; sourceTree = "<group>"; };
 		35831ECE292261C14E2A05FE /* NotationMetrics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotationMetrics.swift; sourceTree = "<group>"; };
+		35A25361AAFCEA2CA39A818C /* zelda_oot_europe_chrome.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = zelda_oot_europe_chrome.png; sourceTree = "<group>"; };
 		36595021E981B9F32234B307 /* sms-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "sms-cheats.zip"; sourceTree = "<group>"; };
 		36A9574C25916D8504475C4C /* GameLaunchErrorOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameLaunchErrorOverlay.swift; sourceTree = "<group>"; };
 		36D54E4EEE23966CA6695EDF /* fightdata_survarts.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_survarts.json; sourceTree = "<group>"; };
@@ -1829,6 +1838,7 @@
 		553202E8BACC113D608625E6 /* LibretroRDBParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibretroRDBParser.swift; sourceTree = "<group>"; };
 		553B9163434E407B82F065DB /* input_systemOverrides_gamegear.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemOverrides_gamegear.json; sourceTree = "<group>"; };
 		554B05428A53DA220A635F40 /* neocd@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "neocd@132w.png"; sourceTree = "<group>"; };
+		559FD1E2D07F03B2D649CB91 /* zelda_oot_japan_title.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = zelda_oot_japan_title.png; sourceTree = "<group>"; };
 		55A0C232023C7657365528C8 /* Nintendo - Nintendo Entertainment System.dat */ = {isa = PBXFileReference; path = "Nintendo - Nintendo Entertainment System.dat"; sourceTree = "<group>"; };
 		55C2586F126544666FE181BC /* UZEBOX.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = UZEBOX.png; sourceTree = "<group>"; };
 		55E2E46CAAE4B5F6B9B64ECC /* input_systemLabels_gam4980.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_gam4980.json; sourceTree = "<group>"; };
@@ -1858,6 +1868,7 @@
 		5AE1CBC695D134E3FF153854 /* ms@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ms@132w.png"; sourceTree = "<group>"; };
 		5AE2907879D793D5504FE9FC /* pcsx_rearmed_libretro_default.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = pcsx_rearmed_libretro_default.json; sourceTree = "<group>"; };
 		5B369817A06C01C6361538D0 /* N64.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = N64.png; sourceTree = "<group>"; };
+		5B67918C09374C9D0B0040D3 /* zelda_oot_usa_chrome.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = zelda_oot_usa_chrome.png; sourceTree = "<group>"; };
 		5B75DCBF03080C5A3D54BFAB /* cps1@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cps1@132w.png"; sourceTree = "<group>"; };
 		5B8B59C768B0762CFFBFDCE3 /* pcecd@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "pcecd@132w.png"; sourceTree = "<group>"; };
 		5B92D737113CB1C86AF06C18 /* fightdata_kaiserkn.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_kaiserkn.json; sourceTree = "<group>"; };
@@ -1873,6 +1884,7 @@
 		5CDC3C79BAFC397D5CB8E5ED /* doom@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "doom@132w.png"; sourceTree = "<group>"; };
 		5CF1824416794F0D6E5938A5 /* RcheevosCDReader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RcheevosCDReader.h; sourceTree = "<group>"; };
 		5D2ACABD070C032CF81B99A6 /* Nintendo - Family Computer Disk System.dat */ = {isa = PBXFileReference; path = "Nintendo - Family Computer Disk System.dat"; sourceTree = "<group>"; };
+		5D50869E1992FD361D9BCED5 /* zelda_oot_europe_background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = zelda_oot_europe_background.png; sourceTree = "<group>"; };
 		5D70975DBD07119CF82935ED /* fightdata_sf2ce.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_sf2ce.json; sourceTree = "<group>"; };
 		5DD14108CB59DFA0DA852B43 /* PORTS.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PORTS.png; sourceTree = "<group>"; };
 		5E3EC54C5F00E0137DF7FD10 /* HoloBumpRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HoloBumpRenderer.swift; sourceTree = "<group>"; };
@@ -1938,6 +1950,7 @@
 		67E3968F66782C9657808245 /* fightdata_tekken2.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_tekken2.json; sourceTree = "<group>"; };
 		67E3AE6E21EEEE60B5106D5D /* input_coreLabels_beetle_pc_fx.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_beetle_pc_fx.json; sourceTree = "<group>"; };
 		67EFFC04948C60EA261E7A65 /* controllerPreset_lic-pro-controller-0300b7156f0e00008b01000001000000.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "controllerPreset_lic-pro-controller-0300b7156f0e00008b01000001000000.json"; sourceTree = "<group>"; };
+		6860E85858C489AD13917F03 /* zelda_oot_japan_chrome.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = zelda_oot_japan_chrome.png; sourceTree = "<group>"; };
 		68782332EFE8C05AAE16BABF /* input_coreLabels_ffmpeg.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_ffmpeg.json; sourceTree = "<group>"; };
 		68D1F7B52E9288BD2CF0C275 /* holo_stylish2_alpha.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = holo_stylish2_alpha.png; sourceTree = "<group>"; };
 		68F707CDD47CCEEBDA203171 /* gba.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = gba.ico; sourceTree = "<group>"; };
@@ -2111,6 +2124,7 @@
 		88240EB90E61D1E0DD6C29DC /* input_coreLabels_beetle_gba.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_beetle_gba.json; sourceTree = "<group>"; };
 		886DF2A7C2891C580F966C89 /* fightdata_fightfev.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_fightfev.json; sourceTree = "<group>"; };
 		88A5AA6240BCC78ED370440C /* ADVMAME.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ADVMAME.png; sourceTree = "<group>"; };
+		88BC781A10F3CB0D2A5096D7 /* zelda_oot_usa_background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = zelda_oot_usa_background.png; sourceTree = "<group>"; };
 		8905CF92C1478804E38BCB68 /* fds@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "fds@132w.png"; sourceTree = "<group>"; };
 		8938D4FC0C24D516AFA27CDA /* SharingTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharingTabView.swift; sourceTree = "<group>"; };
 		895E4313F6A502B39E0267B1 /* PICO.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PICO.png; sourceTree = "<group>"; };
@@ -2399,6 +2413,7 @@
 		BE01BAE4649B80275FA1BBAB /* MAMEUnifiedService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MAMEUnifiedService.swift; sourceTree = "<group>"; };
 		BE1D21745D47B366C16D8F00 /* fightdata_rvschool.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_rvschool.json; sourceTree = "<group>"; };
 		BE8AAC49E7AC25911394118F /* N64DD.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = N64DD.png; sourceTree = "<group>"; };
+		BF3007EB11BA10C95475888A /* zelda_oot_japan_background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = zelda_oot_japan_background.png; sourceTree = "<group>"; };
 		BF4D3CED7C7C18FB8375C015 /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
 		BF4E53391BFE3DECE7B3CA42 /* OpenCritic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenCritic.swift; sourceTree = "<group>"; };
 		BF5AE1A4D1424CE50BD0AE2D /* input_coreLabels_lutro.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_lutro.json; sourceTree = "<group>"; };
@@ -2432,6 +2447,7 @@
 		C61A9A36D430D34E4C3ABDE0 /* GameLoadingOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameLoadingOverlay.swift; sourceTree = "<group>"; };
 		C63329F8A5AAC634E147BB91 /* ExternalDisplayPromptManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExternalDisplayPromptManager.swift; sourceTree = "<group>"; };
 		C6390D2AB62AB2F0DFD55B70 /* PSPMINIS.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PSPMINIS.png; sourceTree = "<group>"; };
+		C63B91E4E19A666E9BEAF245 /* zelda_oot_europe_title.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = zelda_oot_europe_title.png; sourceTree = "<group>"; };
 		C67F121E078838D4056A40D2 /* AppHaptics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppHaptics.swift; sourceTree = "<group>"; };
 		C6A669A1E4230EBBC0D9A2F4 /* RcheevosWrapper.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = RcheevosWrapper.c; sourceTree = "<group>"; };
 		C6B902C8D11765B90604510E /* input_coreLabels_beetle_saturn.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_beetle_saturn.json; sourceTree = "<group>"; };
@@ -2445,7 +2461,6 @@
 		C8197A3CD7930768E84C3380 /* fightdata_sfiii.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_sfiii.json; sourceTree = "<group>"; };
 		C82BB66735423EFE27B88240 /* n64_aleck-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "n64_aleck-cheats.zip"; sourceTree = "<group>"; };
 		C8861B6D319A016F2FDA15DD /* ImageCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCache.swift; sourceTree = "<group>"; };
-		
 		C88C0C39CBAD9A8A15731EA5 /* fightdata_sf2.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_sf2.json; sourceTree = "<group>"; };
 		C8B26D230952CE0ADCFFD5BF /* input_systemLabels_n64.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_n64.json; sourceTree = "<group>"; };
 		C94E2C81D0A16F3F9DCA9E6B /* RAHashComparisonSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RAHashComparisonSheet.swift; sourceTree = "<group>"; };
@@ -2563,6 +2578,7 @@
 		DDE5213C921C511E7900AF33 /* input_coreOverrides_nestopia.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_nestopia.json; sourceTree = "<group>"; };
 		DDFFDFCC5969E427805C3248 /* arduboy@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "arduboy@132w.png"; sourceTree = "<group>"; };
 		DE550E5F3E5C2B4AC358C4DB /* n64-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "n64-cheats.zip"; sourceTree = "<group>"; };
+		DE5E8FC521306D56820AD31A /* zelda_oot_usa_title.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = zelda_oot_usa_title.png; sourceTree = "<group>"; };
 		DE8AA314424647A2DC895F81 /* RcheevosRuntime.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RcheevosRuntime.swift; sourceTree = "<group>"; };
 		DE971EA2E2A3B852CA7C7401 /* TapeDeck.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TapeDeck.swift; sourceTree = "<group>"; };
 		DEA0632F85C21D069D911532 /* StreamRecordingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamRecordingService.swift; sourceTree = "<group>"; };
@@ -4392,11 +4408,20 @@
 		D0CDC1D3C0773FC9C8698346 /* BoxArtSamples */ = {
 			isa = PBXGroup;
 			children = (
+				5D50869E1992FD361D9BCED5 /* zelda_oot_europe_background.png */,
+				35A25361AAFCEA2CA39A818C /* zelda_oot_europe_chrome.png */,
 				F670C04EC19DA343B4D0E920 /* zelda_oot_europe_hero.png */,
+				C63B91E4E19A666E9BEAF245 /* zelda_oot_europe_title.png */,
 				A0C5FCB3FF56DD20AC65678B /* zelda_oot_europe.png */,
+				BF3007EB11BA10C95475888A /* zelda_oot_japan_background.png */,
+				6860E85858C489AD13917F03 /* zelda_oot_japan_chrome.png */,
 				806042BD2577F89D91AFAF00 /* zelda_oot_japan_hero.png */,
+				559FD1E2D07F03B2D649CB91 /* zelda_oot_japan_title.png */,
 				4AFB6438D35AED5F2F6B318F /* zelda_oot_japan.png */,
+				88BC781A10F3CB0D2A5096D7 /* zelda_oot_usa_background.png */,
+				5B67918C09374C9D0B0040D3 /* zelda_oot_usa_chrome.png */,
 				A46C7165C848074FC91A8B26 /* zelda_oot_usa_hero.png */,
+				DE5E8FC521306D56820AD31A /* zelda_oot_usa_title.png */,
 				D74F5E8A10EE90C1CAAF9C7D /* zelda_oot_usa.png */,
 			);
 			path = BoxArtSamples;
@@ -5935,11 +5960,20 @@
 				15C423B679CB7656D667C51D /* xbox.ico in Resources */,
 				25AA217D9B455BBE6C01A754 /* xbox360.ico in Resources */,
 				DC99BD2F868611CE28B49E80 /* zelda_oot_europe.png in Resources */,
+				2ABC7D56DDF7045D815A08E3 /* zelda_oot_europe_background.png in Resources */,
+				28BC7672CDB646B9F4A7B2A2 /* zelda_oot_europe_chrome.png in Resources */,
 				0F89504CF8C7F21B1BD67C9F /* zelda_oot_europe_hero.png in Resources */,
+				87CCF1AFEBF4B73D71F2FF54 /* zelda_oot_europe_title.png in Resources */,
 				50C01002372D1C1EEB123631 /* zelda_oot_japan.png in Resources */,
+				23DDBEE389B36CF647DB6199 /* zelda_oot_japan_background.png in Resources */,
+				866F1C1CE56B2547C91703B7 /* zelda_oot_japan_chrome.png in Resources */,
 				2A410DC310789ACB0C64F510 /* zelda_oot_japan_hero.png in Resources */,
+				AE78AB43037156AB2708A415 /* zelda_oot_japan_title.png in Resources */,
 				9CCD7E647F3D97C79FDFAFF5 /* zelda_oot_usa.png in Resources */,
+				5BD9A2B601A4CCF318B36F72 /* zelda_oot_usa_background.png in Resources */,
+				AB499CF37ED79D2B531D4FFA /* zelda_oot_usa_chrome.png in Resources */,
 				ADB685BCE6B067EACB492C02 /* zelda_oot_usa_hero.png in Resources */,
+				D9AB0849F817D586EF91BDD2 /* zelda_oot_usa_title.png in Resources */,
 				683ACAE70B7A63365CD21520 /* zxs@132w.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
