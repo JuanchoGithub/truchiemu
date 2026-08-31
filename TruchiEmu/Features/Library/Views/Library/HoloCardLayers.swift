@@ -486,40 +486,6 @@ struct HoloFoilLayers: View, Equatable {
                                     intensity: randomization.intensity(.hero),
                                     mask: hero, w: w, h: h)
                     }
-                } else {
-                    // User-configured path: region-specific patterns /
-                    // intensities from the settings store. No variant roll —
-                    // the texture alone provides the holographic look.
-                    let fallbackBoost = fallbackBoost(for: masks)
-                    let bgIntensity = max(0, min(1, settings.backgroundIntensity + fallbackBoost))
-                    if let background = masks.background {
-                        regionLayer(resolvedPattern(for: .background),
-                                    variant: nil,
-                                    intensity: bgIntensity,
-                                    mask: background, w: w, h: h)
-                    }
-                    if settings.regionIsActive(.title, maskPresent: masks.title != nil),
-                       let title = masks.title {
-                        regionLayer(resolvedPattern(for: .title),
-                                    variant: nil,
-                                    intensity: settings.titleIntensity,
-                                    mask: title, w: w, h: h)
-                    }
-                    if settings.regionIsActive(.chrome, maskPresent: masks.chrome != nil),
-                       let chrome = masks.chrome {
-                        regionLayer(resolvedPattern(for: .chrome),
-                                    variant: nil,
-                                    intensity: settings.chromeIntensity,
-                                    mask: chrome, w: w, h: h)
-                    }
-                    if masks.heroHolo,
-                       settings.regionIsActive(.hero, maskPresent: masks.hero != nil),
-                       let hero = masks.hero {
-                        regionLayer(resolvedPattern(for: .hero),
-                                    variant: nil,
-                                    intensity: settings.heroIntensity,
-                                    mask: hero, w: w, h: h)
-                    }
                 }
             }
         }
@@ -636,27 +602,6 @@ struct HoloFoilLayers: View, Equatable {
         // Negative: source uses `50% - var(--background-x)` so positive
         // cursor offset pulls the rainbow opposite direction.
         return CGSize(width: -cx * strength + tx, height: -cy * strength + ty)
-    }
-
-    @inline(__always)
-    private func fallbackBoost(for masks: HoloMaskSet) -> Double {
-        var boost: Double = 0
-        if masks.title == nil, settings.titleIntensity > 0    { boost += settings.titleIntensity * 0.5    }
-        if masks.chrome == nil, settings.chromeIntensity > 0   { boost += settings.chromeIntensity * 0.5   }
-        if masks.heroHolo, masks.hero == nil, settings.heroIntensity > 0 {
-            boost += settings.heroIntensity * 0.5
-        }
-        return boost
-    }
-
-    @inline(__always)
-    private func resolvedPattern(for region: HoloRegion) -> HoloPattern {
-        switch region {
-        case .title:      return settings.titlePattern
-        case .chrome:     return settings.chromePattern
-        case .hero:       return settings.heroPattern
-        case .background: return settings.backgroundPattern
-        }
     }
 
     @ViewBuilder

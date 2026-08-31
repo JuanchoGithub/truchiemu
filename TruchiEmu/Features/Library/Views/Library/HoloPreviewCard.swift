@@ -55,10 +55,7 @@ struct HoloPreviewCard: View {
             hero: heroMask ?? white,
             title: white,
             chrome: white,
-            background: white,
-            heroHolo: false,
-            titleBackgroundHolo: false,
-            chromeBackgroundHolo: false
+            background: white
         )
     }
 
@@ -69,7 +66,6 @@ struct HoloPreviewCard: View {
         var snapshot = HoloSettingsSnapshot(from: HoloSettingsStore.shared, romID: "holo-preview")
         snapshot.randomization = HoloCardRandomization(
             seed: 1,
-            deviationChance: 0,
             variantWeights: [.reverseHolo: 1.0]
         )
         return snapshot

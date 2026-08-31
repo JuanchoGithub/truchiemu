@@ -10,15 +10,6 @@ struct HoloSettingsView: View {
     @ObservedObject private var loc = LocalizationManager.shared
     @ObservedObject private var settings = HoloSettingsStore.shared
 
-    @State private var titleIntensity: Double = HoloSettings.titleIntensity
-    @State private var chromeIntensity: Double = HoloSettings.chromeIntensity
-    @State private var heroIntensity: Double = HoloSettings.heroIntensity
-    @State private var backgroundIntensity: Double = HoloSettings.backgroundIntensity
-    @State private var titlePattern: HoloPattern = HoloSettings.titlePattern
-    @State private var chromePattern: HoloPattern = HoloSettings.chromePattern
-    @State private var heroPattern: HoloPattern = HoloSettings.heroPattern
-    @State private var backgroundPattern: HoloPattern = HoloSettings.backgroundPattern
-    @State private var maskDeviationChance: Double = HoloSettings.maskDeviationChance
     @State private var depthMode: HoloDepthMode = HoloSettings.depthMode
     @State private var specularPower: Double = HoloSettings.specularPower
     @State private var cursorInfluence: Double = HoloSettings.cursorInfluence
@@ -34,9 +25,7 @@ struct HoloSettingsView: View {
     @State private var reverseTextureVariation: Bool = HoloSettings.reverseTextureVariation
     @State private var holofoilRareIntensity: Double = HoloSettings.holofoilRareIntensity
     @State private var holofoilRareScanlineDensity: Double = HoloSettings.holofoilRareScanlineDensity
-    @State private var holofoilRareBeamStrength: Double = HoloSettings.holofoilRareBeamStrength
     @State private var holofoilRareGlare: Double = HoloSettings.holofoilRareGlare
-    @State private var randomFoilSize: Bool = HoloSettings.randomFoilSize
 
     init(searchText: Binding<String> = .constant(""),
          focusedSectionID: Binding<String?> = .constant(nil),
@@ -89,7 +78,7 @@ struct HoloSettingsView: View {
 
     @ViewBuilder
     private var levelsSection: some View {
-        if (!isSearching || matchesSearch("intensity strength pattern texture title chrome hero background holo mask deviation chance")) && sectionVisible("section-levels") {
+        if (!isSearching || matchesSearch("holo play button")) && sectionVisible("section-levels") {
             Section(content: {
                 SettingsRow(
                     loc.localized("holo.showPlayButton"),
@@ -100,122 +89,6 @@ struct HoloSettingsView: View {
                         .onChange(of: showPlayButton) { _, newValue in
                             HoloSettings.showPlayButton = newValue
                         }
-                }
-                SettingsRow(
-                    loc.localized("holo.maskDeviationChance"),
-                    description: loc.localized("holo.maskDeviationChanceDescription")
-                ) {
-                    HStack(spacing: 8) {
-                        Slider(value: $maskDeviationChance, in: 0.0...1.0)
-                            .frame(width: 140)
-                        Text("\(Int((maskDeviationChance * 100).rounded()))%")
-                            .font(.system(size: 12, weight: .medium, design: .rounded))
-                            .foregroundStyle(AppColors.textSecondary(colorScheme))
-                            .frame(width: 36, alignment: .trailing)
-                    }
-                    .onChange(of: maskDeviationChance) { _, newValue in
-                        HoloSettingsStore.shared.maskDeviationChance = newValue
-                    }
-                }
-                SettingsRow(
-                    loc.localized("holo.backgroundIntensity"),
-                    description: loc.localized("holo.backgroundIntensityDescription")
-                ) {
-                    Slider(value: $backgroundIntensity, in: 0.0...1.0)
-                        .frame(width: 180)
-                        .onChange(of: backgroundIntensity) { _, newValue in
-                            HoloSettingsStore.shared.backgroundIntensity = newValue
-                        }
-                }
-                SettingsRow(
-                    loc.localized("holo.backgroundPattern"),
-                    description: loc.localized("holo.backgroundPatternDescription")
-                ) {
-                    Picker(loc.localized("holo.backgroundPattern"), selection: $backgroundPattern) {
-                        ForEach(HoloPattern.allCases) { pattern in
-                            Text(pattern.displayName).tag(pattern)
-                        }
-                    }
-                    .labelsHidden()
-                    .frame(width: 180)
-                    .onChange(of: backgroundPattern) { _, newValue in
-                        HoloSettings.backgroundPattern = newValue
-                    }
-                }
-                SettingsRow(
-                    loc.localized("holo.titleIntensity"),
-                    description: loc.localized("holo.titleIntensityDescription")
-                ) {
-                    Slider(value: $titleIntensity, in: 0.0...1.0)
-                        .frame(width: 180)
-                        .onChange(of: titleIntensity) { _, newValue in
-                            HoloSettings.titleIntensity = newValue
-                        }
-                }
-                SettingsRow(
-                    loc.localized("holo.chromeIntensity"),
-                    description: loc.localized("holo.chromeIntensityDescription")
-                ) {
-                    Slider(value: $chromeIntensity, in: 0.0...1.0)
-                        .frame(width: 180)
-                        .onChange(of: chromeIntensity) { _, newValue in
-                            HoloSettings.chromeIntensity = newValue
-                        }
-                }
-                SettingsRow(
-                    loc.localized("holo.heroIntensity"),
-                    description: loc.localized("holo.heroIntensityDescription")
-                ) {
-                    Slider(value: $heroIntensity, in: 0.0...1.0)
-                        .frame(width: 180)
-                        .onChange(of: heroIntensity) { _, newValue in
-                            HoloSettings.heroIntensity = newValue
-                        }
-                }
-                SettingsRow(
-                    loc.localized("holo.titlePattern"),
-                    description: loc.localized("holo.titlePatternDescription")
-                ) {
-                    Picker(loc.localized("holo.titlePattern"), selection: $titlePattern) {
-                        ForEach(HoloPattern.allCases) { pattern in
-                            Text(pattern.displayName).tag(pattern)
-                        }
-                    }
-                    .labelsHidden()
-                    .frame(width: 180)
-                    .onChange(of: titlePattern) { _, newValue in
-                        HoloSettings.titlePattern = newValue
-                    }
-                }
-                SettingsRow(
-                    loc.localized("holo.chromePattern"),
-                    description: loc.localized("holo.chromePatternDescription")
-                ) {
-                    Picker(loc.localized("holo.chromePattern"), selection: $chromePattern) {
-                        ForEach(HoloPattern.allCases) { pattern in
-                            Text(pattern.displayName).tag(pattern)
-                        }
-                    }
-                    .labelsHidden()
-                    .frame(width: 180)
-                    .onChange(of: chromePattern) { _, newValue in
-                        HoloSettings.chromePattern = newValue
-                    }
-                }
-                SettingsRow(
-                    loc.localized("holo.heroPattern"),
-                    description: loc.localized("holo.heroPatternDescription")
-                ) {
-                    Picker(loc.localized("holo.heroPattern"), selection: $heroPattern) {
-                        ForEach(HoloPattern.allCases) { pattern in
-                            Text(pattern.displayName).tag(pattern)
-                        }
-                    }
-                    .labelsHidden()
-                    .frame(width: 180)
-                    .onChange(of: heroPattern) { _, newValue in
-                        HoloSettings.heroPattern = newValue
-                    }
                 }
             }, header: {
                 Label { Text(loc.localized("holo.levels")) } icon: { Image(systemName: "slider.horizontal.3") }
@@ -421,16 +294,6 @@ struct HoloSettingsView: View {
                                 HoloSettings.reverseTextureVariation = newValue
                             }
                     }
-                    SettingsRow(
-                        loc.localized("holo.randomFoilSize"),
-                        description: loc.localized("holo.randomFoilSizeDescription")
-                    ) {
-                        Toggle("", isOn: $randomFoilSize)
-                            .labelsHidden()
-                            .onChange(of: randomFoilSize) { _, newValue in
-                                HoloSettings.randomFoilSize = newValue
-                            }
-                    }
                 }
 
                 if reverseColorMode == .solid {
@@ -534,23 +397,6 @@ struct HoloSettingsView: View {
                     }
                     .onChange(of: holofoilRareScanlineDensity) { _, newValue in
                         HoloSettings.holofoilRareScanlineDensity = newValue
-                    }
-                }
-
-                SettingsRow(
-                    loc.localized("holo.holofoilRare.beamStrength"),
-                    description: loc.localized("holo.holofoilRare.beamStrengthDescription")
-                ) {
-                    HStack(spacing: 8) {
-                        Slider(value: $holofoilRareBeamStrength, in: 0.0...1.0)
-                            .frame(width: 140)
-                        Text("\(Int((holofoilRareBeamStrength * 100).rounded()))%")
-                            .font(.system(size: 12, weight: .medium, design: .rounded))
-                            .foregroundStyle(AppColors.textSecondary(colorScheme))
-                            .frame(width: 36, alignment: .trailing)
-                    }
-                    .onChange(of: holofoilRareBeamStrength) { _, newValue in
-                        HoloSettings.holofoilRareBeamStrength = newValue
                     }
                 }
 

@@ -13,11 +13,6 @@ struct HoloMaskSet: Sendable {
     let title: NSImage?
     let chrome: NSImage?
     let background: NSImage?
-    // Per-card random flags: whether title/chrome also pick up the background
-    // holo at their subtle level, and whether hero gets its rare 5% holo.
-    let heroHolo: Bool
-    let titleBackgroundHolo: Bool
-    let chromeBackgroundHolo: Bool
 }
 
 extension HoloMaskSet: Equatable {
@@ -29,9 +24,6 @@ extension HoloMaskSet: Equatable {
             && lhs.title === rhs.title
             && lhs.chrome === rhs.chrome
             && lhs.background === rhs.background
-            &&         lhs.heroHolo == rhs.heroHolo
-            && lhs.titleBackgroundHolo == rhs.titleBackgroundHolo
-            && lhs.chromeBackgroundHolo == rhs.chromeBackgroundHolo
     }
 }
 
@@ -48,9 +40,9 @@ extension HoloMaskSet: Equatable {
 // shows the layer split (red hero, yellow title, green mid, blue sky,
 // gray chrome).
 //
-// Per-card pattern choices and heroHolo/titleBackgroundHolo/chromeBackgroundHolo
-// flags are persisted as JSON sidecar `<romID>.meta.json` so the look stays
-// stable across launches (matches the cached-on-disk masks).
+// Per-card holo appearance is rolled at launch by `HoloCardRandomization`
+// (seeded from the rom's FNV-1a hash) and stays stable for the session, so
+// the look is deterministic without needing a per-rom meta sidecar.
 //
 // Decomposition failures (Vision returned no useful masks, throws, etc.) are
 // marked with `<romID>.failed` so we don't retry on every card view appearance.
@@ -116,10 +108,6 @@ final class HoloSaliencyService: @unchecked Sendable, ObservableObject {
 
     nonisolated static func previewFileURL(for romID: String) -> URL {
         storageDirectory.appendingPathComponent("\(romID).preview.png")
-    }
-
-    nonisolated static func metaFileURL(for romID: String) -> URL {
-        storageDirectory.appendingPathComponent("\(romID).meta.json")
     }
 
     nonisolated static func failureMarkerURL(for romID: String) -> URL {
@@ -328,7 +316,6 @@ final class HoloSaliencyService: @unchecked Sendable, ObservableObject {
             Self.maskFileURL(for: romID, role: "chrome"),
             Self.maskFileURL(for: romID, role: "background"),
             Self.previewFileURL(for: romID),
-            Self.metaFileURL(for: romID),
             Self.failureMarkerURL(for: romID),
         ]
         let fm = FileManager.default
@@ -384,7 +371,6 @@ final class HoloSaliencyService: @unchecked Sendable, ObservableObject {
         let titleURL = maskFileURL(for: romID, role: "title")
         let chromeURL = maskFileURL(for: romID, role: "chrome")
         let backgroundURL = maskFileURL(for: romID, role: "background")
-        let metaURL = metaFileURL(for: romID)
 
         let task = Task.detached(priority: .utility) { () -> HoloMaskSet? in
             if Task.isCancelled { return nil }
@@ -397,20 +383,11 @@ final class HoloSaliencyService: @unchecked Sendable, ObservableObject {
                 return nil
             }
 
-            var meta = HoloMaskMeta()
-            if let data = try? Data(contentsOf: metaURL),
-               let decoded = try? JSONDecoder().decode(HoloMaskMeta.self, from: data) {
-                meta = decoded
-            }
-
             return HoloMaskSet(
                 hero: hero,
                 title: title,
                 chrome: chrome,
-                background: background,
-                heroHolo: meta.heroHolo,
-                titleBackgroundHolo: meta.titleBackgroundHolo,
-                chromeBackgroundHolo: meta.chromeBackgroundHolo
+                background: background
             )
         }
         return await withTaskCancellationHandler {
@@ -440,26 +417,11 @@ final class HoloSaliencyService: @unchecked Sendable, ObservableObject {
         writePNG(bundle.preview, to: previewFileURL(for: romID))
         if Task.isCancelled { return nil }
 
-        var rng = SplitMix64(seed: stableSeed(romID))
-        let heroHolo = (rng.next() % 100) < 20
-        let titleBackgroundHolo = (rng.next() % 100) < 50
-        let chromeBackgroundHolo = (rng.next() % 100) < 50
-
-        let meta = HoloMaskMeta(
-            heroHolo: heroHolo,
-            titleBackgroundHolo: titleBackgroundHolo,
-            chromeBackgroundHolo: chromeBackgroundHolo
-        )
-        writeMeta(meta, to: metaFileURL(for: romID))
-
         return HoloMaskSet(
             hero: hero,
             title: title,
             chrome: chrome,
-            background: background,
-            heroHolo: heroHolo,
-            titleBackgroundHolo: titleBackgroundHolo,
-            chromeBackgroundHolo: chromeBackgroundHolo
+            background: background
         )
     }
 
@@ -478,11 +440,6 @@ final class HoloSaliencyService: @unchecked Sendable, ObservableObject {
         guard let destination = CGImageDestinationCreateWithURL(url as CFURL, UTType.png.identifier as CFString, 1, nil) else { return }
         CGImageDestinationAddImage(destination, image, nil)
         CGImageDestinationFinalize(destination)
-    }
-
-    nonisolated private static func writeMeta(_ meta: HoloMaskMeta, to url: URL) {
-        guard let data = try? JSONEncoder().encode(meta) else { return }
-        try? data.write(to: url, options: .atomic)
     }
 
     // BoxArtLayers masks are grayscale (white = region present, no alpha
@@ -515,14 +472,6 @@ final class HoloSaliencyService: @unchecked Sendable, ObservableObject {
             return age < failureTTL
         }.value
     }
-}
-
-// MARK: - Meta sidecar
-
-private struct HoloMaskMeta: Codable {
-    var heroHolo: Bool = false
-    var titleBackgroundHolo: Bool = false
-    var chromeBackgroundHolo: Bool = false
 }
 
 // MARK: - Async semaphore

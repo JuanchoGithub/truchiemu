@@ -785,10 +785,11 @@ private func holoArtworkDefault(allowBump: Bool = true) -> some View {
         .shadow(color: Color.black.opacity(isPressed ? 0.35 : 0.20), radius: isPressed ? 9 : 5, x: 0, y: isPressed ? 5 : 3)
     }
     
-    // Holo regions for one card. The settings store drives both the
-    // intensity (per region, slider in Holo settings) and the pattern source
-    // (the user's chosen pattern; per-card randomization applies only when the
-    // card's `maskDeviationChance` roll succeeds).
+    // Holo regions for one card. Per-launch, per-card randomization
+    // (`HoloCardRandomization`) picks a variant (regularHolo, cosmosHolo,
+    // rainbowHolo, ...) and a per-card intensity jitter, then `HoloFoilLayers`
+    // composes one foil layer per region using the variant's source-foil
+    // pattern and the card's mask.
     //
     // The foil is pre-rendered and its position is fixed — tiles clipped to
     // the region masks stay glued to the art. The cursor drives the foil's

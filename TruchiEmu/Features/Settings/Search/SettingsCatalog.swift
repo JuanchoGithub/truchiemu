@@ -221,7 +221,7 @@ enum SettingsCatalog {
             SettingsCatalogEntry(
                 page: .holo, sectionID: "levels",
                 sectionTitle: "Holo Levels",
-                keywords: ["holo", "holographic", "foil", "intensity", "strength", "pattern", "texture", "title", "chrome", "hero", "background", "randomize", "per-card"]
+                keywords: ["holo", "holographic", "foil", "play", "button"]
             ),
 
             SettingsCatalogEntry(
