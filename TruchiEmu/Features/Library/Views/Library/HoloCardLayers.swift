@@ -827,9 +827,13 @@ struct HoloFoilLayers: View, Equatable {
                 .blendMode(.softLight)
                 .frame(width: w * 2, height: h * 2)
             }
-            .mask(mode == .rainbow
-                  ? AnyView(foilLuminanceMask(period: period, w: w, h: h))
-                  : AnyView(Color.white.frame(width: w * 6, height: h * 6)))
+            // The light/dark sweep is gated by the foil's luminance mask in
+            // EVERY mode (not just rainbow). This is what makes the reverse
+            // holo sections read as transparent: the sweep — which is white and
+            // colour-dodged so it would otherwise cover the whole card — only
+            // plays through the etch's visible (mid-bright) cells, so the dark
+            // valleys and blown-out highlights let the card art show through.
+            .mask(foilLuminanceMask(period: period, w: w, h: h))
         }
         .compositingGroup()
         // source: filter: brightness(.55) contrast(1.5) saturate(1).
@@ -846,9 +850,12 @@ struct HoloFoilLayers: View, Equatable {
     }
 
     /// Foil heightmap as an alpha mask, shared by the rainbow hue and the
-    /// light/dark sweep. Dark foil areas -> transparent (alpha 0); bright areas
-    /// -> opaque. So both the hue AND the moving ray/radial only touch the
-    /// texture's lit cells — the dark cells stay untouched (card shows through).
+    /// light/dark sweep. The etch's luminance (bright cells -> visible, dark
+    /// valleys -> hidden) is remapped by the `reverseHoloMask` tone curve so it
+    /// reads like real holographic paper: transparent at max dark AND max
+    /// bright, most visible in the bright mid-tones, quick falloff at the top.
+    /// So both the hue AND the moving ray/radial only touch the texture's lit
+    /// cells — the dark cells stay untouched (card shows through).
     @ViewBuilder
     private func foilLuminanceMask(period: CGFloat, w: CGFloat, h: CGFloat) -> some View {
         if settings.reverseTextureMode != .generated,
@@ -857,6 +864,7 @@ struct HoloFoilLayers: View, Equatable {
             Image(nsImage: m)
                 .resizable()
                 .frame(width: w * 2, height: h * 2)
+                .colorEffect(Shader(function: ShaderLibrary.reverseHoloMask, arguments: []))
         } else {
             ZStack {
                 RepeatingLinearGradientView(colors: [.white, .clear], angle: 45, period: period)
@@ -864,6 +872,7 @@ struct HoloFoilLayers: View, Equatable {
                     .blendMode(.multiply)
             }
             .frame(width: w * 2, height: h * 2)
+            .colorEffect(Shader(function: ShaderLibrary.reverseHoloMask, arguments: []))
         }
     }
 

@@ -898,18 +898,32 @@ private func holoArtworkDefault(allowBump: Bool = true) -> some View {
 
                  Color.black.opacity(0.25)
 
-                 // Sharp box art on top (base for holo blend modes)
-                 BoxArtBaseView(image: image, normalizedMouseX: normalizedMouseX, normalizedMouseY: normalizedMouseY, isPressed: isPressed, w: w, h: h, tiltEnabled: !scrollState.isScrolling)
+                 // Sharp box art on top (base for holo blend modes). Rendered at
+                 // the *fitted* size (same aspect as the art) and centered, so it
+                 // is not zoomed/cropped to fill the vertical card and matches the
+                 // fitted holo mask above.
+                 ZStack {
+                     BoxArtBaseView(image: image, normalizedMouseX: normalizedMouseX, normalizedMouseY: normalizedMouseY, isPressed: isPressed, w: artSize.width, h: artSize.height, tiltEnabled: !scrollState.isScrolling)
+                         .frame(width: artSize.width, height: artSize.height)
+                 }
+                 .frame(width: w, height: h)
              }
              .frame(width: w, height: h)
              // Native holo layers & glare. Built ONLY while hovered (gated on
              // `effectsActive`): constructing them for every visible cell rendered
              // a foil tile + median-RGB sampling on the main thread.
+             // The foil/mask must stay at the *fitted* art size (not zoomed to fill
+             // the card) and be centered over the box art. Without a wrapping
+             // container these land at the GeometryReader's top-leading origin and
+             // drift off-center for non-vertical images.
              if effectsActive {
-                 holoLayers(width: artSize.width, height: artSize.height)
-                     .frame(width: artSize.width, height: artSize.height)
-                 holoGlare(width: artSize.width, height: artSize.height)
-                     .frame(width: artSize.width, height: artSize.height)
+                 ZStack {
+                     holoLayers(width: artSize.width, height: artSize.height)
+                         .frame(width: artSize.width, height: artSize.height)
+                     holoGlare(width: artSize.width, height: artSize.height)
+                         .frame(width: artSize.width, height: artSize.height)
+                 }
+                 .frame(width: w, height: h)
              }
         }
         .clipShape(RoundedRectangle(cornerRadius: 8))

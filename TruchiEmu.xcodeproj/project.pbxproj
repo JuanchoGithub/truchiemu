@@ -224,6 +224,7 @@
 		257DABEB6CF4AE2796DE658C /* amiga@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 2C2F2DF4897288485EFCEFF0 /* amiga@132w.png */; };
 		25AA217D9B455BBE6C01A754 /* xbox360.ico in Resources */ = {isa = PBXBuildFile; fileRef = A65D19621F30226A183FD4EA /* xbox360.ico */; };
 		263F6B73A64FEF6EE14E43A0 /* CoreOptionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CFD1DFC1E63A628D89B5DF7 /* CoreOptionsView.swift */; };
+		269AC24CA094DC2CE2ABD087 /* ReverseHoloMask.metal in Sources */ = {isa = PBXBuildFile; fileRef = A355544255BE468FAF663229 /* ReverseHoloMask.metal */; };
 		26BAE55E615589BF97C79EFB /* 3ds.ico in Resources */ = {isa = PBXBuildFile; fileRef = 9595683C509F8F3CF9F41CE4 /* 3ds.ico */; };
 		26BD97DBE595A4B1D9F33FA9 /* fightdata_aodk.json in Resources */ = {isa = PBXBuildFile; fileRef = 631DBE9A82934122CB458925 /* fightdata_aodk.json */; };
 		26C4D46E040DF8B433A63D96 /* input_coreLabels_o2em.json in Resources */ = {isa = PBXBuildFile; fileRef = 0A0B987D3192A6B7AD9E370C /* input_coreLabels_o2em.json */; };
@@ -2258,6 +2259,7 @@
 		A2C16D86692E8B684AC3F8D8 /* atari5200@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "atari5200@132w.png"; sourceTree = "<group>"; };
 		A30E84AC45B0EC95454FA87F /* MoveListStorageService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoveListStorageService.swift; sourceTree = "<group>"; };
 		A316856DC2D245997166CE52 /* fightdata_kof2000.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_kof2000.json; sourceTree = "<group>"; };
+		A355544255BE468FAF663229 /* ReverseHoloMask.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = ReverseHoloMask.metal; sourceTree = "<group>"; };
 		A39DD6DF363A2A9C56EE1CC4 /* TrainingInputManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainingInputManager.swift; sourceTree = "<group>"; };
 		A3B40C7C6A8813B47954412E /* PerSystemSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PerSystemSettingsView.swift; sourceTree = "<group>"; };
 		A3E75082D78B1B88C66D6618 /* SlangAuditRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlangAuditRunner.swift; sourceTree = "<group>"; };
@@ -3246,6 +3248,7 @@
 				3BD337DAF7B206DF941EB16D /* LottesCRT.metal */,
 				2181ADA6355FD20750F4E018 /* Passthrough.metal */,
 				9C5D64D2262E657B3F007C98 /* PSP.metal */,
+				A355544255BE468FAF663229 /* ReverseHoloMask.metal */,
 				FE79415A22D8FF65CB0E2D0D /* RfDisplay.metal */,
 				DB371ABEE63BE1D87FA4114E /* ScaleSmooth.metal */,
 				B2A931CA2A371018760BC6F6 /* SharpBilinear.metal */,
@@ -6395,6 +6398,7 @@
 				452E0E7F7A9630C725D08395 /* RetroAchievementsSettingsView.swift in Sources */,
 				BD71E295B764ABB29962EA20 /* RetroButton.swift in Sources */,
 				1D74BFC265809AEF5ED3C30F /* RetroKeycodeMapper.swift in Sources */,
+				269AC24CA094DC2CE2ABD087 /* ReverseHoloMask.metal in Sources */,
 				1F5AD818986F55A620A10E7A /* RfDisplay.metal in Sources */,
 				BDE2EEECA8DA493D98C511D6 /* RollingBufferConfig.swift in Sources */,
 				BF2294CF47D51708805A3C96 /* RollingVideoBufferService.swift in Sources */,

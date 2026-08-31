@@ -299,6 +299,19 @@ AppColors.accentSecondaryForScheme(colorScheme)
 
 **Custom theme handling:** When `currentTheme == .custom`, `ThemeManager` derives all variants algorithmically from `customAccentColor` (dimmed at 84%, dark at 70%). Code using `AppColors` tokens automatically gets the correct derived colors, so no special-casing is needed.
 
+## Holo FX Box Art Rendering
+
+The library grid renders box art with a holographic foil/glare effect in `TruchiEmu/Features/Library/Views/Library/HoloGameCardView.swift` (see `holoArtworkDefault`, `holoArtworkFillBlurred`, `holoArtworkCropSquare`). This has regressed repeatedly when touched — hold these invariants:
+
+**The fitted box-art rect is the single source of truth.** `fittedBoxartSize(image:w:h:)` returns the rect the box art actually occupies when `scaledToFit` into the card. For non-vertical (landscape/square) images in the grouped/all-games view this rect is smaller than the card and is **centered** within it.
+
+- **Sharp art must be `scaledToFit`, not fill the card.** In `holoArtworkFillBlurred`, the sharp `BoxArtBaseView` is rendered at `artSize` (the fitted size) and centered inside a `w×h` container. Do NOT pass the full card `w×h` to `BoxArtBaseView` — `scaledToFill` crops the art to the vertical card and hides the blurred backdrop, which reads as "the image is zoomed too big."
+- **Holo foil + glare must match the fitted art, not the card.** Render `holoLayers` and `holoGlare` at `artSize.width × artSize.height`, wrapped in a `w×h` `ZStack` so they are centered over the art. Never apply them directly as bare siblings in the `GeometryReader` — they land at the top-leading origin and drift off-center (the recurring "mask not centered" bug). Do not zoom them to fill the card.
+- **Sharp art rect and holo rect must be identical** so the foil/mask is glued to the displayed art.
+- `holoArtworkDefault` and `holoArtworkCropSquare` already wrap their holo layers in the card-sized `ZStack`; keep that pattern.
+
+When editing any holo box-art code, verify: (1) the sharp art is fitted + centered, (2) the holo layers are at the fitted size, (3) both are centered in a `w×h` container so they align.
+
 ## SwiftData & Persistence
 
 - **SwiftDataContainer** (`Shared/Infrastructure/Persistence/`): Singleton owning the `ModelContainer`; registers 25+ model types at init; store at `~/Library/Application Support/TruchiEmu/TruchiEmu.sqlite`
