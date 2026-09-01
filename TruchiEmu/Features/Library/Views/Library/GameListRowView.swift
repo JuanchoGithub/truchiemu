@@ -17,6 +17,10 @@ struct GameListRowView: View {
     @State private var thumb: NSImage?
     @State private var isHovered = false
     @State private var raProgress: (earned: Int, total: Int)?
+    @State private var mousePosition: CGPoint?
+    @State private var tiltRotationX: Double = 0
+    @State private var tiltRotationY: Double = 0
+    @State private var artFrame: CGRect = .zero
     @ObservedObject private var boxArtService = BoxArtService.shared
     @ObservedObject private var loc = LocalizationManager.shared
     @EnvironmentObject var library: ROMLibrary
@@ -50,6 +54,51 @@ struct GameListRowView: View {
     
     private var categoryBadges: [GameCategory] {
         categoryManager.categories.filter { $0.gameIDs.contains(rom.id) }
+    }
+
+    // MARK: - 3D Pivoting Effect (mirrors GameCardView)
+
+    private var pivotingEnabled: Bool {
+        SystemPreferences.shared.boxArtPivotingEnabled() && !isScrolling
+    }
+
+    private var normalizedMouseX: CGFloat {
+        guard let mp = mousePosition, artFrame.width > 0 else { return 0.5 }
+        return min(max((mp.x - artFrame.minX) / artFrame.width, 0), 1)
+    }
+
+    private var normalizedMouseY: CGFloat {
+        guard let mp = mousePosition, artFrame.height > 0 else { return 0.5 }
+        return min(max((mp.y - artFrame.minY) / artFrame.height, 0), 1)
+    }
+
+    private let maxTiltAngle: Double = 9
+    private let tiltPerspective: CGFloat = 0.5
+
+    private var tiltTargetRotationX: Double {
+        (normalizedMouseY - 0.5) * 2 * maxTiltAngle
+    }
+
+    private var tiltTargetRotationY: Double {
+        (0.5 - normalizedMouseX) * 2 * maxTiltAngle
+    }
+
+    private var tiltCombinedAngle: Double {
+        let ax = tiltRotationX * .pi / 180
+        let ay = tiltRotationY * .pi / 180
+        let qw = cos(ay / 2) * cos(ax / 2)
+        return 2 * acos(min(max(qw, -1), 1)) * 180 / .pi
+    }
+
+    private var tiltCombinedAxis: (x: CGFloat, y: CGFloat, z: CGFloat) {
+        let ax = tiltRotationX * .pi / 180
+        let ay = tiltRotationY * .pi / 180
+        var x = cos(ay / 2) * sin(ax / 2)
+        var y = sin(ay / 2) * cos(ax / 2)
+        var z = -sin(ay / 2) * sin(ax / 2)
+        let len = sqrt(x * x + y * y + z * z)
+        if len < 1e-6 { return (1, 0, 0) }
+        return (x / len, y / len, z / len)
     }
     
     // MARK: - Formatted Playtime
@@ -309,6 +358,7 @@ Text(sys.name)
             }
         }
         .padding(.vertical, 4)
+        .coordinateSpace(name: "gameListRow")
         .background(
             Rectangle()
             .fill(isEvenRow ? AppColors.cardBackground(colorScheme) : .clear)
@@ -335,6 +385,31 @@ Text(sys.name)
                 withAnimation(.easeOut(duration: 0.12)) {
                     isHovered = hovering
                 }
+            }
+        }
+        .onContinuousHover { phase in
+            guard pivotingEnabled else { return }
+            switch phase {
+            case .active(let location):
+                mousePosition = location
+                withAnimation(AppMotion.tilt) {
+                    tiltRotationX = tiltTargetRotationX
+                    tiltRotationY = tiltTargetRotationY
+                }
+            case .ended:
+                mousePosition = nil
+                withAnimation(AppMotion.tilt) {
+                    tiltRotationX = 0
+                    tiltRotationY = 0
+                }
+            }
+        }
+        .onChange(of: isScrolling) { _, scrolling in
+            if scrolling {
+                isHovered = false
+                mousePosition = nil
+                tiltRotationX = 0
+                tiltRotationY = 0
             }
         }
         .task(id: "\(rom.id)-\(boxArtService.boxArtUpdated)") {
@@ -380,6 +455,20 @@ Text(sys.name)
         .frame(width: thumb != nil ? thumbWidth : min(thumbWidth, thumbHeight), height: thumb != nil ? thumbHeight : min(thumbWidth, thumbHeight))
         .clipShape(RoundedRectangle(cornerRadius: AppRadius.sm))
         .shadow(color: AppColors.brandAccent.opacity(0.12), radius: 3, x: 0, y: 1)
+        // 3D pivoting effect — only the art pivots, text stays flat
+        .rotation3DEffect(
+            .degrees(pivotingEnabled && isHovered ? tiltCombinedAngle : 0),
+            axis: tiltCombinedAxis,
+            anchor: .center,
+            perspective: tiltPerspective
+        )
+        .background(
+            GeometryReader { geo in
+                Color.clear
+                    .onAppear { artFrame = geo.frame(in: .named("gameListRow")) }
+                    .onChange(of: geo.frame(in: .named("gameListRow"))) { _, new in artFrame = new }
+            }
+        )
         .overlay(alignment: .center) {
             if isHovered, onPlay != nil {
                 GlassOrbPlayButton(
