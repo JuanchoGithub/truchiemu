@@ -41,6 +41,15 @@ final class TVModeSettingsManager: ObservableObject {
     /// `resolveColdStartScreenSelectionIfNeeded()`).
     private var coldStartPendingScreenSelection = false
 
+    /// True when the app cold-started in TV-mode (i.e. the main window never
+    /// rendered before TV-mode took over). On cold start there is no live
+    /// main-window filter to sync TV-mode from — `ContentView.selectedFilter`
+    /// is still its default placeholder — so callers should NOT pass it as
+    /// the initial entry and instead let TV-mode restore its own persisted
+    /// filter (`tvMode_lastFilter`). Stays `false` for live entry via the
+    /// menu / gamepad / grid, which DO have a real main-window position.
+    var isColdStartResume: Bool { coldStartPendingScreenSelection }
+
     private init() {
         // Resume the last TV-mode session. The `currentlyActive` key is written
         // on every `isActive` change, so it reflects what the user was doing at

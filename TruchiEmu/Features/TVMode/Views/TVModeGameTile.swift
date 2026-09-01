@@ -87,9 +87,22 @@ struct TVModeGameTile: View {
                     .allowsHitTesting(false)
             }
 
-            boxartView
+            // Auto holo on the focused (selected) tile only — always on, using the
+            // user's weighted random variant, with the wizard-style self-driven
+            // light + card motion. The component draws the base art itself.
+            if isFocused, let img = image {
+                TVModeHoloBoxart(
+                    image: img,
+                    romID: rom.id.uuidString,
+                    cornerRadius: boxCornerRadius
+                )
                 .frame(width: imageDisplaySize.width, height: imageDisplaySize.height)
                 .clipShape(RoundedRectangle(cornerRadius: boxCornerRadius, style: .continuous))
+            } else {
+                boxartView
+                    .frame(width: imageDisplaySize.width, height: imageDisplaySize.height)
+                    .clipShape(RoundedRectangle(cornerRadius: boxCornerRadius, style: .continuous))
+            }
         }
         .frame(
             width: imageDisplaySize.width + (isFocused ? 36 * scale : 0),

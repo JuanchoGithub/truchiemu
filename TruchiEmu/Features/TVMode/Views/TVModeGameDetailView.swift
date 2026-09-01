@@ -42,18 +42,22 @@ struct TVModeGameDetailView: View {
     private var heroColumn: some View {
         VStack(alignment: .center, spacing: 16 * scale) {
             if let img = boxart ?? titleImage {
-                Image(nsImage: img)
-                    .resizable()
-                    .interpolation(.high)
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: heroWidth, height: heroWidth * 4.0 / 3.0)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 16 * scale, style: .continuous)
-                            .strokeBorder(
-                                theme == .bold ? AppColors.accentForScheme(colorScheme) : Color.white.opacity(0.4),
-                                lineWidth: 2 * scale
-                            )
-                    )
+                // Auto holo on the selected game's hero boxart — always on, using
+                // the user's weighted random variant, with the wizard-style
+                // self-driven light + card motion.
+                TVModeHoloBoxart(
+                    image: img,
+                    romID: rom.id.uuidString,
+                    cornerRadius: 16 * scale
+                )
+                .frame(width: heroWidth, height: heroWidth * 4.0 / 3.0)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16 * scale, style: .continuous)
+                        .strokeBorder(
+                            theme == .bold ? AppColors.accentForScheme(colorScheme) : Color.white.opacity(0.4),
+                            lineWidth: 2 * scale
+                        )
+                )
             } else {
                 RoundedRectangle(cornerRadius: 16 * scale, style: .continuous)
                     .fill(Color.gray.opacity(0.18))

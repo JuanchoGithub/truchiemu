@@ -67,6 +67,14 @@ final class TVModeViewModel: ObservableObject {
     /// instead of always jumping to "All Games".
     private var initialEntryID: String?
 
+    /// True (on cold start, where `initialEntryID` is nil) until the persisted
+    /// `tvMode_lastFilter`/`tvMode_lastROM` have been successfully restored.
+    /// The restore can't always complete in `init` — on a cold start the ROM
+    /// library (and thus the system entries it drives) may not be loaded yet,
+    /// so a persisted system filter isn't findable. This flag keeps the restore
+    /// pending until the entries rebuild after the library loads.
+    private var pendingColdStartRestore = false
+
     init(library: ROMLibrary, systemDatabase: SystemDatabaseWrapper, initialEntryID: String? = nil) {
         self.library = library
         self.systemDatabase = systemDatabase
@@ -84,6 +92,10 @@ final class TVModeViewModel: ObservableObject {
         } else if let raw = AppSettings.getString("tvMode_lastFilter"),
                   let idx = row1Entries.firstIndex(where: { $0.id == raw }) {
             selectedEntryIndex = idx
+        } else {
+            // Cold start: defer the persisted-filter restore until the library
+            // loads and the entries rebuild (see restoreColdStartSelectionIfNeeded).
+            pendingColdStartRestore = initialEntryID == nil
         }
         recomputeGames()
         // Restore the same game the main window was on. We check both the
@@ -97,9 +109,16 @@ final class TVModeViewModel: ObservableObject {
             selectedGameIndex = idx
         }
         observeChanges()
+        restoreColdStartSelectionIfNeeded()
         // Snapshot the initial selection so an immediate exit (without any
-        // user nav) still has a valid filter+ROM pair to restore.
-        syncStateForMainWindow()
+        // user nav) still has a valid filter+ROM pair to restore. On a cold
+        // start whose persisted restore is still pending (library not loaded),
+        // `selectedFilterID` is nil — writing it here would clobber the
+        // persisted `tvMode_lastFilter` before the deferred restore reads it.
+        // The restore calls `syncStateForMainWindow()` itself once it lands.
+        if !pendingColdStartRestore {
+            syncStateForMainWindow()
+        }
     }
 
     func reloadSettings() {
@@ -176,12 +195,12 @@ final class TVModeViewModel: ObservableObject {
         downloadedDetailROM = rom
         page = .detail
         refreshMostRecentSaveSlot(for: rom)
-        Task { await fetchDetailArt(for: rom) }
     }
 
     /// Move to a neighbouring game while already on the detail page. Updates
-    /// both the hero ROM and the art-fetch task so the next frame reflects the
-    /// newly-selected game and begins loading its boxart/title/snaps.
+    /// the hero ROM so the next frame reflects the newly-selected game. Art
+    /// (boxart/title/snaps) is downloaded by the detail view's own `loadArt`
+    /// (keyed off `rom.id`), not here — see `TVModeGameDetailView`.
     func shiftDetailGame(by delta: Int) {
         guard page == .detail, !games.isEmpty else { return }
         let count = games.count
@@ -197,7 +216,6 @@ final class TVModeViewModel: ObservableObject {
         loadingDetailROM = rom
         downloadedDetailROM = rom
         refreshMostRecentSaveSlot(for: rom)
-        Task { await fetchDetailArt(for: rom) }
     }
 
     func exitDetail() {
@@ -281,6 +299,7 @@ final class TVModeViewModel: ObservableObject {
             .sink { [weak self] _ in
                 self?.rebuildEntries()
                 self?.recomputeGames()
+                self?.restoreColdStartSelectionIfNeeded()
             }
             .store(in: &cancellables)
 
@@ -289,6 +308,7 @@ final class TVModeViewModel: ObservableObject {
             .sink { [weak self] _ in
                 self?.rebuildEntries()
                 self?.recomputeGames()
+                self?.restoreColdStartSelectionIfNeeded()
             }
             .store(in: &cancellables)
 
@@ -298,12 +318,30 @@ final class TVModeViewModel: ObservableObject {
             .store(in: &cancellables)
     }
 
+    /// Retries the persisted cold-start filter+ROM restore once the library
+    /// has loaded and the system entries exist. No-op once it has applied.
+    private func restoreColdStartSelectionIfNeeded() {
+        guard pendingColdStartRestore else { return }
+        guard let raw = AppSettings.getString("tvMode_lastFilter"),
+              let idx = row1Entries.firstIndex(where: { $0.id == raw }) else { return }
+        selectedEntryIndex = idx
+        recomputeGames()
+        if let saved = AppSettings.getString("tvMode_lastROM"),
+           let uuid = UUID(uuidString: saved),
+           let gIdx = games.firstIndex(where: { $0.id == uuid }) {
+            selectedGameIndex = gIdx
+        }
+        pendingColdStartRestore = false
+        syncStateForMainWindow()
+    }
+
     /// Called from the View's `.onChange(of: systemDatabase.systems)` because
     /// `@Observable` classes don't expose Combine publishers for property
     /// changes.
     func handleExternalSystemsChange() {
         rebuildEntries()
         recomputeGames()
+        restoreColdStartSelectionIfNeeded()
     }
 
     private func rebuildEntries() {
@@ -520,19 +558,6 @@ final class TVModeViewModel: ObservableObject {
             let internalIDs = Set(systemDatabase.allInternalIDs(forDisplayID: sys.id))
             return library.roms.filter { internalIDs.contains($0.systemID ?? "") && !$0.isHidden }.count
         case .category: return 0
-        }
-    }
-
-    private func fetchDetailArt(for rom: ROM) async {
-        // Matches GameInfoWindow/GameDetailView behaviour: lazy download of
-        // title screen + snaps on first reveal of the detail page.
-        _ = await BoxArtService.shared.downloadTitleScreen(for: rom)
-        if rom.screenshotPaths.isEmpty {
-            _ = await BoxArtService.shared.downloadScreenshots(for: rom)
-        }
-        if page == .detail {
-            loadingDetailROM = rom
-            downloadedDetailROM = rom
         }
     }
 

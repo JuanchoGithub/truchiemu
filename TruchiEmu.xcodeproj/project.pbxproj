@@ -401,6 +401,7 @@
 		4AB23F3CFA5D46860C322282 /* UpdateWizardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A534F2D85440714CF65708BD /* UpdateWizardView.swift */; };
 		4ABA13771D06AE503D7724CE /* LOWRESNX.png in Resources */ = {isa = PBXBuildFile; fileRef = 78131EAC3F8B4141AAFC799F /* LOWRESNX.png */; };
 		4B0455148E7C00D2645FE37F /* ppsspp_libretro_default.json in Resources */ = {isa = PBXBuildFile; fileRef = 53A454FEA006A9BC23D6D0B6 /* ppsspp_libretro_default.json */; };
+		4B3578F9FB893C4F597253E6 /* TVModeHoloBoxart.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7BC369FFD55119B0FAF4037 /* TVModeHoloBoxart.swift */; };
 		4B3653D2CFD98630DAFE2B80 /* pce.ico in Resources */ = {isa = PBXBuildFile; fileRef = 957E7564C726099C45EA7659 /* pce.ico */; };
 		4B94C244C68FFB5B7611ED77 /* VECTREX.png in Resources */ = {isa = PBXBuildFile; fileRef = CE108305F82ABE87D2BE7D7D /* VECTREX.png */; };
 		4BC641474FF845851DDAD200 /* ArcadeButtonMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B58F4D64F1E5008E97CEB40F /* ArcadeButtonMapper.swift */; };
@@ -2627,6 +2628,7 @@
 		E6E60C302C9773D699C09794 /* input_coreLabels_gam4980.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_gam4980.json; sourceTree = "<group>"; };
 		E6E9451452ECA3885D80AE70 /* fightdata_tekken3.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_tekken3.json; sourceTree = "<group>"; };
 		E7A3FCEEB46E51A8BCEA836E /* TrainingModeModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainingModeModels.swift; sourceTree = "<group>"; };
+		E7BC369FFD55119B0FAF4037 /* TVModeHoloBoxart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVModeHoloBoxart.swift; sourceTree = "<group>"; };
 		E7EF32DC42376637E5715064 /* input_systemLabels_saturn.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_saturn.json; sourceTree = "<group>"; };
 		E8AF3225C83E5D89BC360652 /* input_systemLabels_craft.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_craft.json; sourceTree = "<group>"; };
 		E8C0B309CDF7F5C3FA06E6B7 /* input_coreOverrides_dolphin.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_dolphin.json; sourceTree = "<group>"; };
@@ -4535,6 +4537,7 @@
 				86C00E951DC0729BDE7FCDDA /* TVModeEntryTile.swift */,
 				5BF7F46A5B667F8AB060455A /* TVModeGameDetailView.swift */,
 				FB9B612171274CE268934F30 /* TVModeGameTile.swift */,
+				E7BC369FFD55119B0FAF4037 /* TVModeHoloBoxart.swift */,
 				FFA25006558B653BDA5466A1 /* TVModeScreenPickerView.swift */,
 				538AB49C132C82E063E21D0A /* TVModeSettingsView.swift */,
 				DAE8D121916EBBB0D6D8B750 /* TVModeView.swift */,
@@ -6477,6 +6480,7 @@
 				5A715B466E5613FF4980B3A8 /* TVModeEntryTile.swift in Sources */,
 				623644F24D5A2B17725FC856 /* TVModeGameDetailView.swift in Sources */,
 				F62933F7B93123D3C48B2565 /* TVModeGameTile.swift in Sources */,
+				4B3578F9FB893C4F597253E6 /* TVModeHoloBoxart.swift in Sources */,
 				90F9EBACE99C59EC91F7859C /* TVModeMainSettingsView.swift in Sources */,
 				BCFC90DF9027D4305BD145A3 /* TVModeMetrics.swift in Sources */,
 				AC543D9A9B74F75A84690A8C /* TVModeScreenPickerView.swift in Sources */,

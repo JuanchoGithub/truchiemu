@@ -59,7 +59,12 @@ struct ContentView: View {
                 TVModeView(
                     library: library,
                     systemDatabase: systemDatabase,
-                    initialEntryID: selectedFilter.id
+                    // On a cold-start resume the main window never rendered,
+                    // so `selectedFilter` is still its default (`.recent`) and
+                    // must not be handed to TV-mode as the initial entry — that
+                    // forced the "last played" section every launch. Pass nil so
+                    // TV-mode restores its own persisted filter instead.
+                    initialEntryID: tvModeSettings.isColdStartResume ? nil : selectedFilter.id
                 )
                     .environmentObject(library)
                     .environmentObject(categoryManager)
