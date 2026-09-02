@@ -1,0 +1,12 @@
+{
+  "system": "mac68k",
+  "systemName": "Mac68k",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for Mac68k",
+      "systemID": "mac68k",
+      "source": "placeholder"
+    }
+  ]
+}

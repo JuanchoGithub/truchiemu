@@ -1,0 +1,367 @@
+{
+  "system": "nes",
+  "systemName": "Nintendo Entertainment System",
+  "totalGames": 120,
+  "games": [
+    {
+      "name": "Nintendo - Nintendo Entertainment System"
+    },
+    {
+      "name": "!Clik! (World) (Proto 1) (Aftermarket) (Unl).nes"
+    },
+    {
+      "name": "!Clik! (World) (Proto 2) (Aftermarket) (Unl).nes"
+    },
+    {
+      "name": "!Clik! (World) (Proto 3) (Aftermarket) (Unl).nes"
+    },
+    {
+      "name": "'89 Dennou Kyuusei Uranai (Japan).nes"
+    },
+    {
+      "name": "'93 Chaoji Hun (Asia) (En) (Spread Gun Cheat) (Pirate).nes"
+    },
+    {
+      "name": "'93 Chaoji Hun (China) (Pirate).nes"
+    },
+    {
+      "name": "'93 Zuixin Yizhi Chaoji Jinka 4-in-1 (China) (Unl).nes"
+    },
+    {
+      "name": "10-Yard Fight (Japan) (En)"
+    },
+    {
+      "name": "10-Yard Fight (Japan) (En).nes"
+    },
+    {
+      "name": "10-Yard Fight (Japan) (En).unh"
+    },
+    {
+      "name": "10-Yard Fight (Japan) (En) (Rev 1)"
+    },
+    {
+      "name": "10-Yard Fight (Japan) (En) (Rev 1).nes"
+    },
+    {
+      "name": "10-Yard Fight (Japan) (En) (Rev 1).unh"
+    },
+    {
+      "name": "10-Yard Fight (USA) (Retro-Bit Generations)"
+    },
+    {
+      "name": "10-Yard Fight (USA) (Retro-Bit Generations).nes"
+    },
+    {
+      "name": "10-Yard Fight (USA) (Retro-Bit Generations).unh"
+    },
+    {
+      "name": "10-Yard Fight (USA, Europe)"
+    },
+    {
+      "name": "10-Yard Fight (USA, Europe).nes"
+    },
+    {
+      "name": "10-Yard Fight (USA, Europe).unh"
+    },
+    {
+      "name": "100 Man Dollar Kid - Maboroshi no Teiou Hen (Japan).nes"
+    },
+    {
+      "name": "100-in-1 (Asia) (En) (Pirate).nes"
+    },
+    {
+      "name": "100-in-1 Contra Function 16 (Asia) (En) (Pirate).nes"
+    },
+    {
+      "name": "100-in-1 Real Game (China) (En,Ja) (Pirate).nes"
+    },
+    {
+      "name": "1000 Stars (World) (Proto) (Byte-Off 2020)"
+    },
+    {
+      "name": "1000 Stars (World) (Proto) (Byte-Off 2020) (Aftermarket) (Unl).nes"
+    },
+    {
+      "name": "1000 Stars (World) (Proto) (Byte-Off 2020) (Aftermarket) (Unl).unh"
+    },
+    {
+      "name": "10000000-in-1 Unchained Melody 95 (Asia) (En) (Pirate).nes"
+    },
+    {
+      "name": "1007 Bolts (World) (Aftermarket) (Unl).nes"
+    },
+    {
+      "name": "1007 Bolts (World) (Beta) (Aftermarket) (Unl).nes"
+    },
+    {
+      "name": "106 Games (Brazil) (En,Ja) (Dynavision) (Aftermarket) (Pirate).nes"
+    },
+    {
+      "name": "11-in-1 NES Musical Pack (World)"
+    },
+    {
+      "name": "11-in-1 NES Musical Pack (World) (Aftermarket) (Unl).nes"
+    },
+    {
+      "name": "11-in-1 NES Musical Pack (World) (Aftermarket) (Unl).unh"
+    },
+    {
+      "name": "110-in-1 (Asia) (En) (Pirate).nes"
+    },
+    {
+      "name": "117-in-1 (Asia) (En) (WQ1708 D) (Pirate).nes"
+    },
+    {
+      "name": "117-in-1 Cartoons Collection (China) (En) (Aftermarket) (Pirate).nes"
+    },
+    {
+      "name": "1200-in-1 (Asia) (En) (Pirate).nes"
+    },
+    {
+      "name": "13 Spook Hollow Road (World) (Demo 1) (Byte-Off V) (Aftermarket) (Unl).nes"
+    },
+    {
+      "name": "13 Spook Hollow Road (World) (Demo 2) (Aftermarket) (Unl).nes"
+    },
+    {
+      "name": "15-in-1 DIGITALezLG (World) (Aftermarket) (Pirate).nes"
+    },
+    {
+      "name": "150-in-1 Golden 1992 (Asia) (En) (Pirate).nes"
+    },
+    {
+      "name": "150-in-1 Unchained Melody (Asia) (En) (Pirate).nes"
+    },
+    {
+      "name": "16-in-1 Cassetta Videogame (Italy) (En) (Pirate).nes"
+    },
+    {
+      "name": "168-in-1 (Asia) (En,Ja) (AB CARD-15) (Pirate).nes"
+    },
+    {
+      "name": "168-in-1 New Contra Function 16 (Asia) (En) (Pirate).nes"
+    },
+    {
+      "name": "18-in-1 (Asia) (En) (Pirate).nes"
+    },
+    {
+      "name": "18-in-1 Videogame Super 8 Bit Cassetta 18 Giochi (Italy) (En) (Aftermarket) (Pirate).nes"
+    },
+    {
+      "name": "188-in-1 Real Game (China) (En) (Aftermarket) (Pirate).nes"
+    },
+    {
+      "name": "1942 (Japan, USA) (En).nes"
+    },
+    {
+      "name": "1943 (Japan) (FamicomBox).nes"
+    },
+    {
+      "name": "1943 - The Battle of Midway (Japan) (Beta).nes"
+    },
+    {
+      "name": "1943 - The Battle of Midway (USA).nes"
+    },
+    {
+      "name": "1943 - The Battle of Midway (USA) (Beta 1).nes"
+    },
+    {
+      "name": "1943 - The Battle of Midway (USA) (Beta 2).nes"
+    },
+    {
+      "name": "1943 - The Battle of Midway (USA) (Retro-Bit Generations).nes"
+    },
+    {
+      "name": "1943 - The Battle of Valhalla (Japan).nes"
+    },
+    {
+      "name": "1944 (Asia) (Ja) (Pirate).nes"
+    },
+    {
+      "name": "1988 Jinpai Mali (Asia) (En) (Pirate).nes"
+    },
+    {
+      "name": "1991 Du Ma Racing (Taiwan) (Super Mega) (Unl).nes"
+    },
+    {
+      "name": "1991 Du Ma Racing (Taiwan) (TXC) (Unl).nes"
+    },
+    {
+      "name": "1992 Gaishi 190-in-1 Hua Mian Xuan Guan (Asia) (En) (Pirate).nes"
+    },
+    {
+      "name": "1992 Super HiK 3-in-1 (Asia) (En,Ja) (Pirate).nes"
+    },
+    {
+      "name": "1995 Super Value Collection 2-in-1 (Asia) (En) (Pirate).nes"
+    },
+    {
+      "name": "1996 Aoyunhui Jingji Ban 24-in-1 (Asia) (En) (Pirate).nes"
+    },
+    {
+      "name": "1996 Yingyu CAI 3-in-1 (China) (Unl).nes"
+    },
+    {
+      "name": "1997 Super HIK 16-in-1 (Asia) (En) (Pirate).nes"
+    },
+    {
+      "name": "1999 - Hore, Mitakotoka! Seikimatsu (Japan).nes"
+    },
+    {
+      "name": "2-in-1 - Conan & Rygar (Asia) (En) (Pirate).nes"
+    },
+    {
+      "name": "2-in-1 - Shuang Wang Ji (Asia) (Pirate).nes"
+    },
+    {
+      "name": "2-in-1 - Zhili Pintu + Dudu Wawa Da Maoxian (China) (Unl).nes"
+    },
+    {
+      "name": "2-in-1 Geminim-Siamond (World) (Aftermarket) (Unl).nes"
+    },
+    {
+      "name": "20-in-1 (Asia) (En) (Aftermarket) (Pirate).nes"
+    },
+    {
+      "name": "2002 121-in-1 (Asia) (En) (Pirate).nes"
+    },
+    {
+      "name": "2002 61-in-1 (Asia) (En) (Pirate).nes"
+    },
+    {
+      "name": "2010 Street Fighter (Japan)"
+    },
+    {
+      "name": "2010 Street Fighter (Japan).nes"
+    },
+    {
+      "name": "2010 Street Fighter (Japan).unh"
+    },
+    {
+      "name": "2010 Street Fighter (Japan) (Beta)"
+    },
+    {
+      "name": "2010 Street Fighter (Japan) (Beta).nes"
+    },
+    {
+      "name": "2010 Street Fighter (Japan) (Beta).unh"
+    },
+    {
+      "name": "2048 (World) (Aftermarket) (Unl).nes"
+    },
+    {
+      "name": "211-in-1 - 1992 Ultra Power Card (Asia) (En) (Pirate).nes"
+    },
+    {
+      "name": "22 Games (China) (En) (Pirate).nes"
+    },
+    {
+      "name": "23-in-1 Super Game (Europe) (En,Ja) (Pirate).nes"
+    },
+    {
+      "name": "240p Test Suite with Gus's Game Collection (World) (Digital)"
+    },
+    {
+      "name": "240p Test Suite with Gus's Game Collection (World) (Digital) (Aftermarket) (Unl).nes"
+    },
+    {
+      "name": "240p Test Suite with Gus's Game Collection (World) (Digital) (Aftermarket) (Unl).unh"
+    },
+    {
+      "name": "245-in-1 Real Game (China) (Aftermarket) (Pirate).nes"
+    },
+    {
+      "name": "24K 4-in-1 Baozheng Zhen Ka Quanji (Asia) (En) (Pirate).nes"
+    },
+    {
+      "name": "29~10MG-in-1 (Asia) (En,Ja) (Pirate).nes"
+    },
+    {
+      "name": "2A03 Puritans (World) (Aftermarket) (Unl).nes"
+    },
+    {
+      "name": "3-D WorldRunner (USA).nes"
+    },
+    {
+      "name": "3-in-1 (Asia) (En) (Super 308) (Pirate).nes"
+    },
+    {
+      "name": "3-in-1 - Spartan Super 1998 (Asia) (En) (Pirate).nes"
+    },
+    {
+      "name": "3-in-1 2p Pak (World) (Beta) (Aftermarket) (Unl).nes"
+    },
+    {
+      "name": "3-in-1 2p Pak (World) (Robert L Bryant) (Aftermarket) (Unl).nes"
+    },
+    {
+      "name": "3-in-1 2p Pak (World) (Sly Dog Studios)"
+    },
+    {
+      "name": "3-in-1 2p Pak (World) (Sly Dog Studios) (Aftermarket) (Unl).nes"
+    },
+    {
+      "name": "3-in-1 2p Pak (World) (Sly Dog Studios) (Aftermarket) (Unl).unh"
+    },
+    {
+      "name": "3-in-1 Supergun (Asia) (En) (Unl).nes"
+    },
+    {
+      "name": "30 Games (Brazil) (En) (Pirate).nes"
+    },
+    {
+      "name": "31-in-1 (Asia) (En) (Pirate).nes"
+    },
+    {
+      "name": "32-in-1 (Asia) (En) (Pirate).nes"
+    },
+    {
+      "name": "32-in-1 Speech Educational Software (Asia) (En) (Pirate).nes"
+    },
+    {
+      "name": "3D Block (Taiwan) (En) (Hwang Shinwei) (Pirate).nes"
+    },
+    {
+      "name": "3D Block (Taiwan) (En) (RCM Group) (Pirate).nes"
+    },
+    {
+      "name": "4 Nin Uchi Mahjong (Japan).nes"
+    },
+    {
+      "name": "4 Nin Uchi Mahjong (Japan) (Rev 1).nes"
+    },
+    {
+      "name": "4-in-1 (AP009) (Asia) (En) (Pirate).nes"
+    },
+    {
+      "name": "4-in-1 (CK-001) (Taiwan) (En) (Pirate).nes"
+    },
+    {
+      "name": "4-in-1 (SN 406) (Asia) (En) (Pirate).nes"
+    },
+    {
+      "name": "4-in-1 - BattleCity - Pac-Man - Galaga - Ice Climber (Asia) (En) (Pirate).nes"
+    },
+    {
+      "name": "4-in-1 - Unsurpass Air-Combat Series (Asia) (Ja) (Pirate).nes"
+    },
+    {
+      "name": "400-in-1 (Asia) (En) (NTDEC) (Pirate).nes"
+    },
+    {
+      "name": "42 Games (China) (En) (Pirate).nes"
+    },
+    {
+      "name": "42-in-1 (Asia) (En) (Aftermarket) (Pirate).nes"
+    },
+    {
+      "name": "42-in-1 (Asia) (En) (Pirate).nes"
+    },
+    {
+      "name": "42-in-1 Y2K (Asia) (En) (Aftermarket) (Pirate).nes"
+    },
+    {
+      "name": "45-in-1 (Asia) (En) (Pirate).nes"
+    }
+  ]
+}

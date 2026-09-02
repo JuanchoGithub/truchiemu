@@ -1,0 +1,14 @@
+{
+  "system": "xbox",
+  "systemName": "Xbox",
+  "totalGames": 1,
+  "openCriticURLs": [
+    null
+  ],
+  "metacriticURLs": [
+    "https://metacritic.com/game/game-for-xbox"
+  ],
+  "launchboxURLs": [
+    "https://gamesdb.launchbox-app.com/metadata/xbox/game-for-xbox"
+  ]
+}

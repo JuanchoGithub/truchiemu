@@ -1,0 +1,12 @@
+{
+  "system": "wonderswan",
+  "systemName": "WonderSwan/Color",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for WonderSwan/Color",
+      "systemID": "wonderswan",
+      "source": "placeholder"
+    }
+  ]
+}

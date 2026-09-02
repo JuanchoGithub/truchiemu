@@ -1,0 +1,12 @@
+{
+  "system": "vaporspec",
+  "systemName": "VaporSpec",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for VaporSpec",
+      "systemID": "vaporspec",
+      "source": "placeholder"
+    }
+  ]
+}

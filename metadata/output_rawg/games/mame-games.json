@@ -1,0 +1,12 @@
+{
+  "system": "mame",
+  "systemName": "Arcade (MAME)",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for Arcade (MAME)",
+      "systemID": "mame",
+      "source": "placeholder"
+    }
+  ]
+}

@@ -1,0 +1,367 @@
+{
+  "system": "nds",
+  "systemName": "Nintendo DS",
+  "totalGames": 120,
+  "games": [
+    {
+      "name": "'Chou' Kowai Hanashi DS - Ao no Shou (Japan).nds"
+    },
+    {
+      "name": "'Josei no Hinkaku' Juku DS - Tsuyoku, Yasashiku, Utsukushiku - Bando Mariko Shinsho (Japan).nds"
+    },
+    {
+      "name": "007 - Blood Stone (Canada) (Fr).nds"
+    },
+    {
+      "name": "007 - Blood Stone (France).nds"
+    },
+    {
+      "name": "007 - Blood Stone (Germany).nds"
+    },
+    {
+      "name": "007 - Blood Stone (USA).nds"
+    },
+    {
+      "name": "007 - Blood Stone (United Kingdom).nds"
+    },
+    {
+      "name": "007 - Ein Quantum Trost (Germany).nds"
+    },
+    {
+      "name": "007 - Quantum of Solace (Europe) (En,Fr).nds"
+    },
+    {
+      "name": "007 - Quantum of Solace (Europe) (Es,It).nds"
+    },
+    {
+      "name": "007 - Quantum of Solace (Korea).nds"
+    },
+    {
+      "name": "007 - Quantum of Solace (USA) (En,Fr).nds"
+    },
+    {
+      "name": "1 contre 100 (France).nds"
+    },
+    {
+      "name": "1 gegen 100 (Germany).nds"
+    },
+    {
+      "name": "1 vs 100 (Australia).nds"
+    },
+    {
+      "name": "1 vs 100 (USA).nds"
+    },
+    {
+      "name": "1-nichi 10-pun de E ga Jouzu ni Kakeru DS (Japan).nds"
+    },
+    {
+      "name": "10 voor Taal (Netherlands)"
+    },
+    {
+      "name": "10 voor Taal (Netherlands).nds"
+    },
+    {
+      "name": "100 All-Time Favorites (USA) (En,Fr,Es).nds"
+    },
+    {
+      "name": "100 Classic Book Collection (Europe).nds"
+    },
+    {
+      "name": "100 Classic Books (USA).nds"
+    },
+    {
+      "name": "100 Classic Games (Europe) (En,Fr,De,Es,Nl).nds"
+    },
+    {
+      "name": "100 Classic Games (Europe) (En,Fr,De,Es,Nl) (Rev 1).nds"
+    },
+    {
+      "name": "100 Livres Classiques (France).nds"
+    },
+    {
+      "name": "1000 Bornes - Coups-Fourres et Courses Folles! (France).nds"
+    },
+    {
+      "name": "1000 Cooking Recipes from Elle a Table (Europe) (En,Fr,De,Es,It) (NDSi Enhanced)"
+    },
+    {
+      "name": "1000 Cooking Recipes from Elle a Table (Europe) (En,Fr,De,Es,It) (NDSi Enhanced).nds"
+    },
+    {
+      "name": "1001 Crosswords (Europe).nds"
+    },
+    {
+      "name": "1001 Touch Games (Europe).nds"
+    },
+    {
+      "name": "1001 Touch Games (Europe) (En,Fr,It,Nl).nds"
+    },
+    {
+      "name": "1001 Touch Games (Germany).nds"
+    },
+    {
+      "name": "1001 Touch Games (USA).nds"
+    },
+    {
+      "name": "101 Dino Pets (Europe) (En,Fr,De,It).nds"
+    },
+    {
+      "name": "101 in 1 Explosive Megamix (Europe) (En,Fr,De,Es,It,Nl).nds"
+    },
+    {
+      "name": "101 in 1 Explosive Megamix (USA) (En,Fr,Es).nds"
+    },
+    {
+      "name": "101 in 1 Sports Megamix (Europe) (En,Fr,De,Es,It,Nl).nds"
+    },
+    {
+      "name": "101 in 1 Sports Megamix (USA) (En,Fr,Es).nds"
+    },
+    {
+      "name": "11 Card Games (Europe) (En,De,Es).nds"
+    },
+    {
+      "name": "12 (Europe).nds"
+    },
+    {
+      "name": "123 Sesame Street - Cookie's Counting Carnival - The Videogame (Australia).nds"
+    },
+    {
+      "name": "123 Sesame Street - Cookie's Counting Carnival - The Videogame (USA).nds"
+    },
+    {
+      "name": "123 Sesame Street - Elmo's A-to-Zoo Adventure - The Videogame (Australia).nds"
+    },
+    {
+      "name": "123 Sesame Street - Elmo's A-to-Zoo Adventure - The Videogame (USA).nds"
+    },
+    {
+      "name": "123 Sesame Street - Ready, Set, Grover! - With Elmo - The Videogame (USA) (En,Es).nds"
+    },
+    {
+      "name": "1500 DS Spirits - Mahjong V (Japan).nds"
+    },
+    {
+      "name": "1500 DS Spirits - Shougi V (Japan).nds"
+    },
+    {
+      "name": "1500 DS Spirits Vol. 1 - Mahjong (Japan).nds"
+    },
+    {
+      "name": "1500 DS Spirits Vol. 10 - Igo (Japan).nds"
+    },
+    {
+      "name": "1500 DS Spirits Vol. 2 - Shougi (Japan).nds"
+    },
+    {
+      "name": "1500 DS Spirits Vol. 3 - Block Kuzushi (Japan).nds"
+    },
+    {
+      "name": "1500 DS Spirits Vol. 4 - Reversi (Japan).nds"
+    },
+    {
+      "name": "1500 DS Spirits Vol. 5 - Hanafuda (Japan).nds"
+    },
+    {
+      "name": "1500 DS Spirits Vol. 6 - Trump (Japan).nds"
+    },
+    {
+      "name": "1500 DS Spirits Vol. 7 - Chess (Japan).nds"
+    },
+    {
+      "name": "1500 DS Spirits Vol. 8 - Darts (Japan).nds"
+    },
+    {
+      "name": "1500 DS Spirits Vol. 9 - 2-nin Uchi Mahjong (Japan).nds"
+    },
+    {
+      "name": "18 Card Games (Europe) (En,Fr,De,Es,Nl).nds"
+    },
+    {
+      "name": "18 Classic Card Games (USA).nds"
+    },
+    {
+      "name": "1seg Jushin Adapter - DS Television (Japan).nds"
+    },
+    {
+      "name": "2 Game Pack - My Amusement Park + Digging for Dinosaurs (USA).nds"
+    },
+    {
+      "name": "2 Game Pack! - Monster Trucks Mayhem + ATV - Thunder Ridge Riders (USA).nds"
+    },
+    {
+      "name": "2 Games in 1 - Jewel Master - Cradle of Egypt + Mahjongg - Ancient Egypt (Europe) (En,Fr,De,Es,It,Nl).nds"
+    },
+    {
+      "name": "2 Games on 1 Card - Monster Trucks Mayhem & ATV - Thunder Ridge Riders (Europe) (En,Fr,De,Es,It).nds"
+    },
+    {
+      "name": "2 in 1 - Best Of Bibi Und Tina - Die Grosse Schnitzeljagd + Das Grosse Unwetter (Germany).nds"
+    },
+    {
+      "name": "2 in 1 - Best of Bibi Blocksberg - Neustadt im Hex-Chaos + Das Gestohlene Hexbuch (Germany).nds"
+    },
+    {
+      "name": "2 in 1 - Mahjong + Mahjong Around the World (Europe) (En,Fr,De,Es,It).nds"
+    },
+    {
+      "name": "2 in 1 - Music for Kids + Englisch Macht Spass - Eine Reise nach London! (Europe) (En,De) (NDSi Enhanced)"
+    },
+    {
+      "name": "2 in 1 - Music for Kids + Englisch Macht Spass - Eine Reise nach London! (Europe) (En,De) (NDSi Enhanced).nds"
+    },
+    {
+      "name": "2 in 1 - My Little Baby + My Boyfriend (Europe) (En,Fr,De,Es,It,Sv,No,Da).nds"
+    },
+    {
+      "name": "2 in 1 - My Pet Hotel + My Vet Practice - In the Country (Europe) (En,Fr,De).nds"
+    },
+    {
+      "name": "2 in 1 - My Pet Hotel 2 + My Vet Practice - In the Country (Europe) (Fr,De).nds"
+    },
+    {
+      "name": "2 in 1 - My Pet School + Best Friends - My Horse (Europe) (En,Fr,De)"
+    },
+    {
+      "name": "2 in 1 - My Pet School + Best Friends - My Horse (Europe) (En,Fr,De).nds"
+    },
+    {
+      "name": "2 in 1 - My Riding Stables + My Riding Stables - Life with Horses (Europe) (En,Fr,De,Es,It).nds"
+    },
+    {
+      "name": "2 in 1 - My Riding Stables + My Western Horse (Europe) (En,Fr,De).nds"
+    },
+    {
+      "name": "2 in 1 - My Vet Practice + My Pet Hotel 2 (Europe) (En,Fr,De,Es,It).nds"
+    },
+    {
+      "name": "2-Pack - Pinkalicious - It's Party Time! & Silverlicious - Sweet Adventure (USA).nds"
+    },
+    {
+      "name": "200 Klassische Buecher (Germany).nds"
+    },
+    {
+      "name": "2006 FIFA World Cup - Germany 2006 (Europe) (En,Fr,De,Es,It).nds"
+    },
+    {
+      "name": "2006 FIFA World Cup - Germany 2006 (USA) (En,Fr,De,Es,It).nds"
+    },
+    {
+      "name": "3 Game Pack! - Cradle of Rome + Cradle of Athena + Cradle of Egypt (Europe) (En,Fr,De,Es,It,Nl).nds"
+    },
+    {
+      "name": "3 Game Pack! - Cradle of Rome + Cradle of Athena + Cradle of Egypt (Europe) (En,Fr,De,Es,It,Nl) (Rev 1).nds"
+    },
+    {
+      "name": "3 Game Pack! - Uno & Skip-Bo & Uno Free Fall (Europe) (En,Fr,De,Es,It).nds"
+    },
+    {
+      "name": "3 Game Pack! - Uno + Skip-Bo + Uno Free Fall (USA).nds"
+    },
+    {
+      "name": "3 in 1 - Animals (Europe) (En,Fr,De).nds"
+    },
+    {
+      "name": "3 in 1 - Horses (Europe) (En,Fr,De).nds"
+    },
+    {
+      "name": "3 in 1 - My Horse + My Vet Practice + My Vet Practice in the Country (Europe) (Fr,De,It).nds"
+    },
+    {
+      "name": "3 in 1 - My Riding Stables + My Pet School + My Western Horse (Europe) (Fr,De,It).nds"
+    },
+    {
+      "name": "3 in 1 - My Riding Stables - Life with Horses + My Pet Hotel 2 & + My Pet School (Europe) (Fr,De,It).nds"
+    },
+    {
+      "name": "3 in 1 - My Vet Practice & Riding Star & My Vet Practice in Australia (Europe) (En,Fr,De,Es,It).nds"
+    },
+    {
+      "name": "3 in 1 - Solitaire, Mahjong & Tangram (Europe) (En,Fr,De,Es,It).nds"
+    },
+    {
+      "name": "4 Elements (Europe).nds"
+    },
+    {
+      "name": "4 Elements (Europe) (Fr,De).nds"
+    },
+    {
+      "name": "4 Elements (Europe) (Fr,Nl).nds"
+    },
+    {
+      "name": "4 Game Fun Pack - Monopoly + Boggle + Yahtzee + Battleship (Europe).nds"
+    },
+    {
+      "name": "4 Game Fun Pack - Monopoly + Boggle + Yahtzee + Battleship (USA).nds"
+    },
+    {
+      "name": "4 Game Pack! - Battleship + Connect Four + Sorry! + Trouble (USA).nds"
+    },
+    {
+      "name": "4 Game Pack! - Clue + Aggravation + Perfection + Mouse Trap (USA).nds"
+    },
+    {
+      "name": "4 Kyouka Perfect Clear DS (Japan) (Not for Resale).nds"
+    },
+    {
+      "name": "4 Kyouka Perfect Clear DS - Eigo Onsei Tsuki (Japan) (Not for Resale).nds"
+    },
+    {
+      "name": "4 in 1 - Meine Tierarztpraxis + Meine Tierpension + Mein Gestuet + Mein Pferd (Germany).nds"
+    },
+    {
+      "name": "42 All-Time Classics (Europe) (En,Fr,De,Es,It).nds"
+    },
+    {
+      "name": "42 All-Time Classics (Europe) (En,Fr,De,Es,It) (Rev 1).nds"
+    },
+    {
+      "name": "5-Nen Kanji Keisan Nigate Hunter DS (Japan) (Not for Resale).nds"
+    },
+    {
+      "name": "5-kyuu kara 1-kyuu Kanzen Taiou Saishin Kako Mondai - Nijishiken Taisaku - Eiken Kanzenban (Japan).nds"
+    },
+    {
+      "name": "5-kyuu kara 1-kyuu Kanzen Taiou Saishin Kako Mondai - Nijishiken Taisaku - Eiken Kanzenban (Japan) (Rev 1).nds"
+    },
+    {
+      "name": "50 Classic Games (Europe) (En,Fr,De,Es,It,Nl).nds"
+    },
+    {
+      "name": "50 Classic Games (USA).nds"
+    },
+    {
+      "name": "50 Classic Games (USA) (Rev 1).nds"
+    },
+    {
+      "name": "50 Jeux Incontournables (France) (En,Fr,De,Es,It,Nl).nds"
+    },
+    {
+      "name": "50 Jeux Incontournables (France) (En,Fr,De,Es,It,Nl) (Rev 1).nds"
+    },
+    {
+      "name": "50 More Classic Games (USA).nds"
+    },
+    {
+      "name": "7 Wonders - Treasures of Seven (Europe).nds"
+    },
+    {
+      "name": "7 Wonders - Treasures of Seven (France) (Fr,Nl).nds"
+    },
+    {
+      "name": "7 Wonders - Treasures of Seven (USA).nds"
+    },
+    {
+      "name": "7 Wonders II (Europe).nds"
+    },
+    {
+      "name": "7 Wonders II (Europe) (En,Fr).nds"
+    },
+    {
+      "name": "7 Wonders II (Germany).nds"
+    },
+    {
+      "name": "7 Wonders II (USA).nds"
+    }
+  ]
+}

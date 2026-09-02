@@ -1,0 +1,14 @@
+{
+  "system": "pico8",
+  "systemName": "PICO-8",
+  "totalGames": 1,
+  "openCriticURLs": [
+    null
+  ],
+  "metacriticURLs": [
+    "https://metacritic.com/game/game-for-pico-8"
+  ],
+  "launchboxURLs": [
+    "https://gamesdb.launchbox-app.com/metadata/pico8/game-for-pico-8"
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "system": "unknown",
+  "systemName": "Unknown System",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for Unknown System",
+      "systemID": "unknown",
+      "source": "placeholder"
+    }
+  ]
+}

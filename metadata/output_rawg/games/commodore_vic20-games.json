@@ -1,0 +1,12 @@
+{
+  "system": "commodore_vic20",
+  "systemName": "VIC-20",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for VIC-20",
+      "systemID": "commodore_vic20",
+      "source": "placeholder"
+    }
+  ]
+}

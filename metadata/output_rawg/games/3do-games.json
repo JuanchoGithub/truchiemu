@@ -1,0 +1,367 @@
+{
+  "system": "3do",
+  "systemName": "3DO",
+  "totalGames": 120,
+  "games": [
+    {
+      "name": "20th Century Video Almanac (USA).bin"
+    },
+    {
+      "name": "3D Atlas (Europe).bin"
+    },
+    {
+      "name": "3D Atlas (USA).bin"
+    },
+    {
+      "name": "3DO Game Guru (USA, Europe).bin"
+    },
+    {
+      "name": "3DO Interactive Sampler CD 2, The (USA).bin"
+    },
+    {
+      "name": "3DO Interactive Sampler CD 3, The (USA).bin"
+    },
+    {
+      "name": "3DO Interactive Sampler CD 4, The (USA).bin"
+    },
+    {
+      "name": "3DO Interactive Sampler CD, The (USA).bin"
+    },
+    {
+      "name": "3DO Interactive Sampler, The (Europe).bin"
+    },
+    {
+      "name": "3DO Multi Game Sampler Number 3, The (Europe).bin"
+    },
+    {
+      "name": "3DO de Shiru Miru Asobu - Nakajima Miyuki (Japan).bin"
+    },
+    {
+      "name": "AI Shougi (Japan).bin"
+    },
+    {
+      "name": "Adventures Of Captain J, The (USA) (Unl).bin"
+    },
+    {
+      "name": "Agi Gongnyong Goldie (Korea).bin"
+    },
+    {
+      "name": "Alone in the Dark (Europe) (En,Fr).bin"
+    },
+    {
+      "name": "Alone in the Dark (Europe) (En,Fr) (NTSC Version).bin"
+    },
+    {
+      "name": "Alone in the Dark (Japan).bin"
+    },
+    {
+      "name": "Alone in the Dark (USA).bin"
+    },
+    {
+      "name": "Alone in the Dark 2 (Europe).bin"
+    },
+    {
+      "name": "Alone in the Dark 2 (France).bin"
+    },
+    {
+      "name": "Alone in the Dark 2 (Japan).bin"
+    },
+    {
+      "name": "Alone in the Dark 2 (USA).bin"
+    },
+    {
+      "name": "Anno Mitsumasa Pepperon-mura no Shiki (Japan).bin"
+    },
+    {
+      "name": "Another World (Europe).bin"
+    },
+    {
+      "name": "Aqua World - Umi Monogatari (Japan).bin"
+    },
+    {
+      "name": "Armageddon (Korea).bin"
+    },
+    {
+      "name": "AutoBahn Tokio (Japan).bin"
+    },
+    {
+      "name": "BC Racers (USA) (Beta) (1995-09-29).bin"
+    },
+    {
+      "name": "BC Racers (USA, Europe).bin"
+    },
+    {
+      "name": "BFS - Blue Forest Story (Japan).bin"
+    },
+    {
+      "name": "BFS - Blue Forest Story (Japan) (Alt).bin"
+    },
+    {
+      "name": "Bakushou!! All Yoshimoto Quiz-ou Ketteisen (Japan).bin"
+    },
+    {
+      "name": "Ballz - The Director's Cut (World) (En,Ja).bin"
+    },
+    {
+      "name": "Battle Blues (Korea).bin"
+    },
+    {
+      "name": "Battle Chess (Europe).bin"
+    },
+    {
+      "name": "Battle Chess (Japan).bin"
+    },
+    {
+      "name": "Battle Chess (USA).bin"
+    },
+    {
+      "name": "Battle Pinball (Japan).bin"
+    },
+    {
+      "name": "BattleSport (Europe).bin"
+    },
+    {
+      "name": "BattleSport (USA).bin"
+    },
+    {
+      "name": "BattleSport (USA) (Beta) (1995-09-22).bin"
+    },
+    {
+      "name": "Belzerion (Japan).bin"
+    },
+    {
+      "name": "BioFury (USA) (Unl).bin"
+    },
+    {
+      "name": "Blade Force (Europe).bin"
+    },
+    {
+      "name": "Blade Force (Japan).bin"
+    },
+    {
+      "name": "Blade Force (Korea).bin"
+    },
+    {
+      "name": "Blade Force (USA).bin"
+    },
+    {
+      "name": "Blade Force (USA) (Beta) (1995-09-06).bin"
+    },
+    {
+      "name": "Blonde Justice (USA).bin"
+    },
+    {
+      "name": "Blood Angels (Japan).bin"
+    },
+    {
+      "name": "Bodyconscious Digital Rave! Part 1 - Shinjuku & Takasaki (Japan).bin"
+    },
+    {
+      "name": "Bonogurashi (Japan).bin"
+    },
+    {
+      "name": "BrainDead 13 (USA) (Disc 1).bin"
+    },
+    {
+      "name": "BrainDead 13 (USA) (Disc 1) (RE-1).bin"
+    },
+    {
+      "name": "BrainDead 13 (USA) (Disc 2).bin"
+    },
+    {
+      "name": "Burning Soldier (Canada).bin"
+    },
+    {
+      "name": "Burning Soldier (Europe).bin"
+    },
+    {
+      "name": "Burning Soldier (Japan).bin"
+    },
+    {
+      "name": "Burning Soldier (USA, Korea).bin"
+    },
+    {
+      "name": "Bust-A-Move (USA).bin"
+    },
+    {
+      "name": "Cannon Fodder (Europe).bin"
+    },
+    {
+      "name": "Cannon Fodder (USA).bin"
+    },
+    {
+      "name": "Cannon Fodder (USA) (Beta).bin"
+    },
+    {
+      "name": "Captain Quazar (Europe).bin"
+    },
+    {
+      "name": "Captain Quazar (Japan).bin"
+    },
+    {
+      "name": "Captain Quazar (Korea).bin"
+    },
+    {
+      "name": "Captain Quazar (USA).bin"
+    },
+    {
+      "name": "Captain Quazar (USA) (Beta) (1995-09-21).bin"
+    },
+    {
+      "name": "Carrier - Fortress at Sea (USA).bin"
+    },
+    {
+      "name": "Casper (USA).bin"
+    },
+    {
+      "name": "Casper (USA) (Beta) (1995-12-15).bin"
+    },
+    {
+      "name": "Chiki Chiki Machine Mou Race - Kenken to Black Maou no Ijiwaru Daisakusen (Japan).bin"
+    },
+    {
+      "name": "Chiki Chiki Machine Mou Race 2 - In Space (Japan).bin"
+    },
+    {
+      "name": "Club 3DO - Station Invasion (USA).bin"
+    },
+    {
+      "name": "Corpse Killer (Japan).bin"
+    },
+    {
+      "name": "Corpse Killer (USA).bin"
+    },
+    {
+      "name": "Coven, The (USA).bin"
+    },
+    {
+      "name": "Cowboy Casino (USA).bin"
+    },
+    {
+      "name": "Crash 'n Burn (Japan).bin"
+    },
+    {
+      "name": "Crash 'n Burn (USA) (Not for Resale).bin"
+    },
+    {
+      "name": "Crash 'n Burn (USA, Korea).bin"
+    },
+    {
+      "name": "Crayon Shin-chan - Puzzle Daimaou no Nazo (Japan).bin"
+    },
+    {
+      "name": "Creature Shock (USA) (Disc 1).bin"
+    },
+    {
+      "name": "Creature Shock (USA) (Disc 2).bin"
+    },
+    {
+      "name": "Crime Patrol (USA).bin"
+    },
+    {
+      "name": "Crime Patrol (USA) (Arcade CD-ROM).bin"
+    },
+    {
+      "name": "Crime Patrol (USA) (Beta) (1994-11-23).bin"
+    },
+    {
+      "name": "CyberDillo (USA).bin"
+    },
+    {
+      "name": "CyberDillo (USA) (Beta) (1996-02-14).bin"
+    },
+    {
+      "name": "Cyberia (Europe).bin"
+    },
+    {
+      "name": "Cyberia (Japan).bin"
+    },
+    {
+      "name": "Cyberia (USA).bin"
+    },
+    {
+      "name": "D (Germany) (Disc 1).bin"
+    },
+    {
+      "name": "D (Germany) (Disc 2).bin"
+    },
+    {
+      "name": "D (USA, Europe) (Disc 1).bin"
+    },
+    {
+      "name": "D (USA, Europe) (Disc 2).bin"
+    },
+    {
+      "name": "D no Shokutaku (Japan) (Disc 1).bin"
+    },
+    {
+      "name": "D no Shokutaku (Japan) (Disc 2).bin"
+    },
+    {
+      "name": "D's Diner - The Director's Cut (Japan) (Disc A).bin"
+    },
+    {
+      "name": "D's Diner - The Director's Cut (Japan) (Disc B).bin"
+    },
+    {
+      "name": "D's Diner - The Director's Cut (Japan) (Disc C).bin"
+    },
+    {
+      "name": "Daedalus Encounter, The (Korea) (Disc 1).bin"
+    },
+    {
+      "name": "Daedalus Encounter, The (Korea) (Disc 2).bin"
+    },
+    {
+      "name": "Daedalus Encounter, The (Korea) (Disc 3).bin"
+    },
+    {
+      "name": "Daedalus Encounter, The (Korea) (Disc 4).bin"
+    },
+    {
+      "name": "Daedalus Encounter, The (USA, Europe) (Disc 1).bin"
+    },
+    {
+      "name": "Daedalus Encounter, The (USA, Europe) (Disc 2).bin"
+    },
+    {
+      "name": "Daedalus Encounter, The (USA, Europe) (Disc 3).bin"
+    },
+    {
+      "name": "Daedalus Encounter, The (USA, Europe) (Disc 4).bin"
+    },
+    {
+      "name": "Daedalus Encounter, The - Episode 1 - Nanpasen no Alien (Japan) (Disc 1)"
+    },
+    {
+      "name": "Daedalus Encounter, The - Episode 1 - Nanpasen no Alien (Japan) (Disc 1).bin"
+    },
+    {
+      "name": "Daedalus Encounter, The - Episode 1 - Nanpasen no Alien (Japan) (Disc 2)"
+    },
+    {
+      "name": "Daedalus Encounter, The - Episode 1 - Nanpasen no Alien (Japan) (Disc 2).bin"
+    },
+    {
+      "name": "Daedalus Encounter, The - Episode 1 - Nanpasen no Alien (Japan) (Disc 3)"
+    },
+    {
+      "name": "Daedalus Encounter, The - Episode 1 - Nanpasen no Alien (Japan) (Disc 3).bin"
+    },
+    {
+      "name": "Daedalus Encounter, The - Episode 1 - Nanpasen no Alien (Japan) (Disc 4)"
+    },
+    {
+      "name": "Daedalus Encounter, The - Episode 1 - Nanpasen no Alien (Japan) (Disc 4).bin"
+    },
+    {
+      "name": "DeathKeep (USA).bin"
+    },
+    {
+      "name": "Decathlon (USA) (Unl).bin"
+    },
+    {
+      "name": "Defcon 5 (Europe).bin"
+    }
+  ]
+}

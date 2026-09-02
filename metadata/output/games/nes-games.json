@@ -1,0 +1,196 @@
+{
+  "system": "nes",
+  "systemName": "Nintendo Entertainment System",
+  "totalGames": 21,
+  "games": [
+    {
+      "name": "Super Mario Bros.",
+      "systemID": "nes",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "The Legend of Zelda",
+      "systemID": "nes",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": 84,
+      "userScore": 13.631230734531243
+    },
+    {
+      "name": "Metroid",
+      "systemID": "nes",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": 58,
+      "userScore": -12.368769265468757
+    },
+    {
+      "name": "Mega Man 2",
+      "systemID": "nes",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "Contra",
+      "systemID": "nes",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": 63,
+      "userScore": -7.368769265468757
+    },
+    {
+      "name": "Castlevania",
+      "systemID": "nes",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": 74,
+      "userScore": 3.6312307345312433
+    },
+    {
+      "name": "Double Dragon",
+      "systemID": "nes",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "Final Fantasy",
+      "systemID": "nes",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": 67,
+      "userScore": -3.3687692654687567
+    },
+    {
+      "name": "Dragon Quest",
+      "systemID": "nes",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": 63,
+      "userScore": -7.368769265468757
+    },
+    {
+      "name": "Mike Tyson's Punch-Out!!",
+      "systemID": "nes",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "Bubble Bobble",
+      "systemID": "nes",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "Teenage Mutant Ninja Turtles",
+      "systemID": "nes",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "Battletoads",
+      "systemID": "nes",
+      "source": "popular-list",
+      "openCriticID": 105482,
+      "openCriticScore": 73,
+      "metacriticScore": 72,
+      "userScore": 1.6312307345312431
+    },
+    {
+      "name": "Castlevania",
+      "systemID": "nes",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": 74,
+      "userScore": 3.6312307345312433
+    },
+    {
+      "name": "Mike Tyson's Punch-Out!!",
+      "systemID": "nes",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "Gyromite",
+      "systemID": "nes",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "Stack-Up",
+      "systemID": "nes",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "Wario's Woods",
+      "systemID": "nes",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "Pinball",
+      "systemID": "nes",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "Tetris",
+      "systemID": "nes",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "Track & Field",
+      "systemID": "nes",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    }
+  ]
+}

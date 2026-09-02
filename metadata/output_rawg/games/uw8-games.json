@@ -1,0 +1,12 @@
+{
+  "system": "uw8",
+  "systemName": "MicroW8",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for MicroW8",
+      "systemID": "uw8",
+      "source": "placeholder"
+    }
+  ]
+}

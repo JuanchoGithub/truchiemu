@@ -1,0 +1,12 @@
+{
+  "system": "ngpc",
+  "systemName": "Neo Geo Pocket Color",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for Neo Geo Pocket Color",
+      "systemID": "ngpc",
+      "source": "placeholder"
+    }
+  ]
+}

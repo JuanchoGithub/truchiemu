@@ -1,0 +1,12 @@
+{
+  "system": "pc_88",
+  "systemName": "PC-8000 / PC-8800 series",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for PC-8000 / PC-8800 series",
+      "systemID": "pc_88",
+      "source": "placeholder"
+    }
+  ]
+}

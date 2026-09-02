@@ -1,0 +1,14 @@
+{
+  "system": "uzebox",
+  "systemName": "Uzebox",
+  "totalGames": 1,
+  "openCriticURLs": [
+    null
+  ],
+  "metacriticURLs": [
+    "https://metacritic.com/game/game-for-uzebox"
+  ],
+  "launchboxURLs": [
+    "https://gamesdb.launchbox-app.com/metadata/uzebox/game-for-uzebox"
+  ]
+}

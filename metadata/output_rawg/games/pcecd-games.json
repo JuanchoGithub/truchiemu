@@ -1,0 +1,12 @@
+{
+  "system": "pcecd",
+  "systemName": "PC Engine CD",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for PC Engine CD",
+      "systemID": "pcecd",
+      "source": "placeholder"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "system": "psvita",
+  "systemName": "PlayStation Vita",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for PlayStation Vita",
+      "systemID": "psvita",
+      "source": "placeholder"
+    }
+  ]
+}

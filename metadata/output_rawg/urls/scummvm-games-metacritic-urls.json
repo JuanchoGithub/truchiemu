@@ -1,0 +1,14 @@
+{
+  "system": "scummvm",
+  "systemName": "ScummVM",
+  "totalGames": 1,
+  "openCriticURLs": [
+    null
+  ],
+  "metacriticURLs": [
+    "https://metacritic.com/game/game-for-scummvm"
+  ],
+  "launchboxURLs": [
+    "https://gamesdb.launchbox-app.com/metadata/scummvm/game-for-scummvm"
+  ]
+}

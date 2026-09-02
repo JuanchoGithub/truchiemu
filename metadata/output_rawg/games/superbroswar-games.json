@@ -1,0 +1,12 @@
+{
+  "system": "superbroswar",
+  "systemName": "Superbroswar",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for Superbroswar",
+      "systemID": "superbroswar",
+      "source": "placeholder"
+    }
+  ]
+}

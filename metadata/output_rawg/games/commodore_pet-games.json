@@ -1,0 +1,12 @@
+{
+  "system": "commodore_pet",
+  "systemName": "PET",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for PET",
+      "systemID": "commodore_pet",
+      "source": "placeholder"
+    }
+  ]
+}

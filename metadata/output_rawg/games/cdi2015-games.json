@@ -1,0 +1,12 @@
+{
+  "system": "cdi2015",
+  "systemName": "CDi",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for CDi",
+      "systemID": "cdi2015",
+      "source": "placeholder"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "system": "commodore_c64",
+  "systemName": "C64",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for C64",
+      "systemID": "commodore_c64",
+      "source": "placeholder"
+    }
+  ]
+}

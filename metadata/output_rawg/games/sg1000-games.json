@@ -1,0 +1,12 @@
+{
+  "system": "sg1000",
+  "systemName": "SG-1000",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for SG-1000",
+      "systemID": "sg1000",
+      "source": "placeholder"
+    }
+  ]
+}

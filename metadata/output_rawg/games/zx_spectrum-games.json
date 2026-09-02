@@ -1,0 +1,12 @@
+{
+  "system": "zx_spectrum",
+  "systemName": "ZX Spectrum (various)",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for ZX Spectrum (various)",
+      "systemID": "zx_spectrum",
+      "source": "placeholder"
+    }
+  ]
+}

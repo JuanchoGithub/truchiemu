@@ -1,0 +1,12 @@
+{
+  "system": "gamecube",
+  "systemName": "GameCube",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for GameCube",
+      "systemID": "gamecube",
+      "source": "placeholder"
+    }
+  ]
+}

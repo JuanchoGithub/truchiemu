@@ -1,0 +1,12 @@
+{
+  "system": "mess",
+  "systemName": "Multi (various)",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for Multi (various)",
+      "systemID": "mess",
+      "source": "placeholder"
+    }
+  ]
+}

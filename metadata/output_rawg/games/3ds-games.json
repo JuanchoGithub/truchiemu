@@ -1,0 +1,12 @@
+{
+  "system": "3ds",
+  "systemName": "3DS",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for 3DS",
+      "systemID": "3ds",
+      "source": "placeholder"
+    }
+  ]
+}

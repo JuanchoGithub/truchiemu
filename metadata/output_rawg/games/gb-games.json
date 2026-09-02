@@ -1,0 +1,367 @@
+{
+  "system": "gb",
+  "systemName": "Game Boy",
+  "totalGames": 120,
+  "games": [
+    {
+      "name": "10-Pin Bowling (USA) (Proto).gb"
+    },
+    {
+      "name": "14 Juillet (World) (Fr) (Aftermarket) (Unl).gb"
+    },
+    {
+      "name": "3 Choume no Tama - Tama and Friends - 3 Choume Obake Panic!! (Japan).gb"
+    },
+    {
+      "name": "3-pun Yosou - Umaban Club (Japan).gb"
+    },
+    {
+      "name": "4 in 1 (Europe) (4B-001, Sachen-Commin) (Unl).gb"
+    },
+    {
+      "name": "4 in 1 (Europe) (4B-002, Sachen) (Unl).gb"
+    },
+    {
+      "name": "4 in 1 (Europe) (4B-004, Sachen-Commin) (Unl).gb"
+    },
+    {
+      "name": "4 in 1 (Europe) (4B-005, Sachen-Commin) (Unl).gb"
+    },
+    {
+      "name": "4 in 1 (Europe) (4B-006, Sachen) (Unl).gb"
+    },
+    {
+      "name": "4 in 1 (Europe) (4B-007, Sachen) (Unl).gb"
+    },
+    {
+      "name": "4 in 1 (Europe) (4B-008, Sachen) (Unl).gb"
+    },
+    {
+      "name": "4 in 1 (Europe) (4B-009, Sachen) (Unl).gb"
+    },
+    {
+      "name": "4 in 1 (Taiwan) (En,Zh) (4B-003, Sachen-Commin) (Unl).gb"
+    },
+    {
+      "name": "4-in-1 Fun Pak (Japan).gb"
+    },
+    {
+      "name": "4-in-1 Fun Pak (USA, Europe).gb"
+    },
+    {
+      "name": "4-in-1 Funpak - Volume II (USA, Europe).gb"
+    },
+    {
+      "name": "8-in-1 (Taiwan) (En) (Unl).gb"
+    },
+    {
+      "name": "A Fairy Without Wings (World) (v1.3.0) (Aftermarket) (Unl).gb"
+    },
+    {
+      "name": "A-mazing Tater (USA).gb"
+    },
+    {
+      "name": "Aa Harimanada (Japan).gb"
+    },
+    {
+      "name": "Action Replay Pro (World) (Unl).gb"
+    },
+    {
+      "name": "Addams Family, The (Europe) (En,Fr,De).gb"
+    },
+    {
+      "name": "Addams Family, The (Japan).gb"
+    },
+    {
+      "name": "Addams Family, The (USA).gb"
+    },
+    {
+      "name": "Addams Family, The - Pugsley's Scavenger Hunt (USA, Europe).gb"
+    },
+    {
+      "name": "Addams Family, The - Pugsley's Scavenger Hunt (USA, Europe) (Beta 1).gb"
+    },
+    {
+      "name": "Addams Family, The - Pugsley's Scavenger Hunt (USA, Europe) (Beta 2) (1993-04-22).gb"
+    },
+    {
+      "name": "Adulting! (World) (v2.0) (Aftermarket) (Unl).gb"
+    },
+    {
+      "name": "Adventure Island (USA, Europe).gb"
+    },
+    {
+      "name": "Adventure Island II - Aliens in Paradise (USA, Europe).gb"
+    },
+    {
+      "name": "Adventures of Lolo (Europe) (SGB Enhanced)"
+    },
+    {
+      "name": "Adventures of Lolo (Europe) (SGB Enhanced).gb"
+    },
+    {
+      "name": "Adventures of Pinocchio, The (Europe) (Proto).gb"
+    },
+    {
+      "name": "Adventures of Rocky and Bullwinkle and Friends, The (USA).gb"
+    },
+    {
+      "name": "Adventures of Star Saver, The (USA, Europe).gb"
+    },
+    {
+      "name": "Aerostar (Japan) (En).gb"
+    },
+    {
+      "name": "Aerostar (USA, Europe).gb"
+    },
+    {
+      "name": "After Burst (Japan) (En).gb"
+    },
+    {
+      "name": "Agro Soar (Australia).gb"
+    },
+    {
+      "name": "Akazukin Chacha (Japan) (SGB Enhanced)"
+    },
+    {
+      "name": "Akazukin Chacha (Japan) (SGB Enhanced).gb"
+    },
+    {
+      "name": "Akumajou Dracula - Shikkoku Taru Zensoukyoku - Dark Night Prelude (Japan) (SGB Enhanced)"
+    },
+    {
+      "name": "Akumajou Dracula - Shikkoku Taru Zensoukyoku - Dark Night Prelude (Japan) (SGB Enhanced).gb"
+    },
+    {
+      "name": "Akumajou Special - Boku Dracula-kun (Japan).gb"
+    },
+    {
+      "name": "Aladdin (Europe) (SGB Enhanced)"
+    },
+    {
+      "name": "Aladdin (Europe) (SGB Enhanced).gb"
+    },
+    {
+      "name": "Aladdin (Europe) (Sample) (SGB Enhanced)"
+    },
+    {
+      "name": "Aladdin (Europe) (Sample) (SGB Enhanced).gb"
+    },
+    {
+      "name": "Aladdin (USA) (SGB Enhanced)"
+    },
+    {
+      "name": "Aladdin (USA) (SGB Enhanced).gb"
+    },
+    {
+      "name": "Aladdin (World) (Disney Classic Games) (SGB Enhanced)"
+    },
+    {
+      "name": "Aladdin (World) (Disney Classic Games) (SGB Enhanced).gb"
+    },
+    {
+      "name": "Alfred Chicken (Europe).gb"
+    },
+    {
+      "name": "Alfred Chicken (Europe) (Beta).gb"
+    },
+    {
+      "name": "Alfred Chicken (Japan) (En) (SGB Enhanced)"
+    },
+    {
+      "name": "Alfred Chicken (Japan) (En) (SGB Enhanced).gb"
+    },
+    {
+      "name": "Alfred Chicken (USA).gb"
+    },
+    {
+      "name": "Alien 3 (Japan) (En).gb"
+    },
+    {
+      "name": "Alien 3 (USA, Europe).gb"
+    },
+    {
+      "name": "Alien Games (USA) (Proto).gb"
+    },
+    {
+      "name": "Alien Invasion (World) (Aftermarket) (Unl).gb"
+    },
+    {
+      "name": "Alien Olympics (Europe).gb"
+    },
+    {
+      "name": "Alien Olympics (Europe) (Beta 1).gb"
+    },
+    {
+      "name": "Alien Olympics (Europe) (Beta 2).gb"
+    },
+    {
+      "name": "Alien Olympics (Europe) (Beta 3) (1994-06-14).gb"
+    },
+    {
+      "name": "Alien vs Predator (Japan).gb"
+    },
+    {
+      "name": "Alien vs Predator - The Last of His Clan (USA).gb"
+    },
+    {
+      "name": "All-Star Baseball 99 (USA).gb"
+    },
+    {
+      "name": "Alley (World) (Aftermarket) (Unl).gb"
+    },
+    {
+      "name": "Alleyway (World).gb"
+    },
+    {
+      "name": "Alphamax (World) (Aftermarket) (Unl).gb"
+    },
+    {
+      "name": "Altered Space - A 3-D Alien Adventure (Europe).gb"
+    },
+    {
+      "name": "Altered Space - A 3-D Alien Adventure (Japan) (En).gb"
+    },
+    {
+      "name": "Altered Space - A 3-D Alien Adventure (USA).gb"
+    },
+    {
+      "name": "Amazing Penguin (USA, Europe).gb"
+    },
+    {
+      "name": "Amazing Penguin (World) (Limited Run Games).gb"
+    },
+    {
+      "name": "Amazing Spider-Man, The (USA, Europe).gb"
+    },
+    {
+      "name": "America Oudan Ultra Quiz (Japan).gb"
+    },
+    {
+      "name": "America Oudan Ultra Quiz Part 2 (Japan).gb"
+    },
+    {
+      "name": "America Oudan Ultra Quiz Part 2 (Japan) (Rev 1).gb"
+    },
+    {
+      "name": "America Oudan Ultra Quiz Part 3 - Champion Taikai (Japan).gb"
+    },
+    {
+      "name": "America Oudan Ultra Quiz Part 4 (Japan).gb"
+    },
+    {
+      "name": "Amida (Japan) (En).gb"
+    },
+    {
+      "name": "Anctrayl (World) (Aftermarket) (Unl).gb"
+    },
+    {
+      "name": "Animal Breeder (Japan) (SGB Enhanced)"
+    },
+    {
+      "name": "Animal Breeder (Japan) (SGB Enhanced).gb"
+    },
+    {
+      "name": "Animal Breeder 2 (Japan) (SGB Enhanced)"
+    },
+    {
+      "name": "Animal Breeder 2 (Japan) (SGB Enhanced).gb"
+    },
+    {
+      "name": "Animaniacs (Europe) (SGB Enhanced)"
+    },
+    {
+      "name": "Animaniacs (Europe) (SGB Enhanced).gb"
+    },
+    {
+      "name": "Animaniacs (USA) (SGB Enhanced)"
+    },
+    {
+      "name": "Animaniacs (USA) (SGB Enhanced).gb"
+    },
+    {
+      "name": "Another Bible (Japan) (SGB Enhanced)"
+    },
+    {
+      "name": "Another Bible (Japan) (SGB Enhanced).gb"
+    },
+    {
+      "name": "Another Push Game (World) (v1.07) (Proto) (Aftermarket) (Unl).gb"
+    },
+    {
+      "name": "Aoki Densetsu Shoot! (Japan) (SGB Enhanced)"
+    },
+    {
+      "name": "Aoki Densetsu Shoot! (Japan) (SGB Enhanced).gb"
+    },
+    {
+      "name": "Aqua (World) (v1.0) (Aftermarket) (Unl).gb"
+    },
+    {
+      "name": "Aqua (World) (v1.1) (Aftermarket) (Unl).gb"
+    },
+    {
+      "name": "Arcade Classic No. 1 - Asteroids & Missile Command (USA, Europe) (SGB Enhanced)"
+    },
+    {
+      "name": "Arcade Classic No. 1 - Asteroids & Missile Command (USA, Europe) (SGB Enhanced).gb"
+    },
+    {
+      "name": "Arcade Classic No. 2 - Centipede & Millipede (USA, Europe) (SGB Enhanced)"
+    },
+    {
+      "name": "Arcade Classic No. 2 - Centipede & Millipede (USA, Europe) (SGB Enhanced).gb"
+    },
+    {
+      "name": "Arcade Classic No. 3 - Galaga & Galaxian (Europe) (SGB Enhanced)"
+    },
+    {
+      "name": "Arcade Classic No. 3 - Galaga & Galaxian (Europe) (SGB Enhanced).gb"
+    },
+    {
+      "name": "Arcade Classic No. 3 - Galaga & Galaxian (USA) (SGB Enhanced)"
+    },
+    {
+      "name": "Arcade Classic No. 3 - Galaga & Galaxian (USA) (SGB Enhanced).gb"
+    },
+    {
+      "name": "Arcade Classic No. 4 - Defender & Joust (USA, Europe) (SGB Enhanced)"
+    },
+    {
+      "name": "Arcade Classic No. 4 - Defender & Joust (USA, Europe) (SGB Enhanced).gb"
+    },
+    {
+      "name": "Arcade Classics - Super Breakout & Battlezone (USA, Europe) (SGB Enhanced)"
+    },
+    {
+      "name": "Arcade Classics - Super Breakout & Battlezone (USA, Europe) (SGB Enhanced).gb"
+    },
+    {
+      "name": "Aretha (Japan).gb"
+    },
+    {
+      "name": "Aretha II (Japan).gb"
+    },
+    {
+      "name": "Aretha III (Japan).gb"
+    },
+    {
+      "name": "Art School Pocket (World) (De) (Aftermarket) (Unl).gb"
+    },
+    {
+      "name": "Art School Pocket (World) (En) (Aftermarket) (Unl).gb"
+    },
+    {
+      "name": "Art School Pocket (World) (Es) (Aftermarket) (Unl).gb"
+    },
+    {
+      "name": "Art School Pocket (World) (Fr) (Aftermarket) (Unl).gb"
+    },
+    {
+      "name": "Asmik-kun World 2 (Japan).gb"
+    },
+    {
+      "name": "Asterix & Obelix (Europe) (Fr,De) (Beta) (SGB Enhanced)"
+    }
+  ]
+}

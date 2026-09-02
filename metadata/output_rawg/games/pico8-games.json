@@ -1,0 +1,12 @@
+{
+  "system": "pico8",
+  "systemName": "PICO-8",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for PICO-8",
+      "systemID": "pico8",
+      "source": "placeholder"
+    }
+  ]
+}

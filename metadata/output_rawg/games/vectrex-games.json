@@ -1,0 +1,12 @@
+{
+  "system": "vectrex",
+  "systemName": "Vectrex",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for Vectrex",
+      "systemID": "vectrex",
+      "source": "placeholder"
+    }
+  ]
+}

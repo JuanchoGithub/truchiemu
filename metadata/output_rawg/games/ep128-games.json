@@ -1,0 +1,12 @@
+{
+  "system": "ep128",
+  "systemName": "128",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for 128",
+      "systemID": "ep128",
+      "source": "placeholder"
+    }
+  ]
+}

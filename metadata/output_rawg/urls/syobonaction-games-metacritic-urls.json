@@ -1,0 +1,14 @@
+{
+  "system": "syobonaction",
+  "systemName": "SyobonAction",
+  "totalGames": 1,
+  "openCriticURLs": [
+    null
+  ],
+  "metacriticURLs": [
+    "https://metacritic.com/game/game-for-syobonaction"
+  ],
+  "launchboxURLs": [
+    "https://gamesdb.launchbox-app.com/metadata/syobonaction/game-for-syobonaction"
+  ]
+}

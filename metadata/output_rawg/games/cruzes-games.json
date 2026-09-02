@@ -1,0 +1,12 @@
+{
+  "system": "cruzes",
+  "systemName": "Cruzes",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for Cruzes",
+      "systemID": "cruzes",
+      "source": "placeholder"
+    }
+  ]
+}

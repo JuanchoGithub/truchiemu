@@ -1,0 +1,12 @@
+{
+  "system": "ngp",
+  "systemName": "Neo Geo Pocket",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for Neo Geo Pocket",
+      "systemID": "ngp",
+      "source": "placeholder"
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "system": "unknown",
+  "systemName": "Unknown System",
+  "totalGames": 1,
+  "openCriticURLs": [
+    null
+  ],
+  "metacriticURLs": [
+    "https://metacritic.com/game/game-for-unknown-system"
+  ],
+  "launchboxURLs": [
+    "https://gamesdb.launchbox-app.com/metadata/unknown/game-for-unknown-system"
+  ]
+}

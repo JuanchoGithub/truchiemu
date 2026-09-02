@@ -1,0 +1,367 @@
+{
+  "system": "pce",
+  "systemName": "PC Engine / TurboGrafx-16",
+  "totalGames": 120,
+  "games": [
+    {
+      "name": "1943 Kai (Japan).pce"
+    },
+    {
+      "name": "21 Emon - Mezase Hotel Ou!! (Japan).pce"
+    },
+    {
+      "name": "AV Poker - World Gambler (Japan) (Unl).pce"
+    },
+    {
+      "name": "Adventure Island (Japan).pce"
+    },
+    {
+      "name": "Aero Blasters (Japan).pce"
+    },
+    {
+      "name": "Aero Blasters (USA).pce"
+    },
+    {
+      "name": "After Burner II (Japan).pce"
+    },
+    {
+      "name": "Air Zonk (USA).pce"
+    },
+    {
+      "name": "Air Zonk (USA, Europe) (Wii U Virtual Console).pce"
+    },
+    {
+      "name": "Alien Crush (Japan).pce"
+    },
+    {
+      "name": "Alien Crush (USA).pce"
+    },
+    {
+      "name": "All Star Power League (Japan).pce"
+    },
+    {
+      "name": "Andre Panza Kick Boxing (USA).pce"
+    },
+    {
+      "name": "Ankoku Densetsu (Japan).pce"
+    },
+    {
+      "name": "Aoi Blink (Japan).pce"
+    },
+    {
+      "name": "Appare! Gateball (Japan).pce"
+    },
+    {
+      "name": "Armed F (Japan).pce"
+    },
+    {
+      "name": "Artist Tool (Japan).pce"
+    },
+    {
+      "name": "Atlantean (World) (Aftermarket) (Homebrew).pce"
+    },
+    {
+      "name": "Atomic Robo-Kid Special (Japan).pce"
+    },
+    {
+      "name": "Ballistix (Japan).pce"
+    },
+    {
+      "name": "Ballistix (USA).pce"
+    },
+    {
+      "name": "Bari Bari Densetsu (Japan).pce"
+    },
+    {
+      "name": "Barunba (Japan).pce"
+    },
+    {
+      "name": "Batman (Japan)"
+    },
+    {
+      "name": "Batman (Japan).pce"
+    },
+    {
+      "name": "Battle Chopper (Japan)"
+    },
+    {
+      "name": "Battle Chopper (Japan).pce"
+    },
+    {
+      "name": "Battle Lode Runner (Japan)"
+    },
+    {
+      "name": "Battle Lode Runner (Japan).pce"
+    },
+    {
+      "name": "Battle Royale (USA)"
+    },
+    {
+      "name": "Battle Royale (USA).pce"
+    },
+    {
+      "name": "Be Ball (Japan).pce"
+    },
+    {
+      "name": "Benkei Gaiden (Japan).pce"
+    },
+    {
+      "name": "Benkei Gaiden (Japan) (Wii Virtual Console).pce"
+    },
+    {
+      "name": "Bikkuriman World (Japan).pce"
+    },
+    {
+      "name": "Blazing Lazers (USA).pce"
+    },
+    {
+      "name": "Blazing Lazers (World) (Wii U Virtual Console).pce"
+    },
+    {
+      "name": "Blodia (Japan).pce"
+    },
+    {
+      "name": "Bloody Wolf (USA).pce"
+    },
+    {
+      "name": "Bodycon Quest II (Japan) (Unl).pce"
+    },
+    {
+      "name": "Bomberman '93 (Japan).pce"
+    },
+    {
+      "name": "Bomberman '93 (Japan) (Wii U Virtual Console).pce"
+    },
+    {
+      "name": "Bomberman '93 (USA).pce"
+    },
+    {
+      "name": "Bomberman '93 (USA, Europe) (Wii U Virtual Console).pce"
+    },
+    {
+      "name": "Bomberman '93 - Special Version (Japan).pce"
+    },
+    {
+      "name": "Bomberman '94 (Japan).pce"
+    },
+    {
+      "name": "Bomberman '94 (World) (Wii U Virtual Console).pce"
+    },
+    {
+      "name": "Bomberman (Japan).pce"
+    },
+    {
+      "name": "Bomberman (USA).pce"
+    },
+    {
+      "name": "Bomberman (USA) (Bomberman Collection).pce"
+    },
+    {
+      "name": "Bomberman - Users Battle (Japan)"
+    },
+    {
+      "name": "Bomberman - Users Battle (Japan).pce"
+    },
+    {
+      "name": "Bonk 3 - Bonk's Big Adventure (USA).pce"
+    },
+    {
+      "name": "Bonk 3 - Bonk's Big Adventure (USA, Europe) (Wii U Virtual Console).pce"
+    },
+    {
+      "name": "Bonk's Adventure (USA).pce"
+    },
+    {
+      "name": "Bonk's Adventure (USA, Europe) (Wii U Virtual Console).pce"
+    },
+    {
+      "name": "Bonk's Revenge (USA).pce"
+    },
+    {
+      "name": "Bonk's Revenge (USA, Europe) (Wii U Virtual Console).pce"
+    },
+    {
+      "name": "Bonk's Revenge (USA, Europe) (Wii Virtual Console).pce"
+    },
+    {
+      "name": "Bouken Danshaku Don - The Lost Sunheart (Japan).pce"
+    },
+    {
+      "name": "Boxyboy (USA).pce"
+    },
+    {
+      "name": "Bravoman (USA).pce"
+    },
+    {
+      "name": "Break In (Japan).pce"
+    },
+    {
+      "name": "Bubblegum Crash! - Knight Sabers 2034 (Japan).pce"
+    },
+    {
+      "name": "Bull Fight - Ring no Hasha (Japan).pce"
+    },
+    {
+      "name": "Burning Angels (Japan).pce"
+    },
+    {
+      "name": "Busou Keiji - Cyber Cross (Japan).pce"
+    },
+    {
+      "name": "Cadash (Japan).pce"
+    },
+    {
+      "name": "Cadash (USA).pce"
+    },
+    {
+      "name": "Champion Wrestler (Japan).pce"
+    },
+    {
+      "name": "Champions Forever Boxing (USA).pce"
+    },
+    {
+      "name": "Chase H.Q. (USA).pce"
+    },
+    {
+      "name": "Chew-Man-Fu (USA).pce"
+    },
+    {
+      "name": "Chibi Maruko-chan - Quiz de Piihyara (Japan).pce"
+    },
+    {
+      "name": "Chikudenya Toubei - Kubikiri Yakata Yori (Japan).pce"
+    },
+    {
+      "name": "China Warrior (USA).pce"
+    },
+    {
+      "name": "Chouzetsurinjin Bravoman (Japan).pce"
+    },
+    {
+      "name": "Circus Lido (Japan).pce"
+    },
+    {
+      "name": "City Hunter (Japan).pce"
+    },
+    {
+      "name": "Columns (Japan).pce"
+    },
+    {
+      "name": "Coryoon - Child of Dragon (Japan).pce"
+    },
+    {
+      "name": "Cratermaze (USA).pce"
+    },
+    {
+      "name": "Cross Wiber - Cyber Combat Police (Japan)"
+    },
+    {
+      "name": "Cross Wiber - Cyber Combat Police (Japan).pce"
+    },
+    {
+      "name": "Cyber Core (Japan).pce"
+    },
+    {
+      "name": "Cyber Core (USA).pce"
+    },
+    {
+      "name": "Cyber Dodge (Japan).pce"
+    },
+    {
+      "name": "Cyber Knight (Japan).pce"
+    },
+    {
+      "name": "Daichi-kun Crisis - Do Natural (Japan).pce"
+    },
+    {
+      "name": "Daisenpuu (Japan).pce"
+    },
+    {
+      "name": "Darius Alpha (Japan) (SG Enhanced).pce"
+    },
+    {
+      "name": "Darius Alpha (World) (SG Enhanced) (Darius Cozmic Collection).pce"
+    },
+    {
+      "name": "Darius Plus (Japan) (SG Enhanced).pce"
+    },
+    {
+      "name": "Darkwing Duck (USA).pce"
+    },
+    {
+      "name": "Davis Cup Tennis (USA).pce"
+    },
+    {
+      "name": "Dead Moon (USA).pce"
+    },
+    {
+      "name": "Dead Moon - Getsu Sekai no Akumu (Japan).pce"
+    },
+    {
+      "name": "Deep Blue (USA).pce"
+    },
+    {
+      "name": "Deep Blue - Kaitei Shinwa (Japan).pce"
+    },
+    {
+      "name": "Detana!! TwinBee (Japan).pce"
+    },
+    {
+      "name": "Devil Crash - Naxat Pinball (Japan).pce"
+    },
+    {
+      "name": "Devil Crash - Naxat Pinball (Japan) (Wii U Virtual Console).pce"
+    },
+    {
+      "name": "Devil's Crush (USA).pce"
+    },
+    {
+      "name": "Devil's Crush (USA, Europe) (Wii U Virtual Console).pce"
+    },
+    {
+      "name": "Die Hard (Japan).pce"
+    },
+    {
+      "name": "Digital Champ (Japan).pce"
+    },
+    {
+      "name": "Don Doko Don! (Japan).pce"
+    },
+    {
+      "name": "Doraemon - Meikyuu Daisakusen (Japan).pce"
+    },
+    {
+      "name": "Doraemon - Nobita no Dorabian Night (Japan).pce"
+    },
+    {
+      "name": "Double Dungeons (Japan).pce"
+    },
+    {
+      "name": "Double Dungeons (Japan) (Wii U Virtual Console).pce"
+    },
+    {
+      "name": "Double Dungeons (USA).pce"
+    },
+    {
+      "name": "Double Dungeons (USA, Europe) (Wii U Virtual Console).pce"
+    },
+    {
+      "name": "Download (Japan).pce"
+    },
+    {
+      "name": "Dragon Egg! (Japan).pce"
+    },
+    {
+      "name": "Dragon Saber (Japan).pce"
+    },
+    {
+      "name": "Dragon Spirit (Japan).pce"
+    },
+    {
+      "name": "Dragon Spirit (USA).pce"
+    },
+    {
+      "name": "Dragon's Curse (USA).pce"
+    }
+  ]
+}

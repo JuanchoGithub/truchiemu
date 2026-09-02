@@ -1,0 +1,12 @@
+{
+  "system": "arcadia",
+  "systemName": "Arcadia 2001",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for Arcadia 2001",
+      "systemID": "arcadia",
+      "source": "placeholder"
+    }
+  ]
+}

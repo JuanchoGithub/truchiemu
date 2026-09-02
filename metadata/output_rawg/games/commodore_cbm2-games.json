@@ -1,0 +1,12 @@
+{
+  "system": "commodore_cbm2",
+  "systemName": "CBM-II",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for CBM-II",
+      "systemID": "commodore_cbm2",
+      "source": "placeholder"
+    }
+  ]
+}

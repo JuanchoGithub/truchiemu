@@ -1,0 +1,46 @@
+{
+  "system": "genesis",
+  "systemName": "Sega Genesis / Mega Drive",
+  "openCriticURLs": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+  ],
+  "metacriticURLs": [
+    "https://metacritic.com/game/sonic-the-hedgehog-2",
+    "https://metacritic.com/game/sonic-knuckles",
+    "https://metacritic.com/game/streets-of-rage-2",
+    "https://metacritic.com/game/golden-axe",
+    "https://metacritic.com/game/altered-beast",
+    "https://metacritic.com/game/shining-force",
+    "https://metacritic.com/game/phantasy-star-iv",
+    "https://metacritic.com/game/gunstar-heroes",
+    "https://metacritic.com/game/streets-of-rage-3",
+    "https://metacritic.com/game/madden-nfl-98",
+    "https://metacritic.com/game/nba-jam",
+    "https://metacritic.com/game/mega-man-ii"
+  ],
+  "launchboxURLs": [
+    "https://gamesdb.launchbox-app.com/metadata/genesis/sonic the hedgehog 2",
+    "https://gamesdb.launchbox-app.com/metadata/genesis/sonic knuckles",
+    "https://gamesdb.launchbox-app.com/metadata/genesis/streets of rage 2",
+    "https://gamesdb.launchbox-app.com/metadata/genesis/golden axe",
+    "https://gamesdb.launchbox-app.com/metadata/genesis/altered beast",
+    "https://gamesdb.launchbox-app.com/metadata/genesis/shining force",
+    "https://gamesdb.launchbox-app.com/metadata/genesis/phantasy star iv",
+    "https://gamesdb.launchbox-app.com/metadata/genesis/gunstar heroes",
+    "https://gamesdb.launchbox-app.com/metadata/genesis/streets of rage 3",
+    "https://gamesdb.launchbox-app.com/metadata/genesis/madden nfl 98",
+    "https://gamesdb.launchbox-app.com/metadata/genesis/nba jam",
+    "https://gamesdb.launchbox-app.com/metadata/genesis/mega man ii"
+  ]
+}

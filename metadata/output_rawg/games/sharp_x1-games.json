@@ -1,0 +1,12 @@
+{
+  "system": "sharp_x1",
+  "systemName": "Sharp X1",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for Sharp X1",
+      "systemID": "sharp_x1",
+      "source": "placeholder"
+    }
+  ]
+}

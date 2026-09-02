@@ -1,0 +1,12 @@
+{
+  "system": "cdi",
+  "systemName": "CD-i",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for CD-i",
+      "systemID": "cdi",
+      "source": "placeholder"
+    }
+  ]
+}

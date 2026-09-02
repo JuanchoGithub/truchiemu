@@ -1,0 +1,12 @@
+{
+  "system": "chip_8",
+  "systemName": "CHIP-8",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for CHIP-8",
+      "systemID": "chip_8",
+      "source": "placeholder"
+    }
+  ]
+}

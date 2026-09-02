@@ -1,0 +1,12 @@
+{
+  "system": "game_music",
+  "systemName": "Music",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for Music",
+      "systemID": "game_music",
+      "source": "placeholder"
+    }
+  ]
+}

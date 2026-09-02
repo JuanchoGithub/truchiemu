@@ -1,0 +1,14 @@
+{
+  "system": "tic80",
+  "systemName": "TIC-80",
+  "totalGames": 1,
+  "openCriticURLs": [
+    null
+  ],
+  "metacriticURLs": [
+    "https://metacritic.com/game/game-for-tic-80"
+  ],
+  "launchboxURLs": [
+    "https://gamesdb.launchbox-app.com/metadata/tic80/game-for-tic-80"
+  ]
+}

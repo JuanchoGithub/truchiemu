@@ -1,0 +1,12 @@
+{
+  "system": "redbook",
+  "systemName": "Redbook",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for Redbook",
+      "systemID": "redbook",
+      "source": "placeholder"
+    }
+  ]
+}

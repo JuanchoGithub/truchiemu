@@ -1,0 +1,115 @@
+{
+  "system": "genesis",
+  "systemName": "Sega Genesis / Mega Drive",
+  "totalGames": 12,
+  "games": [
+    {
+      "name": "Sonic the Hedgehog 2",
+      "systemID": "genesis",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": 83,
+      "userScore": 12.631230734531243
+    },
+    {
+      "name": "Sonic & Knuckles",
+      "systemID": "genesis",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "Streets of Rage 2",
+      "systemID": "genesis",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": 89,
+      "userScore": 18.631230734531243
+    },
+    {
+      "name": "Golden Axe",
+      "systemID": "genesis",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "Altered Beast",
+      "systemID": "genesis",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "Shining Force",
+      "systemID": "genesis",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "Phantasy Star IV",
+      "systemID": "genesis",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "Gunstar Heroes",
+      "systemID": "genesis",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": 89,
+      "userScore": 18.631230734531243
+    },
+    {
+      "name": "Streets of Rage 3",
+      "systemID": "genesis",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "Madden NFL 98",
+      "systemID": "genesis",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "NBA Jam",
+      "systemID": "genesis",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "Mega Man II",
+      "systemID": "genesis",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    }
+  ]
+}

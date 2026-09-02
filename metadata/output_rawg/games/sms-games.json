@@ -1,0 +1,367 @@
+{
+  "system": "sms",
+  "systemName": "Sega Master System",
+  "totalGames": 120,
+  "games": [
+    {
+      "name": "11 Hap Gam-Boy (Korea) (Unl).sms"
+    },
+    {
+      "name": "128 Hap (Korea) (Unl).sms"
+    },
+    {
+      "name": "2 Hap in 1 - Moai-ui Bomul + David II (Korea) (Unl).sms"
+    },
+    {
+      "name": "20 em 1 (Brazil).sms"
+    },
+    {
+      "name": "2048 (World) (Aftermarket) (Unl).sms"
+    },
+    {
+      "name": "2048 (World) (v1.01) (Aftermarket) (Unl).sms"
+    },
+    {
+      "name": "2048 (World) (v1.02) (Aftermarket) (Unl).sms"
+    },
+    {
+      "name": "2048-SMS! (World)"
+    },
+    {
+      "name": "2048-SMS! (World) (Aftermarket) (Unl).sms"
+    },
+    {
+      "name": "3 in 1 - The Best Game Collection (A) (Korea) (En) (Unl).sms"
+    },
+    {
+      "name": "3 in 1 - The Best Game Collection (B) (Korea) (En) (Unl).sms"
+    },
+    {
+      "name": "3 in 1 - The Best Game Collection (C) (Korea) (En) (Unl).sms"
+    },
+    {
+      "name": "3 in 1 - The Best Game Collection (D) (Korea) (En) (Unl).sms"
+    },
+    {
+      "name": "3 in 1 - The Best Game Collection (E) (Korea) (En) (Unl).sms"
+    },
+    {
+      "name": "3 in 1 - The Best Game Collection (F) (Korea) (En) (Unl).sms"
+    },
+    {
+      "name": "3D Alien Maze (World) (Aftermarket) (Unl).sms"
+    },
+    {
+      "name": "3D City (World) (Aftermarket) (Unl).sms"
+    },
+    {
+      "name": "3D Gunner (USA) (Beta).sms"
+    },
+    {
+      "name": "4 PAK All Action (Australia) (Unl).sms"
+    },
+    {
+      "name": "8 in 1 - The Best Game Collection (A) (Korea) (En) (Unl).sms"
+    },
+    {
+      "name": "8 in 1 - The Best Game Collection (B) (Korea) (En) (Unl).sms"
+    },
+    {
+      "name": "8 in 1 - The Best Game Collection (C) (Korea) (En) (Unl).sms"
+    },
+    {
+      "name": "94 Super World Cup Soccer (Korea) (En) (Unl).sms"
+    },
+    {
+      "name": "94-Nen Super Basketball (Taiwan) (En) (Unl).sms"
+    },
+    {
+      "name": "A-Team Music, The (Europe) (Proto) (1992-11-09) (Sound Data).sms"
+    },
+    {
+      "name": "Ace of Aces (Europe, Brazil) (En).sms"
+    },
+    {
+      "name": "Acerte o Alvo (Brazil) (Mega Drive 4).sms"
+    },
+    {
+      "name": "Acid Reflux (World) (Aftermarket) (Unl).sms"
+    },
+    {
+      "name": "Acid Reflux (World) (v1.10) (Aftermarket) (Unl).sms"
+    },
+    {
+      "name": "Action Boy (Taiwan) (En) (Unl).sms"
+    },
+    {
+      "name": "Action Fighter (Japan, Europe) (En).sms"
+    },
+    {
+      "name": "Action Fighter (Japan, Europe) (En) (Beta).sms"
+    },
+    {
+      "name": "Action Fighter (Taiwan) (En) (Unl).sms"
+    },
+    {
+      "name": "Action Fighter (USA, Europe, Brazil) (En) (Rev 1).sms"
+    },
+    {
+      "name": "Addams Family, The (Europe).sms"
+    },
+    {
+      "name": "Aerial (World) (Aftermarket) (Unl).sms"
+    },
+    {
+      "name": "Aerial Assault (Europe, Brazil) (En).sms"
+    },
+    {
+      "name": "Aerial Assault (Taiwan) (En) (Unl).sms"
+    },
+    {
+      "name": "Aerial Assault (USA, Brazil) (En).sms"
+    },
+    {
+      "name": "Africa (World) (Audio) (Aftermarket) (Unl).sms"
+    },
+    {
+      "name": "After Burner (World).sms"
+    },
+    {
+      "name": "Agigongnyong Dooly (Korea) (Unl).sms"
+    },
+    {
+      "name": "Air Rescue (Europe, Brazil) (En).sms"
+    },
+    {
+      "name": "Aladdin (Europe, Brazil) (En).sms"
+    },
+    {
+      "name": "Aleste (Japan) (En).sms"
+    },
+    {
+      "name": "Alex Kidd - High-Tech World (USA, Europe, Brazil) (En).sms"
+    },
+    {
+      "name": "Alex Kidd - High-Tech World (USA, Europe, Brazil) (En) (Beta).sms"
+    },
+    {
+      "name": "Alex Kidd - The Lost Stars (World).sms"
+    },
+    {
+      "name": "Alex Kidd 3 - Curse in Miracle World (World) (De) (v1.1) (Aftermarket) (Unl).sms"
+    },
+    {
+      "name": "Alex Kidd 3 - Curse in Miracle World (World) (De) (v1.2) (Aftermarket) (Unl).sms"
+    },
+    {
+      "name": "Alex Kidd 3 - Curse in Miracle World (World) (En) (v1.1) (Aftermarket) (Unl).sms"
+    },
+    {
+      "name": "Alex Kidd 3 - Curse in Miracle World (World) (Es) (v1.1) (Aftermarket) (Unl).sms"
+    },
+    {
+      "name": "Alex Kidd 3 - Curse in Miracle World (World) (Fr) (v1.1) (Aftermarket) (Unl).sms"
+    },
+    {
+      "name": "Alex Kidd 3 - Curse in Miracle World (World) (It) (Aftermarket) (Unl).sms"
+    },
+    {
+      "name": "Alex Kidd 3 - Curse in Miracle World (World) (Pt) (v1.1) (Aftermarket) (Unl).sms"
+    },
+    {
+      "name": "Alex Kidd in Miracle World (USA, Europe).sms"
+    },
+    {
+      "name": "Alex Kidd in Miracle World (USA, Europe, Brazil) (En) (Rev 1).sms"
+    },
+    {
+      "name": "Alex Kidd in Miracle World (World) (En) (Sega Ages).sms"
+    },
+    {
+      "name": "Alex Kidd in Miracle World (World) (Ja) (Sega Ages).sms"
+    },
+    {
+      "name": "Alex Kidd in Miracle World 2 (World) (Unl).sms"
+    },
+    {
+      "name": "Alex Kidd in Shinobi World (USA, Europe, Brazil) (En).sms"
+    },
+    {
+      "name": "Alex Kidd no Miracle World (Japan).sms"
+    },
+    {
+      "name": "Alex Kido (Taiwan) (Ja) (Unl).sms"
+    },
+    {
+      "name": "Alf (USA).sms"
+    },
+    {
+      "name": "Alibaba and 40 Thieves (Korea) (En) (Unl).sms"
+    },
+    {
+      "name": "Alien 3 (Europe, Brazil) (En).sms"
+    },
+    {
+      "name": "Alien Cat 2 (World) (Aftermarket) (Unl).sms"
+    },
+    {
+      "name": "Alien Storm (Europe, Brazil) (En).sms"
+    },
+    {
+      "name": "Alien Syndrome (Japan) (En).sms"
+    },
+    {
+      "name": "Alien Syndrome (USA, Europe, Brazil) (En).sms"
+    },
+    {
+      "name": "Alien Syndrome (USA, Europe, Brazil) (En) (Beta).sms"
+    },
+    {
+      "name": "Alocos (Taiwan) (En) (Unl).sms"
+    },
+    {
+      "name": "Alter Ego (World) (v1.04) (Aftermarket) (Unl).sms"
+    },
+    {
+      "name": "Altered Beast (USA, Europe, Brazil) (En).sms"
+    },
+    {
+      "name": "American Baseball (Europe, Brazil) (En).sms"
+    },
+    {
+      "name": "American Pro Football (Europe).sms"
+    },
+    {
+      "name": "Andre Agassi Tennis (Europe, Brazil) (En).sms"
+    },
+    {
+      "name": "Anguna - The Prison Dungeon (World) (v0.07) (Proto) (Aftermarket) (Unl).sms"
+    },
+    {
+      "name": "Anmitsu Hime (Japan).sms"
+    },
+    {
+      "name": "AntiISDA Warrior (World) (v1.00) (Aftermarket) (Unl).sms"
+    },
+    {
+      "name": "AntiISDA Warrior (World) (v1.01) (Aftermarket) (Unl).sms"
+    },
+    {
+      "name": "AntiISDA Warrior (World) (v1.02) (Aftermarket) (Unl).sms"
+    },
+    {
+      "name": "Antiair (World) (Aftermarket) (Unl).sms"
+    },
+    {
+      "name": "Ants for Master System (World) (Aftermarket) (Unl).sms"
+    },
+    {
+      "name": "Arcade Smash Hits (Europe).sms"
+    },
+    {
+      "name": "Arcade Volleyball (World) (Aftermarket) (Unl).sms"
+    },
+    {
+      "name": "Argos no Juujiken (Japan) (En).sms"
+    },
+    {
+      "name": "Ariel - The Little Mermaid (Brazil) (En).sms"
+    },
+    {
+      "name": "Arno Dash (World) (v1.00) (Aftermarket) (Unl).sms"
+    },
+    {
+      "name": "Arno Dash (World) (v1.03) (Aftermarket) (Unl).sms"
+    },
+    {
+      "name": "Arno Dash 2 (World) (v1.03) (Aftermarket) (Unl).sms"
+    },
+    {
+      "name": "Artfull (World) (v1.0) (Aftermarket) (Unl).sms"
+    },
+    {
+      "name": "Artfull (World) (v1.1) (Aftermarket) (Unl).sms"
+    },
+    {
+      "name": "Artfull (World) (v1.2) (Aftermarket) (Unl).sms"
+    },
+    {
+      "name": "Artfull (World) (v1.3) (Aftermarket) (Unl).sms"
+    },
+    {
+      "name": "Artfull (World) (v1.4) (Aftermarket) (Unl).sms"
+    },
+    {
+      "name": "Artillery Master 8k (World) (v0.9) (Proto) (Aftermarket) (Unl).sms"
+    },
+    {
+      "name": "Ascend (World) (Aftermarket) (Unl).sms"
+    },
+    {
+      "name": "Ashura (Japan) (En).sms"
+    },
+    {
+      "name": "Assault City (Europe) (Joypad).sms"
+    },
+    {
+      "name": "Assault City (Europe, Brazil) (En) (Light Phaser).sms"
+    },
+    {
+      "name": "Asterix (Europe, Brazil) (En,Fr).sms"
+    },
+    {
+      "name": "Asterix (Europe, Brazil) (En,Fr) (Rev 1).sms"
+    },
+    {
+      "name": "Asterix and the Great Rescue (Europe, Brazil) (En,Fr,De,Es,It).sms"
+    },
+    {
+      "name": "Asterix and the Secret Mission (Europe, Brazil) (En,Fr,De).sms"
+    },
+    {
+      "name": "Astro Adventure (Taiwan) (En) (Unl).sms"
+    },
+    {
+      "name": "Astro Climber (World) (v1.2.1) (Aftermarket) (Unl).sms"
+    },
+    {
+      "name": "Astro Flash (Japan) (En).sms"
+    },
+    {
+      "name": "Astro Force (World) (v1.00) (Aftermarket) (Unl).sms"
+    },
+    {
+      "name": "Astro Force (World) (v1.01) (Aftermarket) (Unl).sms"
+    },
+    {
+      "name": "Astro Force (World) (v1.02) (Aftermarket) (Unl).sms"
+    },
+    {
+      "name": "Astro Force (World) (v1.03) (Aftermarket) (Unl).sms"
+    },
+    {
+      "name": "Astro Hunter (World) (v0.1) (Aftermarket) (Pirate).sms"
+    },
+    {
+      "name": "Astro Hunter (World) (v0.2) (Proto) (Aftermarket) (Unl).sms"
+    },
+    {
+      "name": "Astro Warrior & Pit Pot (Brazil) (En) (Master System Evolution).sms"
+    },
+    {
+      "name": "Astro Warrior & Pit Pot (Europe).sms"
+    },
+    {
+      "name": "Astro Warrior & Pit Pot (Europe) (Sample).sms"
+    },
+    {
+      "name": "Astro Warrior (Japan, USA, Brazil) (En).sms"
+    },
+    {
+      "name": "Astroswab (World) (Aftermarket) (Unl).sms"
+    },
+    {
+      "name": "Attention to Detail (World) (Aftermarket) (Unl).sms"
+    }
+  ]
+}

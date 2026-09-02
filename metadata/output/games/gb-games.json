@@ -1,0 +1,142 @@
+{
+  "system": "gb",
+  "systemName": "Game Boy",
+  "totalGames": 15,
+  "games": [
+    {
+      "name": "Tetris",
+      "systemID": "gb",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "Pok\u00e9mon Red",
+      "systemID": "gb",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "Pok\u00e9mon Blue",
+      "systemID": "gb",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "Super Mario Land",
+      "systemID": "gb",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "The Legend of Zelda: Link's Awakening",
+      "systemID": "gb",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "Metroid II",
+      "systemID": "gb",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "Mega Man II",
+      "systemID": "gb",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "Castlevania II",
+      "systemID": "gb",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "Dragon Quest",
+      "systemID": "gb",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": 63,
+      "userScore": -7.368769265468757
+    },
+    {
+      "name": "Final Fantasy Legend",
+      "systemID": "gb",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "Street Fighter II",
+      "systemID": "gb",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "Pokemon Yellow",
+      "systemID": "gb",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "Mega Man",
+      "systemID": "gb",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "Dr. Mario",
+      "systemID": "gb",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "Kirby's Dream Land",
+      "systemID": "gb",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    }
+  ]
+}

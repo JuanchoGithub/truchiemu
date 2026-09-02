@@ -1,0 +1,12 @@
+{
+  "system": "colecovision",
+  "systemName": "ColecoVision",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for ColecoVision",
+      "systemID": "colecovision",
+      "source": "placeholder"
+    }
+  ]
+}

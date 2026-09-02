@@ -1,0 +1,12 @@
+{
+  "system": "rvvm",
+  "systemName": "RVVM",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for RVVM",
+      "systemID": "rvvm",
+      "source": "placeholder"
+    }
+  ]
+}

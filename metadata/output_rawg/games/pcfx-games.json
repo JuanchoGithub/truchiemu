@@ -1,0 +1,12 @@
+{
+  "system": "pcfx",
+  "systemName": "PC-FX",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for PC-FX",
+      "systemID": "pcfx",
+      "source": "placeholder"
+    }
+  ]
+}

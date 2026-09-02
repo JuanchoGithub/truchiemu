@@ -1,0 +1,14 @@
+{
+  "system": "pcecd",
+  "systemName": "PC Engine CD",
+  "totalGames": 1,
+  "openCriticURLs": [
+    null
+  ],
+  "metacriticURLs": [
+    "https://metacritic.com/game/game-for-pc-engine-cd"
+  ],
+  "launchboxURLs": [
+    "https://gamesdb.launchbox-app.com/metadata/pcecd/game-for-pc-engine-cd"
+  ]
+}

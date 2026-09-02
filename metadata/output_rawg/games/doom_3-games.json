@@ -1,0 +1,12 @@
+{
+  "system": "doom_3",
+  "systemName": "Doom 3 XP Game Engine",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for Doom 3 XP Game Engine",
+      "systemID": "doom_3",
+      "source": "placeholder"
+    }
+  ]
+}

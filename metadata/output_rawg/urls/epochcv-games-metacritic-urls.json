@@ -1,0 +1,14 @@
+{
+  "system": "epochcv",
+  "systemName": "Epoch Cassette Vision",
+  "totalGames": 1,
+  "openCriticURLs": [
+    null
+  ],
+  "metacriticURLs": [
+    "https://metacritic.com/game/game-for-epoch-cassette-vision"
+  ],
+  "launchboxURLs": [
+    "https://gamesdb.launchbox-app.com/metadata/epochcv/game-for-epoch-cassette-vision"
+  ]
+}

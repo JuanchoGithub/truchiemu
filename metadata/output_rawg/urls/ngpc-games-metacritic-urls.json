@@ -1,0 +1,14 @@
+{
+  "system": "ngpc",
+  "systemName": "Neo Geo Pocket Color",
+  "totalGames": 1,
+  "openCriticURLs": [
+    null
+  ],
+  "metacriticURLs": [
+    "https://metacritic.com/game/game-for-neo-geo-pocket-color"
+  ],
+  "launchboxURLs": [
+    "https://gamesdb.launchbox-app.com/metadata/ngpc/game-for-neo-geo-pocket-color"
+  ]
+}

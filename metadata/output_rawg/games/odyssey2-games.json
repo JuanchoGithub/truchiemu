@@ -1,0 +1,12 @@
+{
+  "system": "odyssey2",
+  "systemName": "Magnavox Odyssey2 / Philips Videopac+",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for Magnavox Odyssey2 / Philips Videopac+",
+      "systemID": "odyssey2",
+      "source": "placeholder"
+    }
+  ]
+}

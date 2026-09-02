@@ -1,0 +1,12 @@
+{
+  "system": "atari_jaguar",
+  "systemName": "Jaguar",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for Jaguar",
+      "systemID": "atari_jaguar",
+      "source": "placeholder"
+    }
+  ]
+}

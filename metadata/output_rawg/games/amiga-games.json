@@ -1,0 +1,12 @@
+{
+  "system": "amiga",
+  "systemName": "Commodore Amiga",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for Commodore Amiga",
+      "systemID": "amiga",
+      "source": "placeholder"
+    }
+  ]
+}

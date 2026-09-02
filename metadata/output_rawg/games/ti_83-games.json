@@ -1,0 +1,12 @@
+{
+  "system": "ti_83",
+  "systemName": "TI83",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for TI83",
+      "systemID": "ti_83",
+      "source": "placeholder"
+    }
+  ]
+}

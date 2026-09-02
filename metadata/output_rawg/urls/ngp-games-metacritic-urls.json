@@ -1,0 +1,14 @@
+{
+  "system": "ngp",
+  "systemName": "Neo Geo Pocket",
+  "totalGames": 1,
+  "openCriticURLs": [
+    null
+  ],
+  "metacriticURLs": [
+    "https://metacritic.com/game/game-for-neo-geo-pocket"
+  ],
+  "launchboxURLs": [
+    "https://gamesdb.launchbox-app.com/metadata/ngp/game-for-neo-geo-pocket"
+  ]
+}

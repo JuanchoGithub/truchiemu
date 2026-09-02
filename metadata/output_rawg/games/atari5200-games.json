@@ -1,0 +1,12 @@
+{
+  "system": "atari5200",
+  "systemName": "Atari 5200",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for Atari 5200",
+      "systemID": "atari5200",
+      "source": "placeholder"
+    }
+  ]
+}

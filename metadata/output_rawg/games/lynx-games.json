@@ -1,0 +1,367 @@
+{
+  "system": "lynx",
+  "systemName": "Atari Lynx",
+  "totalGames": 120,
+  "games": [
+    {
+      "name": "2048 (World) (Aftermarket) (Unl)"
+    },
+    {
+      "name": "2048 (World) (Aftermarket) (Unl).bll"
+    },
+    {
+      "name": "2048 (World) (Aftermarket) (Unl).lnx"
+    },
+    {
+      "name": "2048 (World) (Aftermarket) (Unl).lyx"
+    },
+    {
+      "name": "4Ttude (World) (v1.0) (Atari Lynx 30th Birthday) (Aftermarket) (Unl)"
+    },
+    {
+      "name": "4Ttude (World) (v1.0) (Atari Lynx 30th Birthday) (Aftermarket) (Unl).lnx"
+    },
+    {
+      "name": "4Ttude (World) (v1.0) (Atari Lynx 30th Birthday) (Aftermarket) (Unl).lyx"
+    },
+    {
+      "name": "4Ttude (World) (v1.1) (Aftermarket) (Unl)"
+    },
+    {
+      "name": "4Ttude (World) (v1.1) (Aftermarket) (Unl).lnx"
+    },
+    {
+      "name": "4Ttude (World) (v1.1) (Aftermarket) (Unl).lyx"
+    },
+    {
+      "name": "4Ttude (World) (v1.2) (Aftermarket) (Unl)"
+    },
+    {
+      "name": "4Ttude (World) (v1.2) (Aftermarket) (Unl).lnx"
+    },
+    {
+      "name": "4Ttude (World) (v1.2) (Aftermarket) (Unl).lyx"
+    },
+    {
+      "name": "A.P.B. (USA, Europe)"
+    },
+    {
+      "name": "A.P.B. (USA, Europe).lyx"
+    },
+    {
+      "name": "Alien (World) (v1.02) (Aftermarket) (Unl)"
+    },
+    {
+      "name": "Alien (World) (v1.02) (Aftermarket) (Unl).lnx"
+    },
+    {
+      "name": "Alien (World) (v1.02) (Aftermarket) (Unl).lyx"
+    },
+    {
+      "name": "Alien (World) (v1.03) (Aftermarket) (Unl)"
+    },
+    {
+      "name": "Alien (World) (v1.03) (Aftermarket) (Unl).lnx"
+    },
+    {
+      "name": "Alien (World) (v1.03) (Aftermarket) (Unl).lyx"
+    },
+    {
+      "name": "Alien (World) (v1.04) (Aftermarket) (Unl)"
+    },
+    {
+      "name": "Alien (World) (v1.04) (Aftermarket) (Unl).lnx"
+    },
+    {
+      "name": "Alien (World) (v1.04) (Aftermarket) (Unl).lyx"
+    },
+    {
+      "name": "Alien (World) (v1.06) (Aftermarket) (Unl)"
+    },
+    {
+      "name": "Alien (World) (v1.06) (Aftermarket) (Unl).lnx"
+    },
+    {
+      "name": "Alien (World) (v1.06) (Aftermarket) (Unl).lyx"
+    },
+    {
+      "name": "Alien vs Predator (Europe) (Proto)"
+    },
+    {
+      "name": "Alien vs Predator (Europe) (Proto) (1993-12-17).lyx"
+    },
+    {
+      "name": "Allein (World) (De) (Aftermarket) (Unl)"
+    },
+    {
+      "name": "Allein (World) (De) (Aftermarket) (Unl).lnx"
+    },
+    {
+      "name": "Allein (World) (De) (Aftermarket) (Unl).lyx"
+    },
+    {
+      "name": "Always Winter, Never Christmas (World) (Aftermarket) (Unl)"
+    },
+    {
+      "name": "Always Winter, Never Christmas (World) (Aftermarket) (Unl).lnx"
+    },
+    {
+      "name": "Always Winter, Never Christmas (World) (Aftermarket) (Unl).lyx"
+    },
+    {
+      "name": "Angry Motes (World) (Aftermarket) (Unl)"
+    },
+    {
+      "name": "Angry Motes (World) (Aftermarket) (Unl).bll"
+    },
+    {
+      "name": "Angry Motes (World) (Aftermarket) (Unl).lnx"
+    },
+    {
+      "name": "Angry Motes (World) (Aftermarket) (Unl).lyx"
+    },
+    {
+      "name": "Anti A-Bomb Aircraft Artillery (World) (v1.0) (Aftermarket) (Unl)"
+    },
+    {
+      "name": "Anti A-Bomb Aircraft Artillery (World) (v1.0) (Aftermarket) (Unl).bll"
+    },
+    {
+      "name": "Anti A-Bomb Aircraft Artillery (World) (v1.0) (Aftermarket) (Unl).lnx"
+    },
+    {
+      "name": "Anti A-Bomb Aircraft Artillery (World) (v1.0) (Aftermarket) (Unl).lyx"
+    },
+    {
+      "name": "Anti A-Bomb Aircraft Artillery (World) (v1.1) (Aftermarket) (Unl)"
+    },
+    {
+      "name": "Anti A-Bomb Aircraft Artillery (World) (v1.1) (Aftermarket) (Unl).lnx"
+    },
+    {
+      "name": "Anti A-Bomb Aircraft Artillery (World) (v1.1) (Aftermarket) (Unl).lyx"
+    },
+    {
+      "name": "Assembloids (World) (v1.00) (Digital) (Atari Lynx 30th Birthday) (Aftermarket) (Unl)"
+    },
+    {
+      "name": "Assembloids (World) (v1.00) (Digital) (Atari Lynx 30th Birthday) (Aftermarket) (Unl).lnx"
+    },
+    {
+      "name": "Assembloids (World) (v1.00) (Digital) (Atari Lynx 30th Birthday) (Aftermarket) (Unl).lyx"
+    },
+    {
+      "name": "Assembloids (World) (v1.04) (Digital) (Aftermarket) (Unl)"
+    },
+    {
+      "name": "Assembloids (World) (v1.04) (Digital) (Aftermarket) (Unl).lnx"
+    },
+    {
+      "name": "Assembloids (World) (v1.04) (Digital) (Aftermarket) (Unl).lyx"
+    },
+    {
+      "name": "Asteroids Chasers (World) (Proto) (Aftermarket) (Unl)"
+    },
+    {
+      "name": "Asteroids Chasers (World) (2020-08-14) (Proto) (Aftermarket) (Unl).lnx"
+    },
+    {
+      "name": "Asteroids Chasers (World) (2020-08-14) (Proto) (Aftermarket) (Unl).lyx"
+    },
+    {
+      "name": "Asteroids Chasers (World) (2020-08-16) (Proto) (Aftermarket) (Unl).lnx"
+    },
+    {
+      "name": "Asteroids Chasers (World) (2020-08-16) (Proto) (Aftermarket) (Unl).lyx"
+    },
+    {
+      "name": "Atari Tabletops Collection (World) (v1.0) (Aftermarket) (Unl)"
+    },
+    {
+      "name": "Atari Tabletops Collection (World) (v1.0) (Aftermarket) (Unl).bll"
+    },
+    {
+      "name": "Atari Tabletops Collection (World) (v1.0) (Aftermarket) (Unl).lnx"
+    },
+    {
+      "name": "Atari Tabletops Collection (World) (v1.0) (Aftermarket) (Unl).lyx"
+    },
+    {
+      "name": "Atari Tabletops Collection (World) (v1.1) (Aftermarket) (Unl)"
+    },
+    {
+      "name": "Atari Tabletops Collection (World) (v1.1) (Aftermarket) (Unl).bll"
+    },
+    {
+      "name": "Atari Tabletops Collection (World) (v1.1) (Aftermarket) (Unl).lnx"
+    },
+    {
+      "name": "Atari Tabletops Collection (World) (v1.1) (Aftermarket) (Unl).lyx"
+    },
+    {
+      "name": "Atomix (World) (Proto) (Aftermarket) (Unl)"
+    },
+    {
+      "name": "Atomix (World) (Proto) (Aftermarket) (Unl).lnx"
+    },
+    {
+      "name": "Atomix (World) (Proto) (Aftermarket) (Unl).lyx"
+    },
+    {
+      "name": "Awesome Golf (USA, Europe)"
+    },
+    {
+      "name": "Awesome Golf (USA, Europe).lyx"
+    },
+    {
+      "name": "Awesome Golf (World) (Atari Lynx Collection 1) (Unl)"
+    },
+    {
+      "name": "Awesome Golf (World) (Atari Lynx Collection 1) (Unl).lnx"
+    },
+    {
+      "name": "Awesome Golf (World) (Atari Lynx Collection 1) (Unl).lyx"
+    },
+    {
+      "name": "Banana Ghost (World) (v0.1) (Proto) (Aftermarket) (Unl)"
+    },
+    {
+      "name": "Banana Ghost (World) (v0.1) (Proto) (Aftermarket) (Unl).bll"
+    },
+    {
+      "name": "Banana Ghost (World) (v0.1) (Proto) (Aftermarket) (Unl).lnx"
+    },
+    {
+      "name": "Banana Ghost (World) (v0.1) (Proto) (Aftermarket) (Unl).lyx"
+    },
+    {
+      "name": "Banana Ghost (World) (v0.2) (Proto) (Aftermarket) (Unl)"
+    },
+    {
+      "name": "Banana Ghost (World) (v0.2) (Proto) (Aftermarket) (Unl).bll"
+    },
+    {
+      "name": "Banana Ghost (World) (v0.2) (Proto) (Aftermarket) (Unl).lnx"
+    },
+    {
+      "name": "Banana Ghost (World) (v0.2) (Proto) (Aftermarket) (Unl).lyx"
+    },
+    {
+      "name": "Bars (World) (Proto) (Aftermarket) (Unl)"
+    },
+    {
+      "name": "Bars (World) (Proto) (Aftermarket) (Unl).bll"
+    },
+    {
+      "name": "Bars (World) (Proto) (Aftermarket) (Unl).lnx"
+    },
+    {
+      "name": "Bars (World) (Proto) (Aftermarket) (Unl).lyx"
+    },
+    {
+      "name": "Baseball Heroes (USA, Europe)"
+    },
+    {
+      "name": "Baseball Heroes (USA, Europe).lyx"
+    },
+    {
+      "name": "Basketbrawl (USA, Europe)"
+    },
+    {
+      "name": "Basketbrawl (USA, Europe).lyx"
+    },
+    {
+      "name": "Basketbrawl (World) (Atari Lynx Collection 1) (Unl)"
+    },
+    {
+      "name": "Basketbrawl (World) (Atari Lynx Collection 1) (Unl).lnx"
+    },
+    {
+      "name": "Basketbrawl (World) (Atari Lynx Collection 1) (Unl).lyx"
+    },
+    {
+      "name": "Bathman (World) (Aftermarket) (Unl)"
+    },
+    {
+      "name": "Bathman (World) (Aftermarket) (Unl).bll"
+    },
+    {
+      "name": "Bathman (World) (Aftermarket) (Unl).lnx"
+    },
+    {
+      "name": "Bathman (World) (Aftermarket) (Unl).lyx"
+    },
+    {
+      "name": "Batman Returns (USA, Europe)"
+    },
+    {
+      "name": "Batman Returns (USA, Europe).lyx"
+    },
+    {
+      "name": "Battle Wheels (USA, Europe)"
+    },
+    {
+      "name": "Battle Wheels (USA, Europe).lyx"
+    },
+    {
+      "name": "Battlezone 2000 (USA, Europe)"
+    },
+    {
+      "name": "Battlezone 2000 (USA, Europe).lyx"
+    },
+    {
+      "name": "Befok (World) (Proto) (Aftermarket) (Unl)"
+    },
+    {
+      "name": "Befok (World) (Proto) (Aftermarket) (Unl).bll"
+    },
+    {
+      "name": "Befok (World) (Proto) (Aftermarket) (Unl).lnx"
+    },
+    {
+      "name": "Befok (World) (Proto) (Aftermarket) (Unl).lyx"
+    },
+    {
+      "name": "Bezerkoids (World) (Proto 1) (Aftermarket) (Unl)"
+    },
+    {
+      "name": "Bezerkoids (World) (Proto 1) (Aftermarket) (Unl).lnx"
+    },
+    {
+      "name": "Bezerkoids (World) (Proto 1) (Aftermarket) (Unl).lyx"
+    },
+    {
+      "name": "Bezerkoids (World) (Proto 2) (Aftermarket) (Unl)"
+    },
+    {
+      "name": "Bezerkoids (World) (Proto 2) (Aftermarket) (Unl).lnx"
+    },
+    {
+      "name": "Bezerkoids (World) (Proto 2) (Aftermarket) (Unl).lyx"
+    },
+    {
+      "name": "Bezerkoids (World) (Proto 3) (Aftermarket) (Unl)"
+    },
+    {
+      "name": "Bezerkoids (World) (Proto 3) (Aftermarket) (Unl).lnx"
+    },
+    {
+      "name": "Bezerkoids (World) (Proto 3) (Aftermarket) (Unl).lyx"
+    },
+    {
+      "name": "Bill & Ted's Excellent Adventure (USA, Europe)"
+    },
+    {
+      "name": "Bill & Ted's Excellent Adventure (USA, Europe).lyx"
+    },
+    {
+      "name": "Biniax (World) (v0.1) (Beta) (Aftermarket) (Unl)"
+    },
+    {
+      "name": "Biniax (World) (v0.1) (Beta) (Aftermarket) (Unl).lnx"
+    },
+    {
+      "name": "Biniax (World) (v0.1) (Beta) (Aftermarket) (Unl).lyx"
+    }
+  ]
+}

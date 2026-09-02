@@ -1,0 +1,12 @@
+{
+  "system": "wasm4",
+  "systemName": "WASM-4",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for WASM-4",
+      "systemID": "wasm4",
+      "source": "placeholder"
+    }
+  ]
+}

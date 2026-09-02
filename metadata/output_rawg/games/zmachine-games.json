@@ -1,0 +1,12 @@
+{
+  "system": "zmachine",
+  "systemName": "Z-Machine",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for Z-Machine",
+      "systemID": "zmachine",
+      "source": "placeholder"
+    }
+  ]
+}

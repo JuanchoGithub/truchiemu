@@ -1,0 +1,12 @@
+{
+  "system": "atari2600",
+  "systemName": "Atari 2600",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for Atari 2600",
+      "systemID": "atari2600",
+      "source": "placeholder"
+    }
+  ]
+}

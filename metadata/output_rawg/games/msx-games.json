@@ -1,0 +1,12 @@
+{
+  "system": "msx",
+  "systemName": "MSX",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for MSX",
+      "systemID": "msx",
+      "source": "placeholder"
+    }
+  ]
+}

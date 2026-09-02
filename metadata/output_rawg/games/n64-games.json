@@ -1,0 +1,12 @@
+{
+  "system": "n64",
+  "systemName": "Nintendo 64",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for Nintendo 64",
+      "systemID": "n64",
+      "source": "placeholder"
+    }
+  ]
+}

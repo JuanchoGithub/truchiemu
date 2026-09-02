@@ -1,0 +1,12 @@
+{
+  "system": "gam4980",
+  "systemName": "Longman 4980",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for Longman 4980",
+      "systemID": "gam4980",
+      "source": "placeholder"
+    }
+  ]
+}

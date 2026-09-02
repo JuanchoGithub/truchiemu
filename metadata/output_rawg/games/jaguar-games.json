@@ -1,0 +1,367 @@
+{
+  "system": "jaguar",
+  "systemName": "Atari Jaguar",
+  "totalGames": 120,
+  "games": [
+    {
+      "name": "Atari - Jaguar"
+    },
+    {
+      "name": "1943 (World) (Aftermarket) (Unl).j64"
+    },
+    {
+      "name": "1943 (World) (Aftermarket) (Unl).rom"
+    },
+    {
+      "name": "2048 (World) (Aftermarket) (Unl).j64"
+    },
+    {
+      "name": "2048 (World) (Aftermarket) (Unl).rom"
+    },
+    {
+      "name": "Abyss (World) (v0.74) (Proto) (Aftermarket) (Unl).cof"
+    },
+    {
+      "name": "Abyss (World) (v0.74) (Proto) (Aftermarket) (Unl).j64"
+    },
+    {
+      "name": "Abyss (World) (v0.74) (Proto) (Aftermarket) (Unl).rom"
+    },
+    {
+      "name": "Action Fighter (World) (Aftermarket) (Unl).j64"
+    },
+    {
+      "name": "Action Fighter (World) (Aftermarket) (Unl).rom"
+    },
+    {
+      "name": "Aircars (USA) (Beta) (1994-11-14).j64"
+    },
+    {
+      "name": "Aircars (USA) (Beta) (1994-11-14).rom"
+    },
+    {
+      "name": "Aircars (World) (Aftermarket) (Unl).j64"
+    },
+    {
+      "name": "Aircars (World) (Aftermarket) (Unl).rom"
+    },
+    {
+      "name": "Alice's Mom's Rescue (World) (En,Fr,De,Es,It) (Aftermarket) (Unl).j64"
+    },
+    {
+      "name": "Alice's Mom's Rescue (World) (En,Fr,De,Es,It) (Aftermarket) (Unl).rom"
+    },
+    {
+      "name": "Alien Syndrome (World) (Aftermarket) (Unl)"
+    },
+    {
+      "name": "Alien Syndrome (World) (Aftermarket) (Unl).j64"
+    },
+    {
+      "name": "Alien Syndrome (World) (Aftermarket) (Unl).rom"
+    },
+    {
+      "name": "Alien vs Predator (World).j64"
+    },
+    {
+      "name": "Alien vs Predator (World).rom"
+    },
+    {
+      "name": "Alien vs Predator (World) (Beta) (1993-08-18).j64"
+    },
+    {
+      "name": "Alien vs Predator (World) (Beta) (1993-08-18).rom"
+    },
+    {
+      "name": "Alien vs Predator (World) (Beta) (1993-10-13).j64"
+    },
+    {
+      "name": "Alien vs Predator (World) (Beta) (1993-10-13).rom"
+    },
+    {
+      "name": "Alien vs Predator (World) (v0.93) (Beta) (1994-04-08).j64"
+    },
+    {
+      "name": "Alien vs Predator (World) (v0.93) (Beta) (1994-04-08).rom"
+    },
+    {
+      "name": "Arena Football '95 (World) (Aftermarket) (Unl).j64"
+    },
+    {
+      "name": "Arena Football '95 (World) (Aftermarket) (Unl).rom"
+    },
+    {
+      "name": "Arkanoid - Revenge of DoH (World) (Aftermarket) (Unl).j64"
+    },
+    {
+      "name": "Arkanoid - Revenge of DoH (World) (Aftermarket) (Unl).rom"
+    },
+    {
+      "name": "Assassin, The (World) (Demo 1) (Aftermarket) (Unl).j64"
+    },
+    {
+      "name": "Assassin, The (World) (Demo 1) (Aftermarket) (Unl).rom"
+    },
+    {
+      "name": "Assassin, The (World) (Demo 2) (Aftermarket) (Unl).j64"
+    },
+    {
+      "name": "Assassin, The (World) (Demo 2) (Aftermarket) (Unl).rom"
+    },
+    {
+      "name": "Asteroids (World) (Aftermarket) (Unl).j64"
+    },
+    {
+      "name": "Asteroids (World) (Aftermarket) (Unl).rom"
+    },
+    {
+      "name": "AstroStorm (World) (v1.43) (Digital) (Aftermarket) (Unl).abs"
+    },
+    {
+      "name": "AstroStorm (World) (v1.43) (Digital) (Aftermarket) (Unl).j64"
+    },
+    {
+      "name": "AstroStorm (World) (v1.43) (Digital) (Aftermarket) (Unl).rom"
+    },
+    {
+      "name": "Atari Karts (World).j64"
+    },
+    {
+      "name": "Atari Karts (World).rom"
+    },
+    {
+      "name": "Atari Karts (World) (Beta).j64"
+    },
+    {
+      "name": "Atari Karts (World) (Beta).rom"
+    },
+    {
+      "name": "Atomic (World) (Aftermarket) (Unl).j64"
+    },
+    {
+      "name": "Atomic (World) (Aftermarket) (Unl).rom"
+    },
+    {
+      "name": "Atomic Reloaded (World) (Aftermarket) (Unl).j64"
+    },
+    {
+      "name": "Atomic Reloaded (World) (Aftermarket) (Unl).rom"
+    },
+    {
+      "name": "Attack of the Mutant Penguins (World).j64"
+    },
+    {
+      "name": "Attack of the Mutant Penguins (World).rom"
+    },
+    {
+      "name": "Bad Apple (World) (Color Version) (Aftermarket) (Unl).j64"
+    },
+    {
+      "name": "Bad Apple (World) (Color Version) (Aftermarket) (Unl).rom"
+    },
+    {
+      "name": "Bad Apple (World) (Monochrome Version) (Aftermarket) (Unl)"
+    },
+    {
+      "name": "Bad Apple (World) (Monochrome Version) (Aftermarket) (Unl).j64"
+    },
+    {
+      "name": "Bad Apple (World) (Monochrome Version) (Aftermarket) (Unl).rom"
+    },
+    {
+      "name": "Badlands (World) (Aftermarket) (Unl).j64"
+    },
+    {
+      "name": "Badlands (World) (Aftermarket) (Unl).rom"
+    },
+    {
+      "name": "Barbarian (World) (AMIGA) (Aftermarket) (Unl).j64"
+    },
+    {
+      "name": "Barbarian (World) (AMIGA) (Aftermarket) (Unl).rom"
+    },
+    {
+      "name": "Barbarian (World) (Atari ST) (Aftermarket) (Unl).j64"
+    },
+    {
+      "name": "Barbarian (World) (Atari ST) (Aftermarket) (Unl).rom"
+    },
+    {
+      "name": "Barkley Shut Up and Jam (USA) (Beta).j64"
+    },
+    {
+      "name": "Barkley Shut Up and Jam (USA) (Beta).rom"
+    },
+    {
+      "name": "Barkley Shut Up and Jam (World) (Aftermarket) (Unl).j64"
+    },
+    {
+      "name": "Barkley Shut Up and Jam (World) (Aftermarket) (Unl).rom"
+    },
+    {
+      "name": "Battle Sphere (World) (Aftermarket) (Unl).j64"
+    },
+    {
+      "name": "Battle Sphere (World) (Aftermarket) (Unl).rom"
+    },
+    {
+      "name": "Battle Sphere Gold (World) (Aftermarket) (Unl).j64"
+    },
+    {
+      "name": "Battle Sphere Gold (World) (Aftermarket) (Unl).rom"
+    },
+    {
+      "name": "Beach Volley (World) (Aftermarket) (Unl).j64"
+    },
+    {
+      "name": "Beach Volley (World) (Aftermarket) (Unl).rom"
+    },
+    {
+      "name": "Beast Busters (World) (Aftermarket) (Unl).j64"
+    },
+    {
+      "name": "Beast Busters (World) (Aftermarket) (Unl).rom"
+    },
+    {
+      "name": "Beebris (World) (Aftermarket) (Unl).j64"
+    },
+    {
+      "name": "Beebris (World) (Aftermarket) (Unl).rom"
+    },
+    {
+      "name": "Bionic Commando (World) (Aftermarket) (Unl).j64"
+    },
+    {
+      "name": "Bionic Commando (World) (Aftermarket) (Unl).rom"
+    },
+    {
+      "name": "Biopede (World) (v1.3) (Aftermarket) (Unl).j64"
+    },
+    {
+      "name": "Biopede (World) (v1.3) (Aftermarket) (Unl).rom"
+    },
+    {
+      "name": "Black Lamp (World) (Aftermarket) (Unl).abs"
+    },
+    {
+      "name": "Black Lamp (World) (Aftermarket) (Unl).j64"
+    },
+    {
+      "name": "Black Lamp (World) (Aftermarket) (Unl).rom"
+    },
+    {
+      "name": "Blackhole (World) (Proto) (Aftermarket) (Unl).abs"
+    },
+    {
+      "name": "Blackhole (World) (Proto) (Aftermarket) (Unl).j64"
+    },
+    {
+      "name": "Blackhole (World) (Proto) (Aftermarket) (Unl).rom"
+    },
+    {
+      "name": "Block'em Sock'em (World) (Digital) (Aftermarket) (Unl).j64"
+    },
+    {
+      "name": "Block'em Sock'em (World) (Digital) (Aftermarket) (Unl).rom"
+    },
+    {
+      "name": "Boingy (World) (Demo 1) (Aftermarket) (Unl).abs"
+    },
+    {
+      "name": "Boingy (World) (Demo 1) (Aftermarket) (Unl).j64"
+    },
+    {
+      "name": "Boingy (World) (Demo 1) (Aftermarket) (Unl).rom"
+    },
+    {
+      "name": "Boingy (World) (Demo 2) (Aftermarket) (Unl).abs"
+    },
+    {
+      "name": "Boingy (World) (Demo 2) (Aftermarket) (Unl).j64"
+    },
+    {
+      "name": "Boingy (World) (Demo 2) (Aftermarket) (Unl).rom"
+    },
+    {
+      "name": "Boingy (World) (Demo 3) (Aftermarket) (Unl).abs"
+    },
+    {
+      "name": "Boingy (World) (Demo 3) (Aftermarket) (Unl).j64"
+    },
+    {
+      "name": "Boingy (World) (Demo 3) (Aftermarket) (Unl).rom"
+    },
+    {
+      "name": "Breakout 2000 (USA, Europe).j64"
+    },
+    {
+      "name": "Breakout 2000 (USA, Europe).rom"
+    },
+    {
+      "name": "Breakout 2000 (USA, Europe) (Beta).j64"
+    },
+    {
+      "name": "Breakout 2000 (USA, Europe) (Beta).rom"
+    },
+    {
+      "name": "Brett Hull Hockey (World) (Aftermarket) (Unl).j64"
+    },
+    {
+      "name": "Brett Hull Hockey (World) (Aftermarket) (Unl).rom"
+    },
+    {
+      "name": "Brutal Sports Football (World).j64"
+    },
+    {
+      "name": "Brutal Sports Football (World).rom"
+    },
+    {
+      "name": "Bubble Bobble (World) (Aftermarket) (Unl).j64"
+    },
+    {
+      "name": "Bubble Bobble (World) (Aftermarket) (Unl).rom"
+    },
+    {
+      "name": "Bubsy in Fractured Furry Tales (World).j64"
+    },
+    {
+      "name": "Bubsy in Fractured Furry Tales (World).rom"
+    },
+    {
+      "name": "Burn Out (World) (Demo 1).j64"
+    },
+    {
+      "name": "Burn Out (World) (Demo 1).rom"
+    },
+    {
+      "name": "Burn Out (World) (Demo 2) (WCES 1995).j64"
+    },
+    {
+      "name": "Burn Out (World) (Demo 2) (WCES 1995).rom"
+    },
+    {
+      "name": "Cannon Fodder (World).j64"
+    },
+    {
+      "name": "Cannon Fodder (World).rom"
+    },
+    {
+      "name": "Caribean Tavern (World) (Proto) (GemTos 2023) (Aftermarket) (Unl).abs"
+    },
+    {
+      "name": "Caribean Tavern (World) (Proto) (GemTos 2023) (Aftermarket) (Unl).j64"
+    },
+    {
+      "name": "Caribean Tavern (World) (Proto) (GemTos 2023) (Aftermarket) (Unl).rom"
+    },
+    {
+      "name": "Checkered Flag (World).j64"
+    },
+    {
+      "name": "Checkered Flag (World).rom"
+    },
+    {
+      "name": "Checkered Flag (World) (Beta) (CES 1993).j64"
+    }
+  ]
+}

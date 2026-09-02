@@ -1,0 +1,12 @@
+{
+  "system": "p2000t",
+  "systemName": "P2000T",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for P2000T",
+      "systemID": "p2000t",
+      "source": "placeholder"
+    }
+  ]
+}

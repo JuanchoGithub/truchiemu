@@ -1,0 +1,12 @@
+{
+  "system": "segacd",
+  "systemName": "Sega CD",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for Sega CD",
+      "systemID": "segacd",
+      "source": "placeholder"
+    }
+  ]
+}

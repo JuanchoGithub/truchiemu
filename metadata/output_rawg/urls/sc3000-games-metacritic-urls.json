@@ -1,0 +1,14 @@
+{
+  "system": "sc3000",
+  "systemName": "SC-3000",
+  "totalGames": 1,
+  "openCriticURLs": [
+    null
+  ],
+  "metacriticURLs": [
+    "https://metacritic.com/game/game-for-sc-3000"
+  ],
+  "launchboxURLs": [
+    "https://gamesdb.launchbox-app.com/metadata/sc3000/game-for-sc-3000"
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "system": "sc3000",
+  "systemName": "SC-3000",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for SC-3000",
+      "systemID": "sc3000",
+      "source": "placeholder"
+    }
+  ]
+}

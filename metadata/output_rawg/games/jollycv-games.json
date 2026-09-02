@@ -1,0 +1,12 @@
+{
+  "system": "jollycv",
+  "systemName": "ColecoVision/CreatiVision/My Vision",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for ColecoVision/CreatiVision/My Vision",
+      "systemID": "jollycv",
+      "source": "placeholder"
+    }
+  ]
+}

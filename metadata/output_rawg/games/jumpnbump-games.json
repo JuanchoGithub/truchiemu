@@ -1,0 +1,12 @@
+{
+  "system": "jumpnbump",
+  "systemName": "Jumpnbump",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for Jumpnbump",
+      "systemID": "jumpnbump",
+      "source": "placeholder"
+    }
+  ]
+}

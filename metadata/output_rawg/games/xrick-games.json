@@ -1,0 +1,12 @@
+{
+  "system": "xrick",
+  "systemName": "Rick Dangerous Game Engine",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for Rick Dangerous Game Engine",
+      "systemID": "xrick",
+      "source": "placeholder"
+    }
+  ]
+}

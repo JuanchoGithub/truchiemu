@@ -1,0 +1,12 @@
+{
+  "system": "nxengine",
+  "systemName": "Cave Story Game Engine",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for Cave Story Game Engine",
+      "systemID": "nxengine",
+      "source": "placeholder"
+    }
+  ]
+}

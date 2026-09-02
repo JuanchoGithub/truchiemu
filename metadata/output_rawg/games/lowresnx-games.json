@@ -1,0 +1,12 @@
+{
+  "system": "lowresnx",
+  "systemName": "LowRes NX",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for LowRes NX",
+      "systemID": "lowresnx",
+      "source": "placeholder"
+    }
+  ]
+}

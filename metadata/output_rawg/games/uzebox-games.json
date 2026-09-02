@@ -1,0 +1,12 @@
+{
+  "system": "uzebox",
+  "systemName": "Uzebox",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for Uzebox",
+      "systemID": "uzebox",
+      "source": "placeholder"
+    }
+  ]
+}

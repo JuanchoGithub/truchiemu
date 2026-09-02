@@ -1,0 +1,12 @@
+{
+  "system": "wolfenstein3d",
+  "systemName": "Wolfenstein 3D Game Engine",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for Wolfenstein 3D Game Engine",
+      "systemID": "wolfenstein3d",
+      "source": "placeholder"
+    }
+  ]
+}

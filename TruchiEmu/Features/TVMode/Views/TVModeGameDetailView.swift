@@ -24,44 +24,81 @@ struct TVModeGameDetailView: View {
     @State private var selectedSnapIndex: Int = 0
     @State private var downloading: Bool = false
 
-    private var heroWidth: CGFloat { 320 * scale }
-
     var body: some View {
         HStack(spacing: 32 * scale) {
             heroColumn
-                .frame(width: heroWidth)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
             infoColumn
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                .frame(width: 440 * scale, alignment: .topLeading)
+                .frame(maxHeight: .infinity, alignment: .topLeading)
         }
         .padding(40 * scale)
         .onAppear { loadArt() }
         .onChange(of: rom.id) { _, _ in resetArt(); loadArt() }
     }
 
+    /// The game's declared boxart layout (vertical / box / landscape). Drives
+    /// the container aspect ratio when the image hasn't resolved yet, mirroring
+    /// the flat move-list tiles in `TVModeGameTile`.
+    private var boxType: BoxType {
+        SystemPreferences.shared.boxType(for: rom.systemID ?? "")
+    }
+
+    /// Aspect ratio of the hero art. Falls back to the system's `BoxType` while
+    /// the image is still loading so the container never flashes a wrong-ratio
+    /// frame.
+    private var heroAspect: CGFloat {
+        if let img = boxart ?? titleImage, img.size.width > 0, img.size.height > 0 {
+            return img.size.width / img.size.height
+        }
+        return boxType.aspectRatio
+    }
+
+    /// Fits the hero art into `available` while preserving its aspect ratio.
+    private func heroSize(in available: CGSize) -> CGSize {
+        let byHeight = CGSize(width: available.height * heroAspect, height: available.height)
+        if byHeight.width <= available.width {
+            return byHeight
+        }
+        return CGSize(width: available.width, height: available.width / heroAspect)
+    }
+
+    /// Corner radius follows the art's own proportions, matching the move-list
+    /// tiles so portrait covers stay moderately rounded and landscape covers get
+    /// a shallower arc.
+    private func heroCornerRadius(for size: CGSize) -> CGFloat {
+        let base = min(size.width, size.height) * 0.07
+        return min(max(base, 6 * scale), 22 * scale)
+    }
+
     @ViewBuilder
     private var heroColumn: some View {
         VStack(alignment: .center, spacing: 16 * scale) {
-            if let img = boxart ?? titleImage {
-                // Auto holo on the selected game's hero boxart — always on, using
-                // the user's weighted random variant, with the wizard-style
-                // self-driven light + card motion.
-                TVModeHoloBoxart(
-                    image: img,
-                    romID: rom.id.uuidString,
-                    cornerRadius: 16 * scale
-                )
-                .frame(width: heroWidth, height: heroWidth * 4.0 / 3.0)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 16 * scale, style: .continuous)
-                        .strokeBorder(
-                            theme == .bold ? AppColors.accentForScheme(colorScheme) : Color.white.opacity(0.4),
-                            lineWidth: 2 * scale
+            GeometryReader { geo in
+                let size = heroSize(in: geo.size)
+                let radius = heroCornerRadius(for: size)
+                HStack(spacing: 0) {
+                    Spacer(minLength: 0)
+                    if let img = boxart ?? titleImage {
+                        // Auto holo on the selected game's hero boxart — always on,
+                        // using the user's weighted random variant, with the
+                        // wizard-style self-driven light + card motion. No border
+                        // or backing fill: just the art clipped to rounded corners.
+                        TVModeHoloBoxart(
+                            image: img,
+                            romID: rom.id.uuidString,
+                            cornerRadius: radius,
+                            showBackingFill: false
                         )
-                )
-            } else {
-                RoundedRectangle(cornerRadius: 16 * scale, style: .continuous)
-                    .fill(Color.gray.opacity(0.18))
-                    .frame(width: heroWidth, height: heroWidth * 4.0 / 3.0)
+                        .frame(width: size.width, height: size.height)
+                        .clipShape(RoundedRectangle(cornerRadius: radius, style: .continuous))
+                    } else {
+                        RoundedRectangle(cornerRadius: radius, style: .continuous)
+                            .fill(Color.gray.opacity(0.18))
+                            .frame(width: size.width, height: size.height)
+                    }
+                    Spacer(minLength: 0)
+                }
             }
 
             Text(rom.displayName)
@@ -114,7 +151,6 @@ struct TVModeGameDetailView: View {
             snapsSection
             metadataSection
             descriptionSection
-            Spacer(minLength: 0)
         }
     }
 
@@ -176,7 +212,7 @@ struct TVModeGameDetailView: View {
                     .foregroundStyle(theme == .bold ? AppColors.textPrimary(colorScheme).opacity(0.85) : .primary.opacity(0.85))
                     .lineSpacing(1.6)
             }
-            .frame(maxHeight: 140 * scale)
+            .frame(maxHeight: .infinity, alignment: .topLeading)
         }
     }
 

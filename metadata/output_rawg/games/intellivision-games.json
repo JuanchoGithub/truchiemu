@@ -1,0 +1,12 @@
+{
+  "system": "intellivision",
+  "systemName": "Intellivision",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for Intellivision",
+      "systemID": "intellivision",
+      "source": "placeholder"
+    }
+  ]
+}

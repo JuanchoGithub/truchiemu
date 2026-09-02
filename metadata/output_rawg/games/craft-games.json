@@ -1,0 +1,12 @@
+{
+  "system": "craft",
+  "systemName": "Minecraft Game Clone",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for Minecraft Game Clone",
+      "systemID": "craft",
+      "source": "placeholder"
+    }
+  ]
+}

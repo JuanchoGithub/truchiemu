@@ -1,0 +1,14 @@
+{
+  "system": "wii",
+  "systemName": "Wii",
+  "totalGames": 1,
+  "openCriticURLs": [
+    null
+  ],
+  "metacriticURLs": [
+    "https://metacritic.com/game/game-for-wii"
+  ],
+  "launchboxURLs": [
+    "https://gamesdb.launchbox-app.com/metadata/wii/game-for-wii"
+  ]
+}

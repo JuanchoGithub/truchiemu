@@ -1,0 +1,12 @@
+{
+  "system": "dos",
+  "systemName": "MS-DOS",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for MS-DOS",
+      "systemID": "dos",
+      "source": "placeholder"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "system": "scummvm",
+  "systemName": "ScummVM",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for ScummVM",
+      "systemID": "scummvm",
+      "source": "placeholder"
+    }
+  ]
+}

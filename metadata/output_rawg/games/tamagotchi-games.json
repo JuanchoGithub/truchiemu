@@ -1,0 +1,12 @@
+{
+  "system": "tamagotchi",
+  "systemName": "Tamagotchi P1",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for Tamagotchi P1",
+      "systemID": "tamagotchi",
+      "source": "placeholder"
+    }
+  ]
+}

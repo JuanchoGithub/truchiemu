@@ -1,0 +1,12 @@
+{
+  "system": "openlara",
+  "systemName": "Classic Tomb Raider engine",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for Classic Tomb Raider engine",
+      "systemID": "openlara",
+      "source": "placeholder"
+    }
+  ]
+}

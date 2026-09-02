@@ -1,0 +1,14 @@
+{
+  "system": "quake_3",
+  "systemName": "Quake 3 Game Engine",
+  "totalGames": 1,
+  "openCriticURLs": [
+    null
+  ],
+  "metacriticURLs": [
+    "https://metacritic.com/game/game-for-quake-3-game-engine"
+  ],
+  "launchboxURLs": [
+    "https://gamesdb.launchbox-app.com/metadata/quake_3/game-for-quake-3-game-engine"
+  ]
+}

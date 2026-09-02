@@ -1,0 +1,14 @@
+{
+  "system": "arduboy",
+  "systemName": "Arduboy",
+  "totalGames": 1,
+  "openCriticURLs": [
+    null
+  ],
+  "metacriticURLs": [
+    "https://metacritic.com/game/game-for-arduboy"
+  ],
+  "launchboxURLs": [
+    "https://gamesdb.launchbox-app.com/metadata/arduboy/game-for-arduboy"
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "system": "sms",
+  "systemName": "Sega Master System",
+  "openCriticURLs": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    "https://openCritic.com/game/100163",
+    null,
+    null,
+    null,
+    null
+  ],
+  "metacriticURLs": [
+    "https://metacritic.com/game/sonic-the-hedgehog",
+    "https://metacritic.com/game/alex-kidd-in-miracle-world",
+    "https://metacritic.com/game/phantasy-star",
+    "https://metacritic.com/game/shining-force",
+    "https://metacritic.com/game/golden-axe",
+    "https://metacritic.com/game/strider",
+    "https://metacritic.com/game/castle-of-illusion",
+    "https://metacritic.com/game/gain-ground",
+    "https://metacritic.com/game/wonder-boy",
+    "https://metacritic.com/game/sylvanian-families"
+  ],
+  "launchboxURLs": [
+    "https://gamesdb.launchbox-app.com/metadata/sms/sonic the hedgehog",
+    "https://gamesdb.launchbox-app.com/metadata/sms/alex kidd in miracle world",
+    "https://gamesdb.launchbox-app.com/metadata/sms/phantasy star",
+    "https://gamesdb.launchbox-app.com/metadata/sms/shining force",
+    "https://gamesdb.launchbox-app.com/metadata/sms/golden axe",
+    "https://gamesdb.launchbox-app.com/metadata/sms/strider",
+    "https://gamesdb.launchbox-app.com/metadata/sms/castle of illusion",
+    "https://gamesdb.launchbox-app.com/metadata/sms/gain ground",
+    "https://gamesdb.launchbox-app.com/metadata/sms/wonder boy",
+    "https://gamesdb.launchbox-app.com/metadata/sms/sylvanian families"
+  ]
+}

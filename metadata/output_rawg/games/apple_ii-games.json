@@ -1,0 +1,12 @@
+{
+  "system": "apple_ii",
+  "systemName": "II",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for II",
+      "systemID": "apple_ii",
+      "source": "placeholder"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "system": "atari7800",
+  "systemName": "Atari 7800",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for Atari 7800",
+      "systemID": "atari7800",
+      "source": "placeholder"
+    }
+  ]
+}

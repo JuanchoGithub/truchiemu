@@ -1,0 +1,97 @@
+{
+  "system": "sms",
+  "systemName": "Sega Master System",
+  "totalGames": 10,
+  "games": [
+    {
+      "name": "Sonic the Hedgehog",
+      "systemID": "sms",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": 77,
+      "userScore": 6.631230734531243
+    },
+    {
+      "name": "Alex Kidd in Miracle World",
+      "systemID": "sms",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "Phantasy Star",
+      "systemID": "sms",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "Shining Force",
+      "systemID": "sms",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "Golden Axe",
+      "systemID": "sms",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "Strider",
+      "systemID": "sms",
+      "source": "popular-list",
+      "openCriticID": 100163,
+      "openCriticScore": 77,
+      "metacriticScore": 77,
+      "userScore": 6.631230734531243
+    },
+    {
+      "name": "Castle of Illusion",
+      "systemID": "sms",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "Gain Ground",
+      "systemID": "sms",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "Wonder Boy",
+      "systemID": "sms",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "Sylvanian Families",
+      "systemID": "sms",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    }
+  ]
+}

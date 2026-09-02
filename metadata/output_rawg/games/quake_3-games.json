@@ -1,0 +1,12 @@
+{
+  "system": "quake_3",
+  "systemName": "Quake 3 Game Engine",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for Quake 3 Game Engine",
+      "systemID": "quake_3",
+      "source": "placeholder"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "system": "pokemon_mini",
+  "systemName": "Pokemon Mini",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for Pokemon Mini",
+      "systemID": "pokemon_mini",
+      "source": "placeholder"
+    }
+  ]
+}

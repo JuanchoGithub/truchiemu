@@ -1,0 +1,12 @@
+{
+  "system": "dinothawr",
+  "systemName": "Dinothawr Game Engine",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for Dinothawr Game Engine",
+      "systemID": "dinothawr",
+      "source": "placeholder"
+    }
+  ]
+}

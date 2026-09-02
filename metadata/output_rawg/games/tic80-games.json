@@ -1,0 +1,12 @@
+{
+  "system": "tic80",
+  "systemName": "TIC-80",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for TIC-80",
+      "systemID": "tic80",
+      "source": "placeholder"
+    }
+  ]
+}

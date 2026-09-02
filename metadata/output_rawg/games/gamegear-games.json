@@ -1,0 +1,367 @@
+{
+  "system": "gamegear",
+  "systemName": "Sega Game Gear",
+  "totalGames": 120,
+  "games": [
+    {
+      "name": "5 in One FunPak (USA).gg"
+    },
+    {
+      "name": "Aa Harimanada (Japan).gg"
+    },
+    {
+      "name": "Addams Family, The (World).gg"
+    },
+    {
+      "name": "Adventures of Batman & Robin, The (USA, Europe, Brazil) (En).gg"
+    },
+    {
+      "name": "Adventures of Batman & Robin, The (USA, Europe, Brazil) (En) (Beta 1).gg"
+    },
+    {
+      "name": "Adventures of Batman & Robin, The (USA, Europe, Brazil) (En) (Beta 2).gg"
+    },
+    {
+      "name": "Adventures of Batman & Robin, The (USA, Europe, Brazil) (En) (Beta 3).gg"
+    },
+    {
+      "name": "Adventures of Batman & Robin, The (USA, Europe, Brazil) (En) (Beta 4).gg"
+    },
+    {
+      "name": "Adventures of Batman & Robin, The (USA, Europe, Brazil) (En) (Beta 5).gg"
+    },
+    {
+      "name": "Adventures of Batman & Robin, The (USA, Europe, Brazil) (En) (Beta 6).gg"
+    },
+    {
+      "name": "Adventures of Batman & Robin, The (USA, Europe, Brazil) (En) (Beta 7).gg"
+    },
+    {
+      "name": "Adventures of Batman & Robin, The (USA, Europe, Brazil) (En) (Beta 8).gg"
+    },
+    {
+      "name": "Aerial Assault (World).gg"
+    },
+    {
+      "name": "Aerial Assault (World) (Rev 1).gg"
+    },
+    {
+      "name": "Aerial Mini (World) (Aftermarket) (Unl).gg"
+    },
+    {
+      "name": "Aladdin (Japan) (En).gg"
+    },
+    {
+      "name": "Aladdin (USA, Europe, Brazil) (En).gg"
+    },
+    {
+      "name": "Aladdin (USA, Europe, Brazil) (En) (Beta 1).gg"
+    },
+    {
+      "name": "Aladdin (USA, Europe, Brazil) (En) (Beta 2).gg"
+    },
+    {
+      "name": "Aladdin (USA, Europe, Brazil) (En) (Beta 3).gg"
+    },
+    {
+      "name": "Alien 3 (Japan) (En).gg"
+    },
+    {
+      "name": "Alien 3 (USA, Europe).gg"
+    },
+    {
+      "name": "Alien Syndrome (Europe).gg"
+    },
+    {
+      "name": "Alien Syndrome (Japan) (En).gg"
+    },
+    {
+      "name": "Andre Agassi Tennis (USA).gg"
+    },
+    {
+      "name": "Andre Agassi Tennis (USA) (Beta).gg"
+    },
+    {
+      "name": "Antiair Mini (World) (Aftermarket) (Unl).gg"
+    },
+    {
+      "name": "Arcade Classics (USA).gg"
+    },
+    {
+      "name": "Arch Rivals - The Arcade Game (USA).gg"
+    },
+    {
+      "name": "Archer Maclean's Dropzone (Europe).gg"
+    },
+    {
+      "name": "Arena (USA, Europe).gg"
+    },
+    {
+      "name": "Ariel - The Little Mermaid (USA, Europe, Brazil) (En).gg"
+    },
+    {
+      "name": "Arliel - Crystal Densetsu (Japan).gg"
+    },
+    {
+      "name": "Ascend Mini (World) (Aftermarket) (Unl).gg"
+    },
+    {
+      "name": "Asterix and the Great Rescue (Europe) (En,Fr,De,Es,It).gg"
+    },
+    {
+      "name": "Asterix and the Great Rescue (USA) (Beta 3).gg"
+    },
+    {
+      "name": "Asterix and the Great Rescue (USA) (Beta 4).gg"
+    },
+    {
+      "name": "Asterix and the Great Rescue (USA) (Beta 5).gg"
+    },
+    {
+      "name": "Asterix and the Great Rescue (USA) (En,Fr,De,Es,It) (Beta 1).gg"
+    },
+    {
+      "name": "Asterix and the Great Rescue (USA) (En,Fr,De,Es,It) (Beta 2).gg"
+    },
+    {
+      "name": "Asterix and the Great Rescue (USA, Brazil) (En).gg"
+    },
+    {
+      "name": "Asterix and the Secret Mission (Europe) (En,Fr,De).gg"
+    },
+    {
+      "name": "Ax Battler - A Legend of Golden Axe (USA, Europe, Brazil) (En).gg"
+    },
+    {
+      "name": "Ax Battler - A Legend of Golden Axe (USA, Europe, Brazil) (En) (Beta).gg"
+    },
+    {
+      "name": "Ax Battler - Golden Axe Densetsu (Japan).gg"
+    },
+    {
+      "name": "Ayrton Senna's Super Monaco GP II (Japan).gg"
+    },
+    {
+      "name": "Ayrton Senna's Super Monaco GP II (Japan) (Rev 1).gg"
+    },
+    {
+      "name": "Ayrton Senna's Super Monaco GP II (USA, Europe, Brazil) (En).gg"
+    },
+    {
+      "name": "Ayrton Senna's Super Monaco GP II (USA, Europe, Brazil) (En) (Beta).gg"
+    },
+    {
+      "name": "Baku Baku (Europe).gg"
+    },
+    {
+      "name": "Baku Baku (USA).gg"
+    },
+    {
+      "name": "Baku Baku Animal - Sekai Shiikugakari Senshu-ken (Japan).gg"
+    },
+    {
+      "name": "Barbie Super Model (USA) (Proto).gg"
+    },
+    {
+      "name": "Batman Forever (World).gg"
+    },
+    {
+      "name": "Batman Returns (World).gg"
+    },
+    {
+      "name": "Batter Up (USA).gg"
+    },
+    {
+      "name": "Battleship - The Classic Naval Combat Game (USA).gg"
+    },
+    {
+      "name": "Battletoads (Japan, Europe) (En).gg"
+    },
+    {
+      "name": "Battletoads (USA).gg"
+    },
+    {
+      "name": "Battlot Mini (World) (Aftermarket) (Unl).gg"
+    },
+    {
+      "name": "Beavis and Butt-Head (USA, Europe).gg"
+    },
+    {
+      "name": "Beavis and Butt-Head (USA, Europe) (Beta).gg"
+    },
+    {
+      "name": "Berenstain Bears' Camping Adventure, The (USA).gg"
+    },
+    {
+      "name": "Berenstain Bears' Camping Adventure, The (USA) (Beta 1).gg"
+    },
+    {
+      "name": "Berenstain Bears' Camping Adventure, The (USA) (Beta 10).gg"
+    },
+    {
+      "name": "Berenstain Bears' Camping Adventure, The (USA) (Beta 11).gg"
+    },
+    {
+      "name": "Berenstain Bears' Camping Adventure, The (USA) (Beta 12).gg"
+    },
+    {
+      "name": "Berenstain Bears' Camping Adventure, The (USA) (Beta 13).gg"
+    },
+    {
+      "name": "Berenstain Bears' Camping Adventure, The (USA) (Beta 14).gg"
+    },
+    {
+      "name": "Berenstain Bears' Camping Adventure, The (USA) (Beta 15).gg"
+    },
+    {
+      "name": "Berenstain Bears' Camping Adventure, The (USA) (Beta 16).gg"
+    },
+    {
+      "name": "Berenstain Bears' Camping Adventure, The (USA) (Beta 17).gg"
+    },
+    {
+      "name": "Berenstain Bears' Camping Adventure, The (USA) (Beta 2).gg"
+    },
+    {
+      "name": "Berenstain Bears' Camping Adventure, The (USA) (Beta 3).gg"
+    },
+    {
+      "name": "Berenstain Bears' Camping Adventure, The (USA) (Beta 4).gg"
+    },
+    {
+      "name": "Berenstain Bears' Camping Adventure, The (USA) (Beta 5).gg"
+    },
+    {
+      "name": "Berenstain Bears' Camping Adventure, The (USA) (Beta 6).gg"
+    },
+    {
+      "name": "Berenstain Bears' Camping Adventure, The (USA) (Beta 7).gg"
+    },
+    {
+      "name": "Berenstain Bears' Camping Adventure, The (USA) (Beta 8).gg"
+    },
+    {
+      "name": "Berenstain Bears' Camping Adventure, The (USA) (Beta 9).gg"
+    },
+    {
+      "name": "Berlin no Kabe (Japan).gg"
+    },
+    {
+      "name": "Bishoujo Mahjong Puzzle (Japan) (Aftermarket) (Unl).gg"
+    },
+    {
+      "name": "Bishoujo Senshi Sailor Moon S (Japan).gg"
+    },
+    {
+      "name": "Black Castle (World) (Aftermarket) (Unl).gg"
+    },
+    {
+      "name": "Black Castle (World) (v1.1) (Aftermarket) (Unl).gg"
+    },
+    {
+      "name": "Bonkers Wax Up! (USA, Europe).gg"
+    },
+    {
+      "name": "Bonkers Wax Up! (USA, Europe) (Beta 1).gg"
+    },
+    {
+      "name": "Bonkers Wax Up! (USA, Europe) (Beta 10).gg"
+    },
+    {
+      "name": "Bonkers Wax Up! (USA, Europe) (Beta 11).gg"
+    },
+    {
+      "name": "Bonkers Wax Up! (USA, Europe) (Beta 12).gg"
+    },
+    {
+      "name": "Bonkers Wax Up! (USA, Europe) (Beta 13).gg"
+    },
+    {
+      "name": "Bonkers Wax Up! (USA, Europe) (Beta 2).gg"
+    },
+    {
+      "name": "Bonkers Wax Up! (USA, Europe) (Beta 3).gg"
+    },
+    {
+      "name": "Bonkers Wax Up! (USA, Europe) (Beta 4).gg"
+    },
+    {
+      "name": "Bonkers Wax Up! (USA, Europe) (Beta 5).gg"
+    },
+    {
+      "name": "Bonkers Wax Up! (USA, Europe) (Beta 6).gg"
+    },
+    {
+      "name": "Bonkers Wax Up! (USA, Europe) (Beta 7).gg"
+    },
+    {
+      "name": "Bonkers Wax Up! (USA, Europe) (Beta 8).gg"
+    },
+    {
+      "name": "Bonkers Wax Up! (USA, Europe) (Beta 9).gg"
+    },
+    {
+      "name": "Bootskell Mini (World) (Aftermarket) (Unl).gg"
+    },
+    {
+      "name": "Bram Stoker's Dracula (Europe).gg"
+    },
+    {
+      "name": "Bram Stoker's Dracula (USA).gg"
+    },
+    {
+      "name": "BreakThru! (USA) (Proto).gg"
+    },
+    {
+      "name": "Bubble Bobble (USA).gg"
+    },
+    {
+      "name": "Bubble Bobble (USA) (Beta).gg"
+    },
+    {
+      "name": "Bugs Bunny in Double Trouble (USA, Europe).gg"
+    },
+    {
+      "name": "Burger Kitchen (Japan) (Aftermarket) (Unl).gg"
+    },
+    {
+      "name": "Bust-A-Move (USA).gg"
+    },
+    {
+      "name": "Buster Ball (Japan).gg"
+    },
+    {
+      "name": "Buster Fight (Japan).gg"
+    },
+    {
+      "name": "CJ Elephant Fugitive (USA, Europe).gg"
+    },
+    {
+      "name": "CJ Elephant Fugitive (USA, Europe) (Beta).gg"
+    },
+    {
+      "name": "Cacorm Mini (World) (Aftermarket) (Unl).gg"
+    },
+    {
+      "name": "Caesars Palace (USA).gg"
+    },
+    {
+      "name": "Captain America and the Avengers (USA).gg"
+    },
+    {
+      "name": "Car Licence (Japan).gg"
+    },
+    {
+      "name": "Casino FunPak (USA).gg"
+    },
+    {
+      "name": "Cavit Mini (World) (Aftermarket) (Unl).gg"
+    },
+    {
+      "name": "Chakan (USA, Europe).gg"
+    },
+    {
+      "name": "Championship Hockey (Europe).gg"
+    }
+  ]
+}

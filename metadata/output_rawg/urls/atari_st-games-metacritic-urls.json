@@ -1,0 +1,14 @@
+{
+  "system": "atari_st",
+  "systemName": "Atari ST/STE/TT/Falcon",
+  "totalGames": 1,
+  "openCriticURLs": [
+    null
+  ],
+  "metacriticURLs": [
+    "https://metacritic.com/game/game-for-atari-st/ste/tt/falcon"
+  ],
+  "launchboxURLs": [
+    "https://gamesdb.launchbox-app.com/metadata/atari_st/game-for-atari-st/ste/tt/falcon"
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "system": "cpc",
+  "systemName": "CPC/GX4000",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for CPC/GX4000",
+      "systemID": "cpc",
+      "source": "placeholder"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "system": "taylor",
+  "systemName": "C713",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for C713",
+      "systemID": "taylor",
+      "source": "placeholder"
+    }
+  ]
+}

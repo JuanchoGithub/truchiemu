@@ -1,0 +1,12 @@
+{
+  "system": "commodore_c64dtv",
+  "systemName": "C64DTV",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for C64DTV",
+      "systemID": "commodore_c64dtv",
+      "source": "placeholder"
+    }
+  ]
+}

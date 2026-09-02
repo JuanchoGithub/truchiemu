@@ -1,0 +1,12 @@
+{
+  "system": "fba",
+  "systemName": "Arcade (FinalBurn Neo)",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for Arcade (FinalBurn Neo)",
+      "systemID": "fba",
+      "source": "placeholder"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "system": "arduboy",
+  "systemName": "Arduboy",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for Arduboy",
+      "systemID": "arduboy",
+      "source": "placeholder"
+    }
+  ]
+}

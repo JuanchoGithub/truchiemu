@@ -1,0 +1,12 @@
+{
+  "system": "daphne",
+  "systemName": "Arcade (various)",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for Arcade (various)",
+      "systemID": "daphne",
+      "source": "placeholder"
+    }
+  ]
+}

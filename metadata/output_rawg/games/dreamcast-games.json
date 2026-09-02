@@ -1,0 +1,12 @@
+{
+  "system": "dreamcast",
+  "systemName": "Sega Dreamcast",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for Sega Dreamcast",
+      "systemID": "dreamcast",
+      "source": "placeholder"
+    }
+  ]
+}

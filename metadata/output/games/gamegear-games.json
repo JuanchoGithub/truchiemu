@@ -1,0 +1,79 @@
+{
+  "system": "gamegear",
+  "systemName": "Sega Game Gear",
+  "totalGames": 8,
+  "games": [
+    {
+      "name": "Sonic the Hedgehog",
+      "systemID": "gamegear",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": 77,
+      "userScore": 6.631230734531243
+    },
+    {
+      "name": "Columns",
+      "systemID": "gamegear",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "Shinobi",
+      "systemID": "gamegear",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "Streets of Rage",
+      "systemID": "gamegear",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "Phantasy Star II",
+      "systemID": "gamegear",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "Gain Ground",
+      "systemID": "gamegear",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "Columns II",
+      "systemID": "gamegear",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "Puzzle & Action: I Love You",
+      "systemID": "gamegear",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    }
+  ]
+}

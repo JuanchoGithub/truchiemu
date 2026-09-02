@@ -1,0 +1,12 @@
+{
+  "system": "puzzlescript",
+  "systemName": "PuzzleScript",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for PuzzleScript",
+      "systemID": "puzzlescript",
+      "source": "placeholder"
+    }
+  ]
+}

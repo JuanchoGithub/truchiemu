@@ -1,0 +1,14 @@
+{
+  "system": "rvvm",
+  "systemName": "RVVM",
+  "totalGames": 1,
+  "openCriticURLs": [
+    null
+  ],
+  "metacriticURLs": [
+    "https://metacritic.com/game/game-for-rvvm"
+  ],
+  "launchboxURLs": [
+    "https://gamesdb.launchbox-app.com/metadata/rvvm/game-for-rvvm"
+  ]
+}

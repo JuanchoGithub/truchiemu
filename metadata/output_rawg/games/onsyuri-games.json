@@ -1,0 +1,12 @@
+{
+  "system": "onsyuri",
+  "systemName": "ONScripter Yuri",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for ONScripter Yuri",
+      "systemID": "onsyuri",
+      "source": "placeholder"
+    }
+  ]
+}

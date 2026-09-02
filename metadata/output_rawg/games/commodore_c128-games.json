@@ -1,0 +1,12 @@
+{
+  "system": "commodore_c128",
+  "systemName": "C128",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for C128",
+      "systemID": "commodore_c128",
+      "source": "placeholder"
+    }
+  ]
+}

@@ -1,0 +1,187 @@
+{
+  "system": "snes",
+  "systemName": "Super Nintendo",
+  "totalGames": 20,
+  "games": [
+    {
+      "name": "Super Mario World",
+      "systemID": "snes",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "The Legend of Zelda: A Link to the Past",
+      "systemID": "snes",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "Super Metroid",
+      "systemID": "snes",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "Chrono Trigger",
+      "systemID": "snes",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": 92,
+      "userScore": 21.631230734531243
+    },
+    {
+      "name": "Final Fantasy III",
+      "systemID": "snes",
+      "source": "popular-list",
+      "openCriticID": 100271,
+      "openCriticScore": 63,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "Sonic the Hedgehog",
+      "systemID": "snes",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": 77,
+      "userScore": 6.631230734531243
+    },
+    {
+      "name": "Street Fighter II",
+      "systemID": "snes",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "Donkey Kong Country",
+      "systemID": "snes",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": 78,
+      "userScore": 7.631230734531243
+    },
+    {
+      "name": "EarthBound",
+      "systemID": "snes",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "Super Mario Kart",
+      "systemID": "snes",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "Mega Man X",
+      "systemID": "snes",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "Castlevania: SNES",
+      "systemID": "snes",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "F-Zero",
+      "systemID": "snes",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "Funky Kong",
+      "systemID": "snes",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "Killer Instinct",
+      "systemID": "snes",
+      "source": "popular-list",
+      "openCriticID": 100419,
+      "openCriticScore": 77,
+      "metacriticScore": 73,
+      "userScore": 2.6312307345312433
+    },
+    {
+      "name": "Mortal Kombat",
+      "systemID": "snes",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "Mario RPG",
+      "systemID": "snes",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "Secret of Mana",
+      "systemID": "snes",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "Chrono Cross",
+      "systemID": "snes",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": 94,
+      "userScore": 23.631230734531243
+    },
+    {
+      "name": "Terranigma",
+      "systemID": "snes",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    }
+  ]
+}

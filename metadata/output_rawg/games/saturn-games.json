@@ -1,0 +1,367 @@
+{
+  "system": "saturn",
+  "systemName": "Sega Saturn",
+  "totalGames": 120,
+  "games": [
+    {
+      "name": "2Tax Gold (Japan) (Track 01).bin"
+    },
+    {
+      "name": "2do Aru Koto wa Sando R (Japan) (Track 1).bin"
+    },
+    {
+      "name": "3D Baseball (USA) (Track 1).bin"
+    },
+    {
+      "name": "3D Baseball - The Majors (Japan) (Track 1).bin"
+    },
+    {
+      "name": "3D Lemmings (Europe) (Track 01).bin"
+    },
+    {
+      "name": "3D Lemmings (Japan) (Track 01).bin"
+    },
+    {
+      "name": "3D Mission Shooting - Finalist (Japan) (Track 01).bin"
+    },
+    {
+      "name": "3x3 Eyes - Kyuusei Koushu S (Japan) (Disc 1) (Track 1).bin"
+    },
+    {
+      "name": "3x3 Eyes - Kyuusei Koushu S (Japan) (Disc 2) (Track 1).bin"
+    },
+    {
+      "name": "3x3 Eyes - Kyuusei Koushu S (Japan) (Disc 3) (Special CD-ROM) (Track 1).bin"
+    },
+    {
+      "name": "6 Inch My Darling (Japan) (Track 1).bin"
+    },
+    {
+      "name": "AI Igo (Japan) (Track 1).bin"
+    },
+    {
+      "name": "AI Shougi (Japan) (Track 1).bin"
+    },
+    {
+      "name": "AI Shougi 2 (Japan) (Track 1).bin"
+    },
+    {
+      "name": "Actua Golf (Europe) (En,Fr,De) (Track 1).bin"
+    },
+    {
+      "name": "Actua Golf (Japan) (Track 1).bin"
+    },
+    {
+      "name": "Actua Soccer (Japan) (Track 1).bin"
+    },
+    {
+      "name": "Actua Soccer - Club Edition (Europe) (Track 1).bin"
+    },
+    {
+      "name": "Advanced V.G. (Japan) (Track 01).bin"
+    },
+    {
+      "name": "Advanced World War - Sennen Teikoku no Koubou - Last of the Millennium (Japan) (2M) (Track 01).bin"
+    },
+    {
+      "name": "Advanced World War - Sennen Teikoku no Koubou - Last of the Millennium (Japan) (Rev B) (22M) (Track 01).bin"
+    },
+    {
+      "name": "Ai Iijima Interactive Video Clip - Good Island Cafe (Japan) (Track 1).bin"
+    },
+    {
+      "name": "Air Management '96 (Japan) (Track 01).bin"
+    },
+    {
+      "name": "Airs Adventure (Japan) (Track 1).bin"
+    },
+    {
+      "name": "Akumajou Dracula X - Gekka no Yasoukyoku (Japan) (2M) (Track 1).bin"
+    },
+    {
+      "name": "Albert Odyssey - Legend of Eldean (USA) (Track 01).bin"
+    },
+    {
+      "name": "Albert Odyssey - Legend of Eldean (USA) (RE) (Track 01).bin"
+    },
+    {
+      "name": "Albert Odyssey Gaiden - Legend of Eldean (Japan) (2M) (Track 01).bin"
+    },
+    {
+      "name": "Album Club (Mune Kyun) - St. Paulia Jogakuin (Japan) (Track 1).bin"
+    },
+    {
+      "name": "Alien Trilogy (Europe) (En,Fr,Es,It) (7S) (Track 01).bin"
+    },
+    {
+      "name": "Alien Trilogy (Europe) (En,Fr,Es,It) (Beta) (1996-07-23) (Track 01).bin"
+    },
+    {
+      "name": "Alien Trilogy (Germany) (Track 01).bin"
+    },
+    {
+      "name": "Alien Trilogy (Japan) (Track 01).bin"
+    },
+    {
+      "name": "Alien Trilogy (USA) (Track 01).bin"
+    },
+    {
+      "name": "All-Star Baseball '97 Featuring Frank Thomas (USA) (Track 1).bin"
+    },
+    {
+      "name": "Alone in the Dark - Jack Is Back (Europe) (En,Fr,De,Es,It) (Track 1).bin"
+    },
+    {
+      "name": "Alone in the Dark - One-Eyed Jack's Revenge (USA) (Track 1).bin"
+    },
+    {
+      "name": "Alone in the Dark 2 (Japan) (Track 1).bin"
+    },
+    {
+      "name": "Amagi Shien (Japan) (Track 1).bin"
+    },
+    {
+      "name": "America Oudan Ultra Quiz (Japan) (Track 1).bin"
+    },
+    {
+      "name": "Amok (Europe) (En,Fr,De,Es,It,Nl) (Track 1).bin"
+    },
+    {
+      "name": "Amok (Japan) (Track 1).bin"
+    },
+    {
+      "name": "Amok (USA) (Track 1).bin"
+    },
+    {
+      "name": "AnEarth Fantasy Stories - The First Volume (Japan) (Track 1).bin"
+    },
+    {
+      "name": "Andretti Racing (Europe) (Track 1).bin"
+    },
+    {
+      "name": "Andretti Racing (France) (Track 1).bin"
+    },
+    {
+      "name": "Andretti Racing (Germany) (Track 1).bin"
+    },
+    {
+      "name": "Andretti Racing (USA) (Track 1).bin"
+    },
+    {
+      "name": "Angel Graffiti S - Anata e no Profile (Japan) (Track 1).bin"
+    },
+    {
+      "name": "Angel Paradise Vol. 1 - Sakaki Yuko - Koi no Yokan in Hollywood (Japan) (Track 1).bin"
+    },
+    {
+      "name": "Angel Paradise Vol. 2 - Yoshino Kimika - Isshoni I-ta-i in Hawaii (Japan) (Track 1).bin"
+    },
+    {
+      "name": "Angelique Duet (Japan) (Track 1).bin"
+    },
+    {
+      "name": "Angelique Special (Japan) (Track 01).bin"
+    },
+    {
+      "name": "Angelique Special 2 (Japan) (Track 1).bin"
+    },
+    {
+      "name": "Another Memories (Japan) (Track 2).bin"
+    },
+    {
+      "name": "Aqua-world - Umi Monogatari (Japan) (Track 1).bin"
+    },
+    {
+      "name": "Aquazone - Desktop Life (Japan) (Track 02).bin"
+    },
+    {
+      "name": "Aquazone - Desktop Life Option Disc Series 1 - Angel Fish (Japan) (Rev A) (Track 02).bin"
+    },
+    {
+      "name": "Aquazone - Desktop Life Option Disc Series 2 - Black Molly (Japan) (Rev A) (Track 02).bin"
+    },
+    {
+      "name": "Aquazone - Desktop Life Option Disc Series 3 - Blue Emperor (Japan) (Rev A) (Track 02).bin"
+    },
+    {
+      "name": "Aquazone - Desktop Life Option Disc Series 4 - Clown Loach (Japan) (Rev A) (Track 02).bin"
+    },
+    {
+      "name": "Aquazone - Desktop Life Option Disc Series 5 - False Rummy-Nose (Japan) (Rev A) (Track 02).bin"
+    },
+    {
+      "name": "Arcade Gears Vol. 1 - Pu-Li-Ru-La (Japan) (Track 01).bin"
+    },
+    {
+      "name": "Arcade Gears Vol. 2 - Gun Frontier (Japan) (Track 01).bin"
+    },
+    {
+      "name": "Arcade Gears Vol. 3 - Wonder 3 (Japan) (Track 01).bin"
+    },
+    {
+      "name": "Arcade Gears Vol. 4 - ImageFight & XMultiply (Japan) (Track 01).bin"
+    },
+    {
+      "name": "Arcade's Greatest Hits (USA) (Track 1).bin"
+    },
+    {
+      "name": "Arcade's Greatest Hits - The Atari Collection 1 (Europe) (Track 1).bin"
+    },
+    {
+      "name": "Arcade's Greatest Hits - The Atari Collection 1 (USA) (Track 1).bin"
+    },
+    {
+      "name": "Arcana Strikes (Japan) (Track 1).bin"
+    },
+    {
+      "name": "Area 51 (Europe) (En,Fr,De,Es) (Track 1).bin"
+    },
+    {
+      "name": "Area 51 (Japan) (Track 1).bin"
+    },
+    {
+      "name": "Area 51 (USA) (Track 1).bin"
+    },
+    {
+      "name": "Area 51 (USA) (Beta) (1996-11-08) (Track 1).bin"
+    },
+    {
+      "name": "Arthur to Astaroth no Nazo Makaimura - Incredible Toons (Japan) (Track 01).bin"
+    },
+    {
+      "name": "Assault Rigs (Japan) (Track 01).bin"
+    },
+    {
+      "name": "Assault Suit Leynos 2 (Japan) (Track 01).bin"
+    },
+    {
+      "name": "Astal (USA) (2S) (Track 1).bin"
+    },
+    {
+      "name": "Astra Superstars (Japan) (Track 1).bin"
+    },
+    {
+      "name": "Asuka 120% Limited - Burning Fest. Limited (Japan) (Track 01).bin"
+    },
+    {
+      "name": "Athlete Kings (Europe) (Track 01).bin"
+    },
+    {
+      "name": "Atlantis - The Lost Tales (Europe) (En,De,Es) (Disc 1) (Track 1).bin"
+    },
+    {
+      "name": "Atlantis - The Lost Tales (Europe) (En,De,Es) (Disc 2) (Track 1).bin"
+    },
+    {
+      "name": "Atlantis - The Lost Tales (France) (Disc 1) (Track 1).bin"
+    },
+    {
+      "name": "Atlantis - The Lost Tales (France) (Disc 2) (Track 1).bin"
+    },
+    {
+      "name": "Ayakashi Ninden Kunoichiban Plus (Japan) (Disc 2) (Track 2).bin"
+    },
+    {
+      "name": "Ayrton Senna Personal Talk - Message for the Future (Japan) (Track 2).bin"
+    },
+    {
+      "name": "Azel - Panzer Dragoon RPG (Japan) (Disc 1) (2M) (Track 1).bin"
+    },
+    {
+      "name": "Azel - Panzer Dragoon RPG (Japan) (Disc 2) (1M) (Track 1).bin"
+    },
+    {
+      "name": "Azel - Panzer Dragoon RPG (Japan) (Disc 3) (2M) (Track 1).bin"
+    },
+    {
+      "name": "Azel - Panzer Dragoon RPG (Japan) (Disc 4) (4M) (Track 1).bin"
+    },
+    {
+      "name": "BackGuiner - Yomigaeru Yuusha-tachi - Hishou-hen - Uragiri no Senjou (Japan) (Disc 1) (Track 1).bin"
+    },
+    {
+      "name": "BackGuiner - Yomigaeru Yuusha-tachi - Hishou-hen - Uragiri no Senjou (Japan) (Disc 2) (Track 1).bin"
+    },
+    {
+      "name": "BackGuiner - Yomigaeru Yuusha-tachi - Kakusei-hen - Guiner Tensei (Japan) (Disc 1) (Track 1).bin"
+    },
+    {
+      "name": "BackGuiner - Yomigaeru Yuusha-tachi - Kakusei-hen - Guiner Tensei (Japan) (Disc 2) (Track 1).bin"
+    },
+    {
+      "name": "Baku Baku Animal - Sekai Shiiku Gakari Senshuken (Japan) (Track 01).bin"
+    },
+    {
+      "name": "Baku Baku Animal - Sekai Shiiku Gakari Senshuken (Japan) (Rev A) (Track 01).bin"
+    },
+    {
+      "name": "Baku Baku Animal - World Zookeeper Contest (Europe) (Track 01).bin"
+    },
+    {
+      "name": "Baku Baku Animal - World Zookeeper Contest (USA) (Track 01).bin"
+    },
+    {
+      "name": "Bakuretsu Hunter (Japan) (Track 1).bin"
+    },
+    {
+      "name": "Bakuretsu Hunter (Japan) (Omake CD) (Track 1).bin"
+    },
+    {
+      "name": "Bakuretsu Hunter R (Japan) (Track 1).bin"
+    },
+    {
+      "name": "Bakushou!! All Yoshimoto Quiz-ou Kettei-sen DX (Japan) (Track 1).bin"
+    },
+    {
+      "name": "Baldy Land (Japan) (Track 01).bin"
+    },
+    {
+      "name": "Baroque (Japan) (Track 1).bin"
+    },
+    {
+      "name": "Baroque Report - CD Data File (Japan) (Track 1).bin"
+    },
+    {
+      "name": "Bases Loaded '96 - Double Header (USA) (Track 1).bin"
+    },
+    {
+      "name": "Batman Forever - The Arcade Game (Europe) (Track 1).bin"
+    },
+    {
+      "name": "Batman Forever - The Arcade Game (Japan) (Track 1).bin"
+    },
+    {
+      "name": "Batman Forever - The Arcade Game (USA) (Track 1).bin"
+    },
+    {
+      "name": "Batsugun (Japan) (Track 01).bin"
+    },
+    {
+      "name": "Battle Arena Toshinden Remix (Europe) (Track 01).bin"
+    },
+    {
+      "name": "Battle Arena Toshinden Remix (USA) (Track 01).bin"
+    },
+    {
+      "name": "Battle Arena Toshinden URA - Ultimate Revenge Attack (Europe) (Track 01).bin"
+    },
+    {
+      "name": "Battle Arena Toshinden URA - Ultimate Revenge Attack (Europe) (Beta) (1996-11-08) (Track 01).bin"
+    },
+    {
+      "name": "Battle Arena Toshinden URA - Ultimate Revenge Attack (USA) (Track 01).bin"
+    },
+    {
+      "name": "Battle Athletess Daiundoukai (Japan) (Track 1).bin"
+    },
+    {
+      "name": "Battle Garegga (Japan) (Track 01).bin"
+    },
+    {
+      "name": "Battle Monsters (Europe) (Track 1).bin"
+    },
+    {
+      "name": "Battle Monsters (Japan) (Track 1).bin"
+    }
+  ]
+}

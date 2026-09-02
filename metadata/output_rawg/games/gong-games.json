@@ -1,0 +1,12 @@
+{
+  "system": "gong",
+  "systemName": "Pong Game Clone",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for Pong Game Clone",
+      "systemID": "gong",
+      "source": "placeholder"
+    }
+  ]
+}

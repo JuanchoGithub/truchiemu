@@ -1,0 +1,367 @@
+{
+  "system": "gbc",
+  "systemName": "Game Boy Color",
+  "totalGames": 120,
+  "games": [
+    {
+      "name": "007 - The World Is Not Enough (USA, Europe).gbc"
+    },
+    {
+      "name": "10-Pin Bowling (Europe).gbc"
+    },
+    {
+      "name": "10-Pin Bowling (USA) (Rumble Version).gbc"
+    },
+    {
+      "name": "102 Dalmatas - Cachorros Al Rescate (Spain).gbc"
+    },
+    {
+      "name": "102 Dalmatians - Puppies to the Rescue (USA, Europe).gbc"
+    },
+    {
+      "name": "102 Dalmatiens a la Rescousse, Les (France).gbc"
+    },
+    {
+      "name": "102 Dalmatiner (Germany).gbc"
+    },
+    {
+      "name": "1942 (USA, Europe).gbc"
+    },
+    {
+      "name": "20 Second Platformer, A (World) (GB Compatible) (Aftermarket) (Unl).gbc"
+    },
+    {
+      "name": "20 Second Platformer, A (World) (v1.1) (GB Compatible) (Aftermarket) (Unl).gbc"
+    },
+    {
+      "name": "2001 Fatal Fury (Taiwan) (En) (Unl).gbc"
+    },
+    {
+      "name": "2002 Adventure Digimon 7 (Taiwan) (En) (Unl).gbc"
+    },
+    {
+      "name": "2002 Digimon Adventure 6 (Taiwan) (En) (Unl).gbc"
+    },
+    {
+      "name": "2003 Crash II Advance (USA) (Unl).gbc"
+    },
+    {
+      "name": "2003 Digimom Sapphii (Taiwan) (De) (Unl).gbc"
+    },
+    {
+      "name": "2003 Digimom Sapphii (Taiwan) (En) (Unl).gbc"
+    },
+    {
+      "name": "2003 Gu Huo Lang II (Taiwan) (Unl).gbc"
+    },
+    {
+      "name": "2003 Hali Bote 2 - Xiaoshi de Mishi (Taiwan) (Unl).gbc"
+    },
+    {
+      "name": "2003 Hali Xiaozi IV (Taiwan) (Unl).gbc"
+    },
+    {
+      "name": "2003 Harry Potter 3 (Taiwan) (Unl).gbc"
+    },
+    {
+      "name": "2003 King Lion Advance III (USA) (Unl).gbc"
+    },
+    {
+      "name": "2003 Koudai Guaishou - Lanbaoshi (Taiwan) (Unl).gbc"
+    },
+    {
+      "name": "2003 Pocket Monster - Carbuncle (USA) (Unl).gbc"
+    },
+    {
+      "name": "2003 Shuma Baolong - Gedou Ban (Taiwan) (Unl).gbc"
+    },
+    {
+      "name": "2123 (World) (Aftermarket) (Unl).gbc"
+    },
+    {
+      "name": "23 in 1 (Taiwan) (Unl).gbc"
+    },
+    {
+      "name": "3-D Ultra Pinball - Thrillride (USA) (Rumble Version).gbc"
+    },
+    {
+      "name": "31 in 1 (Taiwan) (31B-001, Sachen) (Unl).gbc"
+    },
+    {
+      "name": "31-in-1 Mighty Mix (Australia) (31B-001, Sachen) (Unl).gbc"
+    },
+    {
+      "name": "36 in 1 (Taiwan) (SL36-0032) (Unl).gbc"
+    },
+    {
+      "name": "3D Pocket Pool (Europe) (En,Fr,De,Es,It,Nl).gbc"
+    },
+    {
+      "name": "3D Pool Allstars (USA) (En,Fr,Es) (Proto).gbc"
+    },
+    {
+      "name": "3D Quasars (World) (Aftermarket) (Unl).gbc"
+    },
+    {
+      "name": "4 in 1 + 8 in 1 (World) (4B-001, 4B-009, 8B-001, Sachen) (Unl).gbc"
+    },
+    {
+      "name": "4 in 1 + 8 in 1 (World) (4B-002, 4B-004, 8B-002, Sachen) (Unl).gbc"
+    },
+    {
+      "name": "4 in 1 + 8 in 1 (World) (4B-005, 4B-006, 8B-003, Sachen) (Unl).gbc"
+    },
+    {
+      "name": "4 in 1 + 8 in 1 (World) (4B-007, 4B-008, 8B-004, Sachen) (Unl).gbc"
+    },
+    {
+      "name": "4x4 World Trophy (Europe) (En,Fr,De,Es,It) (GB Compatible).gbc"
+    },
+    {
+      "name": "5 Minutes until Goodbye (World) (GB Compatible) (Aftermarket) (Unl).gbc"
+    },
+    {
+      "name": "60 Minutes til Rot (World) (v1.6b) (GB Compatible) (Aftermarket) (Unl).gbc"
+    },
+    {
+      "name": "720 Degrees (USA, Europe) (GB Compatible).gbc"
+    },
+    {
+      "name": "AF+ER (World) (GB Compatible) (Aftermarket) (Unl).gbc"
+    },
+    {
+      "name": "AMF Bowling (USA) (Proto).gbc"
+    },
+    {
+      "name": "ATV Racing & Karate Joe (Europe) (Unl).gbc"
+    },
+    {
+      "name": "ATV Racing & Karate Joe (Europe) (Unl) (Alt).gbc"
+    },
+    {
+      "name": "ATV Racing (Europe) (Unl).gbc"
+    },
+    {
+      "name": "Aardvark (World) (Aftermarket) (Unl).gbc"
+    },
+    {
+      "name": "Absolute X (Europe) (Proto).gbc"
+    },
+    {
+      "name": "Ack Ack Attack (World) (Aftermarket) (Unl).gbc"
+    },
+    {
+      "name": "Action Man - Search for Base X (USA, Europe).gbc"
+    },
+    {
+      "name": "Action Replay Online (Europe) (Unl).gbc"
+    },
+    {
+      "name": "Action Replay Xtreme - Special Edition for Pokemon Crystal (Europe) (Unl).gbc"
+    },
+    {
+      "name": "Adulting! Soundtrack (World) (GB Compatible) (Aftermarket) (Unl).gbc"
+    },
+    {
+      "name": "Adventure (World) (Aftermarket) (Unl).gbc"
+    },
+    {
+      "name": "Adventures in Carnal Hell, The (World) (En) (v1.02) (GB Compatible) (Aftermarket) (Unl).gbc"
+    },
+    {
+      "name": "Adventures in Carnal Hell, The (World) (Es) (v1.02) (GB Compatible) (Aftermarket) (Unl).gbc"
+    },
+    {
+      "name": "Adventures in Carnal Hell, The (World) (Ja) (v1.01) (GB Compatible) (Aftermarket) (Unl).gbc"
+    },
+    {
+      "name": "Adventures in Carnal Hell, The (World) (Ja) (v1.02) (GB Compatible) (Aftermarket) (Unl).gbc"
+    },
+    {
+      "name": "Adventures of the Smurfs, The (Europe) (En,Fr,De,Es,It,Nl).gbc"
+    },
+    {
+      "name": "Agency (World) (Aftermarket) (Unl).gbc"
+    },
+    {
+      "name": "Agent B (World) (GB Compatible) (Aftermarket) (Unl).gbc"
+    },
+    {
+      "name": "AirForce Delta (Japan).gbc"
+    },
+    {
+      "name": "AirForce Delta (USA).gbc"
+    },
+    {
+      "name": "Airwolf 16 (World) (Aftermarket) (Unl).gbc"
+    },
+    {
+      "name": "Aladdin (Europe) (En,Fr,De,Es,It,Nl).gbc"
+    },
+    {
+      "name": "Aladdin (USA).gbc"
+    },
+    {
+      "name": "Alfred's Adventure (Europe) (En,Fr,De,Es,It).gbc"
+    },
+    {
+      "name": "Alice in Wonderland (Europe) (En,Fr,De,Es).gbc"
+    },
+    {
+      "name": "Alice in Wonderland (USA, Australia).gbc"
+    },
+    {
+      "name": "Aliens - Thanatos Encounter (USA, Europe).gbc"
+    },
+    {
+      "name": "All Humans Must Die! (World) (GB Compatible) (Aftermarket) (Unl).gbc"
+    },
+    {
+      "name": "All Star Tennis '99 (USA) (Proto) (1999-09-13) (GB Compatible).gbc"
+    },
+    {
+      "name": "All Star Tennis 2000 (Europe) (AZTP) (GB Compatible).gbc"
+    },
+    {
+      "name": "All Star Tennis 2000 (Europe) (AZTX) (Proto) (GB Compatible).gbc"
+    },
+    {
+      "name": "All Star Tennis 2000 (USA) (Proto) (GB Compatible).gbc"
+    },
+    {
+      "name": "All-Star Baseball 2000 (USA, Europe).gbc"
+    },
+    {
+      "name": "All-Star Baseball 2001 (USA).gbc"
+    },
+    {
+      "name": "Alley Cat (World) (Aftermarket) (Unl).gbc"
+    },
+    {
+      "name": "Alone in the Dark - The New Nightmare (Europe) (En,Fr,De,Es,It,Nl).gbc"
+    },
+    {
+      "name": "Alone in the Dark - The New Nightmare (Europe) (En,Fr,De,Es,It,Nl) (Beta).gbc"
+    },
+    {
+      "name": "Alone in the Dark - The New Nightmare (USA) (Beta) (2001-02-21).gbc"
+    },
+    {
+      "name": "Alone in the Dark - The New Nightmare (USA) (En,Fr,Es).gbc"
+    },
+    {
+      "name": "Android Nim (World) (Aftermarket) (Unl).gbc"
+    },
+    {
+      "name": "Animal Breeder 3 (Japan) (SGB Enhanced) (GB Compatible).gbc"
+    },
+    {
+      "name": "Animal Breeder 4 (Japan).gbc"
+    },
+    {
+      "name": "Animastar GB (Japan).gbc"
+    },
+    {
+      "name": "Animorphs (Europe) (En,Fr,De,Es,It).gbc"
+    },
+    {
+      "name": "Animorphs (USA).gbc"
+    },
+    {
+      "name": "Another Adventure (World) (En,Es) (GB Compatible) (Aftermarket) (Unl).gbc"
+    },
+    {
+      "name": "Anpfiff - Der RTL Fussball-Manager (Germany).gbc"
+    },
+    {
+      "name": "Antz (Europe) (En,Fr,De,Es,It,Nl) (Beta) (GB Compatible).gbc"
+    },
+    {
+      "name": "Antz (Europe) (En,Fr,De,Es,It,Nl) (GB Compatible).gbc"
+    },
+    {
+      "name": "Antz (USA) (En,Fr,Es) (GB Compatible).gbc"
+    },
+    {
+      "name": "Antz Racing (Europe) (En,Fr,De,Es,It,Nl).gbc"
+    },
+    {
+      "name": "Antz Racing (USA) (En,Fr,De,Es,It,Nl).gbc"
+    },
+    {
+      "name": "Antz World Sportz (Europe) (En,Fr,De,Es,It,Nl).gbc"
+    },
+    {
+      "name": "Apollo Mission (World) (Aftermarket) (Unl).gbc"
+    },
+    {
+      "name": "Aqualife (Japan) (SGB Enhanced) (GB Compatible).gbc"
+    },
+    {
+      "name": "Arena 3000 (World) (Aftermarket) (Unl).gbc"
+    },
+    {
+      "name": "Arle no Bouken - Mahou no Jewel (Japan) (SGB Enhanced) (GB Compatible).gbc"
+    },
+    {
+      "name": "Armada - FX Racers (USA).gbc"
+    },
+    {
+      "name": "Armorines - Project S.W.A.R.M. (USA, Europe) (En,De).gbc"
+    },
+    {
+      "name": "Army Men (USA, Europe) (En,Fr,De).gbc"
+    },
+    {
+      "name": "Army Men - Air Combat (USA, Europe) (En,Fr,De).gbc"
+    },
+    {
+      "name": "Army Men - Sarge's Heroes 2 (USA, Europe) (En,Fr,De).gbc"
+    },
+    {
+      "name": "Army Men 2 (USA, Europe) (En,Fr,De).gbc"
+    },
+    {
+      "name": "Arthur's Absolutely Fun Day! (USA).gbc"
+    },
+    {
+      "name": "Asterix & Obelix (Europe) (En,Fr,De,Es).gbc"
+    },
+    {
+      "name": "Asterix & Obelix Contre Cesar (Europe) (En,Fr,De,Es,Nl) (GB Compatible).gbc"
+    },
+    {
+      "name": "Asterix - Sur la Trace D'Idefix (Europe) (En,Fr,De,Es,It,Nl).gbc"
+    },
+    {
+      "name": "Asteroids (USA, Europe) (GB Compatible).gbc"
+    },
+    {
+      "name": "Astral Possession (World) (GB Compatible) (Aftermarket) (Unl).gbc"
+    },
+    {
+      "name": "Astro Plumber (World) (Aftermarket) (Unl).gbc"
+    },
+    {
+      "name": "Astro-Jump - The Sequel (World) (GB Compatible) (Aftermarket) (Unl).gbc"
+    },
+    {
+      "name": "Atlantis - The Lost Empire (Europe) (En,Es,It).gbc"
+    },
+    {
+      "name": "Atlantis - The Lost Empire (Europe) (Fr,De,Nl).gbc"
+    },
+    {
+      "name": "Atlantis - The Lost Empire (USA, Europe).gbc"
+    },
+    {
+      "name": "Atop the Witch's Tower (World) (v1.1) (GB Compatible) (Aftermarket) (Unl).gbc"
+    },
+    {
+      "name": "Atsumete Asobu Kuma no Pooh-san - Mori no Takaramono (Japan).gbc"
+    },
+    {
+      "name": "Austin Powers - Oh, Behave! (Europe) (En,Fr,De,Es,It).gbc"
+    }
+  ]
+}

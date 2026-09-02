@@ -1,0 +1,12 @@
+{
+  "system": "wii",
+  "systemName": "Wii",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for Wii",
+      "systemID": "wii",
+      "source": "placeholder"
+    }
+  ]
+}

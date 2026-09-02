@@ -1,0 +1,14 @@
+{
+  "system": "atari2600",
+  "systemName": "Atari 2600",
+  "totalGames": 1,
+  "openCriticURLs": [
+    null
+  ],
+  "metacriticURLs": [
+    "https://metacritic.com/game/game-for-atari-2600"
+  ],
+  "launchboxURLs": [
+    "https://gamesdb.launchbox-app.com/metadata/atari2600/game-for-atari-2600"
+  ]
+}

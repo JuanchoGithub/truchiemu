@@ -1,0 +1,14 @@
+{
+  "system": "3ds",
+  "systemName": "3DS",
+  "totalGames": 1,
+  "openCriticURLs": [
+    null
+  ],
+  "metacriticURLs": [
+    "https://metacritic.com/game/game-for-3ds"
+  ],
+  "launchboxURLs": [
+    "https://gamesdb.launchbox-app.com/metadata/3ds/game-for-3ds"
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "system": "bgdi",
+  "systemName": "Bennu Game Development",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for Bennu Game Development",
+      "systemID": "bgdi",
+      "source": "placeholder"
+    }
+  ]
+}

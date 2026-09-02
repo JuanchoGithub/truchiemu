@@ -1,0 +1,12 @@
+{
+  "system": "xbox",
+  "systemName": "Xbox",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for Xbox",
+      "systemID": "xbox",
+      "source": "placeholder"
+    }
+  ]
+}

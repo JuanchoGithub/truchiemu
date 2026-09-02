@@ -1,0 +1,12 @@
+{
+  "system": "segapico",
+  "systemName": "Sega Pico",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for Sega Pico",
+      "systemID": "segapico",
+      "source": "placeholder"
+    }
+  ]
+}

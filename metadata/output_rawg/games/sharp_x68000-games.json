@@ -1,0 +1,12 @@
+{
+  "system": "sharp_x68000",
+  "systemName": "Sharp X68000",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for Sharp X68000",
+      "systemID": "sharp_x68000",
+      "source": "placeholder"
+    }
+  ]
+}

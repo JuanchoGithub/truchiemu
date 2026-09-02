@@ -1,0 +1,14 @@
+{
+  "system": "zmachine",
+  "systemName": "Z-Machine",
+  "totalGames": 1,
+  "openCriticURLs": [
+    null
+  ],
+  "metacriticURLs": [
+    "https://metacritic.com/game/game-for-z-machine"
+  ],
+  "launchboxURLs": [
+    "https://gamesdb.launchbox-app.com/metadata/zmachine/game-for-z-machine"
+  ]
+}

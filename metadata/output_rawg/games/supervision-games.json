@@ -1,0 +1,12 @@
+{
+  "system": "supervision",
+  "systemName": "Supervision",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for Supervision",
+      "systemID": "supervision",
+      "source": "placeholder"
+    }
+  ]
+}

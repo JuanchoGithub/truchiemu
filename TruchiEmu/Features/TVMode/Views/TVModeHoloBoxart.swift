@@ -15,6 +15,11 @@ struct TVModeHoloBoxart: View {
     let image: NSImage
     let romID: String
     var cornerRadius: CGFloat = 0
+    /// When `false`, the card-shaped backing fill behind the art is skipped, so
+    /// the boxart renders as a bare image with rounded corners (matches the
+    /// flat TV-mode move-list tiles). Defaults to `true` for the letterboxed
+    /// card look.
+    var showBackingFill: Bool = true
 
     @State private var holoMasks: HoloMaskSet?
     @Environment(\.colorScheme) private var colorScheme
@@ -34,8 +39,10 @@ struct TVModeHoloBoxart: View {
 
             ZStack {
                 // Backing fill shows through any letterboxing for wide/tall ratios.
-                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                    .fill(AppColors.cardBackground(colorScheme))
+                if showBackingFill {
+                    RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                        .fill(AppColors.cardBackground(colorScheme))
+                }
 
                 TimelineView(.periodic(from: .now, by: 0.03)) { ctx in
                     let t = ctx.date.timeIntervalSince1970

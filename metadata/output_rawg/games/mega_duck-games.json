@@ -1,0 +1,12 @@
+{
+  "system": "mega_duck",
+  "systemName": "Mega Duck",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for Mega Duck",
+      "systemID": "mega_duck",
+      "source": "placeholder"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "system": "uxn",
+  "systemName": "Uxn / Varvara",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for Uxn / Varvara",
+      "systemID": "uxn",
+      "source": "placeholder"
+    }
+  ]
+}

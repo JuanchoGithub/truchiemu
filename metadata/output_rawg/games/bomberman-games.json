@@ -1,0 +1,12 @@
+{
+  "system": "bomberman",
+  "systemName": "Mr.Boom",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for Mr.Boom",
+      "systemID": "bomberman",
+      "source": "placeholder"
+    }
+  ]
+}

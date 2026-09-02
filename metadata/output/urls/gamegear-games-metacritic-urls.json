@@ -1,0 +1,34 @@
+{
+  "system": "gamegear",
+  "systemName": "Sega Game Gear",
+  "openCriticURLs": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+  ],
+  "metacriticURLs": [
+    "https://metacritic.com/game/sonic-the-hedgehog",
+    "https://metacritic.com/game/columns",
+    "https://metacritic.com/game/shinobi",
+    "https://metacritic.com/game/streets-of-rage",
+    "https://metacritic.com/game/phantasy-star-ii",
+    "https://metacritic.com/game/gain-ground",
+    "https://metacritic.com/game/columns-ii",
+    "https://metacritic.com/game/puzzle-action-i-love-you"
+  ],
+  "launchboxURLs": [
+    "https://gamesdb.launchbox-app.com/metadata/gamegear/sonic the hedgehog",
+    "https://gamesdb.launchbox-app.com/metadata/gamegear/columns",
+    "https://gamesdb.launchbox-app.com/metadata/gamegear/shinobi",
+    "https://gamesdb.launchbox-app.com/metadata/gamegear/streets of rage",
+    "https://gamesdb.launchbox-app.com/metadata/gamegear/phantasy star ii",
+    "https://gamesdb.launchbox-app.com/metadata/gamegear/gain ground",
+    "https://gamesdb.launchbox-app.com/metadata/gamegear/columns ii",
+    "https://gamesdb.launchbox-app.com/metadata/gamegear/puzzle action i love you"
+  ]
+}

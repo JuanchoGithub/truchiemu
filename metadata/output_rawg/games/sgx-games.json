@@ -1,0 +1,12 @@
+{
+  "system": "sgx",
+  "systemName": "PC Engine SuperGrafx",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for PC Engine SuperGrafx",
+      "systemID": "sgx",
+      "source": "placeholder"
+    }
+  ]
+}

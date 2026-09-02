@@ -1,0 +1,12 @@
+{
+  "system": "pcxt",
+  "systemName": "PC/XT",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for PC/XT",
+      "systemID": "pcxt",
+      "source": "placeholder"
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "system": "pcxt",
+  "systemName": "PC/XT",
+  "totalGames": 1,
+  "openCriticURLs": [
+    null
+  ],
+  "metacriticURLs": [
+    "https://metacritic.com/game/game-for-pc/xt"
+  ],
+  "launchboxURLs": [
+    "https://gamesdb.launchbox-app.com/metadata/pcxt/game-for-pc/xt"
+  ]
+}

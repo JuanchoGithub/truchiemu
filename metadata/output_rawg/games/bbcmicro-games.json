@@ -1,0 +1,12 @@
+{
+  "system": "bbcmicro",
+  "systemName": "BBC Micro",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for BBC Micro",
+      "systemID": "bbcmicro",
+      "source": "placeholder"
+    }
+  ]
+}

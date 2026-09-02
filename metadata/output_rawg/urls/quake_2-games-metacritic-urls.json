@@ -1,0 +1,14 @@
+{
+  "system": "quake_2",
+  "systemName": "Quake II Game Engine",
+  "totalGames": 1,
+  "openCriticURLs": [
+    null
+  ],
+  "metacriticURLs": [
+    "https://metacritic.com/game/game-for-quake-ii-game-engine"
+  ],
+  "launchboxURLs": [
+    "https://gamesdb.launchbox-app.com/metadata/quake_2/game-for-quake-ii-game-engine"
+  ]
+}

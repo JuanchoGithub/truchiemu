@@ -1,0 +1,12 @@
+{
+  "system": "commodore_c64_supercpu",
+  "systemName": "C64 SuperCPU",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for C64 SuperCPU",
+      "systemID": "commodore_c64_supercpu",
+      "source": "placeholder"
+    }
+  ]
+}

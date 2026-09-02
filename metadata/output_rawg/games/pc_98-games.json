@@ -1,0 +1,12 @@
+{
+  "system": "pc_98",
+  "systemName": "PC-98",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for PC-98",
+      "systemID": "pc_98",
+      "source": "placeholder"
+    }
+  ]
+}

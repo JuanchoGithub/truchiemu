@@ -1,0 +1,12 @@
+{
+  "system": "hbmame",
+  "systemName": "Arcade (various)",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for Arcade (various)",
+      "systemID": "hbmame",
+      "source": "placeholder"
+    }
+  ]
+}

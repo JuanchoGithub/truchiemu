@@ -1,0 +1,12 @@
+{
+  "system": "atari_st",
+  "systemName": "Atari ST/STE/TT/Falcon",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for Atari ST/STE/TT/Falcon",
+      "systemID": "atari_st",
+      "source": "placeholder"
+    }
+  ]
+}

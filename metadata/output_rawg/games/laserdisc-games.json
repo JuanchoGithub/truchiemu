@@ -1,0 +1,12 @@
+{
+  "system": "laserdisc",
+  "systemName": "Laserdisc arcade game",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for Laserdisc arcade game",
+      "systemID": "laserdisc",
+      "source": "placeholder"
+    }
+  ]
+}

@@ -1,0 +1,115 @@
+{
+  "system": "gbc",
+  "systemName": "Game Boy Color",
+  "totalGames": 12,
+  "games": [
+    {
+      "name": "Pok\u00e9mon Gold",
+      "systemID": "gbc",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "Pok\u00e9mon Silver",
+      "systemID": "gbc",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "Pok\u00e9mon Crystal",
+      "systemID": "gbc",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "Pok\u00e9mon Yellow",
+      "systemID": "gbc",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "Mario Tennis",
+      "systemID": "gbc",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": 91,
+      "userScore": 20.631230734531243
+    },
+    {
+      "name": "Mario Golf",
+      "systemID": "gbc",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": 91,
+      "userScore": 20.631230734531243
+    },
+    {
+      "name": "Pok\u00e9mon Pinball",
+      "systemID": "gbc",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "The Legend of Zelda: Oracle of Ages",
+      "systemID": "gbc",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "The Legend of Zelda: Oracle of Seasons",
+      "systemID": "gbc",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "Pok\u00e9mon Snap",
+      "systemID": "gbc",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "Tetris",
+      "systemID": "gbc",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "Yoshi's Story",
+      "systemID": "gbc",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    }
+  ]
+}

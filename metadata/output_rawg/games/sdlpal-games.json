@@ -1,0 +1,12 @@
+{
+  "system": "sdlpal",
+  "systemName": "SDLPAL",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for SDLPAL",
+      "systemID": "sdlpal",
+      "source": "placeholder"
+    }
+  ]
+}

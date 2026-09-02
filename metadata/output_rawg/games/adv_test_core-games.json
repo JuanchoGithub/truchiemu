@@ -1,0 +1,12 @@
+{
+  "system": "adv_test_core",
+  "systemName": "Advanced Test Core",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for Advanced Test Core",
+      "systemID": "adv_test_core",
+      "source": "placeholder"
+    }
+  ]
+}

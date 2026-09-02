@@ -1,0 +1,14 @@
+{
+  "system": "atari_jaguar",
+  "systemName": "Jaguar",
+  "totalGames": 1,
+  "openCriticURLs": [
+    null
+  ],
+  "metacriticURLs": [
+    "https://metacritic.com/game/game-for-jaguar"
+  ],
+  "launchboxURLs": [
+    "https://gamesdb.launchbox-app.com/metadata/atari_jaguar/game-for-jaguar"
+  ]
+}

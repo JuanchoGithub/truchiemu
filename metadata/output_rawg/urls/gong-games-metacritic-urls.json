@@ -1,0 +1,14 @@
+{
+  "system": "gong",
+  "systemName": "Pong Game Clone",
+  "totalGames": 1,
+  "openCriticURLs": [
+    null
+  ],
+  "metacriticURLs": [
+    "https://metacritic.com/game/game-for-pong-game-clone"
+  ],
+  "launchboxURLs": [
+    "https://gamesdb.launchbox-app.com/metadata/gong/game-for-pong-game-clone"
+  ]
+}

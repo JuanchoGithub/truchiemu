@@ -1,0 +1,12 @@
+{
+  "system": "virtual_boy",
+  "systemName": "Virtual Boy",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for Virtual Boy",
+      "systemID": "virtual_boy",
+      "source": "placeholder"
+    }
+  ]
+}

@@ -1,0 +1,367 @@
+{
+  "system": "gba",
+  "systemName": "Game Boy Advance",
+  "totalGames": 120,
+  "games": [
+    {
+      "name": "007 - Everything or Nothing (Japan).gba"
+    },
+    {
+      "name": "007 - Everything or Nothing (USA, Europe) (En,Fr,De).gba"
+    },
+    {
+      "name": "007 - NightFire (USA, Europe) (En,Fr,De).gba"
+    },
+    {
+      "name": "2 Disney Games - Disney Sports - Football + Disney Sports - Skateboarding (Europe) (En,Fr,De,Es,It).gba"
+    },
+    {
+      "name": "2 Disney Games - Lilo & Stitch 2 + Peter Pan - Return to Neverland (Europe) (En,Fr,De,Es+En,Fr,De,Es,It,Nl).gba"
+    },
+    {
+      "name": "2 Game Pack! - Hot Wheels - Stunt Track Challenge + Hot Wheels - World Race (USA, Europe).gba"
+    },
+    {
+      "name": "2 Game Pack! - Matchbox Missions - Emergency Response & Air, Land and Sea Rescue (Europe) (En,Fr,De,Es,It).gba"
+    },
+    {
+      "name": "2 Game Pack! - Matchbox Missions - Emergency Response + Air, Land and Sea Rescue (USA).gba"
+    },
+    {
+      "name": "2 Game Pack! - Uno & Skip-Bo (Europe) (En,Fr,De,Es,It).gba"
+    },
+    {
+      "name": "2 Game Pack! - Uno + Skip-Bo (USA).gba"
+    },
+    {
+      "name": "2 Games in 1 - Alla Ricerca di Nemo + Gli Incredibili - Una 'Normale' Famiglia di Supereroi (Italy) (Es,It+It).gba"
+    },
+    {
+      "name": "2 Games in 1 - Bionicle + Knights' Kingdom (Europe) (En,Fr,De,Da+En,De).gba"
+    },
+    {
+      "name": "2 Games in 1 - Brother Bear + The Lion King (Europe) (En,Fr,De,Es,It,Nl,Sv,Da).gba"
+    },
+    {
+      "name": "2 Games in 1 - Buscando a Nemo + Los Increibles (Spain) (Es,It+Es).gba"
+    },
+    {
+      "name": "2 Games in 1 - Cartoon Network Block Party + Cartoon Network Speedway (USA).gba"
+    },
+    {
+      "name": "2 Games in 1 - Columns Crown + ChuChu Rocket! (Europe) (En+En,Ja,Fr,De,Es).gba"
+    },
+    {
+      "name": "2 Games in 1 - Die Monster AG + Findet Nemo (Germany).gba"
+    },
+    {
+      "name": "2 Games in 1 - Disney Princesas + El Rey Leon (Spain) (Es+En,Fr,De,Es,It,Nl,Sv,Da).gba"
+    },
+    {
+      "name": "2 Games in 1 - Disney Princesas + Hermano Oso (Spain) (Es+En,Fr,De,Es,It,Nl,Sv,Da).gba"
+    },
+    {
+      "name": "2 Games in 1 - Disney Princesas + Lizzie McGuire (Spain).gba"
+    },
+    {
+      "name": "2 Games in 1 - Disney Princess + Brother Bear (Europe) (En+En,Fr,De,Es,It,Nl,Sv,Da).gba"
+    },
+    {
+      "name": "2 Games in 1 - Disney Princess + Lizzie McGuire (Europe).gba"
+    },
+    {
+      "name": "2 Games in 1 - Disney Princesse + Frere des Ours (France) (Fr+En,Fr,De,Es,It,Nl,Sv,Da).gba"
+    },
+    {
+      "name": "2 Games in 1 - Disney Princesse + Le Roi Lion (France) (Fr+En,Fr,De,Es,It,Nl,Sv,Da).gba"
+    },
+    {
+      "name": "2 Games in 1 - Disney Principesse + Il Re Leone (Italy) (It+En,Fr,De,Es,It,Nl,Sv,Da).gba"
+    },
+    {
+      "name": "2 Games in 1 - Disney Principesse + Koda, Fratello Orso (Italy) (It+En,Fr,De,Es,It,Nl,Sv,Da).gba"
+    },
+    {
+      "name": "2 Games in 1 - Disneys Prinzessinnen + Baerenbrueder (Germany) (De+En,Fr,De,Es,It,Nl,Sv,Da).gba"
+    },
+    {
+      "name": "2 Games in 1 - Disneys Prinzessinnen + Der Koenig der Loewen (Germany) (De+En,Fr,De,Es,It,Nl,Sv,Da).gba"
+    },
+    {
+      "name": "2 Games in 1 - Dr. Mario + Puzzle League (Europe) (En,Fr,De,Es,It).gba"
+    },
+    {
+      "name": "2 Games in 1 - Dragon Ball Z - The Legacy of Goku I & II (USA).gba"
+    },
+    {
+      "name": "2 Games in 1 - Findet Nemo + Die Unglaublichen (Germany).gba"
+    },
+    {
+      "name": "2 Games in 1 - Findet Nemo + Findet Nemo - Das Abenteuer Geht Weiter (Germany) (De+Fr,De,Nl).gba"
+    },
+    {
+      "name": "2 Games in 1 - Finding Nemo + Finding Nemo - The Continuing Adventures (Europe) (En+En,Es,It,Sv,Da).gba"
+    },
+    {
+      "name": "2 Games in 1 - Finding Nemo + Finding Nemo - The Continuing Adventures (Europe) (Es,It+En,Es,It,Sv,Da).gba"
+    },
+    {
+      "name": "2 Games in 1 - Finding Nemo + Finding Nemo - The Continuing Adventures (Europe) (Fr,Nl+Fr,De,Nl).gba"
+    },
+    {
+      "name": "2 Games in 1 - Finding Nemo + The Incredibles (Europe).gba"
+    },
+    {
+      "name": "2 Games in 1 - Finding Nemo + The Incredibles (Europe) (Fr,Nl).gba"
+    },
+    {
+      "name": "2 Games in 1 - Finding Nemo - The Continuing Adventures + The Incredibles (USA).gba"
+    },
+    {
+      "name": "2 Games in 1 - Golden Nugget Casino + Texas Hold 'em Poker (USA).gba"
+    },
+    {
+      "name": "2 Games in 1 - Hot Wheels - Velocity X + Hot Wheels - World Race (Europe).gba"
+    },
+    {
+      "name": "2 Games in 1 - Hot Wheels - Velocity X + Hot Wheels - World Race (USA).gba"
+    },
+    {
+      "name": "2 Games in 1 - Les Razmoket Rencontrent les Delajungle + SpongeBob SquarePants - SuperSponge (France) (Fr+En).gba"
+    },
+    {
+      "name": "2 Games in 1 - Monsters & Co. + Alla Ricerca di Nemo (Italy) (En,Fr,It+Es,It).gba"
+    },
+    {
+      "name": "2 Games in 1 - Monsters en Co. + Finding Nemo (Netherlands) (En,Es,Nl+Fr,Nl).gba"
+    },
+    {
+      "name": "2 Games in 1 - Monsters, Inc. + Finding Nemo (Europe).gba"
+    },
+    {
+      "name": "2 Games in 1 - Monsters, Inc. + Finding Nemo (USA).gba"
+    },
+    {
+      "name": "2 Games in 1 - Monstres & Cie + Le Monde de Nemo (France) (En,Fr,It+Fr,Nl).gba"
+    },
+    {
+      "name": "2 Games in 1 - Monstruos, S.A. + Buscando a Nemo (Spain) (En,Es,Nl+Es,It).gba"
+    },
+    {
+      "name": "2 Games in 1 - Moto GP + GT Advance 3 - Pro Concept Racing (Europe) (En,Fr,De,Es,It+En).gba"
+    },
+    {
+      "name": "2 Games in 1 - Power Rangers - Ninja Storm + Power Rangers - La Force du Temps (France) (En,Fr,De+Fr).gba"
+    },
+    {
+      "name": "2 Games in 1 - Power Rangers - Ninja Storm + Power Rangers - Time Force (Europe) (En,Fr,De+En).gba"
+    },
+    {
+      "name": "2 Games in 1 - Power Rangers - Ninja Storm + Power Rangers - Time Force (Germany) (En,Fr,De+De).gba"
+    },
+    {
+      "name": "2 Games in 1 - Power Rangers - Ninja Storm + Power Rangers - Time Force (USA) (En,Fr,De+En).gba"
+    },
+    {
+      "name": "2 Games in 1 - Quad Desert Fury + Monster Trucks (USA).gba"
+    },
+    {
+      "name": "2 Games in 1 - Rugrats - Go Wild + SpongeBob SquarePants - SuperSponge (Europe).gba"
+    },
+    {
+      "name": "2 Games in 1 - Scooby-Doo + Scooby-Doo 2 - Desatado (Spain) (Es+En,Fr,De,Es,It).gba"
+    },
+    {
+      "name": "2 Games in 1 - Scooby-Doo + Scooby-Doo 2 - Les Monstres Se Dechainent (France) (Fr+En,Fr,De,Es,It).gba"
+    },
+    {
+      "name": "2 Games in 1 - Scooby-Doo + Scooby-Doo 2 - Monsters Unleashed (Europe).gba"
+    },
+    {
+      "name": "2 Games in 1 - Scooby-Doo + Scooby-Doo 2 - Monsters Unleashed (USA).gba"
+    },
+    {
+      "name": "2 Games in 1 - Scooby-Doo! - Mystery Mayhem + Scooby-Doo and the Cyber Chase (Europe) (En,Fr,De+En).gba"
+    },
+    {
+      "name": "2 Games in 1 - Scooby-Doo! - Mystery Mayhem + Scooby-Doo and the Cyber Chase (USA) (En,Fr,De+En).gba"
+    },
+    {
+      "name": "2 Games in 1 - Sonic Advance + ChuChu Rocket! (Europe) (En,Ja,Fr,De,Es).gba"
+    },
+    {
+      "name": "2 Games in 1 - Sonic Advance + Sonic Battle (Europe) (En,Ja,Fr,De,Es+En,Ja,Fr,De,Es,It).gba"
+    },
+    {
+      "name": "2 Games in 1 - Sonic Advance + Sonic Pinball Party (Europe) (En,Ja,Fr,De,Es+En,Ja,Fr,De,Es,It).gba"
+    },
+    {
+      "name": "2 Games in 1 - Sonic Battle + ChuChu Rocket! (Europe) (En,Ja,Fr,De,Es,It+En,Ja,Fr,De,Es).gba"
+    },
+    {
+      "name": "2 Games in 1 - Sonic Battle + Sonic Pinball Party (Europe) (En,Ja,Fr,De,Es,It).gba"
+    },
+    {
+      "name": "2 Games in 1 - Sonic Pinball Party + Columns Crown (Europe) (En,Ja,Fr,De,Es,It+En).gba"
+    },
+    {
+      "name": "2 Games in 1 - SpongeBob SquarePants - Battle for Bikini Bottom + Jimmy Neutron Boy Genius (Europe) (En,Fr,De+En,Fr,De,Es).gba"
+    },
+    {
+      "name": "2 Games in 1 - SpongeBob SquarePants - Battle for Bikini Bottom + Nicktoons - Freeze Frame Frenzy (USA).gba"
+    },
+    {
+      "name": "2 Games in 1 - SpongeBob SquarePants - Battle for Bikini Bottom + The Fairly OddParents! - Breakin' da Rules (USA).gba"
+    },
+    {
+      "name": "2 Games in 1 - SpongeBob SquarePants - Revenge of the Flying Dutchman + SpongeBob SquarePants - SuperSponge (Europe).gba"
+    },
+    {
+      "name": "2 Games in 1 - SpongeBob SquarePants - Revenge of the Flying Dutchman + SpongeBob SquarePants - SuperSponge (USA).gba"
+    },
+    {
+      "name": "2 Games in 1 - SpongeBob SquarePants - SuperSponge + SpongeBob SquarePants - Battle for Bikini Bottom (Europe).gba"
+    },
+    {
+      "name": "2 Games in 1 - SpongeBob SquarePants - SuperSponge + SpongeBob SquarePants - Battle for Bikini Bottom (Europe) (En+En,Fr,De).gba"
+    },
+    {
+      "name": "2 Games in 1 - The Lion King + Disney Princess (Europe) (En,Fr,De,Es,It,Nl,Sv,Da+En).gba"
+    },
+    {
+      "name": "2 Games in 1 - The SpongeBob SquarePants Movie + SpongeBob SquarePants and Friends in Freeze Frame Frenzy (Europe) (En,Fr,De,Es,It,Nl+En,Fr,De,Es,Nl).gba"
+    },
+    {
+      "name": "2 Games in 1! - Dragon Ball Z - Buu's Fury + Dragon Ball GT - Transformation (USA).gba"
+    },
+    {
+      "name": "2 Games in One! - Dr. Mario + Puzzle League (USA).gba"
+    },
+    {
+      "name": "2 Games in One! - Gauntlet + Rampart (Europe) (En,Fr,De,Es,It).gba"
+    },
+    {
+      "name": "2 Games in One! - Gauntlet + Rampart (USA).gba"
+    },
+    {
+      "name": "2 Games in One! - Marble Madness + Klax (Europe) (En,Fr,De,Es,It).gba"
+    },
+    {
+      "name": "2 Games in One! - Marble Madness + Klax (USA).gba"
+    },
+    {
+      "name": "2 Games in One! - Paperboy + Rampage (Europe) (En,Fr,De,Es,It).gba"
+    },
+    {
+      "name": "2 Games in One! - Paperboy + Rampage (USA).gba"
+    },
+    {
+      "name": "2 Games in One! - Spy Hunter + Super Sprint (Europe) (En,Fr,De,Es,It).gba"
+    },
+    {
+      "name": "2 Games in One! - Spy Hunter + Super Sprint (USA).gba"
+    },
+    {
+      "name": "2 Great Games! - Pac-Man World + Ms. Pac-Man - Maze Madness (USA).gba"
+    },
+    {
+      "name": "2 Jeux en 1 - Titeuf - Ze Gag Machine + Titeuf - Mega Compet (France).gba"
+    },
+    {
+      "name": "2 in 1 - Asterix & Obelix - Bash Them All! + Asterix & Obelix XXL (Europe) (En,Fr,De,Es,It,Nl).gba"
+    },
+    {
+      "name": "2 in 1 - V-Rally 3 + Stuntman (Europe) (En,Fr,De,Es,It).gba"
+    },
+    {
+      "name": "2 in 1 Game Pack - Shrek 2 & Shark Tale (Europe) (En,Fr,De,Es,It,Sv+En,Fr,De,Es,It).gba"
+    },
+    {
+      "name": "2 in 1 Game Pack - Shrek 2 + Shark Tale (USA).gba"
+    },
+    {
+      "name": "2 in 1 Game Pack - Spider-Man & Spider-Man 2 (Europe) (En,Fr,De+En,Fr,De,Es,It).gba"
+    },
+    {
+      "name": "2 in 1 Game Pack - Spider-Man + Spider-Man 2 (USA) (En,Fr,De+En,Fr,De,Es).gba"
+    },
+    {
+      "name": "2 in 1 Game Pack - Spider-Man - Mysterio's Menace + X2 - Wolverine's Revenge (USA, Europe).gba"
+    },
+    {
+      "name": "2 in 1 Game Pack - Tony Hawk's Underground + Kelly Slater's Pro Surfer (USA, Europe).gba"
+    },
+    {
+      "name": "2-in-1 Fun Pack - Shrek 2 + Madagascar (Europe).gba"
+    },
+    {
+      "name": "2-in-1 Fun Pack - Shrek 2 + Madagascar (USA).gba"
+    },
+    {
+      "name": "2-in-1 Fun Pack - Shrek 2 + Madagascar - Operation Penguin (Europe).gba"
+    },
+    {
+      "name": "2-in-1 Fun Pack - Shrek 2 + Madagascar - Operation Penguin (USA).gba"
+    },
+    {
+      "name": "2004Mbit Competition (World) (Unl).gba"
+    },
+    {
+      "name": "2006 FIFA World Cup - Germany 2006 (USA, Europe) (En,Fr,De,Es,It).gba"
+    },
+    {
+      "name": "2048 (World) (GBA Jam 2024)"
+    },
+    {
+      "name": "2048 (World) (GBA Jam 2024) (Aftermarket) (Unl).gba"
+    },
+    {
+      "name": "2048 Pool (World) (Aftermarket) (Unl).gba"
+    },
+    {
+      "name": "2K Sports - Major League Baseball 2K7 (USA).gba"
+    },
+    {
+      "name": "2K Sports - Major League Baseball 2K7 (USA) (Beta).gba"
+    },
+    {
+      "name": "3 Game Pack! - Candy Land + Chutes and Ladders + Original Memory Game (USA).gba"
+    },
+    {
+      "name": "3 Game Pack! - Ker Plunk! + Toss Across + Tip It (USA).gba"
+    },
+    {
+      "name": "3 Game Pack! - Mouse Trap + Simon + Operation (USA).gba"
+    },
+    {
+      "name": "3 Game Pack! - The Game of Life + Payday + Yahtzee (USA).gba"
+    },
+    {
+      "name": "3 Games in 1 - Rugrats - I Gotta Go Party + SpongeBob SquarePants - SuperSponge + Tak and the Power of Juju (Europe) (En+En+En,Fr,De).gba"
+    },
+    {
+      "name": "3 Games in One - Darts + Roll-a-Ball + Shuffle Bowl (Europe).gba"
+    },
+    {
+      "name": "3 Games in One - Darts + Roll-a-Ball + Shuffle Bowl (USA).gba"
+    },
+    {
+      "name": "3 Games in One! - Breakout + Centipede + Warlords (Europe) (En,Fr,De,Es,It).gba"
+    },
+    {
+      "name": "3 Games in One! - Breakout + Centipede + Warlords (USA).gba"
+    },
+    {
+      "name": "3 Games in One! - Super Breakout + Millipede + Lunar Lander (Europe) (En,Fr,De,Es,It).gba"
+    },
+    {
+      "name": "3 Games in One! - Super Breakout + Millipede + Lunar Lander (USA).gba"
+    },
+    {
+      "name": "3 Games in One! - Yars' Revenge + Asteroids + Pong (Europe) (En,Fr,De,Es,It).gba"
+    },
+    {
+      "name": "3 Games in One! - Yars' Revenge + Asteroids + Pong (USA).gba"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "system": "zx81",
+  "systemName": "ZX81",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for ZX81",
+      "systemID": "zx81",
+      "source": "placeholder"
+    }
+  ]
+}

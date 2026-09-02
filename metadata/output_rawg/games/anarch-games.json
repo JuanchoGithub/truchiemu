@@ -1,0 +1,12 @@
+{
+  "system": "anarch",
+  "systemName": "Anarch",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for Anarch",
+      "systemID": "anarch",
+      "source": "placeholder"
+    }
+  ]
+}

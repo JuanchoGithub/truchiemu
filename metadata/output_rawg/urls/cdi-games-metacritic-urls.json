@@ -1,0 +1,14 @@
+{
+  "system": "cdi",
+  "systemName": "CD-i",
+  "totalGames": 1,
+  "openCriticURLs": [
+    null
+  ],
+  "metacriticURLs": [
+    "https://metacritic.com/game/game-for-cd-i"
+  ],
+  "launchboxURLs": [
+    "https://gamesdb.launchbox-app.com/metadata/cdi/game-for-cd-i"
+  ]
+}

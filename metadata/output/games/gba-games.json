@@ -1,0 +1,142 @@
+{
+  "system": "gba",
+  "systemName": "Game Boy Advance",
+  "totalGames": 15,
+  "games": [
+    {
+      "name": "Pok\u00e9mon Ruby",
+      "systemID": "gba",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "Pok\u00e9mon Sapphire",
+      "systemID": "gba",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "Pok\u00e9mon Emerald",
+      "systemID": "gba",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "The Legend of Zelda: The Minish Cap",
+      "systemID": "gba",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "Metroid Fusion",
+      "systemID": "gba",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": 92,
+      "userScore": 21.631230734531243
+    },
+    {
+      "name": "Castlevania: Aria of Sorrow",
+      "systemID": "gba",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "Fire Emblem",
+      "systemID": "gba",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": 88,
+      "userScore": 17.631230734531243
+    },
+    {
+      "name": "Metroid Dread",
+      "systemID": "gba",
+      "source": "popular-list",
+      "openCriticID": 106397,
+      "openCriticScore": 87,
+      "metacriticScore": 88,
+      "userScore": 17.631230734531243
+    },
+    {
+      "name": "Advance Wars",
+      "systemID": "gba",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": 92,
+      "userScore": 21.631230734531243
+    },
+    {
+      "name": "Fire Emblem",
+      "systemID": "gba",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": 88,
+      "userScore": 17.631230734531243
+    },
+    {
+      "name": "Sonic Advance",
+      "systemID": "gba",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "Mario Kart: Super Circuit",
+      "systemID": "gba",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "Luigi's Mansion",
+      "systemID": "gba",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    },
+    {
+      "name": "Animal Crossing",
+      "systemID": "gba",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": 87,
+      "userScore": 16.631230734531243
+    },
+    {
+      "name": "Kirby: Nightmare in Dream Land",
+      "systemID": "gba",
+      "source": "popular-list",
+      "openCriticID": null,
+      "openCriticScore": null,
+      "metacriticScore": null,
+      "userScore": null
+    }
+  ]
+}

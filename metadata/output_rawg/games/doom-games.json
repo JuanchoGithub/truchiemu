@@ -1,0 +1,12 @@
+{
+  "system": "doom",
+  "systemName": "DOOM Game Engine",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for DOOM Game Engine",
+      "systemID": "doom",
+      "source": "placeholder"
+    }
+  ]
+}

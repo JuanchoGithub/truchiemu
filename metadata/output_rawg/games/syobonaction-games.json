@@ -1,0 +1,12 @@
+{
+  "system": "syobonaction",
+  "systemName": "SyobonAction",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for SyobonAction",
+      "systemID": "syobonaction",
+      "source": "placeholder"
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "system": "chip_8",
+  "systemName": "CHIP-8",
+  "totalGames": 1,
+  "openCriticURLs": [
+    null
+  ],
+  "metacriticURLs": [
+    "https://metacritic.com/game/game-for-chip-8"
+  ],
+  "launchboxURLs": [
+    "https://gamesdb.launchbox-app.com/metadata/chip_8/game-for-chip-8"
+  ]
+}

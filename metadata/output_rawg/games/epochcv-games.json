@@ -1,0 +1,12 @@
+{
+  "system": "epochcv",
+  "systemName": "Epoch Cassette Vision",
+  "totalGames": 1,
+  "games": [
+    {
+      "name": "Game for Epoch Cassette Vision",
+      "systemID": "epochcv",
+      "source": "placeholder"
+    }
+  ]
+}

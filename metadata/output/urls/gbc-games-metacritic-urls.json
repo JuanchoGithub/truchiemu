@@ -1,0 +1,46 @@
+{
+  "system": "gbc",
+  "systemName": "Game Boy Color",
+  "openCriticURLs": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+  ],
+  "metacriticURLs": [
+    "https://metacritic.com/game/pok-mon-gold",
+    "https://metacritic.com/game/pok-mon-silver",
+    "https://metacritic.com/game/pok-mon-crystal",
+    "https://metacritic.com/game/pok-mon-yellow",
+    "https://metacritic.com/game/mario-tennis",
+    "https://metacritic.com/game/mario-golf",
+    "https://metacritic.com/game/pok-mon-pinball",
+    "https://metacritic.com/game/the-legend-of-zelda-oracle-of-ages",
+    "https://metacritic.com/game/the-legend-of-zelda-oracle-of-seasons",
+    "https://metacritic.com/game/pok-mon-snap",
+    "https://metacritic.com/game/tetris",
+    "https://metacritic.com/game/yoshi-s-story"
+  ],
+  "launchboxURLs": [
+    "https://gamesdb.launchbox-app.com/metadata/gbc/pok\u00e9mon gold",
+    "https://gamesdb.launchbox-app.com/metadata/gbc/pok\u00e9mon silver",
+    "https://gamesdb.launchbox-app.com/metadata/gbc/pok\u00e9mon crystal",
+    "https://gamesdb.launchbox-app.com/metadata/gbc/pok\u00e9mon yellow",
+    "https://gamesdb.launchbox-app.com/metadata/gbc/mario tennis",
+    "https://gamesdb.launchbox-app.com/metadata/gbc/mario golf",
+    "https://gamesdb.launchbox-app.com/metadata/gbc/pok\u00e9mon pinball",
+    "https://gamesdb.launchbox-app.com/metadata/gbc/the legend of zelda oracle of ages",
+    "https://gamesdb.launchbox-app.com/metadata/gbc/the legend of zelda oracle of seasons",
+    "https://gamesdb.launchbox-app.com/metadata/gbc/pok\u00e9mon snap",
+    "https://gamesdb.launchbox-app.com/metadata/gbc/tetris",
+    "https://gamesdb.launchbox-app.com/metadata/gbc/yoshi s story"
+  ]
+}
