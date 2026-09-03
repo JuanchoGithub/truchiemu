@@ -959,10 +959,6 @@
       {
         "offset": 0,
         "bytes": "PC ENGINE"
-      },
-      {
-        "offset": 32769,
-        "bytes": "CD001"
       }
     ],
     "filenamePatterns": [],
