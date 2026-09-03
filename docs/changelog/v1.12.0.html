@@ -1,0 +1,60 @@
+---
+layout: default
+title: v1.12.0 - TruchiEmu Documentation
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/changelog.html' | relative_url }}">Changelog</a>
+        <span class="separator">/</span>
+        <span class="current">v1.12.0</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.12.0</h1>
+        <div class="release-meta">
+            <span class="release-date">September 3, 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>This release adds a live controller test sheet with on-screen pad visualizer, remap, deadzone and calibration, brings OpenCritic review scores to the game detail view, refactors the library sort picker with new "Time Played" and "Longer to Beat" orders, and polishes the holo FX pipeline: reverse-foil transparency is now correctly visible, fitted box-art alignment is fixed for non-vertical covers, dead Holo settings are pruned, and TV mode gets a 3D pivoting effect on list rows plus a wizard-style auto holo for the focused tile and selected hero. A bogus PC Engine CD001 magic header is removed so DOS CD images no longer mis-identify as PCE.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Highlights</h2>
+        <ul class="feature-list">
+            <li><strong>Live controller test sheet:</strong> An auto-presented sheet on new gamepads (and a manual "Test Controller" entry in settings) shows the current binding layout on a SwiftUI-drawn Xbox layout, lets the user remap face/shoulder/trigger/stick/dpad buttons, adjust stick deadzones, and run a stick calibration session. Conflicts are highlighted in yellow.</li>
+            <li><strong>OpenCritic integration:</strong> The game detail view now shows critic score, tier, percent recommended, review count, and a deep link. Results are cached in <code>ROMMetadata</code>; the API key and connectivity test live in Settings, and everything is localized across en/es/ja/pt.</li>
+            <li><strong>Library sort refactor + new orders:</strong> The legacy two-boolean sort is replaced by a single <code>LibrarySortOrder</code> enum, with "Time Played" (by <code>totalPlaytimeSeconds</code>) and "Longer to Beat" (by <code>hltbMainStoryHours</code>) added in the chip bar's "Other" popover. Pills now cycle inactive → descending → ascending with directional arrows.</li>
+            <li><strong>Holo FX polish:</strong> Reverse-holo foil transparency is correctly visible in the bright mid-tones (new <code>ReverseHoloMask</code> Metal shader with luminance gating), fitted box art and holo foil are centered in the fill-blurred all-games card, nine dead Holo settings are pruned, and TV mode gets a 3D pivoting effect on list rows plus an auto-holo on the focused tile and selected hero.</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Detailed Changes</h2>
+        <ul>
+            <li>Controller test sheet — new <code>PadButton</code> enum covers the full Xbox layout (face, shoulders, triggers, sticks, dpad, share, 8 stick directions); <code>ControllerInputObserver</code> owns a single set of <code>valueChangedHandler</code> chains (or SDL observer callbacks) and synthesizes stick-direction press events from analog axes so remap capture works for any input source; <code>SDLInputManager</code> gains <code>startButtonObservation</code> / <code>startTriggerObservation</code> mirroring the existing single-slot axis pattern; <code>updateMapping</code> dedup logic removed (duplicates allowed; test sheet highlights conflicts); <code>ControllerService.updateMapping</code> / <code>stopObserving</code> now broadcasts a <code>controllerInputObserverStopped</code> notification so <code>StickVisualizerView</code> re-attaches its handlers when the test sheet closes; <code>NewGamepadPresenter</code> auto-presents the sheet for unseen vendor names after a 2s startup warm-up and when no game is running; <code>NavBlocker</code> gamepad context swallows library nav actions while the test sheet is open so A/Start don't accidentally launch games.</li>
+            <li>OpenCritic — new <code>OpenCriticService</code> (RapidAPI) with search, details, and test-connection; Settings UI for the API key with connectivity feedback and logging; new OpenCritic section in the game detail view showing score, tier, percent recommended, review count, and link; results persisted to <code>ROMMetadata</code>; refresh reuses cached game ID to cut API usage from 2 hits to 1 on refresh; localized settings.openCritic.* and openCritic.* across en/es/ja/pt.</li>
+            <li>Library sort refactor — replaces <code>sortByLastPlayed</code> / <code>sortByLastAdded</code> AppSettings keys with a single <code>LibrarySortOrder</code> enum plus a <code>sortAscending</code> flag; new <code>LibrarySortPicker</code> renders both the macOS Sort menu (NSMenu rows + "Other" submenu) and the filter-chip bar (capsule chips); new "Time Played" and "Longer to Beat" sorts in the "Other" popover (unplayed / no-HLTB entries sink to bottom); pill click cycle: inactive → descending → ascending → inactive; "Name" default sort is implicit (no pill); <code>FilterChipView</code> gained a <code>fillsWidth</code> parameter for full-width "Other" rows; legacy keys are read once on first run then left on disk (inert) for rollback safety.</li>
+            <li>Holo alignment — center fitted box art and holo foil/glare in the fill-blurred all-games card so non-vertical art is no longer zoomed/cropped to fill and the mask no longer drifts off-center; documented the holo box-art invariants in <code>AGENTS.md</code>.</li>
+            <li>Reverse holo foil — new <code>ReverseHoloMask</code> Metal shader: reverse holo foil is transparent at max dark and max bright and most visible in the bright mid-tones, with the light/dark sweep gated by the luminance mask in every mode so the transparency is actually visible.</li>
+            <li>Holo settings prune — removed nine Holo settings only consumed by a dead fallback branch in <code>HoloFoilLayers.body</code> (title/chrome/hero/background intensity and pattern, plus <code>maskDeviationChance</code>); removed <code>holofoilRareBeamStrength</code>, <code>randomFoilSize</code>, the <code>heroHolo</code> / <code>titleBackgroundHolo</code> / <code>chromeBackgroundHolo</code> flags, the <code>HoloMaskMeta</code> sidecar, and <code>writeMeta</code> / <code>metaFileURL</code> plumbing; Settings → Holo now exposes only the show-play-button toggle in the Holo Levels section (intensity and pattern are driven by <code>HoloCardRandomization</code>'s per-card variant roll).</li>
+            <li>TV mode 3D pivot — list rows now feature a 3D pivoting effect on their box art.</li>
+            <li>TV mode auto holo — <code>TVModeHoloBoxart</code>: wizard-style auto holo (self-driven light + card motion, user's weighted random variant) applied to the focused games-row tile and the selected game's hero boxart.</li>
+            <li>TV mode cold-start fix — skip the default <code>.recent</code> <code>initialEntryID</code> on cold-start resume and defer the persisted filter restore until the library loads.</li>
+            <li>TV mode stale-art fix — the stale detail-art download no longer overwrites the current hero ROM (download is handled solely by the detail view).</li>
+            <li>TV mode MainActor fix — read <code>auto_generate_holo_masks</code> on the main actor.</li>
+            <li>ROM identifier — removed bogus <code>CD001</code> magic header from the <code>pce</code> system (it was the generic ISO 9660 Primary Volume Descriptor marker present in every cooked CD image, not just PC Engine discs); true PC Engine HuCards still match via the "PC ENGINE" signature at offset 0; PC Engine CD-ROMs handled by the dedicated <code>pcecd</code> system.</li>
+            <li>Box art assets — added <code>zelda_oot_usa_chrome.png</code> and <code>zelda_oot_usa_title.png</code> for The Legend of Zelda: Ocarina of Time (USA).</li>
+            <li>Project cleanup — removed <code>TestWrite.swift</code> references from project configuration.</li>
+            <li>Bump marketing version to 1.12.0 and build number to 35 across <code>project.yml</code>, both <code>Info.plist</code>s, and <code>docs/_config.yml</code>.</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/changelog/v1.11.0.html' | relative_url }}" class="release-prev">&larr; v1.11.0</a>
+        <a href="{{ '/changelog.html' | relative_url }}" class="release-all">All Releases</a>
+    </nav>
+</div>

@@ -1,0 +1,60 @@
+---
+layout: default
+title: v1.12.0 - Documentação do TruchiEmu
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/pt/changelog.html' | relative_url }}">Registro de mudanças</a>
+        <span class="separator">/</span>
+        <span class="current">v1.12.0</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.12.0</h1>
+        <div class="release-meta">
+            <span class="release-date">3 de setembro de 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>Esta versão adiciona uma folha de teste de controle ao vivo com visualizador do pad na tela, remapeamento, deadzone e calibração; traz as notas do OpenCritic para a visualização de detalhes do jogo; refatora o seletor de ordenação da biblioteca com novas ordens "Tempo jogado" e "Mais longo para terminar"; e dá polimento ao pipeline de efeitos holo: a transparência do foil reverso agora é visível corretamente, o alinhamento da arte ajustada é corrigido para capas não verticais, ajustes Holo obsoletos são removidos, e o modo TV ganha um efeito de pivô 3D nas linhas da lista além de um holo automático estilo assistente para o tile em foco e o herói selecionado. Um cabeçalho mágico CD001 espúrio do PC Engine é removido para que imagens DOS CD não sejam mais identificadas incorretamente como PCE.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Destaques</h2>
+        <ul class="feature-list">
+            <li><strong>Folha de teste de controle ao vivo:</strong> Uma folha auto-apresentada ao conectar novos gamepads (e uma entrada manual "Testar controle" em configurações) mostra o mapeamento atual em um layout Xbox desenhado em SwiftUI, permite remapear botões frontais/ombros/gatilhos/sticks/dpad, ajustar deadzones dos sticks e executar uma sessão de calibração dos sticks. Conflitos são destacados em amarelo.</li>
+            <li><strong>Integração com OpenCritic:</strong> A visualização de detalhes do jogo agora mostra nota da crítica, tier, percentual recomendado, contagem de análises e um link direto. Os resultados são cacheados em <code>ROMMetadata</code>; a chave de API e o teste de conectividade ficam em Configurações, e tudo está localizado em en/es/ja/pt.</li>
+            <li><strong>Refatoração da ordenação da biblioteca + novas ordens:</strong> A antiga ordenação de dois booleanos é substituída por um único enum <code>LibrarySortOrder</code>, com "Tempo jogado" (por <code>totalPlaytimeSeconds</code>) e "Mais longo para terminar" (por <code>hltbMainStoryHours</code>) adicionados no popover "Outros" da barra de chips. As pills agora ciclam inativo → descendente → ascendente com setas direcionais.</li>
+            <li><strong>Polimento dos efeitos Holo:</strong> A transparência do foil reverso fica visível corretamente nos tons médios brilhantes (novo shader Metal <code>ReverseHoloMask</code> com gating por luminância), a capa ajustada e o foil Holo ficam centralizados no card desfocado de todos os jogos, nove ajustes Holo obsoletos são removidos, e o modo TV ganha um efeito de pivô 3D nas linhas da lista mais um holo automático no tile em foco e no herói selecionado.</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Mudanças detalhadas</h2>
+        <ul>
+            <li>Folha de teste de controle — novo enum <code>PadButton</code> cobrindo todo o layout Xbox (frontais, ombros, gatilhos, sticks, dpad, share, 8 direções de stick); <code>ControllerInputObserver</code> possui um único conjunto de cadeias <code>valueChangedHandler</code> (ou callbacks de observer SDL) e sintetiza eventos de pressionamento de direção de stick a partir de eixos analógicos para que a captura de remapeamento funcione para qualquer fonte de entrada; <code>SDLInputManager</code> ganha <code>startButtonObservation</code> / <code>startTriggerObservation</code> espelhando o padrão de eixo de slot único existente; lógica de deduplicação de <code>updateMapping</code> removida (duplicatas são permitidas; a folha de teste destaca conflitos em amarelo); <code>ControllerService.updateMapping</code> / <code>stopObserving</code> agora transmitem uma notificação <code>controllerInputObserverStopped</code> para que <code>StickVisualizerView</code> reanexe seus handlers quando a folha de teste fecha; <code>NewGamepadPresenter</code> auto-apresenta a folha para nomes de vendor não vistos após um warm-up de 2s na inicialização e quando nenhum jogo está rodando; o contexto de gamepad de <code>NavBlocker</code> engole ações de navegação da biblioteca enquanto a folha está aberta para que A/Start não iniciem jogos acidentalmente.</li>
+            <li>OpenCritic — novo <code>OpenCriticService</code> (RapidAPI) com busca, detalhes e teste de conexão; UI de Configurações para a chave de API com feedback de conectividade e logging; nova seção OpenCritic na visualização de detalhes do jogo mostrando nota, tier, percentual recomendado, contagem de análises e link; resultados persistidos em <code>ROMMetadata</code>; refresh reutiliza o game ID em cache para cortar o uso de API de 2 hits para 1 no refresh; localizado settings.openCritic.* e openCritic.* em en/es/ja/pt.</li>
+            <li>Refatoração da ordenação da biblioteca — substitui as chaves AppSettings <code>sortByLastPlayed</code> / <code>sortByLastAdded</code> por um único enum <code>LibrarySortOrder</code> mais um flag <code>sortAscending</code>; novo <code>LibrarySortPicker</code> renderiza tanto o menu Ordenar do macOS (linhas NSMenu + submenu "Outros") quanto a barra de chips de filtro (chips em cápsula); novas ordens "Tempo jogado" e "Mais longo para terminar" no popover "Outros" (entradas não jogadas / sem HLTB afundam para o final); ciclo de clique da pill: inativo → descendente → ascendente → inativo; a ordenação "Nome" padrão é implícita (sem pill); <code>FilterChipView</code> ganhou um parâmetro <code>fillsWidth</code> para linhas "Outros" em largura cheia; as chaves legadas são lidas uma vez na primeira execução e deixadas no disco (inertes) para rollback seguro.</li>
+            <li>Alinhamento Holo — centraliza a capa ajustada e o foil/brilho holo no card desfocado de todos os jogos para que a arte não vertical não fique mais ampliada/cortada para preencher e a máscara não desvie mais do centro; invariantes de capa Holo documentados em <code>AGENTS.md</code>.</li>
+            <li>Foil Holo reverso — novo shader Metal <code>ReverseHoloMask</code>: o foil reverso é transparente no escuro máximo e no brilho máximo, e mais visível nos tons médios brilhantes, com a varredura claro/escuro gatilhada pela máscara de luminância em cada modo para que a transparência seja de fato visível.</li>
+            <li>Poda de ajustes Holo — removidos nove ajustes Holo consumidos apenas por um ramo de fallback morto em <code>HoloFoilLayers.body</code> (intensidade e padrão de título/chrome/herói/fundo, mais <code>maskDeviationChance</code>); removidos <code>holofoilRareBeamStrength</code>, <code>randomFoilSize</code>, os flags <code>heroHolo</code> / <code>titleBackgroundHolo</code> / <code>chromeBackgroundHolo</code>, o sidecar <code>HoloMaskMeta</code>, e a fiação de <code>writeMeta</code> / <code>metaFileURL</code>; Configurações → Holo agora expõe apenas o toggle de mostrar botão de play na seção Holo Levels (intensidade e padrão são dirigidos pela rolagem de variante por cartão de <code>HoloCardRandomization</code>).</li>
+            <li>Pivô 3D modo TV — as linhas da lista agora apresentam um efeito de pivô 3D sobre sua capa.</li>
+            <li>Holo automático modo TV — <code>TVModeHoloBoxart</code>: holo automático estilo assistente (luz autodirigida + movimento do card, variante aleatória ponderada do usuário) aplicado ao tile em foco da linha de jogos e ao boxart do herói do jogo selecionado.</li>
+            <li>Fix cold-start modo TV — pula o <code>initialEntryID</code> padrão <code>.recent</code> ao retomar do cold-start e adia a restauração do filtro persistido até a biblioteca carregar.</li>
+            <li>Fix de arte obsoleta modo TV — o download obsoleto de arte de detalhe não sobrescreve mais o ROM herói atual (o download é tratado apenas pela visualização de detalhe).</li>
+            <li>Fix MainActor modo TV — ler <code>auto_generate_holo_masks</code> no main actor.</li>
+            <li>Identificador de ROM — removido o cabeçalho mágico <code>CD001</code> espúrio do sistema <code>pce</code> (era o marcador genérico do Primary Volume Descriptor ISO 9660 presente em qualquer imagem de CD cozinhada, não só em discos PC Engine); HuCards verdadeiros de PC Engine ainda casam pela assinatura "PC ENGINE" no offset 0; CD-ROMs de PC Engine são tratados pelo sistema dedicado <code>pcecd</code>.</li>
+            <li>Assets de capa — adicionados <code>zelda_oot_usa_chrome.png</code> e <code>zelda_oot_usa_title.png</code> para The Legend of Zelda: Ocarina of Time (USA).</li>
+            <li>Limpeza do projeto — removidas as referências a <code>TestWrite.swift</code> da configuração do projeto.</li>
+            <li>Versão de marketing atualizada para 1.12.0 e número de build para 35 em <code>project.yml</code>, ambos os <code>Info.plist</code> e <code>docs/_config.yml</code>.</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/pt/changelog/v1.11.0.html' | relative_url }}" class="release-prev">&larr; v1.11.0</a>
+        <a href="{{ '/pt/changelog.html' | relative_url }}" class="release-all">Todas as versões</a>
+    </nav>
+</div>
