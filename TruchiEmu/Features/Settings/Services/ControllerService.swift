@@ -572,20 +572,9 @@ class ControllerService: ObservableObject {
     // MARK: - GC Controller Management
 
     func updateMapping(for vendorName: String, systemID: String, mapping: ControllerGamepadMapping) {
-        var cleanedButtons = mapping.buttons
-        var seenKeys = Set<String>()
-        for (btn, btnMapping) in mapping.buttons {
-            let dedupKey = btnMapping.identifier?.rawValue ?? btnMapping.gcElementName ?? UUID().uuidString
-            if seenKeys.contains(dedupKey) {
-                cleanedButtons.removeValue(forKey: btn)
-            } else {
-                seenKeys.insert(dedupKey)
-            }
-        }
-        var cleaned = mapping
-        cleaned.buttons = cleanedButtons
+        // Duplicates allowed — see `updateMapping(forIdentity:)` for rationale.
         if savedMappings[vendorName] == nil { savedMappings[vendorName] = [:] }
-        savedMappings[vendorName]?[systemID] = cleaned
+        savedMappings[vendorName]?[systemID] = mapping
 
         refreshConnectedControllers()
         saveMappings()
@@ -650,21 +639,15 @@ class ControllerService: ObservableObject {
     }
 
     func updateMapping(forIdentity identity: ControllerIdentityKey, systemID: String, mapping: ControllerGamepadMapping) {
-        var cleanedButtons = mapping.buttons
-        var seenKeys = Set<String>()
-        for (btn, btnMapping) in mapping.buttons {
-            let dedupKey = btnMapping.identifier?.rawValue ?? btnMapping.gcElementName ?? UUID().uuidString
-            if seenKeys.contains(dedupKey) {
-                cleanedButtons.removeValue(forKey: btn)
-            } else {
-                seenKeys.insert(dedupKey)
-            }
-        }
-        var cleaned = mapping
-        cleaned.buttons = cleanedButtons
+        // Duplicates allowed: the same physical button may be bound to more
+        // than one `RetroButton` (e.g. A and B both wired to physical X). The
+        // controller test sheet shows conflicts with a yellow highlight so
+        // the user knows about duplicates. A prior version deduped here,
+        // which silently dropped the second binding and made the row show
+        // a "—" alias after the user remapped onto an already-mapped button.
         let key = identity.compositeKey
         if savedIdentityMappings[key] == nil { savedIdentityMappings[key] = [:] }
-        savedIdentityMappings[key]?[systemID] = cleaned
+        savedIdentityMappings[key]?[systemID] = mapping
         refreshConnectedControllers()
         saveIdentityMappings()
     }

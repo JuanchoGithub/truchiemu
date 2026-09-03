@@ -5,6 +5,14 @@ import GameController
 extension Notification.Name {
     static let sdlControllerConnected = Notification.Name("sdlControllerConnected")
     static let sdlControllerDisconnected = Notification.Name("sdlControllerDisconnected")
+
+    /// Posted by `ControllerInputObserver.stopObserving` when it releases
+    /// its `valueChangedHandler` chains on a `GCController` and the SDL
+    /// axis/button observers. Listeners (e.g. `StickVisualizerView`) re-run
+    /// their attach logic on receipt, since the handler slots are
+    /// persistent on the controller and the observer stomps them on
+    /// every open/close.
+    static let controllerInputObserverStopped = Notification.Name("controllerInputObserverStopped")
 }
 
 @MainActor
@@ -37,6 +45,21 @@ class SDLInputManager: ObservableObject {
     private nonisolated(unsafe) var axisObserverCallback: ((Int32, Float, Float, Float, Float) -> Void)?
     private nonisolated(unsafe) var axisObserverInstanceID: Int32?
     private nonisolated(unsafe) var observedAxes: [Int32: (lX: Float, lY: Float, rX: Float, rY: Float)] = [:]
+
+    // Live button observer for the controller test sheet. Single-slot:
+    // only the currently-selected controller's buttons are observed. The
+    // callback receives the generic `PadButton` (mapped from SDL button
+    // index) and whether the button is pressed; unrecognized indices yield
+    // `nil` so the caller can ignore them.
+    private nonisolated(unsafe) var buttonObserverCallback: ((Int32, PadButton?, Bool) -> Void)?
+    private nonisolated(unsafe) var buttonObserverInstanceID: Int32?
+
+    // Live trigger observer for the controller test sheet. Reports the
+    // normalized `0...1` value of L2/R2 (axis 4/5 on recognized controllers)
+    // each time SDL fires an axis event. The test sheet uses this to draw
+    // the trigger bar fill.
+    private nonisolated(unsafe) var triggerObserverCallback: ((Int32, PadButton, Float) -> Void)?
+    private nonisolated(unsafe) var triggerObserverInstanceID: Int32?
 
     // SDL share button index cached at runner registration. The same
     // physical button dispatches single-press vs long-press ShareBehaviors
@@ -160,6 +183,36 @@ class SDLInputManager: ObservableObject {
         SDL_CONTROLLER_BUTTON_DPAD_RIGHT.rawValue: .dpadRight,
         SDL_CONTROLLER_BUTTON_LEFTSTICK.rawValue: .l3,
         SDL_CONTROLLER_BUTTON_RIGHTSTICK.rawValue: .r3,
+    ]
+
+    // SDL game-controller button enum index → generic pad button (used by the
+    // controller test sheet to highlight physical buttons on the rendered pad).
+    // Note: SDL has no separate share button; share = back/select on most pads.
+    private nonisolated static let sdlControllerPadMap: [Int32: PadButton] = [
+        SDL_CONTROLLER_BUTTON_A.rawValue: .a,
+        SDL_CONTROLLER_BUTTON_B.rawValue: .b,
+        SDL_CONTROLLER_BUTTON_X.rawValue: .x,
+        SDL_CONTROLLER_BUTTON_Y.rawValue: .y,
+        SDL_CONTROLLER_BUTTON_BACK.rawValue: .select,
+        SDL_CONTROLLER_BUTTON_START.rawValue: .start,
+        SDL_CONTROLLER_BUTTON_LEFTSHOULDER.rawValue: .l1,
+        SDL_CONTROLLER_BUTTON_RIGHTSHOULDER.rawValue: .r1,
+        SDL_CONTROLLER_BUTTON_DPAD_UP.rawValue: .dpadUp,
+        SDL_CONTROLLER_BUTTON_DPAD_DOWN.rawValue: .dpadDown,
+        SDL_CONTROLLER_BUTTON_DPAD_LEFT.rawValue: .dpadLeft,
+        SDL_CONTROLLER_BUTTON_DPAD_RIGHT.rawValue: .dpadRight,
+        SDL_CONTROLLER_BUTTON_LEFTSTICK.rawValue: .l3,
+        SDL_CONTROLLER_BUTTON_RIGHTSTICK.rawValue: .r3,
+    ]
+
+    // Raw joystick button index → generic pad button (used for unrecognized
+    // controllers handled via the SDL_JOYBUTTON* fallback events). Standard
+    // HID gamepad layout: 0=A, 1=B, 2=X, 3=Y, 4=LB, 5=RB, 6=LT, 7=RT,
+    // 8=Select, 9=Start, 10=L3, 11=R3.
+    private nonisolated static let joystickPadMap: [Int: PadButton] = [
+        0: .a, 1: .b, 2: .x, 3: .y,
+        4: .l1, 5: .r1, 6: .l2, 7: .r2,
+        8: .select, 9: .start, 10: .l3, 11: .r3,
     ]
 
     // Raw joystick button index → app nav button (used for unrecognized
@@ -459,6 +512,7 @@ class SDLInputManager: ObservableObject {
         if let navButton = Self.sdlControllerNavMap[Int32(event.button)] {
             setNavButton(navButton, pressed: pressed)
         }
+        notifyButtonObserverIfMatched(instanceID: event.which, padButton: Self.sdlControllerPadMap[Int32(event.button)], pressed: pressed)
         if pressed {
             sdlDataLock.lock()
             let capID = captureInstanceID
@@ -498,6 +552,7 @@ class SDLInputManager: ObservableObject {
 
     private nonisolated func handleAxisEvent(_ event: SDL_ControllerAxisEvent) {
         notifyAxisObserverIfMatched(instanceID: event.which, axis: Int(event.axis), rawValue: event.value)
+        notifyTriggerObserverIfMatched(instanceID: event.which, axis: Int(event.axis), rawValue: event.value)
         if abs(Int32(event.value)) > Self.triggerThreshold {
             sdlDataLock.lock()
             let capID = captureInstanceID
@@ -563,6 +618,7 @@ class SDLInputManager: ObservableObject {
         if let navButton = Self.joystickNavMap[Int(event.button)] {
             setNavButton(navButton, pressed: pressed)
         }
+        notifyButtonObserverIfMatched(instanceID: event.which, padButton: Self.joystickPadMap[Int(event.button)], pressed: pressed)
         if pressed {
             sdlDataLock.lock()
             let capID = captureInstanceID
@@ -605,6 +661,21 @@ class SDLInputManager: ObservableObject {
 
     private nonisolated func handleJoyAxisEvent(_ event: SDL_JoyAxisEvent) {
         notifyAxisObserverIfMatched(instanceID: event.which, axis: Int(event.axis), rawValue: event.value)
+        // Raw HID gamepad: axes 4/5 are L2/R2 in the standard layout (0-3 are sticks).
+        // The button observer (handleJoyButtonEvent) already reports l2/r2 as
+        // digital press when value crosses threshold; here we feed the analog
+        // value so the test sheet can draw the trigger bar continuously.
+        if event.axis == 4 || event.axis == 5 {
+            let padButton: PadButton = event.axis == 4 ? .l2 : .r2
+            sdlDataLock.lock()
+            let obsID = triggerObserverInstanceID
+            let cb = triggerObserverCallback
+            sdlDataLock.unlock()
+            if event.which == obsID, let cb {
+                let normalized = max(0.0, min(1.0, Float(event.value) / 32768.0))
+                cb(event.which, padButton, normalized)
+            }
+        }
         if abs(Int32(event.value)) > Self.triggerThreshold {
             sdlDataLock.lock()
             let capID = captureInstanceID
@@ -880,6 +951,76 @@ class SDLInputManager: ObservableObject {
         axisObserverCallback = nil
         if let id { observedAxes.removeValue(forKey: id) }
         sdlDataLock.unlock()
+    }
+
+    // MARK: - Live Button Observation (controller test sheet)
+
+    /// Register a single observer for live button press state of the given SDL
+    /// instance ID. The callback receives `(instanceID, padButton, pressed)`.
+    /// `padButton` is the generic Xbox-layout button (nil for unmapped indices).
+    /// Replaces any previously-registered observer (single-slot).
+    func startButtonObservation(instanceID: Int32, callback: @escaping (Int32, PadButton?, Bool) -> Void) {
+        sdlDataLock.lock()
+        buttonObserverInstanceID = instanceID
+        buttonObserverCallback = callback
+        sdlDataLock.unlock()
+    }
+
+    func stopButtonObservation() {
+        sdlDataLock.lock()
+        buttonObserverInstanceID = nil
+        buttonObserverCallback = nil
+        sdlDataLock.unlock()
+    }
+
+    /// Register a single observer for live trigger (L2/R2) values. Callback
+    /// receives `(instanceID, padButton, normalized)` where `normalized` is
+    /// `0...1`. Single-slot. The button and axis observers are independent
+    /// and can be active together.
+    func startTriggerObservation(instanceID: Int32, callback: @escaping (Int32, PadButton, Float) -> Void) {
+        sdlDataLock.lock()
+        triggerObserverInstanceID = instanceID
+        triggerObserverCallback = callback
+        sdlDataLock.unlock()
+    }
+
+    func stopTriggerObservation() {
+        sdlDataLock.lock()
+        triggerObserverInstanceID = nil
+        triggerObserverCallback = nil
+        sdlDataLock.unlock()
+    }
+
+    /// Invoked from both SDL button paths (recognized game controllers and raw
+    /// joysticks) so the test sheet sees live press state for the observed
+    /// controller. Trigger axes (LT/RT) are reported as `l2`/`r2` by the axis
+    /// path, not here, so the digital-button press map stays accurate.
+    private nonisolated func notifyButtonObserverIfMatched(instanceID: Int32, padButton: PadButton?, pressed: Bool) {
+        sdlDataLock.lock()
+        let obsID = buttonObserverInstanceID
+        let cb = buttonObserverCallback
+        sdlDataLock.unlock()
+        guard instanceID == obsID, let cb else { return }
+        cb(instanceID, padButton, pressed)
+    }
+
+    /// Invoked from both SDL axes paths to feed trigger values (axis 4/5) to
+    /// the test sheet's trigger bar. Sticks (axes 0-3) are ignored here — the
+    /// axis observer handles those.
+    private nonisolated func notifyTriggerObserverIfMatched(instanceID: Int32, axis: Int, rawValue: Int16) {
+        let padButton: PadButton
+        switch axis {
+        case Int(SDL_CONTROLLER_AXIS_TRIGGERLEFT.rawValue): padButton = .l2
+        case Int(SDL_CONTROLLER_AXIS_TRIGGERRIGHT.rawValue): padButton = .r2
+        default: return
+        }
+        sdlDataLock.lock()
+        let obsID = triggerObserverInstanceID
+        let cb = triggerObserverCallback
+        sdlDataLock.unlock()
+        guard instanceID == obsID, let cb else { return }
+        let normalized = max(0.0, min(1.0, Float(rawValue) / 32768.0))
+        cb(instanceID, padButton, normalized)
     }
 
     /// Invoked from both SDL axes paths (recognized game controllers and raw

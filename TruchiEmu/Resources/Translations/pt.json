@@ -709,6 +709,12 @@
   "controllers.calibrateReset": "Redefinir",
   "controllers.calibrateInstructions": "Gire cada stick em círculo completo várias vezes. O anel vermelho mostra as bordas capturadas da faixa do stick e o ponto viaja por ele. Pressione Salvar quando o anel parar de crescer.",
   "controllers.calibratedStatus": "Este controle tem uma calibração salva. Use Calibrar para refazê-la ou Redefinir para removê-la.",
+  "controllers.testSheet.openTester": "Testar controle",
+  "controllers.testSheet.openTesterDisabled": "Selecione um controle primeiro",
+  "controllers.testSheet.remapSection": "Remapear",
+  "controllers.testSheet.deadzoneSection": "Zonas Mortas dos Sticks",
+  "controllers.testSheet.deadzoneReset": "Redefinir",
+  "controllers.testSheet.calibrateSection": "Calibrar Sticks",
   "controllers.genesisControllerType": "Tipo de Controle",
   "controllers.wiiControllerType": "Controle Wii",
   "controllers.wiiControllerTypeHelp": "Auto usa um Wiimote + Classic Controller quando um controle está conectado; caso contrário, um Wiimote comum.",
@@ -2678,5 +2684,6 @@
   "openCritic.noData": "",
   "openCritic.fetching": "",
   "openCritic.viewOnOpenCritic": "",
-  "openCritic.notMatched": ""
+  "openCritic.notMatched": "",
+  "controllers.testSheet.stickDirectionsSection": "Direções dos Sticks"
 }

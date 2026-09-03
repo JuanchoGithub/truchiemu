@@ -136,6 +136,7 @@ struct ControllerSettingsView: View {
     @State private var quickHotkeyListeningAction: HotkeyAction?
     @State private var quickHotkeyListeningSlot: HotkeySlot = .primary
     @State private var quickHotkeyListeningControllerAction: HotkeyAction?
+    @State private var showTestSheet: Bool = false
 
 @Binding var searchText: String
     @Binding var focusedSectionID: String?
@@ -317,6 +318,30 @@ struct ControllerSettingsView: View {
                     )
                 }
 
+                Button {
+                    showTestSheet = true
+                } label: {
+                    HStack(spacing: 6) {
+                        Image(systemName: "gamecontroller")
+                        Text(loc.localized("controllers.testSheet.openTester"))
+                    }
+                }
+                .buttonStyle(.borderedProminent)
+                .controlSize(.small)
+                .tint(AppColors.brandAccent)
+                .disabled(!canTestSelectedController)
+                .help(canTestSelectedController ? "" : loc.localized("controllers.testSheet.openTesterDisabled"))
+                .sheet(isPresented: $showTestSheet) {
+                    if let player = selectedPlayerController, !player.isKeyboard {
+                        ControllerTestSheet(
+                            player: player,
+                            systemID: selectedSystemID,
+                            onDismiss: { showTestSheet = false }
+                        )
+                        .environmentObject(controllerService)
+                    }
+                }
+
                 Toggle(isOn: Binding(
                     get: { controllerService.replaceKeyboardWithController },
                     set: { controllerService.replaceKeyboardWithController = $0 }
@@ -426,6 +451,11 @@ struct ControllerSettingsView: View {
             return controllerService.connectedControllers.first(where: { $0.id == id })
         }
         return controllerService.connectedControllers.first
+    }
+
+    private var canTestSelectedController: Bool {
+        guard let player = selectedPlayerController else { return false }
+        return !player.isKeyboard
     }
 
     private var isGenesisSystem: Bool {
@@ -1250,6 +1280,16 @@ struct StickVisualizerView: View {
         .onAppear { monitorSelectedController() }
         .onChange(of: selectedControllerId) { monitorSelectedController() }
         .onDisappear { detachAll() }
+        // When `ControllerInputObserver` (used by the controller test
+        // sheet) opens, it overwrites the GC `valueChangedHandler` chains
+        // the visualizer relies on. On `stopObserving` it nils them out,
+        // leaving the visualizer stuck with no handler — the stick dots
+        // freeze. Re-attach on the observer's "stopped" notification so
+        // the user sees the sticks move again as soon as the test sheet
+        // closes.
+        .onReceive(NotificationCenter.default.publisher(for: .controllerInputObserverStopped)) { _ in
+            monitorSelectedController()
+        }
     }
 
     /// Detach all previously-attached input sources. The GC thumbstick

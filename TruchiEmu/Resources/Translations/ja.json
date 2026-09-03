@@ -709,6 +709,12 @@
   "controllers.calibrateReset": "リセット",
   "controllers.calibrateInstructions": "各スティックを数回、完全な円を描くように回してください。赤いリングがスティックの可動範囲の端を示し、ドットがその輪に沿って移動します。リングがそれ以上大きくならなくなったら保存を押してください。",
   "controllers.calibratedStatus": "このコントローラーには保存済みの校正があります。校正でやり直すか、リセットで削除します。",
+  "controllers.testSheet.openTester": "コントローラーをテスト",
+  "controllers.testSheet.openTesterDisabled": "まずコントローラーを選択してください",
+  "controllers.testSheet.remapSection": "再マッピング",
+  "controllers.testSheet.deadzoneSection": "スティックデッドゾーン",
+  "controllers.testSheet.deadzoneReset": "リセット",
+  "controllers.testSheet.calibrateSection": "スティック校正",
   "controllers.genesisControllerType": "コントローラータイプ",
   "controllers.wiiControllerType": "Wii コントローラー",
   "controllers.wiiControllerTypeHelp": "自動では、ゲームパッドが接続されている場合 Wiimote + クラシックコントローラーを使用し、それ以外の場合は通常の Wiimote を使用します。",
@@ -2680,5 +2686,6 @@
   "openCritic.noData": "",
   "openCritic.fetching": "",
   "openCritic.viewOnOpenCritic": "",
-  "openCritic.notMatched": ""
+  "openCritic.notMatched": "",
+  "controllers.testSheet.stickDirectionsSection": "スティック方向"
 }

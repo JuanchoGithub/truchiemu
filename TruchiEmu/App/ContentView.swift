@@ -43,7 +43,8 @@ struct ContentView: View {
 
 @ObservedObject private var tvModeSettings = TVModeSettingsManager.shared
 @State private var showTVModeSettings: Bool = false
-@ObservedObject private var externalDisplayPrompt = ExternalDisplayPromptManager.shared
+    @ObservedObject private var externalDisplayPrompt = ExternalDisplayPromptManager.shared
+    @State private var autoTestPlayer: PlayerController? = nil
 
     var body: some View {
         Group {
@@ -355,6 +356,19 @@ applyShaderOverrides(systemID: data.systemID, selectedGameIDs: selectedGameIDs)
 }
 .gamepadDismissable { shaderOverrideData = nil }
 }
+        .sheet(item: $autoTestPlayer) { player in
+            ControllerTestSheet(
+                player: player,
+                systemID: "default",
+                onDismiss: { autoTestPlayer = nil }
+            )
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .newGamepadConnected)) { notification in
+            if let uuid = notification.userInfo?["playerID"] as? UUID,
+               let player = controllerService.connectedControllers.first(where: { $0.id == uuid }) {
+                autoTestPlayer = player
+            }
+        }
         .onAppear {
             if let savedFilterID = AppSettings.getString("lastSelectedFilter"),
                let restoredFilter = restoreFilter(from: savedFilterID) {

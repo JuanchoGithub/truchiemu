@@ -444,6 +444,7 @@
 		53610C7E863EC39935522D46 /* DOSRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0173607FC9D5E57349DD932 /* DOSRunner.swift */; };
 		5378C783DC1126D55E54B682 /* fightdata_sgemf.json in Resources */ = {isa = PBXBuildFile; fileRef = 8D81EC76BF3E62E5BD7D2461 /* fightdata_sgemf.json */; };
 		539C875A3EAB3D07EB574739 /* Atari - 7800.dat in Resources */ = {isa = PBXBuildFile; fileRef = 91841A7C7B2DD9EC9AE7FF7F /* Atari - 7800.dat */; };
+		53CD0C446BF977AC15635683 /* ControllerTestSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7FF9A7DBD158DEC791E5D2E /* ControllerTestSheet.swift */; };
 		541A7E28F13591BF9CFAA1C8 /* holo_angular.png in Resources */ = {isa = PBXBuildFile; fileRef = F963CBD06E90F51C6DB3B43D /* holo_angular.png */; };
 		543B34C593F66B5B4A04DE1A /* ScaleSmooth.metal in Sources */ = {isa = PBXBuildFile; fileRef = DB371ABEE63BE1D87FA4114E /* ScaleSmooth.metal */; };
 		5446550872E0129CC0BE3722 /* input_coreOverrides_gam4980.json in Resources */ = {isa = PBXBuildFile; fileRef = A487B63C4BA991FFD20139C0 /* input_coreOverrides_gam4980.json */; };
@@ -543,6 +544,7 @@
 		6852E77C060E146CF3A2BCBF /* fbneo-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = FDC94D1A8BB34C7880EEE06B /* fbneo-cheats.zip */; };
 		68619EC313A850FF98755CF3 /* input_coreLabels_ffmpeg.json in Resources */ = {isa = PBXBuildFile; fileRef = 68782332EFE8C05AAE16BABF /* input_coreLabels_ffmpeg.json */; };
 		6866F085669F50BAF34180A4 /* fightdata_cybots.json in Resources */ = {isa = PBXBuildFile; fileRef = 4E6FEF69213377E31E412F81 /* fightdata_cybots.json */; };
+		68810361B3490A3FF7C5A015 /* NewGamepadPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE2670C448525C7ACB662D42 /* NewGamepadPresenter.swift */; };
 		689BB993F6CD71261D227249 /* MoveDataGamesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C0E8F85B2C2893C2F36FAB0 /* MoveDataGamesView.swift */; };
 		68B60F9D760E5E0809A0FF95 /* fightdata_bloodstm.json in Resources */ = {isa = PBXBuildFile; fileRef = 77B28CDDCE43182179E6F8EE /* fightdata_bloodstm.json */; };
 		68C918A9A778B9E1A015DBE6 /* input_systemLabels_arduboy.json in Resources */ = {isa = PBXBuildFile; fileRef = 99AD8BB70AB9D191C4438D49 /* input_systemLabels_arduboy.json */; };
@@ -953,6 +955,7 @@
 		AEADA54E68FCC9420CF29AFF /* gb@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 0E8ED11C4AC892345874C43D /* gb@132w.png */; };
 		AECF8DDF72216FF183BECCE6 /* fightdata_groovef.json in Resources */ = {isa = PBXBuildFile; fileRef = F4AA64C094DEC99FDACE8E85 /* fightdata_groovef.json */; };
 		AEE277BBC795CF7CED1C4C76 /* fightdata_hvnsgate.json in Resources */ = {isa = PBXBuildFile; fileRef = BFD65EF82DE36060CB9098BC /* fightdata_hvnsgate.json */; };
+		AF3C739AA00CE110D83494B1 /* ControllerInputObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D9BB8DE134E83ABB5109B0F /* ControllerInputObserver.swift */; };
 		AF4B08D12CEE3A6CBDCAF113 /* chai@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 5496899A3DFCC8269B7D763D /* chai@132w.png */; };
 		AF4D141365184F1F226FD614 /* input_systemLabels_commodore_amiga.json in Resources */ = {isa = PBXBuildFile; fileRef = 432C508A73D07EA1295B0302 /* input_systemLabels_commodore_amiga.json */; };
 		AF546C23CCD7863E14C8E976 /* CHANNELF.png in Resources */ = {isa = PBXBuildFile; fileRef = EEECD375C386F72B2D7D5341 /* CHANNELF.png */; };
@@ -974,6 +977,7 @@
 		B2060800C726B146CA892EA6 /* input_systemLabels_virtual_boy.json in Resources */ = {isa = PBXBuildFile; fileRef = EEC57AA109B620AE243E122D /* input_systemLabels_virtual_boy.json */; };
 		B21EE62E7E83D9530DD48D53 /* input_coreLabels_dosbox.json in Resources */ = {isa = PBXBuildFile; fileRef = E3C150E01CBBF7D5A8C71355 /* input_coreLabels_dosbox.json */; };
 		B2322506F68F6E94D30D8EA9 /* ROMScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 181CF812FAA2BD9DF45042BF /* ROMScanner.swift */; };
+		B25E681A0B47E92B3569D2F9 /* PadButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C06F45BB649BBE85B38D441 /* PadButton.swift */; };
 		B28BAC855B3AE12F271C2CE4 /* TIC.png in Resources */ = {isa = PBXBuildFile; fileRef = 24020D18A3CFC76C3A13F218 /* TIC.png */; };
 		B2EDF888CDF5CE14D1D573DE /* BezelBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B1CC886E59DC123C478AE62 /* BezelBackgroundView.swift */; };
 		B3058D8576CF48BBA603DC8E /* input_coreOverrides_vice.json in Resources */ = {isa = PBXBuildFile; fileRef = 91BF04CD67085663A8FADC58 /* input_coreOverrides_vice.json */; };
@@ -1703,12 +1707,14 @@
 		3BD337DAF7B206DF941EB16D /* LottesCRT.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = LottesCRT.metal; sourceTree = "<group>"; };
 		3BD38C52C8520B46C36D80C0 /* input_systemLabels_atari_st.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_atari_st.json; sourceTree = "<group>"; };
 		3BE49C585633F028422B60E3 /* SFCMSU.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SFCMSU.png; sourceTree = "<group>"; };
+		3C06F45BB649BBE85B38D441 /* PadButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PadButton.swift; sourceTree = "<group>"; };
 		3C81E516A57892669DA74C24 /* fightdata_ringdest.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_ringdest.json; sourceTree = "<group>"; };
 		3C9A0ED4F14D4BDE0F914812 /* input_systemLabels_ps2.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_ps2.json; sourceTree = "<group>"; };
 		3C9C7DF8B3C788A24004D789 /* GlassOrb.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = GlassOrb.metal; sourceTree = "<group>"; };
 		3D5122C0BA2C8EE43B5E3F24 /* gearboy_libretro_gb.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = gearboy_libretro_gb.json; sourceTree = "<group>"; };
 		3D753FA56AF8BCFA8A0D6EF5 /* input_coreLabels_citra.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_citra.json; sourceTree = "<group>"; };
 		3D9174F064E6B3F316C9AFDB /* sfc@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "sfc@132w.png"; sourceTree = "<group>"; };
+		3D9BB8DE134E83ABB5109B0F /* ControllerInputObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControllerInputObserver.swift; sourceTree = "<group>"; };
 		3DDEE6F5136E4698DD6685BE /* fightdata_msh.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_msh.json; sourceTree = "<group>"; };
 		3E1A5AE9D789E89EA50E41CB /* fightdata_breakrev.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_breakrev.json; sourceTree = "<group>"; };
 		3E7338C371E12B371E8C32EE /* DOS.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = DOS.png; sourceTree = "<group>"; };
@@ -2415,6 +2421,7 @@
 		BDFDD053E0B69ACF2A0BBE22 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		BE01BAE4649B80275FA1BBAB /* MAMEUnifiedService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MAMEUnifiedService.swift; sourceTree = "<group>"; };
 		BE1D21745D47B366C16D8F00 /* fightdata_rvschool.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_rvschool.json; sourceTree = "<group>"; };
+		BE2670C448525C7ACB662D42 /* NewGamepadPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewGamepadPresenter.swift; sourceTree = "<group>"; };
 		BE8AAC49E7AC25911394118F /* N64DD.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = N64DD.png; sourceTree = "<group>"; };
 		BF3007EB11BA10C95475888A /* zelda_oot_japan_background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = zelda_oot_japan_background.png; sourceTree = "<group>"; };
 		BF4D3CED7C7C18FB8375C015 /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
@@ -2713,6 +2720,7 @@
 		F6CFC52641BA0B6FB051708D /* fightdata_ggx15.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_ggx15.json; sourceTree = "<group>"; };
 		F73EE592565F9E5482E0CB9B /* GamepadNavConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GamepadNavConfig.swift; sourceTree = "<group>"; };
 		F7913A46643B16EB13FFCB6E /* input_coreLabels_mgba.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_mgba.json; sourceTree = "<group>"; };
+		F7FF9A7DBD158DEC791E5D2E /* ControllerTestSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControllerTestSheet.swift; sourceTree = "<group>"; };
 		F80E267122CAC805554DF6CE /* ControllerLongPressDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControllerLongPressDetector.swift; sourceTree = "<group>"; };
 		F840A09480B7BD45951DD050 /* cps2@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cps2@132w.png"; sourceTree = "<group>"; };
 		F84249DEACE74441114A7544 /* input_coreLabels_fmsx.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_fmsx.json; sourceTree = "<group>"; };
@@ -2955,10 +2963,12 @@
 			children = (
 				7CF13E8490C2F1A4A8DA38FB /* BundledControllerPresets.swift */,
 				AED4234BBEB8FF8BF9F4214E /* ControllerHotkeyCaptureCoordinator.swift */,
+				3D9BB8DE134E83ABB5109B0F /* ControllerInputObserver.swift */,
 				0DF9540BCE224E456A3FA60E /* ControllerService.swift */,
 				007D62D59B68855828E28A77 /* CoreOptionsManager.swift */,
 				81561F32B974014E52E04793 /* InputDescriptorsManager.swift */,
 				A30E84AC45B0EC95454FA87F /* MoveListStorageService.swift */,
+				BE2670C448525C7ACB662D42 /* NewGamepadPresenter.swift */,
 				CCF02A2FBE56AF8967FB319E /* SettingsResetter.swift */,
 				3187FDD6F1C85081A49EC325 /* WiiIRSettings.swift */,
 			);
@@ -4582,6 +4592,7 @@
 				D896B5C23A1A5DC2812951B1 /* HotkeyConfig.swift */,
 				596FC72EF305521FB589153D /* InputDeviceType.swift */,
 				66AFB541FCD568D3320D18CD /* KeyboardMapping.swift */,
+				3C06F45BB649BBE85B38D441 /* PadButton.swift */,
 				E058729A2C303A6C324C02A5 /* PendingThemeSettings.swift */,
 				8B1DB6C719F5587E47EB2D0D /* PlayerController.swift */,
 				30A8C369BBDB954516046501 /* RetroButton.swift */,
@@ -4632,6 +4643,7 @@
 				FD4DF5D2F13617BDA825F6F3 /* CheatSettingsView.swift */,
 				D726A1A82A05EEFA659AF95D /* ControllerHotkeyCaptureButton.swift */,
 				3230EB435232A6B5AC4FBC1E /* ControllerSettingsViewGroup.swift */,
+				F7FF9A7DBD158DEC791E5D2E /* ControllerTestSheet.swift */,
 				8CFD1DFC1E63A628D89B5DF7 /* CoreOptionsView.swift */,
 				50F0C395AC7AC42E3144C256 /* CoreSettingsViewGroup.swift */,
 				7BA27E493562B273F8D1C121 /* DOSJoystickSettingsView.swift */,
@@ -6168,9 +6180,11 @@
 				F0299B17F6EDE2A974A47F61 /* ControllerHotkeyCaptureButton.swift in Sources */,
 				27D84DD0993CEDD46E16E0A2 /* ControllerHotkeyCaptureCoordinator.swift in Sources */,
 				6F0840292E8F9C970F9A4FB8 /* ControllerIdentityKey.swift in Sources */,
+				AF3C739AA00CE110D83494B1 /* ControllerInputObserver.swift in Sources */,
 				ECA419AEE6FF3B94E9AD8838 /* ControllerLongPressDetector.swift in Sources */,
 				9D37D249654A1647F9276A9E /* ControllerService.swift in Sources */,
 				7B114C2B979B350258054F09 /* ControllerSettingsViewGroup.swift in Sources */,
+				53CD0C446BF977AC15635683 /* ControllerTestSheet.swift in Sources */,
 				DCB45CB4AFC527F727105206 /* Controls.swift in Sources */,
 				84D8EF6AD4A33478C294BF06 /* CoreAndAchievements.swift in Sources */,
 				BE69107D74B61BC83EFF333D /* CoreButtonOverride.swift in Sources */,
@@ -6354,6 +6368,7 @@
 				C6F9D0C4BECBB033F5726AEB /* MoveNotationTokenView.swift in Sources */,
 				0264BA41980DD15079BBA731 /* N64Runner.swift in Sources */,
 				E317973A7B9CCD95761A632D /* NESRunner.swift in Sources */,
+				68810361B3490A3FF7C5A015 /* NewGamepadPresenter.swift in Sources */,
 				296767A74F56EB5FFD1CD0C5 /* NotationMetrics.swift in Sources */,
 				E3E1E33DEA7FC17D282FB9E0 /* NotationTokenImageCache.swift in Sources */,
 				B35057FB102BBD009CCAD8FB /* NotificationCenterSheetView.swift in Sources */,
@@ -6369,6 +6384,7 @@
 				FE4CEC7F59C13C8EE1396535 /* PPSSPAssetDownloadSheet.swift in Sources */,
 				802243197EC4A31177770310 /* PPSSPAssetService.swift in Sources */,
 				8A6465EC1B5DD1F8FDB9297D /* PSP.metal in Sources */,
+				B25E681A0B47E92B3569D2F9 /* PadButton.swift in Sources */,
 				0731BAFCEC49AC5E62BA3474 /* Passthrough.metal in Sources */,
 				1B0693165646E2AC19CDB194 /* PendingThemeSettings.swift in Sources */,
 				1329ED4A19ECDCC2F04F9EA5 /* PerSystemSettingsView.swift in Sources */,

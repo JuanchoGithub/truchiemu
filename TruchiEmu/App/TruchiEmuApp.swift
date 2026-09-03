@@ -8,6 +8,7 @@ import RTMPHaishinKit
 
 extension Notification.Name {
     static let addROMFolder = Notification.Name("addROMFolder")
+    static let newGamepadConnected = Notification.Name("newGamepadConnected")
     static let viewModeChanged = Notification.Name("viewModeChanged")
     static let boxArtVisibilityChanged = Notification.Name("boxArtVisibilityChanged")
     static let boxArtStyleChanged = Notification.Name("boxArtStyleChanged")
@@ -47,6 +48,8 @@ struct TruchiEmuApp: App {
         _ = LoggerService.shared
         _ = ThemeManager.shared
         _ = SaveDirectoryManager.shared
+        _ = NewGamepadPresenter.shared
+        NewGamepadPresenter.shared.start()
         CoreOverrideService.shared.syncBundledOverridesToAppSupport()
         BoxArtThumbnailService.shared.migrateOldThumbnailCache()
         

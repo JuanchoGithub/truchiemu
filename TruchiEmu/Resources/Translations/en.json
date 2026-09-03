@@ -709,6 +709,12 @@
   "controllers.calibrateReset": "Reset",
   "controllers.calibrateInstructions": "Rotate each stick in a full circle several times. The red ring shows the captured edges of your stick's range and the dot travels along it. Press Save once the ring stops growing.",
   "controllers.calibratedStatus": "This controller has a saved calibration. Use Calibrate to redo it or Reset to remove it.",
+  "controllers.testSheet.openTester": "Test Controller",
+  "controllers.testSheet.openTesterDisabled": "Select a gamepad first",
+  "controllers.testSheet.remapSection": "Remap",
+  "controllers.testSheet.deadzoneSection": "Stick Dead Zones",
+  "controllers.testSheet.deadzoneReset": "Reset",
+  "controllers.testSheet.calibrateSection": "Calibrate Sticks",
   "controllers.genesisControllerType": "Controller Type",
   "controllers.wiiControllerType": "Wii Controller",
   "controllers.wiiControllerTypeHelp": "Auto uses a Wiimote + Classic Controller when a gamepad is connected, otherwise a plain Wiimote.",
@@ -2680,5 +2686,6 @@
   "openCritic.noData": "No OpenCritic data for this game yet.",
   "openCritic.fetching": "Fetching OpenCritic data…",
   "openCritic.viewOnOpenCritic": "View on OpenCritic",
-  "openCritic.notMatched": "No OpenCritic match found for this game."
+  "openCritic.notMatched": "No OpenCritic match found for this game.",
+  "controllers.testSheet.stickDirectionsSection": "Stick Directions"
 }
