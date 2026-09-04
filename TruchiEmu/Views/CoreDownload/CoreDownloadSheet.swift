@@ -9,7 +9,8 @@ struct CoreDownloadSheet: View {
     /// Selected core id. Exposed as a binding so external controllers (e.g.
     /// the TV-mode gamepad nav layer, which lists cores via D-pad) can drive
     /// selection without duplicating the picker UI.
-    @Binding var selectedCoreID: String
+    @State private var selectedCoreID: String = ""
+    private var externalBinding: Binding<String>?
 
     @State private var isDownloading = false
     @State private var downloadError: String? = nil
@@ -23,13 +24,9 @@ struct CoreDownloadSheet: View {
 
 init(pending: CoreManager.PendingCoreDownload, selectedCoreID: Binding<String>? = nil) {
         self.pending = pending
-        if let selectedCoreID {
-            self._selectedCoreID = selectedCoreID
-        } else {
-            self._selectedCoreID = Binding(
-                get: { pending.coreInfo.coreID },
-                set: { _ in }
-            )
+        self.externalBinding = selectedCoreID
+        if selectedCoreID == nil {
+            _selectedCoreID = State(initialValue: pending.coreInfo.coreID)
         }
     }
 
@@ -179,7 +176,15 @@ init(pending: CoreManager.PendingCoreDownload, selectedCoreID: Binding<String>? 
         .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
         // Auto-select best installed core when the requested core isn't installed
         .onAppear {
-            selectedCoreID = bestInstalledOrRequestedCoreID
+            // Sync from external binding if provided
+            if let external = externalBinding {
+                selectedCoreID = external.wrappedValue
+            } else if selectedCoreID.isEmpty {
+                selectedCoreID = bestInstalledOrRequestedCoreID
+            }
+        }
+        .onChange(of: selectedCoreID) { _, newValue in
+            externalBinding?.wrappedValue = newValue
         }
     }
 
