@@ -2409,29 +2409,11 @@ weak var metalCoordinator: MetalCoordinator?
             guard let self else { return }
 
         if GameGuideViewModel.isGuideSidebarOpen {
-            let p = primaryCal.apply(x: primaryStick.xAxis.value, y: primaryStick.yAxis.value)
-            let s = secondaryCal.apply(x: secondaryStick.xAxis.value, y: secondaryStick.yAxis.value)
-            var moveX: CGFloat = 0
-            var moveY: CGFloat = 0
-            if fabsf(p.0) >= deadZone { moveX += CGFloat(p.0 * sensitivity * 12.0) }
-            if fabsf(p.1) >= deadZone { moveY += CGFloat(p.1 * sensitivity * 12.0) }
-            if fabsf(s.0) >= deadZone { moveX += CGFloat(s.0 * sensitivity * 6.0) }
-            if fabsf(s.1) >= deadZone { moveY += CGFloat(s.1 * sensitivity * 6.0) }
-
-            if moveX != 0 || moveY != 0 {
-                if self.sidebarCursorX == nil {
-                    let loc = NSEvent.mouseLocation
-                    self.sidebarCursorX = loc.x
-                    self.sidebarCursorY = loc.y
-                }
-                self.sidebarCursorX! += moveX
-                self.sidebarCursorY! += moveY
-                let screen = NSScreen.main?.frame ?? .zero
-                self.sidebarCursorX = max(screen.minX, min(screen.maxX, self.sidebarCursorX!))
-                self.sidebarCursorY = max(screen.minY, min(screen.maxY, self.sidebarCursorY!))
-                let cgPoint = CGPoint(x: self.sidebarCursorX!, y: screen.height - self.sidebarCursorY!)
-                CGDisplayMoveCursorToPoint(CGMainDisplayID(), cgPoint)
-            }
+            // The guide sidebar is fully driven by GameGuideViewModel's poll
+            // timer (stick nav/scroll + A/B buttons). Do not hijack the real
+            // macOS cursor or send analog deltas to the core here.
+            self.sidebarCursorX = nil
+            self.sidebarCursorY = nil
             return
         }
 
@@ -2464,24 +2446,18 @@ weak var metalCoordinator: MetalCoordinator?
     }
 
     func handleAnalogMouseButton(_ raw: String, pressed: Bool) {
+        if GameGuideViewModel.isGuideSidebarOpen {
+            // Sidebar buttons are handled by GameGuideViewModel's poll timer.
+            return
+        }
         if raw == analogMouseButtonLeft || raw == "y" {
-            if GameGuideViewModel.isGuideSidebarOpen {
-                postMacMouseClick(button: .left, down: pressed)
-            } else if raw == analogMouseButtonLeft {
+            if raw == analogMouseButtonLeft {
                 XPCBridgeAdapter.shared.setMouseButton(0, pressed: pressed)
             }
         } else if raw == analogMouseButtonDownRight {
-            if GameGuideViewModel.isGuideSidebarOpen {
-                postMacMouseClick(button: .right, down: pressed)
-            } else {
-                XPCBridgeAdapter.shared.setMouseButton(1, pressed: pressed)
-            }
+            XPCBridgeAdapter.shared.setMouseButton(1, pressed: pressed)
         } else if raw == analogMouseButtonDownMiddle {
-            if GameGuideViewModel.isGuideSidebarOpen {
-                postMacMouseClick(button: .center, down: pressed)
-            } else {
-                XPCBridgeAdapter.shared.setMouseButton(2, pressed: pressed)
-            }
+            XPCBridgeAdapter.shared.setMouseButton(2, pressed: pressed)
         }
     }
 
@@ -2491,49 +2467,6 @@ weak var metalCoordinator: MetalCoordinator?
         if isToggle && pressed {
             DispatchQueue.main.async {
                 NotificationCenter.default.post(name: .toggleGuideSidebar, object: nil)
-            }
-        }
-    }
-
-    func postMacMouseClick(button: CGMouseButton, down: Bool) {
-        let appKitPoint: NSPoint
-        if let x = sidebarCursorX, let y = sidebarCursorY {
-            appKitPoint = NSPoint(x: x, y: y)
-        } else {
-            appKitPoint = NSEvent.mouseLocation
-        }
-
-        let nsEventType: NSEvent.EventType
-        switch button {
-        case .left:   nsEventType = down ? .leftMouseDown : .leftMouseUp
-        case .right:  nsEventType = down ? .rightMouseDown : .rightMouseUp
-        case .center: nsEventType = down ? .otherMouseDown : .otherMouseUp
-        default:      nsEventType = down ? .leftMouseDown : .leftMouseUp
-        }
-
-        LoggerService.info(category: "Runner", "postMacMouseClick: appKit=\(appKitPoint) AX=\(AXIsProcessTrusted()) gameWindow=\(String(describing: gameWindow))")
-
-        // Try via NSApp (routes to key window, in-process)
-        let window = gameWindow ?? NSApp.keyWindow
-        let windowPoint = window?.convertPoint(fromScreen: appKitPoint) ?? .zero
-        if let mouseEvent = NSEvent.mouseEvent(
-            with: nsEventType,
-            location: windowPoint,
-            modifierFlags: [],
-            timestamp: CACurrentMediaTime(),
-            windowNumber: window?.windowNumber ?? 0,
-            context: nil,
-            eventNumber: 0,
-            clickCount: 1,
-            pressure: down ? 1.0 : 0.0
-        ) {
-            DispatchQueue.main.async {
-                if let w = window {
-                    w.sendEvent(mouseEvent)
-                    LoggerService.info(category: "Runner", "postMacMouseClick: window.sendEvent button=\(button.rawValue) down=\(down)")
-                } else {
-                    LoggerService.info(category: "Runner", "postMacMouseClick: no window, cannot click")
-                }
             }
         }
     }

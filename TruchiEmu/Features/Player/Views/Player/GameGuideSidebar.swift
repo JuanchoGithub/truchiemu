@@ -1,4 +1,80 @@
 import SwiftUI
+import AppKit
+
+// NSScrollView-backed text container so a controller stick can scroll the
+// walkthrough smoothly. `scrollOffset` is two-way: the view applies the value
+// the view model drives, and reads back any offset the user produces with the
+// trackpad/scrollbar so the two stay in sync.
+struct GuideTextScrollView: NSViewRepresentable {
+    @Binding var scrollOffset: CGFloat
+    let text: String
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(scrollOffset: $scrollOffset)
+    }
+
+    func makeNSView(context: Context) -> NSScrollView {
+        let scroll = NSScrollView()
+        scroll.hasVerticalScroller = true
+        scroll.autohidesScrollers = true
+        scroll.drawsBackground = false
+        scroll.verticalScrollElasticity = .allowed
+
+        let textView = NSTextView()
+        textView.string = text
+        textView.isEditable = false
+        textView.isSelectable = true
+        textView.drawsBackground = false
+        textView.font = NSFont.monospacedSystemFont(ofSize: 11, weight: .regular)
+        textView.textColor = NSColor.white.withAlphaComponent(0.8)
+        textView.textContainerInset = NSSize(width: 12, height: 12)
+        scroll.documentView = textView
+
+        context.coordinator.observe(scroll)
+        return scroll
+    }
+
+    func updateNSView(_ scroll: NSScrollView, context: Context) {
+        if let textView = scroll.documentView as? NSTextView, textView.string != text {
+            textView.string = text
+        }
+        context.coordinator.apply(scroll, offset: scrollOffset)
+    }
+
+    final class Coordinator {
+        @Binding var scrollOffset: CGFloat
+        private var isApplying = false
+        private var observer: NSObjectProtocol?
+
+        init(scrollOffset: Binding<CGFloat>) {
+            _scrollOffset = scrollOffset
+        }
+
+        func observe(_ scroll: NSScrollView) {
+            observer = NotificationCenter.default.addObserver(
+                forName: NSView.boundsDidChangeNotification,
+                object: scroll.contentView,
+                queue: .main
+            ) { [weak self, weak scroll] _ in
+                guard let self, let scroll else { return }
+                if self.isApplying { return }
+                let y = scroll.contentView.bounds.origin.y
+                DispatchQueue.main.async {
+                    self.scrollOffset = y
+                }
+            }
+        }
+
+        func apply(_ scroll: NSScrollView, offset: CGFloat) {
+            let current = scroll.contentView.bounds.origin.y
+            guard abs(current - offset) > 1 else { return }
+            isApplying = true
+            scroll.contentView.scroll(to: NSPoint(x: 0, y: offset))
+            scroll.reflectScrolledClipView(scroll.contentView)
+            isApplying = false
+        }
+    }
+}
 
 struct GameGuideSidebar: View {
     @ObservedObject var viewModel: GameGuideViewModel
@@ -290,12 +366,9 @@ struct GameGuideSidebar: View {
     }
 
     private func walkthroughView(_ text: String) -> some View {
-        ScrollView {
-            Text(verbatim: text)
-                .font(.system(size: 11, design: .monospaced))
-                .foregroundColor(.white.opacity(0.8))
-                .textSelection(.enabled)
-                .padding(12)
-        }
+        GuideTextScrollView(
+            scrollOffset: $viewModel.guideScrollOffset,
+            text: text
+        )
     }
 }

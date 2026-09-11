@@ -490,21 +490,21 @@ class ScummVMRunner: EmulatorRunner, @unchecked Sendable {
                                   primaryIsLeft: stickString != "right")
 
             extendedGamepad.valueChangedHandler = { [weak self] _, element in
-                guard let self = self else { return }
-                if GameGuideViewModel.isGuideSidebarOpen,
-                   let btn = element as? GCControllerButtonInput {
-                    if btn === extendedGamepad.buttonA {
-                        self.postMacMouseClick(button: .left, down: btn.isPressed)
-                        return
+                guard let self else { return }
+                if GameGuideViewModel.isGuideSidebarOpen {
+                    // The guide owns all input when open (stick nav/scroll +
+                    // A/B selection are handled by GameGuideViewModel's poll
+                    // timer). Only the R3/L3 toggle (to close) is handled here.
+                    if let btn = element as? GCControllerButtonInput {
+                        for (retroBtn, btnMapping) in mapping.buttons {
+                            guard elementMatches(element, mapping: btnMapping, extendedGamepad: extendedGamepad) else { continue }
+                            if retroBtn == .r3 || retroBtn == .l3 {
+                                self.handleGuideToggleButton(retroBtn: retroBtn, pressed: btn.isPressed, systemID: "scummvm")
+                            }
+                            break
+                        }
                     }
-                    if btn === extendedGamepad.buttonB {
-                        self.postMacMouseClick(button: .right, down: btn.isPressed)
-                        return
-                    }
-                    if btn === extendedGamepad.buttonX || btn === extendedGamepad.buttonY {
-                        self.postMacMouseClick(button: .left, down: btn.isPressed)
-                        return
-                    }
+                    return
                 }
                 for port in ports {
                     self.handleScummVMButtons(element, in: mapping, player: port, dpad: dpad, extendedGamepad: extendedGamepad)

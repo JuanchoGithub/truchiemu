@@ -232,26 +232,20 @@ class DOSRunner: EmulatorRunner, @unchecked Sendable {
 
             extendedGamepad.valueChangedHandler = { [weak self] _, element in
                 guard let self = self else { return }
-                if GameGuideViewModel.isGuideSidebarOpen,
-                   let btn = element as? GCControllerButtonInput {
-                    #if LOG_DEBUG
-                    LoggerService.debug(category: "DOSRunner", "Sidebar button: element=\(String(describing: element.localizedName)) isPressed=\(btn.isPressed) btnA=\(btn === extendedGamepad.buttonA) btnB=\(btn === extendedGamepad.buttonB)")
-                    #endif
-                    if btn === extendedGamepad.buttonA {
-                        LoggerService.info(category: "DOSRunner", "A button → left click down=\(btn.isPressed)")
-                        self.postMacMouseClick(button: .left, down: btn.isPressed)
-                        return
+                if GameGuideViewModel.isGuideSidebarOpen {
+                    // The guide owns all input when open (stick nav/scroll +
+                    // A/B selection are handled by GameGuideViewModel's poll
+                    // timer). Only the R3/L3 toggle (to close) is handled here.
+                    if let btn = element as? GCControllerButtonInput {
+                        for (retroBtn, btnMapping) in mapping.buttons {
+                            guard elementMatches(element, mapping: btnMapping, extendedGamepad: extendedGamepad) else { continue }
+                            if retroBtn == .r3 || retroBtn == .l3 {
+                                self.handleGuideToggleButton(retroBtn: retroBtn, pressed: btn.isPressed, systemID: "dos")
+                            }
+                            break
+                        }
                     }
-                    if btn === extendedGamepad.buttonB {
-                        LoggerService.info(category: "DOSRunner", "B button → right click down=\(btn.isPressed)")
-                        self.postMacMouseClick(button: .right, down: btn.isPressed)
-                        return
-                    }
-                    if btn === extendedGamepad.buttonX || btn === extendedGamepad.buttonY {
-                        LoggerService.info(category: "DOSRunner", "X/Y button → left click down=\(btn.isPressed)")
-                        self.postMacMouseClick(button: .left, down: btn.isPressed)
-                        return
-                    }
+                    return
                 }
                 for port in ports {
                     self.handleDOSButtons(element, in: mapping, player: port, dpad: dpad, extendedGamepad: extendedGamepad)

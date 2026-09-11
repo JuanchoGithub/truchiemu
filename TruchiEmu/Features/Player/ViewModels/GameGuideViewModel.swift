@@ -22,6 +22,10 @@ final class GameGuideViewModel: ObservableObject {
     @Published private(set) var isPrefetching: Bool = false
     @Published private(set) var prefetchProgress: String? = nil
     @Published var controllerSelectedIndex: Int? = nil
+    // Vertical scroll offset (in points) for scrollable text content such as
+    // walkthroughs. Driven by the controller stick; the sidebar's scroll view
+    // observes and applies it.
+    @Published var guideScrollOffset: CGFloat = 0
 
     private let service = GameGuideService.shared
     private let mappingStore = AdventureGuideMappingStore.shared
@@ -46,7 +50,7 @@ final class GameGuideViewModel: ObservableObject {
 
     func loadForGame(_ rom: ROM) {
         self.rom = rom
-        errorMessage = nil
+        clearGuideMemory()
 
         let mapping: AdventureGuideMapping?
         if rom.systemID == "scummvm" {
@@ -74,10 +78,12 @@ final class GameGuideViewModel: ObservableObject {
 
     private func showRootTopics() {
         if let preloaded = preloadedRootTopic {
+            saveViewState()
             currentTopics = preloaded.children
             navigationStack = [.root]
             currentQuestion = nil
             currentWalkthroughText = nil
+            restoreViewState()
             return
         }
         fetchFullGuide()
@@ -101,6 +107,7 @@ final class GameGuideViewModel: ObservableObject {
                 navigationStack = [.root]
                 currentQuestion = nil
                 currentWalkthroughText = nil
+                restoreViewState()
             } else {
                 tryGameFAQsFallback()
             }
@@ -129,7 +136,68 @@ final class GameGuideViewModel: ObservableObject {
         case .question(let question):
             showQuestion(question)
         }
-        resetControllerSelection()
+    }
+
+    // Memory of sidebar position, per view. The key is the full path from
+    // the root to the current view, so scroll and selection return when
+    // you go back or reopen the sidebar. New views start at the top.
+    private var savedScrollOffsets: [String: CGFloat] = [:]
+    private var savedSelections: [String: Int] = [:]
+
+    private func stateKey(for stack: [GuideNavigationLevel]) -> String {
+        let path = stack.map { level -> String in
+            switch level {
+            case .root: return "root"
+            case .topic(let nodeID): return "t\(nodeID)"
+            case .question(let nodeID): return "q\(nodeID)"
+            }
+        }.joined(separator: "/")
+        let source = guideSource == .gamefaqs ? "g" : "u"
+        return source + "|" + path
+    }
+
+    private func saveViewState() {
+        let key = stateKey(for: navigationStack)
+        savedScrollOffsets[key] = max(0, guideScrollOffset)
+        if let index = controllerSelectedIndex {
+            savedSelections[key] = index
+        } else {
+            savedSelections.removeValue(forKey: key)
+        }
+    }
+
+    private func restoreViewState() {
+        let key = stateKey(for: navigationStack)
+        guideScrollOffset = max(0, savedScrollOffsets[key] ?? 0)
+        let count = navigationControllerItemCount
+        if count > 0 {
+            if let saved = savedSelections[key] {
+                controllerSelectedIndex = max(0, min(count - 1, saved))
+            } else {
+                controllerSelectedIndex = 0
+            }
+        } else {
+            controllerSelectedIndex = nil
+        }
+    }
+
+    private func clearGuideMemory() {
+        navigationStack = [.root]
+        currentTopics = []
+        currentQuestion = nil
+        currentWalkthroughText = nil
+        revealedHintCount = [:]
+        topicCache = [:]
+        questionCache = [:]
+        preloadedRootTopic = nil
+        gamefaqsFAQs = []
+        gamefaqsGameURL = nil
+        errorMessage = nil
+        isLoading = false
+        savedScrollOffsets = [:]
+        savedSelections = [:]
+        guideScrollOffset = 0
+        controllerSelectedIndex = nil
     }
 
     func navigateToTopic(_ topic: GuideTopic) {
@@ -137,6 +205,7 @@ final class GameGuideViewModel: ObservableObject {
             errorMessage = "Topic data not loaded"
             return
         }
+        saveViewState()
         currentTopics = cachedTopic.children
         if case .topic(let lastID) = navigationStack.last, lastID == topic.nodeID {
             // already viewing this topic, don't re-push
@@ -144,27 +213,29 @@ final class GameGuideViewModel: ObservableObject {
             navigationStack.append(.topic(nodeID: topic.nodeID))
         }
         currentQuestion = nil
-        resetControllerSelection()
+        restoreViewState()
     }
 
     func showQuestion(_ question: GuideQuestion) {
         guard let cachedQuestion = questionCache[question.nodeID] else {
+            saveViewState()
             currentQuestion = question
             navigationStack.append(.question(nodeID: question.nodeID))
             currentTopics = []
             if revealedHintCount[question.nodeID] == nil {
                 revealedHintCount[question.nodeID] = 0
             }
-            resetControllerSelection()
+            restoreViewState()
             return
         }
+        saveViewState()
         currentQuestion = cachedQuestion
         navigationStack.append(.question(nodeID: question.nodeID))
         currentTopics = []
         if revealedHintCount[question.nodeID] == nil {
             revealedHintCount[question.nodeID] = 0
         }
-        resetControllerSelection()
+        restoreViewState()
     }
 
     func revealNextHint() {
@@ -192,10 +263,11 @@ final class GameGuideViewModel: ObservableObject {
 
     func goBack() {
         guard navigationStack.count > 1 else { return }
+        saveViewState()
         navigationStack.removeLast()
         currentQuestion = nil
         currentWalkthroughText = nil
-        resetControllerSelection()
+        restoreViewState()
 
         switch navigationStack.last {
         case .root:
@@ -238,6 +310,7 @@ final class GameGuideViewModel: ObservableObject {
                 navigationStack = [.root]
                 currentTopics = faqs.map { .topic(GuideTopic(title: $0.title, nodeID: $0.id)) }
                 guideSource = .gamefaqs
+                restoreViewState()
                 isLoading = false
             } catch {
                 errorMessage = error.localizedDescription
@@ -249,7 +322,7 @@ final class GameGuideViewModel: ObservableObject {
     func loadGameFAQsFAQText(_ entry: GameFAQsFAQEntry) {
         isLoading = true
         errorMessage = nil
-        resetControllerSelection()
+        saveViewState()
         Task {
             do {
                 let text = try await service.fetchGameFAQsFAQText(faqPath: entry.path)
@@ -257,6 +330,7 @@ final class GameGuideViewModel: ObservableObject {
                 navigationStack.append(.topic(nodeID: entry.id))
                 currentTopics = []
                 currentQuestion = nil
+                restoreViewState()
                 isLoading = false
             } catch {
                 errorMessage = error.localizedDescription
@@ -268,7 +342,11 @@ final class GameGuideViewModel: ObservableObject {
     func activate() {
         isSidebarVisible = true
         Self.isGuideSidebarOpen = true
-        if currentTopics.isEmpty && !isLoading && errorMessage == nil {
+        restoreViewState()
+        // Only load the root when no view is open. At hint or walkthrough
+        // depth currentTopics is empty by design, so topics alone must not
+        // trigger a reset to root.
+        if navigationStack == [.root] && currentTopics.isEmpty && currentQuestion == nil && currentWalkthroughText == nil && !isLoading && errorMessage == nil {
             if guideSource == .uhs {
                 showRootTopics()
             } else {
@@ -279,6 +357,7 @@ final class GameGuideViewModel: ObservableObject {
     }
 
     func deactivate() {
+        saveViewState()
         isSidebarVisible = false
         Self.isGuideSidebarOpen = false
         stopControllerNavigation()
@@ -324,12 +403,8 @@ final class GameGuideViewModel: ObservableObject {
         return currentTopics.count
     }
 
-    private func resetControllerSelection() {
-        controllerSelectedIndex = navigationControllerItemCount > 0 ? 0 : nil
-    }
-
     func startControllerNavigation() {
-        controllerSelectedIndex = 0
+        restoreViewState()
         lastNavStickY = 0
         navRepeatDelay = 0.0
         lastAPressed = false
@@ -370,12 +445,10 @@ final class GameGuideViewModel: ObservableObject {
             guard index < currentTopics.count else { return }
             navigateToNode(currentTopics[index])
         }
-        controllerSelectedIndex = navigationControllerItemCount > 0 ? 0 : nil
     }
 
     func controllerGoBack() {
         goBack()
-        controllerSelectedIndex = navigationControllerItemCount > 0 ? 0 : nil
     }
 
     func controllerRevealHint() {
@@ -385,31 +458,39 @@ final class GameGuideViewModel: ObservableObject {
         }
     }
 
-    private var controllerNavPollCount: Int = 0
-
     private func pollControllerNavigationStick() {
         guard isSidebarVisible else {
             stopControllerNavigation()
             return
         }
 
-        controllerNavPollCount += 1
+        // Gather navigation intent from every recognized gamepad. GCController
+        // gamepads are read directly; SDL-only pads (never exposed as
+        // GCController) are read via SDLInputManager's nav snapshot. This
+        // mirrors GamepadNavigationManager so both controller types work.
+        var up = false, down = false
+        var aPressed = false, bPressed = false
+        var sdlTogglePressed = false
+
         let controllers = ControllerService.shared.connectedControllers
-        if controllerNavPollCount <= 5 {
-            #if LOG_DEBUG
-            LoggerService.debug(category: "GameGuide", "Poll #\(controllerNavPollCount): controllers=\(controllers.count), first=\(controllers.first?.gcController != nil ? "hasGC" : "nilGC")")
-            #endif
+        let gamepads = controllers.compactMap { $0.isKeyboard ? nil : $0.gcController?.extendedGamepad }
+        for gamepad in gamepads {
+            if gamepad.dpad.up.isPressed { up = true }
+            if gamepad.dpad.down.isPressed { down = true }
+            let ry = gamepad.rightThumbstick.yAxis.value
+            if fabsf(ry) >= 0.5 {
+                if ry > 0 { up = true } else { down = true }
+            }
+            if gamepad.buttonA.isPressed { aPressed = true }
+            if gamepad.buttonB.isPressed { bPressed = true }
         }
 
-        guard let gc = controllers.first?.gcController,
-              let gamepad = gc.extendedGamepad else {
-            if controllerNavPollCount <= 5 {
-                #if LOG_DEBUG
-                LoggerService.debug(category: "GameGuide", "Poll #\(controllerNavPollCount): no gamepad found")
-                #endif
-            }
-            return
-        }
+        let sdl = SDLInputManager.shared.pollNavButtons()
+        if sdl.contains(.dpadUp) || sdl.contains(.rightStickUp) { up = true }
+        if sdl.contains(.dpadDown) || sdl.contains(.rightStickDown) { down = true }
+        if sdl.contains(.buttonA) { aPressed = true }
+        if sdl.contains(.buttonB) { bPressed = true }
+        sdlTogglePressed = sdl.contains(.l3) || sdl.contains(.r3)
 
         let itemCount = navigationControllerItemCount
         if itemCount == 0 {
@@ -420,33 +501,21 @@ final class GameGuideViewModel: ObservableObject {
             controllerSelectedIndex = 0
         }
 
-        let sysID = rom?.systemID?.lowercased() ?? ""
-        let stickString = AppSettings.getString("analogMouse_stick_\(sysID)", defaultValue: "left") ?? "left"
-        let navStick = stickString == "right" ? gamepad.leftThumbstick : gamepad.rightThumbstick
-
-        let yVal = navStick.yAxis.value
-        let xVal = navStick.xAxis.value
-        let deadZone: Float = 0.5
-
-        if fabsf(yVal) >= deadZone || fabsf(xVal) >= deadZone {
-            let now = CACurrentMediaTime()
+        let now = CACurrentMediaTime()
+        if up || down {
             if now >= navRepeatDelay {
-                if itemCount > 0 {
-                    var direction: Int = 0
-                    if fabsf(yVal) >= fabsf(xVal) {
-                        direction = yVal > 0 ? -1 : 1
-                    } else {
-                        direction = xVal > 0 ? 1 : -1
+                let direction = down ? 1 : -1
+                if itemCount == 0 {
+                    // Scrollable text content (walkthrough / hints).
+                    guideScrollOffset += CGFloat(direction) * 36.0
+                    if guideScrollOffset < 0 {
+                        guideScrollOffset = 0
                     }
-                    if var idx = controllerSelectedIndex {
-                        idx += direction
-                        controllerSelectedIndex = max(0, min(itemCount - 1, idx))
-                    } else {
-                        controllerSelectedIndex = 0
-                    }
-                    #if LOG_DEBUG
-                    LoggerService.debug(category: "GameGuide", "Nav stick moved: y=\(yVal) x=\(xVal) idx=\(String(describing: controllerSelectedIndex)) items=\(itemCount)")
-                    #endif
+                } else if var idx = controllerSelectedIndex {
+                    idx += direction
+                    controllerSelectedIndex = max(0, min(itemCount - 1, idx))
+                } else {
+                    controllerSelectedIndex = 0
                 }
                 navRepeatDelay = now + 0.12
             }
@@ -454,25 +523,21 @@ final class GameGuideViewModel: ObservableObject {
             navRepeatDelay = 0.0
         }
 
-        let aPressed = gamepad.buttonA.isPressed
         if aPressed && !lastAPressed {
-            // A button handled via postMacMouseClick in runner
+            controllerSelectItem()
         }
         lastAPressed = aPressed
 
-        let bPressed = gamepad.buttonB.isPressed
         if bPressed && !lastBPressed {
-            // B button handled via postMacMouseClick in runner
+            controllerGoBack()
         }
         lastBPressed = bPressed
 
-        let sysIDStr = rom?.systemID?.lowercased() ?? ""
-        let stickStr = AppSettings.getString("analogMouse_stick_\(sysIDStr)", defaultValue: "left") ?? "left"
-        let toggleButton = stickStr == "right" ? gamepad.leftThumbstickButton : gamepad.rightThumbstickButton
-        let togglePressed = toggleButton?.isPressed ?? false
-        if togglePressed && !lastR3Pressed {
-            // R3/L3 toggle handled via handleGuideToggleButton in runner
+        // Close the guide from an SDL-only pad. GC pads toggle via the runner's
+        // handleGuideToggleButton so we only act on the SDL snapshot here.
+        if sdlTogglePressed && !lastR3Pressed {
+            NotificationCenter.default.post(name: .toggleGuideSidebar, object: nil)
         }
-        lastR3Pressed = togglePressed
+        lastR3Pressed = sdlTogglePressed
     }
 }
