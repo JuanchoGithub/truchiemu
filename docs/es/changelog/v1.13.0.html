@@ -1,0 +1,50 @@
+---
+layout: default
+title: v1.13.0 - Documentación de TruchiEmu
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/es/changelog.html' | relative_url }}">Registro de cambios</a>
+        <span class="separator">/</span>
+        <span class="current">v1.13.0</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.13.0</h1>
+        <div class="release-meta">
+            <span class="release-date">11 de septiembre de 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>Esta versión añade un cuarto estilo de carátula Adaptativo que ajusta carátulas mixtas verticales y horizontales sin recortar, mantiene la posición de la barra lateral de la guía en memoria con soporte para mandos GC y SDL, corrige el modo TV para restaurar el modo de vista anterior (cuadrícula/lista/holo), y corrige errores de selección y actualización en la hoja de descarga de núcleos.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Destacados</h2>
+        <ul class="feature-list">
+            <li><strong>Estilo de carátula Adaptativo:</strong> Un nuevo cuarto <code>BoxType</code> ajusta el arte de cada juego dentro de la tarjeta con un relleno difuminado, para que las carátulas mixtas verticales/horizontales ya no se recorten por el aspecto forzado del sistema. Los marcos mantienen el aspecto por defecto del sistema para preservar la cuadrícula uniforme. Etiquetas localizadas en en/es/pt/ja.</li>
+            <li><strong>Memoria de barra lateral + mandos GC/SDL:</strong> La barra lateral de la guía mantiene su posición en memoria, con soporte para mandos GameCube y SDL.</li>
+            <li><strong>Modo TV restaura vista:</strong> El modo TV ahora guarda y restaura el modo de vista anterior (cuadrícula/lista/holo) en lugar de restablecerlo.</li>
+            <li><strong>Fixes de hoja de núcleos:</strong> La selección de núcleo ahora funciona sin binding externo, y el refresh ya no muestra un falso error <code>noCoresFound</code> cuando hay núcleos disponibles.</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Cambios detallados</h2>
+        <ul>
+            <li>Cuadrícula de biblioteca — nuevo estilo de carátula Adaptativo para carátulas de orientación mixta (#36): las vistas de sistema ofrecen un cuarto <code>BoxType</code> que renderiza el arte ajustado dentro de la tarjeta con relleno difuminado; los marcos conservan el aspecto por defecto del sistema; etiquetas de tipo de caja localizadas en la barra de herramientas, ajustes por sistema y menú macOS (en/es/pt/ja)</li>
+            <li>Guía — se mantiene la posición de la barra lateral en memoria; soporte para mandos GC y SDL</li>
+            <li>Modo TV — se corrige el guardado del modo de vista para restaurar el modo anterior (cuadrícula/lista/holo)</li>
+            <li>Hoja de descarga de núcleos — se corrige la selección sin binding externo (cambio de <code>@Binding</code> a <code>@State</code> con sincronización opcional); se corrige el error <code>noCoresFound</code> tras el refresh al seleccionar un núcleo real de la lista actualizada</li>
+            <li>Versión de marketing subida a 1.13.0 y número de compilación a 36 en <code>project.yml</code>, ambos <code>Info.plist</code> y <code>docs/_config.yml</code>.</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/es/changelog/v1.12.0.html' | relative_url }}" class="release-prev">&larr; v1.12.0</a>
+        <a href="{{ '/es/changelog.html' | relative_url }}" class="release-all">Todas las versiones</a>
+    </nav>
+</div>

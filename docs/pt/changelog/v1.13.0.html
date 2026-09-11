@@ -1,0 +1,50 @@
+---
+layout: default
+title: v1.13.0 - Documentação do TruchiEmu
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/pt/changelog.html' | relative_url }}">Registro de mudanças</a>
+        <span class="separator">/</span>
+        <span class="current">v1.13.0</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.13.0</h1>
+        <div class="release-meta">
+            <span class="release-date">11 de setembro de 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>Esta versão adiciona um quarto estilo de capa Adaptativo que ajusta capas mistas verticais e horizontais sem cortar, mantém a posição da barra lateral do guia em memória com suporte para controles GC e SDL, corrige o modo TV para restaurar o modo de visualização anterior (grade/lista/holo), e corrige erros de seleção e atualização na folha de download de núcleos.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Destaques</h2>
+        <ul class="feature-list">
+            <li><strong>Estilo de capa Adaptativo:</strong> Um novo quarto <code>BoxType</code> ajusta a arte de cada jogo dentro do card com preenchimento desfocado, para que capas mistas verticais/horizontais não sejam mais cortadas pelo aspecto forçado do sistema. As molduras mantêm o aspecto padrão do sistema para preservar a grade uniforme. Rótulos localizados em en/es/pt/ja.</li>
+            <li><strong>Memória da barra lateral + controles GC/SDL:</strong> A barra lateral do guia mantém sua posição em memória, com suporte para controles GameCube e SDL.</li>
+            <li><strong>Modo TV restaura visualização:</strong> O modo TV agora salva e restaura o modo de visualização anterior (grade/lista/holo) em vez de redefini-lo.</li>
+            <li><strong>Correções da folha de núcleos:</strong> A seleção de núcleo agora funciona sem binding externo, e o refresh não mostra mais um falso erro <code>noCoresFound</code> quando há núcleos disponíveis.</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Mudanças detalhadas</h2>
+        <ul>
+            <li>Grade da biblioteca — novo estilo de capa Adaptativo para capas de orientação mista (#36): as visualizações de sistema oferecem um quarto <code>BoxType</code> que renderiza a arte ajustada dentro do card com preenchimento desfocado; as molduras mantêm o aspecto padrão do sistema; rótulos de tipo de caixa localizados na barra de ferramentas, ajustes por sistema e menu macOS (en/es/pt/ja)</li>
+            <li>Guia — mantém a posição da barra lateral em memória; suporte para controles GC e SDL</li>
+            <li>Modo TV — corrige o salvamento do modo de visualização para restaurar o modo anterior (grade/lista/holo)</li>
+            <li>Folha de download de núcleos — corrige a seleção sem binding externo (troca de <code>@Binding</code> para <code>@State</code> com sincronização opcional); corrige o erro <code>noCoresFound</code> após o refresh ao selecionar um núcleo real da lista atualizada</li>
+            <li>Versão de marketing atualizada para 1.13.0 e número de build para 36 em <code>project.yml</code>, ambos os <code>Info.plist</code> e <code>docs/_config.yml</code>.</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/pt/changelog/v1.12.0.html' | relative_url }}" class="release-prev">&larr; v1.12.0</a>
+        <a href="{{ '/pt/changelog.html' | relative_url }}" class="release-all">Todas as versões</a>
+    </nav>
+</div>

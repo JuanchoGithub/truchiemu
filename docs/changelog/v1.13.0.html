@@ -1,0 +1,50 @@
+---
+layout: default
+title: v1.13.0 - TruchiEmu Documentation
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/changelog.html' | relative_url }}">Changelog</a>
+        <span class="separator">/</span>
+        <span class="current">v1.13.0</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.13.0</h1>
+        <div class="release-meta">
+            <span class="release-date">September 11, 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>This release adds a fourth Adaptive box art style that fits mixed portrait and landscape covers without cropping, keeps the guide sidebar position in memory with GameCube and SDL pad support, fixes TV mode to restore the previous grid/list/holo view mode, and fixes core download sheet selection and refresh errors.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Highlights</h2>
+        <ul class="feature-list">
+            <li><strong>Adaptive box art style:</strong> A new fourth <code>BoxType</code> fits each game's art inside the card with a blurred fill, so mixed portrait/landscape covers are no longer trimmed by the forced per-system aspect. Card frames keep the system default aspect to preserve the uniform grid layout. Labels are localized across en/es/pt/ja.</li>
+            <li><strong>Guide sidebar memory + GC/SDL pads:</strong> The guide sidebar keeps its position in memory, with support for GameCube and SDL pads.</li>
+            <li><strong>TV mode restores view mode:</strong> TV mode now saves and restores the previous grid/list/holo mode instead of resetting it.</li>
+            <li><strong>Core download sheet fixes:</strong> Core selection now works when no external binding exists, and refresh no longer shows a false <code>noCoresFound</code> error when cores are available.</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Detailed Changes</h2>
+        <ul>
+            <li>Library grid — new Adaptive box art style for mixed-orientation covers (#36): system views offer a fourth <code>BoxType</code> that renders each game's art fitted inside the card with a blurred fill; card frames keep the system default aspect; box type labels in the toolbar, per-system settings, and macOS menu are localized (en/es/pt/ja)</li>
+            <li>Guide — keep guide sidebar position in memory; add support for GC and SDL pads</li>
+            <li>TV mode — fix view mode save to restore previous grid/list/holo mode</li>
+            <li>Core download sheet — fix selection not working when no external binding exists (changed <code>@Binding</code> to <code>@State</code> with optional external binding sync); fix <code>noCoresFound</code> error after refresh by selecting a real available core from the refreshed list</li>
+            <li>Bump marketing version to 1.13.0 and build number to 36 across <code>project.yml</code>, both <code>Info.plist</code>s, and <code>docs/_config.yml</code>.</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/changelog/v1.12.0.html' | relative_url }}" class="release-prev">&larr; v1.12.0</a>
+        <a href="{{ '/changelog.html' | relative_url }}" class="release-all">All Releases</a>
+    </nav>
+</div>
