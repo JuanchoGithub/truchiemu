@@ -766,7 +766,9 @@ viewModel.updateFilters(
         }
         .onChange(of: viewMode) { _, newMode in
             if newMode != .tv { _previousViewMode = newMode }
-            AppSettings.set("gridViewMode", value: newMode.rawValue)
+            // Persist the *previous* (non-TV) mode when entering TV mode so
+            // exiting TV restores grid/list/holo instead of falling back to grid.
+            AppSettings.set("gridViewMode", value: newMode == .tv ? _previousViewMode.rawValue : newMode.rawValue)
             gamepadNav.columnCount = newMode == .list ? 1 : columnCount
             if newMode == .tv {
                 TVModeSettingsManager.shared.enter()
