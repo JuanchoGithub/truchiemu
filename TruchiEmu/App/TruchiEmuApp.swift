@@ -345,7 +345,7 @@ var body: some Scene {
                         Divider()
 
                         ForEach(BoxType.allCases) { type in
-                            Button(type.rawValue, systemImage: type.iconName) {
+                            Button(loc.localized(type.localizationKey), systemImage: type.iconName) {
                                 AppSettings.set("defaultBoxType", value: type.rawValue)
                                 NotificationCenter.default.post(name: .boxArtStyleChanged, object: nil)
                             }

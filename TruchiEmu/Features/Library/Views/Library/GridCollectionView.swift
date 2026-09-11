@@ -155,7 +155,10 @@ final class GridCollectionViewCoordinator: NSObject {
 
         let boxType: BoxType?
         if case .system(let system) = filter {
-            boxType = SystemPreferences.shared.boxType(for: system.id)
+            let type = SystemPreferences.shared.boxType(for: system.id)
+            // Adaptive cards keep the system's default frame aspect so the
+            // uniform flow-layout item size stays valid for mixed art.
+            boxType = (type == .adaptive) ? system.defaultBoxType : type
         } else {
             boxType = nil
         }
@@ -210,7 +213,9 @@ final class GridCollectionViewCoordinator: NSObject {
         let gap: CGFloat
         if let boxType {
             switch boxType {
-            case .vertical:
+            // `.adaptive` is resolved to the system's default box type by
+            // updateItemSizes; this branch is only a safe fallback.
+            case .vertical, .adaptive:
                 artHeight = cardWidth / 0.75
                 gap = 8
             case .box:

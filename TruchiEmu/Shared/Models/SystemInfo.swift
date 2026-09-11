@@ -32,14 +32,19 @@ enum BoxType: String, CaseIterable, Identifiable, Codable {
     case vertical = "Vertical"
     case box = "Box"
     case landscape = "Landscape"
+    case adaptive = "Adaptive"
     
     var id: String { self.rawValue }
     
+    // Frame aspect used while laying out a card. For `.adaptive` the frame
+    // falls back to the system's `defaultBoxType` aspect at the call sites
+    // (they have the system ID); this fallback is only a safe default.
     var aspectRatio: CGFloat {
         switch self {
         case .vertical: return 3.0 / 4.0
         case .box: return 1.0
         case .landscape: return 4.0 / 3.0
+        case .adaptive: return 3.0 / 4.0
         }
     }
     
@@ -48,6 +53,16 @@ enum BoxType: String, CaseIterable, Identifiable, Codable {
         case .vertical: return "rectangle.portrait"
         case .box: return "square"
         case .landscape: return "rectangle"
+        case .adaptive: return "rectangle.on.rectangle"
+        }
+    }
+    
+    var localizationKey: String {
+        switch self {
+        case .vertical: return "boxArt.boxType.vertical"
+        case .box: return "boxArt.boxType.box"
+        case .landscape: return "boxArt.boxType.landscape"
+        case .adaptive: return "boxArt.boxType.adaptive"
         }
     }
 }

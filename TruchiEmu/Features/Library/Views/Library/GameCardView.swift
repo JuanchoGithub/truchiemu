@@ -82,10 +82,10 @@ struct GameCardView: View {
         // warms the cache. Only relevant when displayMode is .fillBlurred and the
         // current view is a group view (system views keep using the legacy path).
         let isGroup = filter.map { !$0.isSystemView } ?? false
+        let isAdaptiveSystem = !isGroup && prefs.boxType(for: rom.systemID ?? "") == .adaptive
         let initialBlur: NSImage? = {
             guard rom.hasBoxArt,
-                  isGroup,
-                  prefs.boxArtDisplayMode() == .fillBlurred else { return nil }
+                  (isGroup && prefs.boxArtDisplayMode() == .fillBlurred) || isAdaptiveSystem else { return nil }
             return ImageCache.shared.blurredFillImageSync(for: rom.boxArtLocalPath, size: preferredSize)
         }()
         _blurredFillImage = State(initialValue: initialBlur)
@@ -119,7 +119,20 @@ struct GameCardView: View {
             case .cropSquare: return 1.0
             }
         }
+        if boxType == .adaptive {
+            return SystemDatabase.system(forID: rom.systemID ?? "")?.defaultBoxType.aspectRatio ?? boxType.aspectRatio
+        }
         return boxType.aspectRatio
+    }
+
+    // Fill-blurred (fit, no trim) rendering applies in group views when the
+    // display mode is .fillBlurred, and in system views when the box type is
+    // .adaptive (mixed-orientation art must not be cropped by the frame).
+    private var useFillBlurredRendering: Bool {
+        if isGroupView {
+            return displayMode == .fillBlurred
+        }
+        return boxType == .adaptive
     }
 
     private var titleFontSize: CGFloat {
@@ -147,6 +160,7 @@ struct GameCardView: View {
         case .vertical: return 8
         case .box: return 4
         case .landscape: return 4
+        case .adaptive: return 8
         }
     }
 
@@ -358,7 +372,7 @@ struct GameCardView: View {
             // recycling cells flicker-free and avoids yielding to the actor.
             if let cached = ImageCache.shared.thumbnailSync(for: artPath, preferredSize: thumbSize) {
                 self.image = cached
-                if isGroupView, prefs.boxArtDisplayMode() == .fillBlurred {
+                if useFillBlurredRendering {
                     if let blurCached = ImageCache.shared.blurredFillImageSync(for: artPath, size: thumbSize) {
                         self.blurredFillImage = blurCached
                     } else {
@@ -387,7 +401,7 @@ struct GameCardView: View {
                 // rasterization in the background. The cell renders with the
                 // sharp thumbnail + on-the-fly SwiftUI blur for a few frames,
                 // then swaps to the cached blurred bitmap once ready.
-                if isGroupView, prefs.boxArtDisplayMode() == .fillBlurred,
+                if useFillBlurredRendering,
                    blurredFillImage == nil {
                     Task { @MainActor in
                         if let blurred = await ImageCache.shared.blurredFillImage(for: artPath, size: thumbSize) {
@@ -627,11 +641,10 @@ struct GameCardView: View {
 
     @ViewBuilder
     private var artworkView: some View {
-        if isGroupView, let nsImage = image {
-            switch displayMode {
-            case .fillBlurred: artworkFillBlurred(nsImage)
-            case .cropSquare:  artworkCropSquare(nsImage)
-            }
+        if let nsImage = image, useFillBlurredRendering {
+            artworkFillBlurred(nsImage)
+        } else if isGroupView, let nsImage = image {
+            artworkCropSquare(nsImage)
         } else {
             artworkDefault
         }

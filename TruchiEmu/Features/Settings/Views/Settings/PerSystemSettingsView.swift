@@ -381,7 +381,7 @@ struct PerSystemSettingsView: View {
                     set: { prefs.setBoxType($0, for: systemID) }
                 )) {
                     ForEach(BoxType.allCases) { type in
-                        Label(type.rawValue, systemImage: type.iconName).tag(type)
+                        Label(loc.localized(type.localizationKey), systemImage: type.iconName).tag(type)
                     }
                 }
             }

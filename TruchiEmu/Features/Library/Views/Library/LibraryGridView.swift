@@ -491,7 +491,7 @@ struct LibraryGridView: View {
                                     }
                                 } label: {
                                     HStack {
-                                        Label(type.rawValue, systemImage: type.iconName)
+                                        Label(loc.localized(type.localizationKey), systemImage: type.iconName)
                                         if case .system(let system) = filter, prefs.boxType(for: system.id) == type {
                                             Image(systemName: "checkmark")
                                         }

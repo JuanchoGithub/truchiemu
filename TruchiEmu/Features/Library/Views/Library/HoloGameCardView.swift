@@ -146,7 +146,20 @@ struct HoloGameCardView: View {
             case .cropSquare: return 1.0
             }
         }
+        if boxType == .adaptive {
+            return SystemDatabase.system(forID: rom.systemID ?? "")?.defaultBoxType.aspectRatio ?? boxType.aspectRatio
+        }
         return boxType.aspectRatio
+    }
+
+    // Fill-blurred (fit, no trim) rendering applies in group views when the
+    // display mode is .fillBlurred, and in system views when the box type is
+    // .adaptive (mixed-orientation art must not be cropped by the frame).
+    private var useFillBlurredRendering: Bool {
+        if isGroupView {
+            return displayMode == .fillBlurred
+        }
+        return boxType == .adaptive
     }
     
     private var titleFontSize: CGFloat {
@@ -162,6 +175,7 @@ struct HoloGameCardView: View {
         case .vertical: return 14
         case .box: return 10
         case .landscape: return 10
+        case .adaptive: return 14
         }
     }
     
@@ -746,11 +760,10 @@ struct HoloGameCardView: View {
     
     @ViewBuilder
     private func holoArtworkView(allowBump: Bool = true) -> some View {
-        if isGroupView, let nsImage = image {
-            switch displayMode {
-            case .fillBlurred: holoArtworkFillBlurred(nsImage)
-            case .cropSquare:  holoArtworkCropSquare(nsImage)
-            }
+        if let nsImage = image, useFillBlurredRendering {
+            holoArtworkFillBlurred(nsImage)
+        } else if isGroupView, let nsImage = image {
+            holoArtworkCropSquare(nsImage)
         } else {
             holoArtworkDefault(allowBump: allowBump)
         }
