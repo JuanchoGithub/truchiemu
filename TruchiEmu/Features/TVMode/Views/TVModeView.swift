@@ -322,7 +322,7 @@ struct TVModeView: View {
                 set: { viewModel.selectedEntryIndex = $0 }
             ),
             itemWidth: 200 * scale,
-            itemHeight: 200 * scale,
+            itemHeight: 270 * scale,
             spacing: 22 * scale,
             maxSag: 28 * scale,
             visibleEachSide: 5
@@ -335,7 +335,7 @@ struct TVModeView: View {
                 theme: viewModel.theme
             )
         }
-        .padding(.vertical, 30 * scale)
+        .padding(.vertical, 16 * scale)
     }
 
     @ViewBuilder
