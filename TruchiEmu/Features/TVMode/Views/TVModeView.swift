@@ -166,6 +166,10 @@ struct TVModeView: View {
         .animation(.easeInOut(duration: 0.2), value: coreManager.pendingDownload)
         .onAppear {
             refreshScale()
+            // Decode all system icons once, up front: fast flights mount new
+            // tiles every step, and any main-thread disk read or decode there
+            // shows up as hitches. Idempotent after the first call.
+            TVModeEntryTile.warmIcons(for: viewModel.row1Entries, scale: scale)
             // Cold-start resume: the main window exists now, so run the screen
             // selection (move to remembered display + fullscreen) that init
             // deferred because no window was up yet.
@@ -178,6 +182,7 @@ struct TVModeView: View {
             // display needs.
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [self] in
                 refreshScale()
+                TVModeEntryTile.warmIcons(for: viewModel.row1Entries, scale: scale)
             }
             navContext.handler = { [self] action in handle(action: action) }
             // Honor an already-running game so we don't double-rout `select` /
@@ -204,6 +209,9 @@ struct TVModeView: View {
         }
         .onChange(of: systemDatabase.systems) { _, _ in
             viewModel.handleExternalSystemsChange()
+        }
+        .onChange(of: viewModel.row1Entries) { _, entries in
+            TVModeEntryTile.warmIcons(for: entries, scale: scale)
         }
         // Live re-load if the user changes TV mode settings from elsewhere.
         .onReceive(NotificationCenter.default.publisher(for: .tvModeSettingsChanged)) { _ in
@@ -321,17 +329,18 @@ struct TVModeView: View {
                 get: { viewModel.selectedEntryIndex },
                 set: { viewModel.selectedEntryIndex = $0 }
             ),
+            move: viewModel.entryMove,
             itemWidth: 200 * scale,
             itemHeight: 270 * scale,
             spacing: 22 * scale,
             maxSag: 28 * scale,
             visibleEachSide: 5
-        ) { entry, isCenter in
+        ) { entry, focus in
             let count = viewModel.count(for: entry.filter)
             TVModeEntryTile(
                 entry: entry,
                 count: count,
-                isFocused: viewModel.page == .row1 && isCenter,
+                focus: viewModel.page == .row1 ? focus : 0,
                 theme: viewModel.theme
             )
         }
@@ -346,18 +355,24 @@ struct TVModeView: View {
                 get: { viewModel.selectedGameIndex },
                 set: { viewModel.selectedGameIndex = $0 }
             ),
+            move: viewModel.gameMove,
             itemWidth: 280 * scale,
             itemHeight: 360 * scale,
             spacing: 6 * scale,
             maxSag: 28 * scale,
             visibleEachSide: 4
-        ) { rom, isCenter in
+        ) { rom, focus in
             TVModeGameTile(
                 rom: rom,
-                isFocused: viewModel.page != .row1 && isCenter,
+                focus: viewModel.page != .row1 ? focus : 0,
                 theme: viewModel.theme
             )
         }
+        // Fades the games row in for the final system of a fast flight
+        // (see `pulseGamesFade`). Only triggers on that flag; sweeps and
+        // page changes are unaffected.
+        .opacity(viewModel.gamesDimmed ? 0 : 1)
+        .animation(.easeOut(duration: 0.25), value: viewModel.gamesDimmed)
         .padding(.vertical, 30 * scale)
     }
 

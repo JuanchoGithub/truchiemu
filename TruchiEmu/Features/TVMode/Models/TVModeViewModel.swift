@@ -2,6 +2,58 @@ import Foundation
 import SwiftUI
 import Combine
 
+/// Debug-only flight diagnostics. All call sites are unconditional; in
+/// Release every method compiles to an inlined no-op, so there is zero cost
+/// and zero behavior change outside Debug builds.
+enum TVPerfTrace {
+#if DEBUG
+    private static var buffer: [String] = []
+    private static let start = CFAbsoluteTimeGetCurrent()
+
+    static func log(_ message: String) {
+        let t = (CFAbsoluteTimeGetCurrent() - start) * 1000
+        buffer.append(String(format: "[%10.1fms] %@", t, message))
+        if buffer.count >= 400 { flush() }
+    }
+
+    /// Appends buffered lines to /tmp/tvperf.log (off the hot path: file I/O
+    /// only happens here, never inside measured regions).
+    static func flush() {
+        guard !buffer.isEmpty else { return }
+        let text = buffer.joined(separator: "\n") + "\n"
+        buffer.removeAll(keepingCapacity: true)
+        guard let data = text.data(using: .utf8) else { return }
+        let path = "/tmp/tvperf.log"
+        if FileManager.default.fileExists(atPath: path),
+           let handle = try? FileHandle(forWritingTo: URL(fileURLWithPath: path)) {
+            try? handle.seekToEnd()
+            try? handle.write(contentsOf: data)
+            try? handle.close()
+        } else {
+            try? data.write(to: URL(fileURLWithPath: path), options: [])
+        }
+    }
+
+    /// Runs `work`, logging only when it exceeds `thresholdMs`. Keeps the log
+    /// to slow outliers instead of every call.
+    @discardableResult
+    static func time<T>(_ label: String, thresholdMs: Double = 3, _ work: () -> T) -> T {
+        let t0 = CFAbsoluteTimeGetCurrent()
+        let result = work()
+        let ms = (CFAbsoluteTimeGetCurrent() - t0) * 1000
+        if ms >= thresholdMs {
+            log(String(format: "%@ %.1fms", label, ms))
+        }
+        return result
+    }
+#else
+    static func log(_: String) {}
+    static func flush() {}
+    @discardableResult
+    static func time<T>(_: String, _ work: () -> T) -> T { work() }
+#endif
+}
+
 @MainActor
 final class TVModeViewModel: ObservableObject {
     @Published var row1Entries: [TVModeEntry] = []
@@ -15,6 +67,33 @@ final class TVModeViewModel: ObservableObject {
     /// main library but as a single source-of-truth state for the L3 rotate
     /// action to cycle through. Reset by pressing L3+R3.
     @Published var sortMode: SortMode = .alphabetical
+
+    /// Latest animated move per row, read by `CurvedRowLayout`. See `RowMove`.
+    @Published var entryMove = RowMove()
+    /// Same for the games row (`selectGameByOffset`, `shiftDetailGame`).
+    @Published var gameMove = RowMove()
+
+    /// Pending unit steps per row for fast moves (L1/R1, L2/R2). Drained one
+    /// slot per tick by the stepper below.
+    private var entryPending = 0
+    private var gamePending = 0
+    private var stepperRunning = false
+    /// Set when game steps run while on the detail page. Hero art refreshes
+    /// once at drain instead of strobing through every intermediate game.
+    private var detailHeroStale = false
+    /// Memoized per-filter ROM counts for row 1. `count(for:)` runs per tile
+    /// per render (11+ tiles × full library scan each); without this, every
+    /// flight step re-scanned the whole library on the main thread. Cleared
+    /// in `rebuildEntries()`, which already runs on every input change
+    /// (roms, rom counts, RA state, systems).
+    private var countCache: [String: Int] = [:]
+
+    /// True while the games row is fading in after a deferred refresh.
+    /// Driven by `pulseGamesFade()`, read by `TVModeView` row 2.
+    @Published var gamesDimmed = false
+    /// Set when systems-row flight steps skipped their games refresh.
+    /// `finishStepping` (or `flushEntryFlight`) applies it once at the end.
+    private var entryGamesStale = false
 
     /// Brief HUD overlay shown after `cycleSortMode()` / `resetSortMode()`.
     /// `nil` when no overlay is on screen.
@@ -156,33 +235,151 @@ final class TVModeViewModel: ObservableObject {
 
     func selectEntryByOffset(_ delta: Int) {
         guard !row1Entries.isEmpty else { return }
-        let count = row1Entries.count
-        var newIndex = selectedEntryIndex + delta
-        newIndex = ((newIndex % count) + count) % count
-        if newIndex != selectedEntryIndex {
-            withAnimation(.easeOut(duration: 0.22)) {
-                selectedEntryIndex = newIndex
-                recomputeGames()
-                selectedGameIndex = games.isEmpty ? 0 : min(selectedGameIndex, games.count - 1)
-                syncStateForMainWindow()
-            }
+        if abs(delta) == 1 {
+            unitStepEntry(delta, duration: 0.22)
+        } else {
+            TVPerfTrace.log("flight-entry delta=\(delta)")
+            entryPending += delta
+            startStepper()
         }
     }
 
     func selectGameByOffset(_ delta: Int) {
         guard !games.isEmpty else { return }
-        let count = games.count
-        var newIndex = selectedGameIndex + delta
-        newIndex = ((newIndex % count) + count) % count
-        if newIndex != selectedGameIndex {
-            withAnimation(.easeOut(duration: 0.22)) {
-                selectedGameIndex = newIndex
-                syncStateForMainWindow()
+        if abs(delta) == 1 {
+            unitStepGame(delta, duration: 0.22, deferHero: false)
+        } else {
+            TVPerfTrace.log("flight-game delta=\(delta)")
+            gamePending += delta
+            startStepper()
+        }
+    }
+
+    /// One single-slot step on the systems row. The only place
+    /// `selectedEntryIndex` moves for animated navigation. When `deferGames`
+    /// is set (fast-move flight steps), the games list refresh waits for the
+    /// drain instead of churning through every intermediate system.
+    private func unitStepEntry(_ dir: Int, duration: Double, linear: Bool = false, deferGames: Bool = false) {
+        guard !row1Entries.isEmpty else { return }
+        let count = row1Entries.count
+        let newIndex = (((selectedEntryIndex + dir) % count) + count) % count
+        guard newIndex != selectedEntryIndex else { return }
+        let stepAnimation: Animation = linear ? .linear(duration: duration) : .easeOut(duration: duration)
+        withAnimation(stepAnimation) {
+            entryMove = RowMove(delta: dir, seq: entryMove.seq + 1, duration: duration, linear: linear)
+            selectedEntryIndex = newIndex
+            if deferGames {
+                entryGamesStale = true
+            } else {
+                recomputeGames()
+                selectedGameIndex = games.isEmpty ? 0 : min(selectedGameIndex, games.count - 1)
+                if entryPending == 0 { syncStateForMainWindow() }
             }
         }
     }
 
+    /// One single-slot step on the games row. When `deferHero` is set (fast
+    /// moves on the detail page), the hero art refresh waits for the drain
+    /// instead of strobing through every intermediate game.
+    private func unitStepGame(_ dir: Int, duration: Double, linear: Bool = false, deferHero: Bool) {
+        guard !games.isEmpty else { return }
+        let count = games.count
+        let newIndex = (((selectedGameIndex + dir) % count) + count) % count
+        guard newIndex != selectedGameIndex else { return }
+        let stepAnimation: Animation = linear ? .linear(duration: duration) : .easeOut(duration: duration)
+        withAnimation(stepAnimation) {
+            gameMove = RowMove(delta: dir, seq: gameMove.seq + 1, duration: duration, linear: linear)
+            selectedGameIndex = newIndex
+            if gamePending == 0 { syncStateForMainWindow() }
+        }
+        if deferHero && page == .detail { detailHeroStale = true }
+    }
+
+    // MARK: - Fast-move stepper
+
+    /// Fast moves (L1/R1 = ±5, L2/R2 = ±10) run as a rapid chain of unit
+    /// steps, one slot per ~60ms tick, instead of one N-slot transaction.
+    /// Each step re-runs the row body at an intermediate slot, so every icon
+    /// passing through center grows big and shrinks leaving it (carousel).
+    /// New presses simply add to the pending counters, so mashing stays
+    /// smooth and opposite presses cancel out instead of queuing stale jumps.
+    private func startStepper() {
+        guard !stepperRunning else { return }
+        stepperRunning = true
+        Task { @MainActor [weak self] in
+            while let self, self.entryPending != 0 || self.gamePending != 0 {
+                self.consumeStepTick()
+                try? await Task.sleep(nanoseconds: 60_000_000)
+            }
+            self?.finishStepping()
+        }
+    }
+
+    private func consumeStepTick() {
+        TVPerfTrace.log("tick e=\(entryPending) g=\(gamePending)")
+        if entryPending != 0 {
+            let dir = entryPending > 0 ? 1 : -1
+            entryPending -= dir
+            // 0.12s animation on a 60ms tick: consecutive steps always
+            // overlap, so velocity never drops to zero between steps. A
+            // shorter duration left dead gaps on slower ticks (staccato).
+            unitStepEntry(dir, duration: 0.12, linear: true, deferGames: true)
+        }
+        if gamePending != 0 {
+            let dir = gamePending > 0 ? 1 : -1
+            gamePending -= dir
+            unitStepGame(dir, duration: 0.12, linear: true, deferHero: true)
+        }
+    }
+
+    private func finishStepping() {
+        stepperRunning = false
+        TVPerfTrace.log("drain")
+        TVPerfTrace.flush()
+        if detailHeroStale {
+            detailHeroStale = false
+            if page == .detail, let rom = selectedGame {
+                loadingDetailROM = rom
+                downloadedDetailROM = rom
+                refreshMostRecentSaveSlot(for: rom)
+            }
+        }
+        if entryGamesStale {
+            entryGamesStale = false
+            recomputeGames()
+            selectedGameIndex = games.isEmpty ? 0 : min(selectedGameIndex, games.count - 1)
+            pulseGamesFade()
+        }
+        syncStateForMainWindow()
+        // Lost-wakeup guard: a move enqueued after the loop's last check
+        // would otherwise sit unstarted (all MainActor-serial, safe).
+        if entryPending != 0 || gamePending != 0 { startStepper() }
+    }
+
+    /// Fades the games row in for the final system of a flight. The content
+    /// swap and the dim land in one transaction (old content crossfades out),
+    /// then the async flip fades the new content in over 0.25s.
+    private func pulseGamesFade() {
+        gamesDimmed = true
+        Task { @MainActor [weak self] in
+            try? await Task.sleep(nanoseconds: 50_000_000)
+            self?.gamesDimmed = false
+        }
+    }
+
+    /// Applies a still-deferred games refresh immediately. Used when leaving
+    /// the systems row mid-flight (Down) so row 2 never shows a stale system.
+    private func flushEntryFlight(fade: Bool) {
+        guard entryPending != 0 || entryGamesStale else { return }
+        entryPending = 0
+        entryGamesStale = false
+        recomputeGames()
+        selectedGameIndex = games.isEmpty ? 0 : min(selectedGameIndex, games.count - 1)
+        if fade { pulseGamesFade() }
+    }
+
     func moveDownFromRow1() {
+        flushEntryFlight(fade: true)
         if games.isEmpty { return }
         page = .row2
         if !games.indices.contains(selectedGameIndex) { selectedGameIndex = 0 }
@@ -203,19 +400,23 @@ final class TVModeViewModel: ObservableObject {
     /// (keyed off `rom.id`), not here — see `TVModeGameDetailView`.
     func shiftDetailGame(by delta: Int) {
         guard page == .detail, !games.isEmpty else { return }
-        let count = games.count
-        var newIndex = selectedGameIndex + delta
-        newIndex = ((newIndex % count) + count) % count
-        guard newIndex != selectedGameIndex,
-              games.indices.contains(newIndex) else { return }
-        let rom = games[newIndex]
-        withAnimation(.easeOut(duration: 0.22)) {
-            selectedGameIndex = newIndex
-            syncStateForMainWindow()
+        if abs(delta) == 1 {
+            let count = games.count
+            let newIndex = (((selectedGameIndex + delta) % count) + count) % count
+            guard newIndex != selectedGameIndex,
+                  games.indices.contains(newIndex) else { return }
+            let rom = games[newIndex]
+            unitStepGame(delta, duration: 0.22, deferHero: false)
+            loadingDetailROM = rom
+            downloadedDetailROM = rom
+            refreshMostRecentSaveSlot(for: rom)
+        } else {
+            // Fast sweep: steps drain one slot per tick; the hero art
+            // refreshes once at the drain (see `finishStepping`).
+            TVPerfTrace.log("flight-detail delta=\(delta)")
+            gamePending += delta
+            startStepper()
         }
-        loadingDetailROM = rom
-        downloadedDetailROM = rom
-        refreshMostRecentSaveSlot(for: rom)
     }
 
     func exitDetail() {
@@ -345,6 +546,7 @@ final class TVModeViewModel: ObservableObject {
     }
 
     private func rebuildEntries() {
+        countCache.removeAll()
         var entries: [TVModeEntry] = []
         for smart in TVModeSettings.shownSmartEntries {
             if count(for: smart.filter) > 0 {
@@ -546,19 +748,25 @@ final class TVModeViewModel: ObservableObject {
     }
 
     func count(for filter: LibraryFilter) -> Int {
-        switch filter {
-        case .all: return library.roms.filter { !$0.isHidden }.count
-        case .favorites: return library.roms.filter { $0.isFavorite && !$0.isHidden }.count
-        case .recent: return library.roms.filter { $0.lastPlayed != nil && !$0.isHidden }.count
-        case .lastAdded: return library.roms.filter { !$0.isHidden }.count
-        case .retroAchievements: return raService.isEnabled ? library.roms.filter { $0.raMatchStatus == "matched" }.count : 0
-        case .hidden: return library.roms.filter { $0.isHidden }.count
-        case .mameNonGames: return library.roms.filter { $0.systemID == "mame" && $0.mameRomType != "game" }.count
-        case .system(let sys):
-            let internalIDs = Set(systemDatabase.allInternalIDs(forDisplayID: sys.id))
-            return library.roms.filter { internalIDs.contains($0.systemID ?? "") && !$0.isHidden }.count
-        case .category: return 0
+        let key = filter.id
+        if let cached = countCache[key] { return cached }
+        let value: Int = TVPerfTrace.time("count", thresholdMs: 3) {
+            switch filter {
+            case .all: return library.roms.filter { !$0.isHidden }.count
+            case .favorites: return library.roms.filter { $0.isFavorite && !$0.isHidden }.count
+            case .recent: return library.roms.filter { $0.lastPlayed != nil && !$0.isHidden }.count
+            case .lastAdded: return library.roms.filter { !$0.isHidden }.count
+            case .retroAchievements: return raService.isEnabled ? library.roms.filter { $0.raMatchStatus == "matched" }.count : 0
+            case .hidden: return library.roms.filter { $0.isHidden }.count
+            case .mameNonGames: return library.roms.filter { $0.systemID == "mame" && $0.mameRomType != "game" }.count
+            case .system(let sys):
+                let internalIDs = Set(systemDatabase.allInternalIDs(forDisplayID: sys.id))
+                return library.roms.filter { internalIDs.contains($0.systemID ?? "") && !$0.isHidden }.count
+            case .category: return 0
+            }
         }
+        countCache[key] = value
+        return value
     }
 
     /// Recomputes `mostRecentSaveSlot` for the given ROM so the detail view

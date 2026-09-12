@@ -7,7 +7,11 @@ import AppKit
 struct TVModeEntryTile: View {
     let entry: TVModeEntry
     let count: Int
-    let isFocused: Bool
+    /// Center focus from `1` (exact center) to `0` (one slot away or row not
+    /// active). Applied with NO animation modifier: motion comes from the row
+    /// sweep itself, so each icon grows big passing through center and back
+    /// to normal size leaving it.
+    let focus: CGFloat
     let theme: TVModeSettings.Theme
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.tvModeScale) private var scale
@@ -17,6 +21,33 @@ struct TVModeEntryTile: View {
 
     private var size: CGFloat { 168 * scale }
 
+    /// Controller-style icons never change at runtime: one synchronous disk
+    /// read per system total. Without this, every tile mount re-read its
+    /// `.ico` file on the main thread, which hitched fast flights.
+    private static var controllerIconCache: [String: NSImage] = [:]
+
+    /// Decodes all row-1 icons once so fast flights never touch disk or
+    /// decode images on the main thread mid-animation. Idempotent: cache hits
+    /// after the first call, so re-running on entry or scale changes is free.
+    static func warmIcons(for entries: [TVModeEntry], scale: CGFloat) {
+        let size = Int(132 * scale)
+        for entry in entries {
+            guard let system = entry.system else { continue }
+            _ = system.emuImage(size: size)
+            _ = cachedControllerIcon(for: system.id)
+        }
+    }
+
+    private static func cachedControllerIcon(for systemID: String) -> NSImage? {
+        if let cached = controllerIconCache[systemID] { return cached }
+        let img = Bundle.main.url(
+            forResource: systemID,
+            withExtension: "ico"
+        ).flatMap { NSImage(contentsOf: $0) }
+        if let img { controllerIconCache[systemID] = img }
+        return img
+    }
+
     /// Fixed label area so the row does not jump when focus moves between
     /// icons. Only the centered icon fills it; side slots keep it empty.
     private var labelHeight: CGFloat { 72 * scale }
@@ -25,26 +56,26 @@ struct TVModeEntryTile: View {
         VStack(spacing: 10 * scale) {
             iconView
                 .frame(width: size, height: size)
-                .shadow(color: shadowColor, radius: isFocused ? 24 * scale : 8 * scale, y: isFocused ? 12 * scale : 4 * scale)
-                .scaleEffect(isFocused ? 1.45 : 0.9)
-                .animation(.easeOut(duration: 0.22), value: isFocused)
+                .shadow(color: shadowColor, radius: (8 + 16 * focus) * scale, y: (4 + 8 * focus) * scale)
+                .scaleEffect(0.9 + 0.55 * focus)
 
+            // Name and count stay mounted and crossfade with focus. Inserting
+            // and removing them per step popped text in and out at flight
+            // cadence, which read as choppiness.
             VStack(spacing: 4 * scale) {
-                if isFocused {
-                    Text(entry.displayName)
-                        .font(.system(size: 28 * scale, weight: .bold))
-                        .foregroundStyle(textColor)
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.65)
-                    if count > 0 {
-                        Text("\(count)")
-                            .font(.system(size: 22 * scale, weight: .semibold))
-                            .foregroundStyle(textColor.opacity(0.7))
-                    }
+                Text(entry.displayName)
+                    .font(.system(size: 28 * scale, weight: .bold))
+                    .foregroundStyle(textColor)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.65)
+                if count > 0 {
+                    Text("\(count)")
+                        .font(.system(size: 22 * scale, weight: .semibold))
+                        .foregroundStyle(textColor.opacity(0.7))
                 }
             }
             .frame(width: size + 60 * scale, height: labelHeight)
-            .opacity(isFocused ? 1 : 0)
+            .opacity(focus)
         }
         .accessibilityLabel(accessibilityLabel)
         .onAppear { loadSystemImage() }
@@ -106,23 +137,22 @@ struct TVModeEntryTile: View {
 
     private var shadowColor: Color {
         if theme == .bold {
-            return AppColors.accentForScheme(colorScheme).opacity(isFocused ? 0.55 : 0.0)
+            return AppColors.accentForScheme(colorScheme).opacity(0.55 * focus)
         } else {
-            return .black.opacity(isFocused ? 0.4 : 0.15)
+            return .black.opacity(0.15 + 0.25 * focus)
         }
     }
 
     private func loadSystemImage() {
-        guard let system = entry.system else { systemImage = nil; controllerImage = nil; return }
-        systemImage = system.emuImage(size: Int(132 * scale))
-        // Fall back to a slightly larger render if no 132-sized asset is cached.
-        if systemImage == nil {
-            systemImage = system.emuImage(size: Int(600 * scale))
-            if systemImage == nil { systemImage = system.emuImage(size: Int(120 * scale)) }
+        TVPerfTrace.time("loadIcon", thresholdMs: 3) {
+            guard let system = entry.system else { systemImage = nil; controllerImage = nil; return }
+            systemImage = system.emuImage(size: Int(132 * scale))
+            // Fall back to a slightly larger render if no 132-sized asset is cached.
+            if systemImage == nil {
+                systemImage = system.emuImage(size: Int(600 * scale))
+                if systemImage == nil { systemImage = system.emuImage(size: Int(120 * scale)) }
+            }
+            controllerImage = Self.cachedControllerIcon(for: system.id)
         }
-        controllerImage = Bundle.main.url(
-            forResource: system.id,
-            withExtension: "ico"
-        ).flatMap { NSImage(contentsOf: $0) }
     }
 }

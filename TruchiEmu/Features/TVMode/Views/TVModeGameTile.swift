@@ -8,7 +8,11 @@ import AppKit
 /// follows the tile's own bounds — not a fixed rectangle.
 struct TVModeGameTile: View {
     let rom: ROM
-    let isFocused: Bool
+    /// Center focus from `1` (exact center) to `0` (one slot away or row not
+    /// active). Applied with NO animation modifier: motion comes from the row
+    /// sweep itself, so each game grows big passing through center and back
+    /// to normal size leaving it.
+    let focus: CGFloat
     let theme: TVModeSettings.Theme
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.tvModeScale) private var scale
@@ -19,8 +23,7 @@ struct TVModeGameTile: View {
     var body: some View {
         VStack(spacing: 8 * scale) {
             tileContent
-                .scaleEffect(isFocused ? 1.30 : 1.0, anchor: .bottom)
-                .animation(.easeOut(duration: 0.22), value: isFocused)
+                .scaleEffect(1.0 + 0.30 * focus, anchor: .bottom)
 
             Text(rom.displayName)
                 .font(.system(size: 13 * scale, weight: .semibold))
@@ -70,15 +73,16 @@ struct TVModeGameTile: View {
             RoundedRectangle(cornerRadius: boxCornerRadius, style: .continuous)
                 .fill(boxBackground)
                 .frame(width: imageDisplaySize.width, height: imageDisplaySize.height)
-                .shadow(color: shadowColor, radius: isFocused ? 28 * scale : 5 * scale, y: isFocused ? 12 * scale : 2 * scale)
+                .shadow(color: shadowColor, radius: (5 + 23 * focus) * scale, y: (2 + 10 * focus) * scale)
 
             // Halo behind the tile — sized to the tile, not a fixed box, so
-            // each cover's accent glow matches its own proportions.
-            if isFocused {
+            // each cover's accent glow matches its own proportions. Mounts at
+            // the edge while nearly invisible, then ramps: no mid-flight pop.
+            if focus > 0.05 {
                 RoundedRectangle(cornerRadius: boxCornerRadius + 10 * scale, style: .continuous)
                     .fill(haloColor)
                     .blur(radius: 32 * scale)
-                    .opacity(0.55)
+                    .opacity(0.55 * focus)
                     .padding(-18 * scale)
                     .frame(
                         width: imageDisplaySize.width + 36 * scale,
@@ -87,26 +91,27 @@ struct TVModeGameTile: View {
                     .allowsHitTesting(false)
             }
 
-            // Auto holo on the focused (selected) tile only — always on, using the
-            // user's weighted random variant, with the wizard-style self-driven
-            // light + card motion. The component draws the base art itself.
-            if isFocused, let img = image {
+            // Base art stays mounted; holo fades in over it near center, so
+            // there is never a mid-flight view swap. The holo component draws
+            // the base art itself (user's weighted random variant, wizard
+            // self-driven light + card motion).
+            boxartView
+                .frame(width: imageDisplaySize.width, height: imageDisplaySize.height)
+                .clipShape(RoundedRectangle(cornerRadius: boxCornerRadius, style: .continuous))
+            if focus > 0.05, let img = image {
                 TVModeHoloBoxart(
                     image: img,
                     romID: rom.id.uuidString,
                     cornerRadius: boxCornerRadius
                 )
+                .opacity(min(1, focus * 3))
                 .frame(width: imageDisplaySize.width, height: imageDisplaySize.height)
                 .clipShape(RoundedRectangle(cornerRadius: boxCornerRadius, style: .continuous))
-            } else {
-                boxartView
-                    .frame(width: imageDisplaySize.width, height: imageDisplaySize.height)
-                    .clipShape(RoundedRectangle(cornerRadius: boxCornerRadius, style: .continuous))
             }
         }
         .frame(
-            width: imageDisplaySize.width + (isFocused ? 36 * scale : 0),
-            height: imageDisplaySize.height + (isFocused ? 36 * scale : 0)
+            width: imageDisplaySize.width + 36 * focus * scale,
+            height: imageDisplaySize.height + 36 * focus * scale
         )
     }
 
@@ -140,9 +145,9 @@ struct TVModeGameTile: View {
 
     private var shadowColor: Color {
         if theme == .bold {
-            return AppColors.accentForScheme(colorScheme).opacity(isFocused ? 0.45 : 0.0)
+            return AppColors.accentForScheme(colorScheme).opacity(0.45 * focus)
         }
-        return .black.opacity(isFocused ? 0.5 : 0.2)
+        return .black.opacity(0.2 + 0.3 * focus)
     }
 
     private var haloColor: Color {
