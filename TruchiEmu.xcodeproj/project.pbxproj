@@ -1041,6 +1041,7 @@
 		BF3899C41521C9D716EBDC5D /* ControllerGamepadMapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EB63FBDD677CD02C8E222A8 /* ControllerGamepadMapping.swift */; };
 		BF55AC4134A4FB6431A79542 /* fightdata_kabukikl.json in Resources */ = {isa = PBXBuildFile; fileRef = F8AEF8953B8BA54E445A5975 /* fightdata_kabukikl.json */; };
 		C0266AE90962A24605C83813 /* input_coreLabels_wasm-4.json in Resources */ = {isa = PBXBuildFile; fileRef = 0869679B382A9418B9809DC0 /* input_coreLabels_wasm-4.json */; };
+		C03C61A374B19576151E178A /* TitlebarNotificationTicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 377A59ABFA726CC1685B5E3E /* TitlebarNotificationTicker.swift */; };
 		C06A6F384935E4D102E0EAED /* fightdata_vsav.json in Resources */ = {isa = PBXBuildFile; fileRef = 545689DD725AD866285B85AE /* fightdata_vsav.json */; };
 		C0A4880DCF251D9AA79033A2 /* fightdata_fotns.json in Resources */ = {isa = PBXBuildFile; fileRef = D3E37FB39EE0D0947F15FC38 /* fightdata_fotns.json */; };
 		C0B31C7FFBB276342157AAC1 /* CoreHostService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9A707545B834EB4A974DB42 /* CoreHostService.swift */; };
@@ -1683,6 +1684,7 @@
 		36A9574C25916D8504475C4C /* GameLaunchErrorOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameLaunchErrorOverlay.swift; sourceTree = "<group>"; };
 		36D54E4EEE23966CA6695EDF /* fightdata_survarts.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_survarts.json; sourceTree = "<group>"; };
 		36F405FCC5148CACA78ACD58 /* input_coreOverrides_cannonball.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_cannonball.json; sourceTree = "<group>"; };
+		377A59ABFA726CC1685B5E3E /* TitlebarNotificationTicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TitlebarNotificationTicker.swift; sourceTree = "<group>"; };
 		3785C1F47A9C4D765D471039 /* GameModeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameModeManager.swift; sourceTree = "<group>"; };
 		37C4859B682A869506B406B2 /* SavedStates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedStates.swift; sourceTree = "<group>"; };
 		37C93683DE17C73F5933064B /* holo_illusion2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = holo_illusion2.png; sourceTree = "<group>"; };
@@ -4522,6 +4524,7 @@
 				ABE60205F14183C120DDC8AA /* DesignSystem.swift */,
 				4AF5738E0CA85CD54BC36AC0 /* NotificationPill.swift */,
 				A8935D40F11BF986BE60A840 /* ThemeManager.swift */,
+				377A59ABFA726CC1685B5E3E /* TitlebarNotificationTicker.swift */,
 				5E9406B4D1F3A243D22E8BA5 /* TypeToSearch.swift */,
 			);
 			path = UI;
@@ -6510,6 +6513,7 @@
 				A65710823C4D0A6B42F7EA87 /* ThemeManager.swift in Sources */,
 				4DD1329F99229306455B3B86 /* TimeMachineBuffer.swift in Sources */,
 				56EF78D2B7AEFAED9582F023 /* TimeMachineSettingsView.swift in Sources */,
+				C03C61A374B19576151E178A /* TitlebarNotificationTicker.swift in Sources */,
 				1CBE8E9BE89FB1A446E9757E /* TrainingInputManager.swift in Sources */,
 				C7B614C0D64568EA01CC5C75 /* TrainingModeManager.swift in Sources */,
 				EEA23D26837A6E53183BF1DC /* TrainingModeModels.swift in Sources */,

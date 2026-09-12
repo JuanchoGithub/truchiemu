@@ -33,16 +33,41 @@ class NotificationPillManager: ObservableObject {
 
     @Published private(set) var currentNotification: PillNotification?
 
+    private var queue: [PillNotification] = []
+
     func post(_ notification: PillNotification) {
+        if currentNotification == nil {
+            show(notification)
+        } else {
+            queue.append(notification)
+        }
+    }
+
+    private func show(_ notification: PillNotification) {
         currentNotification = notification
         if let delay = notification.autoDismissDelay {
-            let id = notification.id
-            Task {
-                try? await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
-                if currentNotification?.id == id {
-                    withAnimation(AppAnimations.smooth) {
-                        currentNotification = nil
-                    }
+            scheduleDismiss(id: notification.id, delay: delay)
+        }
+    }
+
+    private func scheduleDismiss(id: UUID, delay: TimeInterval) {
+        Task {
+            try? await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
+            if currentNotification?.id == id {
+                advance()
+            }
+        }
+    }
+
+    private func advance() {
+        withAnimation(AppAnimations.smooth) {
+            if queue.isEmpty {
+                currentNotification = nil
+            } else {
+                let next = queue.removeFirst()
+                currentNotification = next
+                if let delay = next.autoDismissDelay {
+                    scheduleDismiss(id: next.id, delay: delay)
                 }
             }
         }
@@ -54,9 +79,7 @@ class NotificationPillManager: ObservableObject {
     }
 
     func dismiss() {
-        withAnimation(AppAnimations.smooth) {
-            currentNotification = nil
-        }
+        advance()
     }
 }
 

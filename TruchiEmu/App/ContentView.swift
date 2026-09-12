@@ -23,7 +23,6 @@ struct ContentView: View {
     @Environment(SystemDatabaseWrapper.self) private var systemDatabase
 @StateObject private var metadataSync = MetadataSyncCoordinator.shared
 @StateObject private var raCacheCoordinator = RAGameCacheCoordinator.shared
-@ObservedObject var notificationPillManager = NotificationPillManager.shared
 @ObservedObject var wizard = SetupWizardState.shared
 @ObservedObject var gamepadNavCoordinator = GamepadNavCoordinator.shared
 @ObservedObject private var ppssppAssetService = PPSSPAssetService.shared
@@ -320,16 +319,10 @@ case .library:
             }
         }
 
-        // Notification pill overlay
-        if let notification = notificationPillManager.currentNotification {
-            VStack {
-                Spacer()
-                NotificationPill(notification: notification)
-                    .padding(.bottom, 20)
-                    .transition(.move(edge: .bottom).combined(with: .opacity))
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
-        }
+        // No bottom notification pill here: the titlebar ticker owns
+        // main-window notifications (see TickerToolbarContent), so each
+        // notification appears exactly once. Game windows and TV Mode keep
+        // their own pill paths.
 
         // Celebration overlay picks up CelebrationManager.shared (confetti + branded pill)
         // Other notification pills continue to render below via the dedicated manager.
@@ -406,6 +399,9 @@ applyShaderOverrides(systemID: data.systemID, selectedGameIDs: selectedGameIDs)
 // Set ideal window size so the window doesn't start stretched larger than needed
 .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
 .frame(minWidth: 1000, idealWidth: 1200, minHeight: 650, idealHeight: 750)
+.toolbar {
+TickerToolbarContent()
+}
 }
 
 private func celebrateFirstScanIfNeeded(addedCount: Int) {
