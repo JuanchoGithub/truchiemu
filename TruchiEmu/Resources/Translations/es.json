@@ -2647,6 +2647,7 @@
   "tvMode.coreDownload.cancel": "Cancelar",
   "tvMode.sortHUD.alphabetical": "Nombre",
   "externalDisplay.prompt.title": "¿Abrir la app en %@?",
+  "externalDisplay.prompt.moveTitle": "¿Mover el modo TV a %@?",
   "externalDisplay.prompt.accept": "A — Continuar",
   "externalDisplay.prompt.decline": "B — Cancelar",
   "externalDisplay.resume.title": "Juego en pausa",

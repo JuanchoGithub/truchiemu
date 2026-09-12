@@ -136,8 +136,8 @@ struct ContentView: View {
             BootSmokeRunner.runIfNeeded(library: library)
         }
         // External-display prompt overlay. Renders nothing when
-        // `ExternalDisplayPromptManager` is idle; the manager never prompts
-        // while TV Mode is active, so this never overlaps `TVModeView`.
+        // `ExternalDisplayPromptManager` is idle; when a display is plugged
+        // in while TV Mode is active the prompt renders above `TVModeView`.
         .overlay {
             ExternalDisplayPromptView()
         }

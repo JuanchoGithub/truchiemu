@@ -8,7 +8,9 @@ import AppKit
 ///     countdown). Deliberately non-intrusive: no scrim, no pause, hit-testing
 ///     passes through, so the player can keep playing (and pause/save) before
 ///     the prompt.
-///   - **Prompt** ("Open app in External Device <name>?") and **resume gate**
+///   - **Prompt** ("Open app in External Device <name>?" when entering TV
+///     Mode, "Move TV Mode to <name>?" when already in TV Mode) and
+///     **resume gate**
 ///     ("Game paused — press A to resume") — full cards over a dark scrim.
 /// Renders nothing while the manager is idle. Input (A/RETURN, B/ESC,
 /// countdown) is handled by `ExternalDisplayPromptManager`; this view is
@@ -62,7 +64,12 @@ struct ExternalDisplayPromptView: View {
                 .font(.system(size: 40))
                 .foregroundStyle(AppColors.brandAccent)
 
-            Text(verbatim: loc.localized("externalDisplay.prompt.title", screen.name))
+            Text(verbatim: loc.localized(
+                TVModeSettingsManager.shared.isActive
+                    ? "externalDisplay.prompt.moveTitle"
+                    : "externalDisplay.prompt.title",
+                screen.name
+            ))
                 .font(.system(size: 26, weight: .bold))
                 .multilineTextAlignment(.center)
 

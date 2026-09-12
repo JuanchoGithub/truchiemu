@@ -12,11 +12,13 @@ import AppKit
 ///      deliberately hands-off: no card, no pause, no input interception — the
 ///      player can keep playing and even pause or save before the intrusive
 ///      step.
-///   2. **Prompt (5s)** — "Open app in External Device <name>?" card, which
+///   2. **Prompt (5s)** — "Open app in External Device <name>?" card (or
+///      "Move TV Mode to <name>?" when TV Mode is already active), which
 ///      covers part of the screen, so the game is paused as soon as it appears.
 ///      The countdown auto-accepts (the console-friendly default is YES);
 ///      B/ESC declines, A/RETURN accepts.
-///   3. On accept, TV Mode enters on the newly-connected display; the paused
+///   3. On accept, TV Mode enters on the newly-connected display (or moves
+///      there when already active); the paused
 ///      game is moved onto it (a fullscreen game window round-trips through
 ///      windowed so the move can `setFrame`).
 ///   4. **Resume gate** — the game stays paused behind a "Press A to resume"
@@ -104,12 +106,11 @@ final class ExternalDisplayPromptManager: ObservableObject {
         let addedExternal = current.first { !previousScreenIDs.contains($0.id) && !$0.isBuiltIn }
         previousScreenIDs = Set(currentIDs)
 
-        // Never prompt while TV Mode is already on that display, when the user
-        // launches straight into TV Mode, or while a prompt is already up.
+        // Only suppress while a prompt is already up. A new external display
+        // prompts even when TV Mode is already active — accept then moves
+        // the TV-mode window onto it instead of entering TV Mode.
         guard phase == .idle,
-              let external = addedExternal,
-              !TVModeSettingsManager.shared.isActive,
-              !TVModeSettings.launchInTVMode else { return }
+              let external = addedExternal else { return }
 
         beginWarmUp(for: external)
     }
@@ -221,7 +222,15 @@ final class ExternalDisplayPromptManager: ObservableObject {
         // idempotent and keeps the invariant if this ever runs without it.
         setGamesPaused(true)
 
-        TVModeSettingsManager.shared.enter(on: screen)
+        if TVModeSettingsManager.shared.isActive {
+            // Already in TV Mode (e.g. plugged a monitor while in TV Mode):
+            // move the TV-mode window onto the new display instead of
+            // re-entering. `commitScreenSelection` only finds windowed hosts,
+            // so a fullscreen TV-mode window needs an exit-move-reenter.
+            moveTVModeWindow(to: screen)
+        } else {
+            TVModeSettingsManager.shared.enter(on: screen)
+        }
 
         // Move the paused game(s) onto the external display. A fullscreen game
         // window is a Space, so it must exit fullscreen before it can be moved,
@@ -236,6 +245,47 @@ final class ExternalDisplayPromptManager: ObservableObject {
         } else {
             teardownPromptUI()
         }
+    }
+
+    /// Moves the already-active TV-mode window onto `screen`. Windowed hosts
+    /// go through `commitScreenSelection` (move + fullscreen + remember). A
+    /// fullscreen host is a Space and ignores `setFrame`, so it must exit
+    /// fullscreen first, move once the exit lands, then re-enter on the new
+    /// display. Uses a one-shot observer so it never collides with the
+    /// game-window fullscreen-exit slot below.
+    private func moveTVModeWindow(to screen: ScreenDescriptor) {
+        // Windowed host (brief window during entry/exit transitions).
+        if NSApp.windows.contains(where: {
+            $0.isVisible && $0.styleMask.contains(.titled)
+                && !$0.styleMask.contains(.fullScreen)
+                && !($0.windowController is StandaloneGameWindowController)
+        }) {
+            TVModeSettingsManager.shared.commitScreenSelection(screen)
+            return
+        }
+        guard let window = NSApp.windows.first(where: {
+            $0.styleMask.contains(.fullScreen)
+                && !($0.windowController is StandaloneGameWindowController)
+        }) else {
+            // No host window resolvable (e.g. cold-start edge) — remember
+            // the pick so a later commit still targets the new display.
+            TVModeSettings.setRememberedScreenID(screen.id)
+            return
+        }
+        var observer: NSObjectProtocol?
+        observer = NotificationCenter.default.addObserver(
+            forName: NSWindow.didExitFullScreenNotification,
+            object: window,
+            queue: .main
+        ) { _ in
+            if let observer {
+                NotificationCenter.default.removeObserver(observer)
+            }
+            TVModeSettingsManager.shared.moveWindow(window, onto: screen)
+            TVModeSettings.setRememberedScreenID(screen.id)
+            window.toggleFullScreen(nil)
+        }
+        window.toggleFullScreen(nil)
     }
 
     private func moveGameWindow(_ window: NSWindow, to screen: ScreenDescriptor) {
