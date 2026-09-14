@@ -1241,7 +1241,8 @@ case "scummvm": runner = ScummVMRunner()
         }
         
         let systemID = gameRom.systemID ?? "default"
-        let gameKey = "\(gameRom.displayName)__\(gameRom.id.uuidString.prefix(8))"
+        // Stable key: hash first, filename stem fallback. Survives re-add.
+        let gameKey = gameRom.stableFileToken
         let (stateURL, version) = resolveSaveURL(slot: slot, gameName: gameKey, systemID: systemID)
         let actualVersion = progressiveVersion ?? version
         
@@ -1394,25 +1395,20 @@ case "scummvm": runner = ScummVMRunner()
         }
         
         let systemID = gameRom.systemID ?? "default"
-        let gameKey = "\(gameRom.displayName)__\(gameRom.id.uuidString.prefix(8))"
+        // Stable key first, legacy "<displayName>__<uuid8>" as read fallback
+        // so states saved before stable identity (or before a re-add) still load.
+        let candidates = gameRom.stateKeyCandidates
         let stateURL: URL
 
-        let versions = saveManager.progressiveSlotVersions(gameName: gameKey, systemID: systemID, slot: slot)
-        if !versions.isEmpty {
-            var newestVersion = versions[0]
-            var newestDate: Date? = nil
-            for v in versions {
-                let info = saveManager.progressiveSlotInfo(gameName: gameKey, systemID: systemID, slot: slot, version: v)
-                if info.exists {
-                    if let date = info.modificationDate, date > (newestDate ?? .distantPast) {
-                        newestDate = date
-                        newestVersion = v
-                    }
-                }
-            }
-            stateURL = saveManager.progressiveStatePath(gameName: gameKey, systemID: systemID, slot: slot, version: newestVersion)
+        if let (foundURL, _) = saveManager.existingStateURL(
+            primaryKey: candidates.primary,
+            fallbackKeys: candidates.fallbacks,
+            systemID: systemID,
+            slot: slot
+        ) {
+            stateURL = foundURL
         } else {
-            stateURL = saveManager.statePath(gameName: gameKey, systemID: systemID, slot: slot)
+            stateURL = saveManager.statePath(gameName: candidates.primary, systemID: systemID, slot: slot)
         }
         
         // Save current state as undo buffer before loading

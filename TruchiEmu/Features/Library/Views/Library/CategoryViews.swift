@@ -59,6 +59,7 @@ struct AddToCategorySheet: View {
 	@Environment(\.dismiss) private var dismiss
 	@EnvironmentObject var categoryManager: CategoryManager
 	let gameIDs: [UUID]
+	let gameKeys: [String] = []
 	@Environment(\.colorScheme) private var colorScheme
 
 	var body: some View {
@@ -66,8 +67,9 @@ struct AddToCategorySheet: View {
             List {
                 ForEach(categoryManager.categories) { category in
                     let alreadyContains = !Set(category.gameIDs).intersection(gameIDs).isEmpty
+                        || !Set(category.gameKeys).intersection(gameKeys).isEmpty
                     Button {
-                        categoryManager.addGamesToCategory(gameIDs: gameIDs, categoryID: category.id)
+                        categoryManager.addGamesToCategory(gameIDs: gameIDs, gameKeys: gameKeys, categoryID: category.id)
                         dismiss()
                     } label: {
                         HStack {

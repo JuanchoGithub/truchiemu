@@ -31,6 +31,24 @@ private struct SaveManagerFileEntry: Identifiable {
     var id: String { url.path }
 }
 
+// One orphan group: save-state files no game in the library claims.
+// Backed by SaveStateReconciler.unlinked(roms:).
+private struct OrphanItem: Identifiable, Hashable {
+    let systemID: String
+    let prefix: String
+    let fileCount: Int
+    let totalBytes: Int64
+    var id: String { "\(systemID)/\(prefix)" }
+    var displayName: String {
+        SaveStateReconciler.displayName(forPrefix: prefix)
+    }
+    // Bridges to the existing per-game detail/delete flows, which key
+    // everything off the raw file prefix.
+    var asGame: SaveManagerGame {
+        SaveManagerGame(systemID: systemID, gameName: prefix)
+    }
+}
+
 // MARK: - Save Manager View
 
 struct SaveManagerView: View {
@@ -47,6 +65,8 @@ struct SaveManagerView: View {
     @State private var isDetailLoading = false
     @State private var searchText = ""
     @State private var confirmingGame: SaveManagerGame.ID?
+    @State private var confirmingOrphans = false
+    @State private var orphanItems: [OrphanItem] = []
     @State private var gameBoxArt: NSImage?
     @EnvironmentObject var library: ROMLibrary
 
@@ -62,6 +82,22 @@ struct SaveManagerView: View {
             return games
         }
         return games.filter { $0.displayName.localizedLowercase.contains(searchText.lowercased()) }
+    }
+
+    private var filteredOrphans: [OrphanItem] {
+        let sorted = orphanItems.sorted { $0.systemID == $1.systemID ? $0.prefix < $1.prefix : $0.systemID < $1.systemID }
+        if searchText.isEmpty {
+            return sorted
+        }
+        return sorted.filter { $0.displayName.localizedLowercase.contains(searchText.lowercased()) }
+    }
+
+    private var orphanFileTotal: Int {
+        orphanItems.reduce(0) { $0 + $1.fileCount }
+    }
+
+    private var orphanIDs: Set<String> {
+        Set(orphanItems.map { $0.asGame.id })
     }
 
     var body: some View {
@@ -192,6 +228,103 @@ struct SaveManagerView: View {
             .padding(.top, 8)
 
             List(selection: $selectedGame) {
+                if !filteredOrphans.isEmpty {
+                    Section(header:
+                        HStack(spacing: 6) {
+                            Image(systemName: "exclamationmark.triangle.fill")
+                                .foregroundStyle(AppColors.warning(colorScheme))
+                            Text("\(loc.localized("settings.saves.orphans")) (\(filteredOrphans.count))")
+                                .font(.caption)
+                                .fontWeight(.semibold)
+                                .foregroundStyle(AppColors.textSecondary(colorScheme))
+                            Spacer()
+                            if confirmingOrphans {
+                                Button(String(format: loc.localized("settings.saves.confirmDeleteAllOrphans"), orphanFileTotal)) {
+                                    deleteAllOrphans()
+                                }
+                                .buttonStyle(.borderedProminent)
+                                .controlSize(.small)
+                                .tint(AppColors.error(colorScheme))
+                                .transition(.asymmetric(
+                                    insertion: .scale.combined(with: .opacity),
+                                    removal: .scale.combined(with: .opacity)
+                                ))
+                            } else {
+                                Button {
+                                    withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                                        confirmingOrphans = true
+                                    }
+                                    autoResetConfirm()
+                                } label: {
+                                    Image(systemName: "trash")
+                                        .font(.system(size: 11, weight: .bold))
+                                        .foregroundStyle(AppColors.textTertiary(colorScheme))
+                                }
+                                .buttonStyle(.plain)
+                                .transition(.asymmetric(
+                                    insertion: .scale.combined(with: .opacity),
+                                    removal: .scale.combined(with: .opacity)
+                                ))
+                            }
+                        }
+                    ) {
+                        ForEach(filteredOrphans) { item in
+                            HStack(spacing: AppSpacing.md) {
+                                Image(systemName: "questionmark.circle")
+                                    .foregroundStyle(AppColors.warning(colorScheme))
+                                    .frame(width: 16)
+                                VStack(alignment: .leading, spacing: 1) {
+                                    Text(item.displayName)
+                                        .font(.body)
+                                        .lineLimit(1)
+                                    Text("\(item.systemID) • \(String(format: loc.localized("settings.saves.orphanFileCount"), item.fileCount)) • \(Int64(item.totalBytes).formattedByteSize)")
+                                        .font(.caption2)
+                                        .foregroundStyle(AppColors.textTertiary(colorScheme))
+                                }
+                                Spacer()
+                                if confirmingGame == item.id {
+                                    Button(loc.localized("settings.saves.delete")) {
+                                        deleteOrphanGroup(item)
+                                    }
+                                    .buttonStyle(.borderedProminent)
+                                    .controlSize(.small)
+                                    .tint(AppColors.error(colorScheme))
+                                    .transition(.asymmetric(
+                                        insertion: .scale.combined(with: .opacity),
+                                        removal: .scale.combined(with: .opacity)
+                                    ))
+                                } else {
+                                    Button {
+                                        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                                            confirmingGame = item.id
+                                        }
+                                        autoResetConfirm()
+                                    } label: {
+                                        Image(systemName: "trash")
+                                            .font(.system(size: 11, weight: .bold))
+                                            .foregroundStyle(AppColors.textTertiary(colorScheme))
+                                    }
+                                    .buttonStyle(.plain)
+                                    .transition(.asymmetric(
+                                        insertion: .scale.combined(with: .opacity),
+                                        removal: .scale.combined(with: .opacity)
+                                    ))
+                                }
+                            }
+                            .tag(item.asGame)
+                            .padding(.vertical, 2)
+                            .padding(.trailing, 12)
+                            .onChange(of: selectedGame) { _, _ in
+                                if confirmingGame != nil {
+                                    withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                                        confirmingGame = nil
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
                 let grouped = Dictionary(grouping: filteredGames) { $0.systemID }
                     .mapValues { $0.sorted { $0.gameName < $1.gameName } }
                     .sorted { $0.key < $1.key }
@@ -250,6 +383,7 @@ struct SaveManagerView: View {
                             }
                             .tag(game)
                             .padding(.vertical, 2)
+                            .padding(.trailing, 12)
                             .onChange(of: selectedGame) { _, _ in
                                 if confirmingGame != nil {
                                     withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
@@ -263,6 +397,11 @@ struct SaveManagerView: View {
             }
             .listStyle(.sidebar)
             .onChange(of: selectedGame) { _, newValue in
+                if confirmingOrphans {
+                    withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                        confirmingOrphans = false
+                    }
+                }
                 if let game = newValue {
                     loadGameDetail(game)
                 }
@@ -298,6 +437,13 @@ struct SaveManagerView: View {
                     }
                 }
                 .padding(.horizontal)
+
+                if orphanIDs.contains(game.id) {
+                    Label(loc.localized("settings.saves.orphansDescription"), systemImage: "exclamationmark.triangle.fill")
+                        .font(.caption)
+                        .foregroundStyle(AppColors.warning(colorScheme))
+                        .padding(.horizontal)
+                }
 
                 if isDetailLoading {
                     HStack {
@@ -542,12 +688,98 @@ struct SaveManagerView: View {
             await MainActor.run {
                 withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
                     confirmingGame = nil
+                    confirmingOrphans = false
                 }
             }
         }
     }
 
     private func deleteAllSavesForGame(_ game: SaveManagerGame) {
+        let allPairs = pairsForGameFiles(game)
+
+        postDeleteNotification(
+            title: loc.localized("pill.allSavesDeleted"),
+            subtitle: "\(game.systemID) \u{203A} \(game.displayName)",
+            filePairs: allPairs
+        )
+
+        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+            confirmingGame = nil
+        }
+
+        withAnimation {
+            games.removeAll { $0.id == game.id }
+        }
+
+        if selectedGame?.id == game.id {
+            selectedGame = nil
+            gameSlots = []
+            gameFiles = []
+            gameBoxArt = nil
+        }
+    }
+
+    // Deletes one orphan group (files no game claims). Same undo support
+    // as game deletes: files move to a temp dir, the pill offers restore.
+    private func deleteOrphanGroup(_ item: OrphanItem) {
+        let pairs = pairsForGameFiles(item.asGame)
+
+        postDeleteNotification(
+            title: loc.localized("pill.orphansDeleted"),
+            subtitle: "\(item.systemID) \u{203A} \(item.displayName) (\(String(format: loc.localized("settings.saves.orphanFileCount"), item.fileCount)))",
+            filePairs: pairs
+        )
+
+        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+            confirmingGame = nil
+        }
+
+        withAnimation {
+            orphanItems.removeAll { $0.id == item.id }
+        }
+
+        if selectedGame?.id == item.id {
+            selectedGame = nil
+            gameSlots = []
+            gameFiles = []
+            gameBoxArt = nil
+        }
+    }
+
+    // Deletes every orphan group at once, with a single undo pill.
+    private func deleteAllOrphans() {
+        var allPairs: [[String]] = []
+        for item in orphanItems {
+            allPairs += pairsForGameFiles(item.asGame)
+        }
+
+        postDeleteNotification(
+            title: loc.localized("pill.orphansDeleted"),
+            subtitle: String(format: loc.localized("settings.saves.allOrphansDeletedDetail"), allPairs.count),
+            filePairs: allPairs
+        )
+
+        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+            confirmingOrphans = false
+        }
+
+        withAnimation {
+            orphanItems.removeAll()
+        }
+
+        if let sel = selectedGame, orphanIDs.contains(sel.id) {
+            selectedGame = nil
+            gameSlots = []
+            gameFiles = []
+            gameBoxArt = nil
+        }
+    }
+
+    // Collects (live, undo) path pairs for every file owned by a game key:
+    // state files, thumbnails, slot-name sidecars, plus matching SRAM files.
+    // Moves happen here; the caller posts the undo pill. Legacy orphan
+    // prefixes never equal a bare SRAM stem, so no live game's SRAM matches.
+    private func pairsForGameFiles(_ game: SaveManagerGame) -> [[String]] {
         let fm = FileManager.default
         let undoDir = Self.undoDir
         var allPairs: [[String]] = []
@@ -576,26 +808,7 @@ struct SaveManagerView: View {
             }
         }
 
-        postDeleteNotification(
-            title: loc.localized("pill.allSavesDeleted"),
-            subtitle: "\(game.systemID) \u{203A} \(game.displayName)",
-            filePairs: allPairs
-        )
-
-        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-            confirmingGame = nil
-        }
-
-        withAnimation {
-            games.removeAll { $0.id == game.id }
-        }
-
-        if selectedGame?.id == game.id {
-            selectedGame = nil
-            gameSlots = []
-            gameFiles = []
-            gameBoxArt = nil
-        }
+        return allPairs
     }
 
     private func postDeleteNotification(title: String, subtitle: String, filePairs: [[String]]) {
@@ -680,6 +893,27 @@ struct SaveManagerView: View {
         }
 
         games = discoveredGames.sorted { $0.systemID == $1.systemID ? $0.gameName < $1.gameName : $0.systemID < $1.systemID }
+
+        // Orphaned saves: state files no game in the library claims.
+        // Sources of rescued games stay on disk as backup and are excluded.
+        let refs = library.roms.map { $0.stableRomRef }
+        let orphans = SaveStateReconciler.shared.unlinked(roms: refs)
+        orphanItems = orphans.map { group in
+            var bytes: Int64 = 0
+            let sysDir = saveManager.systemDirectory(systemID: group.systemID)
+            for file in group.files {
+                let url = sysDir.appendingPathComponent(file)
+                if let attrs = try? FileManager.default.attributesOfItem(atPath: url.path) {
+                    bytes += attrs[.size] as? Int64 ?? 0
+                }
+            }
+            return OrphanItem(
+                systemID: group.systemID,
+                prefix: group.prefix,
+                fileCount: group.files.count,
+                totalBytes: bytes
+            )
+        }.sorted { $0.systemID == $1.systemID ? $0.prefix < $1.prefix : $0.systemID < $1.systemID }
         isScanning = false
     }
 

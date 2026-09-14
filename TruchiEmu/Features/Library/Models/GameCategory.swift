@@ -11,9 +11,71 @@ struct GameCategory: Identifiable, Codable, Hashable, Equatable {
     
     // Array of ROM IDs that belong to this category
     var gameIDs: [UUID] = []
+
+    // Stable game keys (see StableGameIdentity) for the same membership.
+    // ROM IDs change on every database loss and re-add; these keys do not,
+    // so membership survives a re-add. Empty for categories created before
+    // stable identity existed; backfilled on next add/display.
+    var gameKeys: [String] = []
     
     // Display order in the sidebar
     var sortOrder: Int = 0
+
+    // Membership test that survives database loss and re-add.
+    func contains(_ rom: ROM) -> Bool {
+        gameIDs.contains(rom.id) || gameKeys.contains(rom.stableIdentityKey)
+    }
+
+    // MARK: - Codable (tolerant: gameKeys missing in pre-migration data)
+
+    enum CodingKeys: String, CodingKey {
+        case id, name, iconName, customIconPath, colorHex
+        case gameIDs, gameKeys, sortOrder
+    }
+
+    init(
+        id: String = UUID().uuidString,
+        name: String,
+        iconName: String,
+        customIconPath: String? = nil,
+        colorHex: String,
+        gameIDs: [UUID] = [],
+        gameKeys: [String] = [],
+        sortOrder: Int = 0
+    ) {
+        self.id = id
+        self.name = name
+        self.iconName = iconName
+        self.customIconPath = customIconPath
+        self.colorHex = colorHex
+        self.gameIDs = gameIDs
+        self.gameKeys = gameKeys
+        self.sortOrder = sortOrder
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decodeIfPresent(String.self, forKey: .id) ?? UUID().uuidString
+        name = try container.decode(String.self, forKey: .name)
+        iconName = try container.decodeIfPresent(String.self, forKey: .iconName) ?? "gamecontroller.fill"
+        customIconPath = try container.decodeIfPresent(String.self, forKey: .customIconPath)
+        colorHex = try container.decodeIfPresent(String.self, forKey: .colorHex) ?? "007AFF"
+        gameIDs = try container.decodeIfPresent([UUID].self, forKey: .gameIDs) ?? []
+        gameKeys = try container.decodeIfPresent([String].self, forKey: .gameKeys) ?? []
+        sortOrder = try container.decodeIfPresent(Int.self, forKey: .sortOrder) ?? 0
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(id, forKey: .id)
+        try container.encode(name, forKey: .name)
+        try container.encode(iconName, forKey: .iconName)
+        try container.encodeIfPresent(customIconPath, forKey: .customIconPath)
+        try container.encode(colorHex, forKey: .colorHex)
+        try container.encode(gameIDs, forKey: .gameIDs)
+        try container.encode(gameKeys, forKey: .gameKeys)
+        try container.encode(sortOrder, forKey: .sortOrder)
+    }
     
     // Derived color
     var color: Color {

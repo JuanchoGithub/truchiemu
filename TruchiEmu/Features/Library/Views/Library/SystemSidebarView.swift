@@ -437,7 +437,7 @@ onSystemAction: system != nil ? { sys, action, targetID in
     private func categoryRow(category: GameCategory) -> some View {
         let count = searchText.isEmpty
             ? categoryManager.gamesInCategory(categoryID: category.id, fromROMs: library.roms).count
-            : searchMatchedROMs.filter { category.gameIDs.contains($0.id) && !$0.isHidden }.count
+            : searchMatchedROMs.filter { category.contains($0) && !$0.isHidden }.count
         let isSelected = selectedFilter.id == LibraryFilter.category(category.id).id
         let isGamepadFocusedRow = gamepadNav.isGamepadActive && gamepadNav.activeZone == .sidebar && gamepadFocusedFilter?.id == LibraryFilter.category(category.id).id
 
@@ -456,8 +456,13 @@ onSystemAction: system != nil ? { sys, action, targetID in
     private func handleDropOnCategory(items: [NSItemProvider], categoryID: String) -> Bool {
         // Use the shared drag state to get the dragged game IDs
         guard !dragState.draggedGameIDs.isEmpty else { return false }
-        
-        categoryManager.addGamesToCategory(gameIDs: dragState.draggedGameIDs, categoryID: categoryID)
+
+        let draggedROMs = library.roms.filter { dragState.draggedGameIDs.contains($0.id) }
+        if draggedROMs.isEmpty {
+            categoryManager.addGamesToCategory(gameIDs: dragState.draggedGameIDs, categoryID: categoryID)
+        } else {
+            categoryManager.addRomsToCategory(draggedROMs, categoryID: categoryID)
+        }
         dragState.endDrag()
         return true
     }

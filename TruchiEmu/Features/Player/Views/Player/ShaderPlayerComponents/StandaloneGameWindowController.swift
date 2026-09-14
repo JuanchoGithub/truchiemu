@@ -1150,8 +1150,8 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
             let shouldAutoLoad = effectiveShouldAutoLoad()
             if shouldAutoLoad && !isDolphinCore() {
                 let systemID = rom.systemID ?? "default"
-                let gameName = "\(rom.displayName)__\(rom.id.uuidString.prefix(8))"
-                let allSlots = runner?.saveManager.allSlotInfo(gameName: gameName, systemID: systemID) ?? []
+                let candidates = rom.stateKeyCandidates
+                let allSlots = runner?.saveManager.mergedSlotInfo(primaryKey: candidates.primary, fallbackKeys: candidates.fallbacks, systemID: systemID) ?? []
                 willLoadState = allSlots.contains { $0.exists }
             } else {
                 willLoadState = false
@@ -1226,7 +1226,10 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
             guard let self = self, let runner = self.runner else { return }
             let systemID = rom.systemID ?? "default"
-            let gameName = "\(rom.displayName)__\(rom.id.uuidString.prefix(8))"
+            // Stable key for writes. Fallback keys cover pre-migration saves
+            // and the stem fallback from before the hash job finished.
+            let gameName = rom.stableFileToken
+            let fallbackKeys = rom.stateKeyCandidates.fallbacks
             self.didLoadSaveState = false
 
             var loadedSlot: Int?
@@ -1237,8 +1240,11 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
                 self.pendingProgressiveVersion = nil
 
                 if let progVersion = progVersion {
-                    let stateURL = runner.saveManager.progressiveStatePath(gameName: gameName, systemID: systemID, slot: slotToLoad, version: progVersion)
-                    if FileManager.default.fileExists(atPath: stateURL.path) {
+                    // Try primary key first, then legacy keys (pre-migration saves).
+                    let stateURL = ([gameName] + fallbackKeys)
+                        .map { runner.saveManager.progressiveStatePath(gameName: $0, systemID: systemID, slot: slotToLoad, version: progVersion) }
+                        .first(where: { FileManager.default.fileExists(atPath: $0.path) })
+                    if let stateURL = stateURL {
                         LoggerService.info(category: "SaveState", "Found progressive save #\(progVersion) at: \(stateURL.path)")
                         let success = runner.loadState(from: stateURL)
                         if success {
@@ -1252,22 +1258,27 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
                         }
                     } else {
                         #if LOG_DEBUG
-                        LoggerService.debug(category: "SaveState", "No save state found at: \(stateURL.path)")
+                        LoggerService.debug(category: "SaveState", "No save state found for slot \(slotToLoad) v\(progVersion)")
                         #endif
                     }
                 } else {
-                    let versions = runner.saveManager.progressiveSlotVersions(gameName: gameName, systemID: systemID, slot: slotToLoad)
-                    if !versions.isEmpty {
-                        var newestVersion = versions[0]
-                        var newestDate: Date? = nil
+                    // Newest progressive version across primary + legacy keys.
+                    var newestVersion: Int?
+                    var newestKey = gameName
+                    var newestDate: Date? = nil
+                    for key in [gameName] + fallbackKeys {
+                        let versions = runner.saveManager.progressiveSlotVersions(gameName: key, systemID: systemID, slot: slotToLoad)
                         for v in versions {
-                            let info = runner.saveManager.progressiveSlotInfo(gameName: gameName, systemID: systemID, slot: slotToLoad, version: v)
+                            let info = runner.saveManager.progressiveSlotInfo(gameName: key, systemID: systemID, slot: slotToLoad, version: v)
                             if info.exists, let date = info.modificationDate, date > (newestDate ?? .distantPast) {
                                 newestDate = date
                                 newestVersion = v
+                                newestKey = key
                             }
                         }
-                        let stateURL = runner.saveManager.progressiveStatePath(gameName: gameName, systemID: systemID, slot: slotToLoad, version: newestVersion)
+                    }
+                    if let newestVersion {
+                        let stateURL = runner.saveManager.progressiveStatePath(gameName: newestKey, systemID: systemID, slot: slotToLoad, version: newestVersion)
                         let success = runner.loadState(from: stateURL)
                         if success {
                             self.didLoadSaveState = true
@@ -1292,22 +1303,26 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
                         var mostRecentSlot: Int?
                         var mostRecentDate: Date = .distantPast
 
-                        let allSlots = runner.saveManager.allSlotInfo(gameName: gameName, systemID: systemID)
+                        let allSlots = runner.saveManager.mergedSlotInfo(primaryKey: gameName, fallbackKeys: fallbackKeys, systemID: systemID)
                         for slotInfo in allSlots {
-                            let versions = runner.saveManager.progressiveSlotVersions(gameName: gameName, systemID: systemID, slot: slotInfo.id)
-                            for v in versions {
-                                let info = runner.saveManager.progressiveSlotInfo(gameName: gameName, systemID: systemID, slot: slotInfo.id, version: v)
-                                if info.exists, let date = info.modificationDate, date > mostRecentDate {
+                            for key in [gameName] + fallbackKeys {
+                                let versions = runner.saveManager.progressiveSlotVersions(gameName: key, systemID: systemID, slot: slotInfo.id)
+                                for v in versions {
+                                    let info = runner.saveManager.progressiveSlotInfo(gameName: key, systemID: systemID, slot: slotInfo.id, version: v)
+                                    if info.exists, let date = info.modificationDate, date > mostRecentDate {
+                                        mostRecentDate = date
+                                        mostRecentSlot = slotInfo.id
+                                        mostRecentURL = runner.saveManager.progressiveStatePath(gameName: key, systemID: systemID, slot: slotInfo.id, version: v)
+                                    }
+                                }
+                                // Fallback: check base file if no progressive versions
+                                let baseURL = runner.saveManager.statePath(gameName: key, systemID: systemID, slot: slotInfo.id)
+                                if let attrs = try? FileManager.default.attributesOfItem(atPath: baseURL.path),
+                                   let date = attrs[.modificationDate] as? Date, date > mostRecentDate {
                                     mostRecentDate = date
                                     mostRecentSlot = slotInfo.id
-                                    mostRecentURL = runner.saveManager.progressiveStatePath(gameName: gameName, systemID: systemID, slot: slotInfo.id, version: v)
+                                    mostRecentURL = baseURL
                                 }
-                            }
-                            // Fallback: check base file if no progressive versions
-                            if slotInfo.exists, let date = slotInfo.modificationDate, date > mostRecentDate {
-                                mostRecentDate = date
-                                mostRecentSlot = slotInfo.id
-                                mostRecentURL = runner.saveManager.statePath(gameName: gameName, systemID: systemID, slot: slotInfo.id)
                             }
                         }
 

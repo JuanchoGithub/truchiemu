@@ -5,6 +5,7 @@ struct SavesSettingsView: View {
     @Environment(\.colorScheme) private var colorScheme
     @ObservedObject private var loc = LocalizationManager.shared
     @ObservedObject private var directoryManager = SaveDirectoryManager.shared
+    @EnvironmentObject var library: ROMLibrary
 
     @State private var progressiveSaves = false
     @State private var autoSlotCount = 3
@@ -13,6 +14,8 @@ struct SavesSettingsView: View {
     @State private var compressSaveStates = true
     @State private var showSaveManager = false
     @State private var contentLoaded = false
+    @State private var isRepairing = false
+    @State private var repairResult: String?
 
     @State private var saveFileSize: Int64 = 0
     @State private var saveStateSize: Int64 = 0
@@ -186,6 +189,33 @@ struct SavesSettingsView: View {
             .id("section-saveManager")
         }
 
+        if (!isSearching || matchesSearch("Repair relink orphan lost missing states crash")) && sectionVisible("section-saveRepair") {
+            Section {
+                Text(loc.localized("settings.saves.repairDescription"))
+                    .font(.caption)
+                    .foregroundStyle(AppColors.textSecondary(colorScheme))
+                Button {
+                    runRepair()
+                } label: {
+                    Label(
+                        loc.localized(isRepairing ? "settings.saves.repairRunning" : "settings.saves.repairButton"),
+                        systemImage: "wrench.and.screwdriver"
+                    )
+                }
+                .buttonStyle(.bordered)
+                .controlSize(.small)
+                .disabled(isRepairing)
+                if let repairResult {
+                    Text(repairResult)
+                        .font(.caption)
+                        .foregroundStyle(AppColors.textSecondary(colorScheme))
+                }
+            } header: {
+                Label(loc.localized("settings.saves.repair"), systemImage: "arrow.triangle.2.circlepath")
+            }
+            .id("section-saveRepair")
+        }
+
         if isSearching && !hasMatchingSections {
             Section {
                 Text(loc.localized("boxArt.noMatchingSettings"))
@@ -269,7 +299,54 @@ struct SavesSettingsView: View {
         matchesSearch("Progressive saves auto slot rotation version count") ||
         matchesSearch("Auto save on exit auto-load compress states LZ4") ||
         matchesSearch("storage path folder directory disk size stats SRAM location migration") ||
+        matchesSearch("Repair relink orphan lost missing states crash") ||
         matchesSearch("Save manager browse delete manage review")
+    }
+
+    // Copies orphan save-state files (pre-migration keys, or keys from
+    // before a database loss and re-add) to current stable keys.
+    // Sources are kept as backup. The result names what was relinked and,
+    // importantly, what is still unlinked (no game claims those files,
+    // usually because the ROM is no longer in the library).
+    private func runRepair() {
+        isRepairing = true
+        repairResult = nil
+        Task { @MainActor in
+            let refs = library.roms.map { $0.stableRomRef }
+            let report = SaveStateReconciler.shared.relink(roms: refs)
+            // Only files no game claims. Legacy sources of rescued games
+            // stay on disk as backup and are not reported here.
+            let leftover = SaveStateReconciler.shared.unlinked(roms: refs)
+            var parts: [String] = []
+            if report.filesCopied > 0 {
+                parts.append(String(
+                    format: loc.localized("settings.saves.repairDone"),
+                    report.filesCopied,
+                    report.gamesFixed,
+                    report.skipped
+                ))
+            }
+            if leftover.isEmpty {
+                if parts.isEmpty {
+                    parts.append(loc.localized("settings.saves.repairNone"))
+                }
+            } else {
+                var names = leftover.prefix(5).map { "\($0.systemID)/\($0.displayName)" }.joined(separator: ", ")
+                if leftover.count > 5 {
+                    names += " " + String(
+                        format: loc.localized("settings.saves.repairUnlinkedMore"),
+                        leftover.count - 5
+                    )
+                }
+                parts.append(String(
+                    format: loc.localized("settings.saves.repairUnlinked"),
+                    leftover.count,
+                    names
+                ))
+            }
+            repairResult = parts.joined(separator: " ")
+            isRepairing = false
+        }
     }
 
     private func pickSaveDirectory() {

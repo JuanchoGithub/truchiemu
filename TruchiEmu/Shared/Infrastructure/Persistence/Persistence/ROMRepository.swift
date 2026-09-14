@@ -97,17 +97,30 @@ final class ROMRepository {
         // ROMs extracted from archives share the archive path but differ by
         // innerROMPath, so include innerROMPath in the key to keep them distinct.
         var existingByPath: [String: ROMEntry] = [:]
+        var existingByStableKey: [String: ROMEntry] = [:]
         for entry in existingEntries {
             let key = entry.path + (entry.innerROMPath ?? "")
             existingByPath[key] = entry
+            // Secondary map: same game at a new path (moved/renamed file)
+            // keeps its database row and per-game fields via the stable key.
+            if let stable = entry.stableKey, !stable.isEmpty {
+                existingByStableKey[stable] = entry
+            }
         }
 
         // 3. Upsert all ROMs using the in-memory map (no additional queries).
         // When the path matches an existing entry, reuse its id so SwiftData
         // performs an UPDATE instead of creating a duplicate INSERT.
+        // When only the stable key matches, the file moved: reuse the row so
+        // favorites, playtime and core choice survive the move.
         for var rom in roms {
             let key = rom.path.path + (rom.innerROMPath ?? "")
             if let existing = existingByPath[key] {
+                rom.id = existing.id
+                // Backfill rows created before stableKey existed.
+                if rom.stableKey == nil { rom.stableKey = existing.stableKey }
+                updateROMEntry(existing, from: rom)
+            } else if let existing = existingByStableKey[rom.stableIdentityKey] {
                 rom.id = existing.id
                 updateROMEntry(existing, from: rom)
             } else {
@@ -388,6 +401,8 @@ final class ROMRepository {
         )
         rom.mameRomType = entry.mameRomType
         rom.innerROMPath = entry.innerROMPath
+        rom.md5 = entry.md5
+        rom.stableKey = entry.stableKey
         rom.boxArtRequestedRegion = entry.boxArtRequestedRegion
         rom.boxArtRegionTag = entry.boxArtRegionTag
         rom.boxArtFetchedAt = entry.boxArtFetchedAt
@@ -435,6 +450,8 @@ final class ROMRepository {
             dateAdded: rom.dateAdded,
             category: rom.category,
             crc32: rom.crc32,
+            md5: rom.md5,
+            stableKey: rom.stableIdentityKey,
             mameRomType: rom.mameRomType,
             thumbnailLookupSystemID: rom.thumbnailLookupSystemID,
             screenshotPathsJSON: screenshotPathsJSON,
@@ -469,6 +486,11 @@ final class ROMRepository {
         if entry.mameRomType != rom.mameRomType { entry.mameRomType = rom.mameRomType }
         if entry.category != rom.category { entry.category = rom.category }
         if entry.crc32 != rom.crc32 { entry.crc32 = rom.crc32 }
+        if entry.md5 != rom.md5 { entry.md5 = rom.md5 }
+        // Promote the stored key from stem fallback to hash once known.
+        // Never clear an existing key back to nil.
+        let stable = rom.stableIdentityKey
+        if entry.stableKey != stable { entry.stableKey = stable }
         if entry.thumbnailLookupSystemID != rom.thumbnailLookupSystemID { entry.thumbnailLookupSystemID = rom.thumbnailLookupSystemID }
         if entry.raGameId != rom.raGameId { entry.raGameId = rom.raGameId }
         if entry.raMatchStatus != rom.raMatchStatus { entry.raMatchStatus = rom.raMatchStatus }

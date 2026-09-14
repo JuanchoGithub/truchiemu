@@ -1000,24 +1000,25 @@ viewModel.updateFilters(
             .separator
         ]
         for category in categoryManager.categories {
-            let isInCategory = category.gameIDs.contains(rom.id)
+            let isInCategory = category.contains(rom)
             if isInCategory {
                 items.append(.init(title: "✓ \(category.name)") { [self] in
-                    categoryManager.removeGamesFromCategory(gameIDs: [rom.id], categoryID: category.id)
+                    categoryManager.removeRomsFromCategory([rom], categoryID: category.id)
                 })
             } else {
                 items.append(.init(title: category.name) { [self] in
-                    categoryManager.addGamesToCategory(gameIDs: [rom.id], categoryID: category.id)
+                    categoryManager.addRomsToCategory([rom], categoryID: category.id)
                 })
             }
         }
+        let targetROMs = library.roms.filter { targetIDsSet.contains($0.id) }
         let categoriesForTargetGames = categoryManager.categories.filter { category in
-            category.gameIDs.contains { targetIDsSet.contains($0) }
+            targetROMs.contains { category.contains($0) }
         }
         if !categoriesForTargetGames.isEmpty {
             items.append(.init(title: loc.localized("contextMenu.removeFromAllCategories")) { [self] in
                 for category in categoriesForTargetGames {
-                    categoryManager.removeGamesFromCategory(gameIDs: targetIDs, categoryID: category.id)
+                    categoryManager.removeRomsFromCategory(targetROMs, categoryID: category.id)
                 }
             })
         }
@@ -1643,12 +1644,13 @@ viewModel.updateFilters(
                     }
 
                     ForEach(categoryManager.categories) { category in
-                        let isInCategory = category.gameIDs.contains(rom.id)
+                        let isInCategory = category.contains(rom)
                         Button {
+                            let menuTargetROMs = library.roms.filter { targetIDsSet.contains($0.id) }
                             if isInCategory {
-                                categoryManager.removeGamesFromCategory(gameIDs: targetIDs, categoryID: category.id)
+                                categoryManager.removeRomsFromCategory(menuTargetROMs, categoryID: category.id)
                             } else {
-                                categoryManager.addGamesToCategory(gameIDs: targetIDs, categoryID: category.id)
+                                categoryManager.addRomsToCategory(menuTargetROMs, categoryID: category.id)
                             }
                         } label: {
                             HStack {
@@ -1668,13 +1670,14 @@ viewModel.updateFilters(
                     }
 
                     let categoriesForTargetGames = categoryManager.categories.filter { category in
-                        category.gameIDs.contains { targetIDsSet.contains($0) }
+                        library.roms.contains { targetIDsSet.contains($0.id) && category.contains($0) }
                     }
                     if !categoriesForTargetGames.isEmpty {
                         Divider()
                         Button(role: .destructive) {
+                            let menuTargetROMs = library.roms.filter { targetIDsSet.contains($0.id) }
                             for category in categoriesForTargetGames {
-                                categoryManager.removeGamesFromCategory(gameIDs: targetIDs, categoryID: category.id)
+                                categoryManager.removeRomsFromCategory(menuTargetROMs, categoryID: category.id)
                             }
                         } label: {
                             Label(loc.localized("contextMenu.removeFromAllCategories"), systemImage: "folder.badge.minus")

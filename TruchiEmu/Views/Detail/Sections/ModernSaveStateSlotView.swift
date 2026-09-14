@@ -132,9 +132,10 @@ struct ModernSaveStateSlotView: View {
                 }
                 Button(action: {
                     if slot.id >= 0 {
-                        let gameKey = "\(rom.displayName)__\(rom.id.uuidString.prefix(8))"
-                        try? saveStateManager.deleteSlotWithProgressives(
-                            gameName: gameKey,
+                        let candidates = rom.stateKeyCandidates
+                        saveStateManager.deleteSlotEverywhere(
+                            primaryKey: candidates.primary,
+                            fallbackKeys: candidates.fallbacks,
                             systemID: rom.systemID ?? "",
                             slot: slot.id
                         )
@@ -147,8 +148,10 @@ struct ModernSaveStateSlotView: View {
         }
         .task {
             if slot.exists {
+                let candidates = rom.stateKeyCandidates
                 thumbnail = saveStateManager.loadThumbnail(
-                    gameName: "\(rom.displayName)__\(rom.id.uuidString.prefix(8))",
+                    primaryKey: candidates.primary,
+                    fallbackKeys: candidates.fallbacks,
                     systemID: rom.systemID ?? "",
                     slot: slot.id
                 )

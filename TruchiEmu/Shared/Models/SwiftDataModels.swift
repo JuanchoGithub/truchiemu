@@ -25,6 +25,9 @@ final class ROMEntry {
     var category: String
     var crc32: String?
     var md5: String?
+    // Stable identity across database loss and re-add (hash first, filename
+    // stem fallback). Optional so existing stores migrate cleanly with nil.
+    var stableKey: String?
     var thumbnailLookupSystemID: String?
     var screenshotPathsJSON: String?
     var settingsJSON: String?
@@ -75,6 +78,7 @@ final class ROMEntry {
         category: String = "game",
         crc32: String? = nil,
         md5: String? = nil,
+        stableKey: String? = nil,
         mameRomType: String? = nil,
         thumbnailLookupSystemID: String? = nil,
         screenshotPathsJSON: String? = nil,
@@ -111,6 +115,7 @@ final class ROMEntry {
         self.crc32 = crc32
         self.mameRomType = mameRomType
         self.md5 = md5
+        self.stableKey = stableKey
         self.thumbnailLookupSystemID = thumbnailLookupSystemID
         self.screenshotPathsJSON = screenshotPathsJSON
         self.settingsJSON = settingsJSON

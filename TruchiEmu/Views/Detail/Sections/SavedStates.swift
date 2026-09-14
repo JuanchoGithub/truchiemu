@@ -331,9 +331,9 @@ private struct ProgressiveThumbnailView: View {
     @ObservedObject private var loc = LocalizationManager.shared
 
     var body: some View {
-        let gameName = "\(rom.displayName)__\(rom.id.uuidString.prefix(8))"
+        let candidates = rom.stateKeyCandidates
         let systemID = rom.systemID ?? ""
-        let thumb = saveStateManager.loadProgressiveThumbnail(gameName: gameName, systemID: systemID, slot: slotID, version: version)
+        let thumb = saveStateManager.loadProgressiveThumbnail(primaryKey: candidates.primary, fallbackKeys: candidates.fallbacks, systemID: systemID, slot: slotID, version: version)
         ZStack {
             if let thumb = thumb {
                 Image(nsImage: thumb)
@@ -377,8 +377,8 @@ private struct ProgressiveThumbnailView: View {
                 }
             }
             Button(action: {
-                let gameKey = "\(rom.displayName)__\(rom.id.uuidString.prefix(8))"
-                try? saveStateManager.deleteProgressiveState(gameName: gameKey, systemID: rom.systemID ?? "", slot: slotID, version: version)
+                let candidates = rom.stateKeyCandidates
+                saveStateManager.deleteProgressiveEverywhere(primaryKey: candidates.primary, fallbackKeys: candidates.fallbacks, systemID: rom.systemID ?? "", slot: slotID, version: version)
                 onDelete()
             }) {
                 Label(loc.localized("saveState.delete"), systemImage: "trash")

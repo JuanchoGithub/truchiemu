@@ -207,6 +207,10 @@ class ROMLibrary: ObservableObject {
         }
         repository.saveROMs(romsToSave)
 
+        // External backup of per-game fields (throttled). Restores
+        // favorites, playtime and core choice after a database loss.
+        LibraryBackupService.backupGames(romsToSave)
+
         // Update games.xml for modified ROMs. Group by containing folder so each
         // folder's XML is rewritten ONCE with all its ROMs, instead of once per
         // ROM — the old per-ROM loop re-read + re-serialized the whole file for
@@ -506,17 +510,29 @@ let idsToPurge = orphans.map { $0.id }
         Task { @MainActor in
             BoxArtThumbnailService.shared.warmThumbnails(for: self.roms)
         }
+
+        // 9. Relink orphan save states left by a database loss and re-add.
+        // Throttled to once per day, skipped while a game runs.
+        SaveStateReconciler.shared.autoRelinkIfNeeded(roms: self.roms.map { $0.stableRomRef })
     }
 
     private func processNewROMs(_ scannedROMs: [ROM], existingROMPaths: Set<String>) -> [ROM] {
         let newROMs = scannedROMs.filter { !existingROMPaths.contains($0.path.path) }
+        // Per-game backup (favorites, playtime, core choice) from before a
+        // database loss. Loaded once per scan; applied to new ROMs only.
+        let backupGames = LibraryBackupService.readPayload()?.games ?? [:]
         var processedROMs: [ROM] = []
         for var rom in newROMs {
             if rom.systemID == "mame" {
                 self.applyMAMEIdentificationInline(to: &rom, url: rom.path)
             }
             if !rom.isBios && !rom.isHidden {
-                processedROMs.append(LibraryMetadataStore.shared.mergedROM(rom))
+                var merged = LibraryMetadataStore.shared.mergedROM(rom)
+                LibraryBackupService.apply(to: &merged, from: backupGames)
+                if let custom = merged.customName {
+                    merged.displayName = GameNameFormatter.stripTags(custom)
+                }
+                processedROMs.append(merged)
             }
         }
         return processedROMs
@@ -1211,6 +1227,12 @@ let idsToPurge = orphans.map { $0.id }
         purgeOrphanedROMs()
         loadFileIndexFromStorage()
         updateCounts()
+
+        // One-shot stable-identity migration. Runs once ever, on the first
+        // launch after the update. Deferred so launch stays fast.
+        Task { @MainActor in
+            StableIdentityMigration.runIfNeeded(library: self)
+        }
 
         Task { @MainActor in
             // Eagerly pre-generate on-disk thumbnails for the existing library

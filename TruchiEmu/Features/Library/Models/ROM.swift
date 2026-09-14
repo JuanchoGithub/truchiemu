@@ -31,6 +31,10 @@ struct ROM: Identifiable, Codable, Hashable, Sendable {
     // No-Intro / identification CRC32 (hex), persisted in library metadata file.
     var crc32: String?
     var md5: String?
+    // Stable identity across database loss and re-add. The random `id`
+    // changes on every re-scan; this key (hash first, filename stem as
+    // fallback) does not. Nil for ROMs created before this field existed.
+    var stableKey: String? = nil
     // Libretro thumbnail CDN folder (`Nintendo - Game Boy` vs `GBC`) when identification matched a different DB (e.g. GB ROM in merged GB+GBC set).
     var thumbnailLookupSystemID: String?
     // Array of screenshot image paths for the game
@@ -217,6 +221,80 @@ struct ROM: Identifiable, Codable, Hashable, Sendable {
             return "\(path.path)!\(inner)"
         }
         return path.path
+    }
+
+    // MARK: - Stable Identity (survives database loss)
+
+    // Effective filename stem even when refreshDerivedFields() never ran.
+    var effectiveFilenameStem: String {
+        if !filenameWithoutExtension.isEmpty { return filenameWithoutExtension }
+        if let inner = innerROMPath, !inner.isEmpty {
+            return URL(fileURLWithPath: inner)
+                .deletingPathExtension().lastPathComponent.lowercased()
+        }
+        return path.deletingPathExtension().lastPathComponent.lowercased()
+    }
+
+    // File-safe token for save-state filenames. Hash first, stem fallback.
+    var stableFileToken: String {
+        StableGameIdentity.fileToken(
+            systemID: systemID,
+            crc32: crc32,
+            md5: md5,
+            filenameWithoutExtension: effectiveFilenameStem,
+            innerROMPath: innerROMPath
+        )
+    }
+
+    // Stem-only token. Used as read fallback before the hash job finishes.
+    var stableStemToken: String {
+        StableGameIdentity.stemToken(
+            filenameWithoutExtension: effectiveFilenameStem,
+            innerROMPath: innerROMPath
+        )
+    }
+
+    // Full key for database-external stores (backup file, categories).
+    var stableIdentityKey: String {
+        stableKey ?? StableGameIdentity.stableKey(
+            systemID: systemID,
+            crc32: crc32,
+            md5: md5,
+            filenameWithoutExtension: effectiveFilenameStem,
+            innerROMPath: innerROMPath
+        )
+    }
+
+    // Legacy save-state key ("<displayName>__<uuid8>"). Read fallback only.
+    var legacyStateKey: String {
+        StableGameIdentity.legacyKey(displayName: displayName, id: id)
+    }
+
+    // Save-state read candidates. Writes use `primary`. Reads try `primary`
+    // first, then `fallbacks` (stem token before the hash job finishes, plus
+    // the legacy key from before stable identity).
+    var stateKeyCandidates: (primary: String, fallbacks: [String]) {
+        let primary = stableFileToken
+        var fallbacks: [String] = []
+        if stableStemToken != primary { fallbacks.append(stableStemToken) }
+        let legacy = legacyStateKey
+        if legacy != primary { fallbacks.append(legacy) }
+        return (primary, fallbacks)
+    }
+
+    // Snapshot for the save-state reconciler (orphan repair after re-add).
+    var stableRomRef: StableRomRef {
+        StableRomRef(
+            systemID: systemID ?? "default",
+            displayName: displayName,
+            primaryToken: stableFileToken,
+            stemToken: stableStemToken,
+            legacyToken: legacyStateKey,
+            folderName: path.deletingLastPathComponent().lastPathComponent.lowercased(),
+            fileStem: effectiveFilenameStem,
+            pathComponents: path.pathComponents.map { $0.lowercased() },
+            fileExtension: path.pathExtension.lowercased()
+        )
     }
 
     var boxArtIsExactRegion: Bool {

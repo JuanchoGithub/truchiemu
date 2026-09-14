@@ -770,15 +770,14 @@ final class TVModeViewModel: ObservableObject {
     }
 
     /// Recomputes `mostRecentSaveSlot` for the given ROM so the detail view
-    /// can surface a "Continue" affordance. Matches `GameDetailView`'s
-    /// `loadMostRecentSaveState()` formatting — the game name encodes the
-    /// running key that `SaveStateManager` keys on (`displayName__<id prefix>`).
+    /// can surface a "Continue" affordance. Reads merge the stable save-state
+    /// key with legacy keys, so pre-migration saves stay visible.
     /// Hard-core gate isn't checked here because this only displays whether a
     /// save file exists; the load attempt itself is gated by `HardcoreModeManager`
     /// at launch time.
     private func refreshMostRecentSaveSlot(for rom: ROM) {
-        let gameName = "\(rom.displayName)__\(rom.id.uuidString.prefix(8))"
+        let candidates = rom.stateKeyCandidates
         let systemID = rom.systemID ?? ""
-        mostRecentSaveSlot = saveStateManager.mostRecentSaveState(gameName: gameName, systemID: systemID)
+        mostRecentSaveSlot = saveStateManager.mergedMostRecentSaveState(primaryKey: candidates.primary, fallbackKeys: candidates.fallbacks, systemID: systemID)
     }
 }

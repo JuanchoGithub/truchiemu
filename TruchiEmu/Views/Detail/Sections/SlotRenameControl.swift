@@ -27,8 +27,10 @@ struct SlotRenameControl: View {
 
     @State private var isEditing = false
 
+    // Slot names are written under the stable key. Reads merge legacy keys
+    // through the slot list, so the rename lands where future reads find it.
     private var gameKey: String {
-        "\(rom.displayName)__\(rom.id.uuidString.prefix(8))"
+        rom.stableFileToken
     }
 
     @ViewBuilder

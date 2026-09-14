@@ -628,6 +628,134 @@ func gameSaveSet(gameName: String, systemID: String) -> GameSaveSet {
     return GameSaveSet(gameName: gameName, systemID: systemID, safeName: safeName, baseFiles: baseFiles, progressiveFiles: progressiveFiles, slotNames: slotNames)
 }
 
+    // MARK: - Stable-Key Fallback Reads
+
+    // Builds a merged snapshot across the primary stable key plus legacy
+    // fallback keys (stem token, pre-migration "<displayName>__<uuid8>" key).
+    // Writes always use the primary key. Reads merge so states saved under
+    // an old key stay visible after a database loss and re-add.
+    // Priority: primary key wins per slot, fallbacks fill gaps.
+    func mergedSaveSet(primaryKey: String, fallbackKeys: [String], systemID: String) -> GameSaveSet {
+        let primary = gameSaveSet(gameName: primaryKey, systemID: systemID)
+        var base = primary.baseFiles
+        var progressive = primary.progressiveFiles
+        var names = primary.slotNames
+        for key in fallbackKeys where key != primaryKey {
+            let set = gameSaveSet(gameName: key, systemID: systemID)
+            for (slot, info) in set.baseFiles where base[slot] == nil {
+                base[slot] = info
+            }
+            for (slot, versions) in set.progressiveFiles {
+                if progressive[slot] == nil {
+                    progressive[slot] = versions
+                } else {
+                    for (v, info) in versions where progressive[slot]?[v] == nil {
+                        progressive[slot]?[v] = info
+                    }
+                }
+            }
+            for (slot, name) in set.slotNames where names[slot] == nil {
+                names[slot] = name
+            }
+        }
+        return GameSaveSet(
+            gameName: primaryKey,
+            systemID: systemID,
+            safeName: safeGameStateName(primaryKey),
+            baseFiles: base,
+            progressiveFiles: progressive,
+            slotNames: names
+        )
+    }
+
+    // Slot list across primary + fallback keys. See mergedSaveSet(_:fallbackKeys:systemID:).
+    func mergedSlotInfo(primaryKey: String, fallbackKeys: [String], systemID: String) -> [SlotInfo] {
+        mergedSaveSet(primaryKey: primaryKey, fallbackKeys: fallbackKeys, systemID: systemID).slotList
+    }
+
+    // Newest save across primary + fallback keys. Powers "Continue" after re-add.
+    func mergedMostRecentSaveState(primaryKey: String, fallbackKeys: [String], systemID: String) -> SlotInfo? {
+        mergedSaveSet(primaryKey: primaryKey, fallbackKeys: fallbackKeys, systemID: systemID).mostRecentSlot
+    }
+
+    // First existing state URL across keys: newest progressive version when
+    // present, else the base file. Returns the key that owned the hit.
+    func existingStateURL(primaryKey: String, fallbackKeys: [String], systemID: String, slot: Int) -> (URL, String)? {
+        for key in [primaryKey] + fallbackKeys.filter({ $0 != primaryKey }) {
+            let versions = progressiveSlotVersions(gameName: key, systemID: systemID, slot: slot)
+            if let newest = newestProgressiveVersion(gameName: key, systemID: systemID, slot: slot, versions: versions) {
+                return (progressiveStatePath(gameName: key, systemID: systemID, slot: slot, version: newest), key)
+            }
+            let url = statePath(gameName: key, systemID: systemID, slot: slot)
+            if FileManager.default.fileExists(atPath: url.path) {
+                return (url, key)
+            }
+        }
+        return nil
+    }
+
+    // Newest progressive version by modification date. Nil when no version exists.
+    private func newestProgressiveVersion(gameName: String, systemID: String, slot: Int, versions: [Int]) -> Int? {
+        guard !versions.isEmpty else { return nil }
+        var best = versions[0]
+        var bestDate: Date? = nil
+        for v in versions {
+            let info = progressiveSlotInfo(gameName: gameName, systemID: systemID, slot: slot, version: v)
+            if info.exists, let date = info.modificationDate, date > (bestDate ?? .distantPast) {
+                bestDate = date
+                best = v
+            }
+        }
+        return best
+    }
+
+    // Deletes a slot (base, progressive versions, thumbnails, sidecar name)
+    // under the primary key AND every fallback key. Used by delete UI, which
+    // shows merged slots that may be backed by legacy files.
+    func deleteSlotEverywhere(primaryKey: String, fallbackKeys: [String], systemID: String, slot: Int) {
+        for key in [primaryKey] + fallbackKeys.filter({ $0 != primaryKey }) {
+            try? deleteSlotWithProgressives(gameName: key, systemID: systemID, slot: slot)
+        }
+    }
+
+    // Deletes one progressive version under the primary key AND every
+    // fallback key. Used by delete UI, which shows merged slots that may be
+    // backed by legacy files.
+    func deleteProgressiveEverywhere(primaryKey: String, fallbackKeys: [String], systemID: String, slot: Int, version: Int) {
+        for key in [primaryKey] + fallbackKeys.filter({ $0 != primaryKey }) {
+            try? deleteProgressiveState(gameName: key, systemID: systemID, slot: slot, version: version)
+        }
+    }
+    func loadThumbnail(primaryKey: String, fallbackKeys: [String], systemID: String, slot: Int) -> NSImage? {
+        for key in [primaryKey] + fallbackKeys.filter({ $0 != primaryKey }) {
+            if let image = loadThumbnail(gameName: key, systemID: systemID, slot: slot) {
+                return image
+            }
+        }
+        return nil
+    }
+
+    // Progressive thumbnail across primary + fallback keys. First hit wins.
+    func loadProgressiveThumbnail(primaryKey: String, fallbackKeys: [String], systemID: String, slot: Int, version: Int) -> NSImage? {
+        for key in [primaryKey] + fallbackKeys.filter({ $0 != primaryKey }) {
+            if let image = loadProgressiveThumbnail(gameName: key, systemID: systemID, slot: slot, version: version) {
+                return image
+            }
+        }
+        return nil
+    }
+
+    // Slot display name across primary + fallback keys. First hit wins.
+    // Writes always use the primary key via setSlotName(gameName:...).
+    func loadSlotName(primaryKey: String, fallbackKeys: [String], systemID: String, slot: Int) -> String? {
+        for key in [primaryKey] + fallbackKeys.filter({ $0 != primaryKey }) {
+            if let name = loadSlotName(gameName: key, systemID: systemID, slot: slot) {
+                return name
+            }
+        }
+        return nil
+    }
+
 // Parses a state filename into (slot, version). Slot -1 is autosave.
 // Handles "<safe>__autosave", "<safe>__slot_N", "<safe>__autosave__vN" and
 // "<safe>__slot_N__vN". Returns nil for thumbnails/other files.

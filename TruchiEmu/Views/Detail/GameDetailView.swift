@@ -452,18 +452,18 @@ struct GameDetailView: View {
     }
 
     func loadSlotInfo() {
-        let gameName = "\(currentROM.displayName)__\(currentROM.id.uuidString.prefix(8))"
+        let candidates = currentROM.stateKeyCandidates
         let systemID = currentROM.systemID ?? ""
-        let set = saveStateManager.gameSaveSet(gameName: gameName, systemID: systemID)
+        let set = saveStateManager.mergedSaveSet(primaryKey: candidates.primary, fallbackKeys: candidates.fallbacks, systemID: systemID)
         slotInfoList = set.slotList
         progressiveSlots = set.progressiveSlotList
         mostRecentSaveSlot = set.mostRecentSlot
     }
 
     func loadMostRecentSaveState() {
-        let gameName = "\(currentROM.displayName)__\(currentROM.id.uuidString.prefix(8))"
+        let candidates = currentROM.stateKeyCandidates
         let systemID = currentROM.systemID ?? ""
-        mostRecentSaveSlot = saveStateManager.gameSaveSet(gameName: gameName, systemID: systemID).mostRecentSlot
+        mostRecentSaveSlot = saveStateManager.mergedMostRecentSaveState(primaryKey: candidates.primary, fallbackKeys: candidates.fallbacks, systemID: systemID)
     }
 
     func loadTitleScreen() {
