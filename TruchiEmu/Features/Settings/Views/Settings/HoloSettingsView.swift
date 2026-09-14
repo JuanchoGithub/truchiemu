@@ -326,7 +326,7 @@ struct HoloSettingsView: View {
                     }
                 }
 
-                if reverseColorMode == .rainbow {
+                if reverseColorMode == .rainbow || reverseColorMode == .random {
                     SettingsRow(
                         loc.localized("holo.reverse.rainbowIntensity"),
                         description: loc.localized("holo.reverse.rainbowIntensityDescription")

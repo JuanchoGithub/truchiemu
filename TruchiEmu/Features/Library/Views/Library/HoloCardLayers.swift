@@ -779,8 +779,13 @@ struct HoloFoilLayers: View, Equatable {
     /// soft-light glow, filtered and colour-dodged onto the art by the caller.
     @ViewBuilder
     private func reverseShine(w: CGFloat, h: CGFloat) -> some View {
-        let period = max(w, h) * 0.06
         let mode = settings.reverseColorMode
+        // Hue modes (rainbow, random) tile the foil denser so the sheen reads
+        // as fine texture instead of a broad wash. Measured: mask coverage
+        // holds flat down to 0.012, so 0.5x sits safely above any falloff.
+        // Solid/background keep the coarser etch.
+        let isHueMode = (mode == .rainbow || mode == .random)
+        let period = max(w, h) * 0.06 * (isHueMode ? 0.5 : 1.0)
         // The diagonal ray is offset along its own (-45°) axis as the pointer
         // moves, so the white band slides across the foil (its `background-
         // position` tracks the pointer in the source).
@@ -854,7 +859,7 @@ struct HoloFoilLayers: View, Equatable {
         .colorMultiply(Color(white: 0.8))
         .contrast(mode == .rainbow || mode == .random ? 1.5 : 2.0)
         .brightness(0.0)
-        .saturation(mode == .rainbow ? 3.0 : 1.0)
+        .saturation(mode == .rainbow || mode == .random ? 3.0 : 1.0)
         .frame(width: w * 2, height: h * 2)
     }
 
@@ -869,7 +874,7 @@ struct HoloFoilLayers: View, Equatable {
     private func foilLuminanceMask(period: CGFloat, w: CGFloat, h: CGFloat) -> some View {
         if settings.reverseTextureMode != .generated,
            let p = settings.reverseTexturePattern,
-           let m = HoloPatternStore.shared.tiledAlphaMask(for: p, size: NSSize(width: w * 2, height: h * 2), scale: settings.reverseTextureScale) {
+           let m = HoloPatternStore.shared.tiledAlphaMask(for: p, size: NSSize(width: w * 2, height: h * 2), scale: settings.reverseTextureScale * reverseEtchScaleFactor) {
             Image(nsImage: m)
                 .resizable()
                 .frame(width: w * 2, height: h * 2)
@@ -926,6 +931,17 @@ struct HoloFoilLayers: View, Equatable {
                      blue: 0.5 + 0.5 * Double(rgb[2]))
     }
 
+    /// Etch tile scale factor for the current colour mode. Hue modes tile at
+    /// half scale (finer repeat) so bundled etches read as texture, matching
+    /// the denser generated lattice. Callers must apply it to BOTH the foil
+    /// image and its luminance mask so the two stay aligned.
+    private var reverseEtchScaleFactor: CGFloat {
+        switch settings.reverseColorMode {
+        case .rainbow, .random: return 0.5
+        case .solid, .background: return 1.0
+        }
+    }
+
     /// Generated foil etch: a fine diamond lattice (two crossed repeating
     /// gradients multiplied). The foil is alpha-masked by its own luminance
     /// so the etched pattern's dark valleys fade to transparent and only the
@@ -950,12 +966,13 @@ struct HoloFoilLayers: View, Equatable {
 
         if !forceLattice,
            let p1 = settings.reverseTexturePattern,
-           let img1 = HoloPatternStore.shared.tiledImage(for: p1, size: NSSize(width: w * 2, height: h * 2), scale: settings.reverseTextureScale) {
-            if mode == .rainbow {
-                // Rainbow: show ONLY the luminance-gated hue. The dark etch
-                // areas (no hue) become fully transparent so the card art shows
-                // through — there is no metallic base to go dark/light. Bright
-                // texture areas light up in the rainbow hue, exactly as wanted.
+           let img1 = HoloPatternStore.shared.tiledImage(for: p1, size: NSSize(width: w * 2, height: h * 2), scale: settings.reverseTextureScale * reverseEtchScaleFactor) {
+            if mode == .rainbow || mode == .random {
+                // Rainbow / random: show ONLY the luminance-gated hue. The dark
+                // etch areas (no hue) become fully transparent so the card art
+                // shows through — there is no metallic base to go dark/light.
+                // Bright texture areas light up in the rainbow hue, exactly as
+                // wanted. Per-card variety comes from the per-card etch/scale.
                 rainbowHue(period: period, w: w, h: h)
             } else {
                 ZStack {
@@ -964,7 +981,7 @@ struct HoloFoilLayers: View, Equatable {
                         .frame(width: w * 2, height: h * 2)
                         .blendMode(.normal)
                     if let p2 = settings.reverseTexturePattern2,
-                       let img2 = HoloPatternStore.shared.tiledImage(for: p2, size: NSSize(width: w * 2, height: h * 2), scale: settings.reverseTextureScale2) {
+                       let img2 = HoloPatternStore.shared.tiledImage(for: p2, size: NSSize(width: w * 2, height: h * 2), scale: settings.reverseTextureScale2 * reverseEtchScaleFactor) {
                         Image(nsImage: img2)
                             .resizable()
                             .frame(width: w * 2, height: h * 2)
