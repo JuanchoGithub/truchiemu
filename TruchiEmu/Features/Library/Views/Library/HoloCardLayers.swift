@@ -337,9 +337,15 @@ struct HoloFoilContrastModifier: ViewModifier {
 
     func body(content: Content) -> some View {
         if revRainbow {
+            // Reverse rainbow shares the reverse no-blowout path (not the
+            // generic high-contrast one). Contrast 2.75 crushes the soft
+            // fringe of the foil mask to opaque white under colour-dodge, so
+            // the rainbow read as a solid wash instead of transparent paper.
+            // Contrast/saturation 1.0 keeps the fringe soft like solid, while
+            // the vivid hue comes from `reverseShine` itself.
             content
-                .contrast(2.75)
-                .saturation(0.65)
+                .contrast(1.0)
+                .saturation(1.0)
                 .brightness(-0.4 + pfc * 0.25)
         } else if isCosmos {
             // Cosmos is a live, pointer-tracking shine (`cosmosShine`): a bright
@@ -837,14 +843,17 @@ struct HoloFoilLayers: View, Equatable {
         }
         .compositingGroup()
         // source: filter: brightness(.55) contrast(1.5) saturate(1).
-        // Rainbow's dark areas are fully transparent (metallic base dropped),
-        // so there's no dark/light artifact. colour-dodge blows bright hues to
-        // white, so for rainbow we KEEP saturation cranked and AVOID lightening
-        // (low/no brightness lift, lower multiply) so the dodge preserves colour
-        // instead of washing it out.
-        .colorMultiply(Color(white: mode == .rainbow ? 0.8 : 0.55))
-        .contrast(mode == .rainbow ? 1.5 : 1.5)
-        .brightness(mode == .rainbow ? 0.0 : 0.0)
+        // Rainbow keeps saturation cranked and avoids lightening so the
+        // colour-dodge preserves colour instead of washing it out. The hue
+        // modes (rainbow, random) share one filter; solid/background share a
+        // brighter one: their neutral lattice dies under colour-dodge at 0.55
+        // (measured ~1% lift — invisible), while 0.8/2.0 reads clearly with
+        // no white-out. Contrast never touches alpha, so the shared foil mask
+        // keeps every mode transparent in the dark valleys and bright peaks.
+        // Rainbow/random values are unchanged.
+        .colorMultiply(Color(white: 0.8))
+        .contrast(mode == .rainbow || mode == .random ? 1.5 : 2.0)
+        .brightness(0.0)
         .saturation(mode == .rainbow ? 3.0 : 1.0)
         .frame(width: w * 2, height: h * 2)
     }
@@ -878,12 +887,15 @@ struct HoloFoilLayers: View, Equatable {
 
     /// Rainbow hue for Reverse Holo: a smooth spectrum gated by the FOIL's
     /// luminance (the heightmap). Dark foil areas get ZERO hue; bright areas get
-    /// hue whose intensity scales with the foil's brightness (lighter = more
-    /// intense). Returned as a layer to be composited *inside* the foil so the
-    /// moving `difference` ray in `reverseShine` sweeps/inverts it like the
-    /// source does to the textured foil.
+    /// hue whose strength follows the intensity slider quadratically (t = i*i):
+    /// 0 stays fully invisible, the bottom fades fast, and max hits 5x
+    /// saturation. Returned as a layer to be composited *inside* the foil so
+    /// the moving `difference` ray in `reverseShine` sweeps/inverts it like
+    /// the source does to the textured foil.
     @ViewBuilder
     private func rainbowHue(period: CGFloat, w: CGFloat, h: CGFloat) -> some View {
+        let intensity = settings.reverseRainbowIntensity // 0..1 slider
+        let t = intensity * intensity // quadratic: clean fade-out, punchy top
         let spectrum = LinearGradient(
             colors: [HoloCSSColors.violet, HoloCSSColors.blue, HoloCSSColors.green,
                      HoloCSSColors.yellow, HoloCSSColors.red, HoloCSSColors.violet],
@@ -893,11 +905,25 @@ struct HoloFoilLayers: View, Equatable {
         // Heightmap mask: the etch's luminance (alpha) when a bundled texture is
         // used, otherwise the generated lattice's bright diamonds. Both give
         // transparent darks -> no hue, opaque/alpha brights -> hue.
+        // Saturation (not luminance) carries the 5x boost: luminance stacking
+        // washes to white under colour-dodge, while saturation keeps the hue.
         spectrum
             .blendMode(.screen)
-            .opacity(settings.reverseRainbowIntensity)
+            .saturation(1.0 + 4.0 * t)
+            .opacity(t)
             .mask(foilLuminanceMask(period: period, w: w, h: h))
             .frame(width: w * 2, height: h * 2)
+    }
+
+    /// Card art median colour for the `.background` tint, mixed halfway with
+    /// white so the tint stays bright enough to read through colour-dodge
+    /// (a raw dark median dodged onto art would vanish to identity).
+    /// Falls back to white (greyscale lattice) when the sampler has no value.
+    private var reverseBackgroundTint: Color {
+        guard let rgb = settings.backgroundMedianRGB, rgb.count == 3 else { return Color.white }
+        return Color(red: 0.5 + 0.5 * Double(rgb[0]),
+                     green: 0.5 + 0.5 * Double(rgb[1]),
+                     blue: 0.5 + 0.5 * Double(rgb[2]))
     }
 
     /// Generated foil etch: a fine diamond lattice (two crossed repeating
@@ -909,7 +935,7 @@ struct HoloFoilLayers: View, Equatable {
     /// character is layered on top of this luminance-masked shape.
     ///   • `Rainbow` and `Random` only show the hue (added in `rainbowHue`),
     ///     already gated by the same luminance mask.
-    ///   • `Background` keeps the lattice greyscale.
+    ///   • `Background` tints the lattice with the card art median colour.
     ///   • `Solid` tints the lattice to the chosen colour.
     @ViewBuilder
     private func reverseFoil(period: CGFloat, w: CGFloat, h: CGFloat) -> some View {
@@ -918,8 +944,8 @@ struct HoloFoilLayers: View, Equatable {
         // When a bundled etch is selected (`.random` picks one per card), it
         // becomes the foil — the source repo's `var(--foil)`. Variation (when
         // on) tiles it at a random scale (0.1…1.0×) and may layer a second etch
-        // on top with a random blend, for a richer reverse-holo look. `.solid`
-        // still tints it to the chosen colour.
+        // on top with a random blend, for a richer reverse-holo look. Solid
+        // tints it to the chosen colour, background to the card median colour.
         let forceLattice = settings.reverseTextureMode == .generated || settings.reverseTexturePattern == nil
 
         if !forceLattice,
@@ -952,7 +978,7 @@ struct HoloFoilLayers: View, Equatable {
                 // near-opaque black, which read as a black mesh instead of a
                 // metallic holo pattern.
                 .mask(foilLuminanceMask(period: period, w: w, h: h))
-                .colorMultiply(mode == .solid ? settings.reverseSolidColor : Color.white)
+                .colorMultiply(mode == .solid ? settings.reverseSolidColor : mode == .background ? reverseBackgroundTint : Color.white)
             }
         } else {
             // Built-in generated diamond lattice (default Reverse Holo foil).
@@ -967,11 +993,10 @@ struct HoloFoilLayers: View, Equatable {
                 // the per-card hue variation is applied via the outer hueRotation.
                 rainbowHue(period: period, w: w, h: h)
             case .background:
-                // Greyscale metallic lattice. The two crossed gradients use
-                // `[.white, .clear]` so the gaps are already alpha 0, and the
-                // whole stack is then masked by its own luminance (proportional
-                // to luminance) so the transition from bright cells to dark
-                // gaps is smooth instead of a hard line.
+                // Card-tinted metallic lattice. Same greyscale shape as solid,
+                // tinted with the card art median colour so the foil matches
+                // the box art. Still masked by its own luminance, so dark gaps
+                // stay transparent like real paper.
                 ZStack {
                     RepeatingLinearGradientView(colors: [.white, .clear], angle: 45, period: period)
                     RepeatingLinearGradientView(colors: [.white, .clear], angle: -45, period: period)
@@ -979,6 +1004,7 @@ struct HoloFoilLayers: View, Equatable {
                 }
                 .frame(width: w * 2, height: h * 2)
                 .mask(foilLuminanceMask(period: period, w: w, h: h))
+                .colorMultiply(reverseBackgroundTint)
             case .solid:
                 ZStack {
                     RepeatingLinearGradientView(colors: [.white, .clear], angle: 45, period: period)
