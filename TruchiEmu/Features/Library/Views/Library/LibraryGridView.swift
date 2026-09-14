@@ -2323,6 +2323,23 @@ private struct DeleteConfirmationView: View {
     @ObservedObject private var loc = LocalizationManager.shared
     @Environment(\.colorScheme) private var colorScheme
     @State private var boxArtImage: NSImage?
+    @State private var deleteShakeTick = 0
+
+    init(rom: ROM, confirmDeleteTap: Binding<Bool>, onDelete: @escaping () -> Void, onHide: @escaping () -> Void, onCancel: @escaping () -> Void) {
+        self.rom = rom
+        self._confirmDeleteTap = confirmDeleteTap
+        self.onDelete = onDelete
+        self.onHide = onHide
+        self.onCancel = onCancel
+        // Pre-paint synchronously so the sheet never flashes the placeholder
+        // when the art is already cached (same fast path as the grid cards).
+        // thumbnailSync falls back to any cached size, so a zoom-bucket
+        // mismatch still hits. Miss returns nil and the .task below loads async.
+        let initialImage: NSImage? = rom.hasBoxArt
+            ? ImageCache.shared.thumbnailSync(for: rom.boxArtLocalPath, preferredSize: .medium)
+            : nil
+        _boxArtImage = State(initialValue: initialImage)
+    }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -2378,9 +2395,14 @@ private struct DeleteConfirmationView: View {
                         onDelete()
                     } else {
                         confirmDeleteTap = true
+                        deleteShakeTick += 1
                     }
                 } label: {
-                    Text(confirmDeleteTap ? loc.localized("settings.confirmDelete") : loc.localized("contextMenu.deleteGame"))
+                    HStack(spacing: 6) {
+                        Image(systemName: confirmDeleteTap ? "exclamationmark.triangle.fill" : "trash")
+                            .contentTransition(.symbolEffect(.replace))
+                        Text(confirmDeleteTap ? loc.localized("settings.confirmDelete") : loc.localized("contextMenu.deleteGame"))
+                    }
                         .font(.body.weight(.medium))
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 10)
@@ -2388,6 +2410,19 @@ private struct DeleteConfirmationView: View {
                 .buttonStyle(.borderedProminent)
                 .tint(confirmDeleteTap ? .red : AppColors.brandAccent)
                 .controlSize(.large)
+                .scaleEffect(confirmDeleteTap ? 1.04 : 1.0)
+                .animation(.spring(response: 0.28, dampingFraction: 0.45), value: confirmDeleteTap)
+                .keyframeAnimator(initialValue: CGFloat(0), trigger: deleteShakeTick) { content, value in
+                    content.offset(x: value)
+                } keyframes: { _ in
+                    KeyframeTrack {
+                        CubicKeyframe(-10, duration: 0.06)
+                        CubicKeyframe(8, duration: 0.08)
+                        CubicKeyframe(-5, duration: 0.08)
+                        CubicKeyframe(3, duration: 0.07)
+                        CubicKeyframe(0, duration: 0.07)
+                    }
+                }
 
                 Button {
                     onHide()
@@ -2419,6 +2454,8 @@ private struct DeleteConfirmationView: View {
         .frame(width: 320)
         .background(AppColors.windowBackground(colorScheme, tinted: false))
         .onAppear {
+            // Sync fast path in init already painted on a cache hit.
+            guard boxArtImage == nil else { return }
             var artPath = rom.boxArtLocalPath
             if !FileManager.default.fileExists(atPath: artPath.path) {
                 if let resolved = BoxArtService.shared.resolveLocalBoxArt(for: rom) {
