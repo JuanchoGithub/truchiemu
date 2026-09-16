@@ -152,7 +152,7 @@ final class LoggerService: @unchecked Sendable {
         }
 #else
         let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
-        let logURL = appSupport.appendingPathComponent("TruchiEmu/Logs/TruchiEmuCoreHost.log")
+        let logURL = appSupport.appendingPathComponent("TruchiEmu/Logs").appendingPathComponent(LogManager.hostLogFileName)
 #endif
         _setupFileLoggingSync(logURL: logURL)
     }
@@ -236,7 +236,7 @@ final class LoggerService: @unchecked Sendable {
             let logURL = LogManager.shared.currentLogURL
 #else
             let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
-            let logURL = appSupport.appendingPathComponent("TruchiEmu/Logs/TruchiEmuCoreHost.log")
+            let logURL = appSupport.appendingPathComponent("TruchiEmu/Logs").appendingPathComponent(LogManager.hostLogFileName)
 #endif
 
             // Reinitialize file handle on log queue (picks up custom log folder changes)
@@ -512,7 +512,7 @@ final class LoggerService: @unchecked Sendable {
     writeToFile("// Trimmed entries older than \(cutoffDate.description) //\n")
   }
     
-  // Clear all log files (current and rotated).
+  // Clear all log files (current, rotated, and XPC host logs).
   func clearAllLogs() {
     logFileQueue.async { [weak self] in
       guard let self = self else { return }
@@ -525,28 +525,45 @@ final class LoggerService: @unchecked Sendable {
       self.logFileHandle?.closeFile()
       self.logFileHandle = nil
 
-      // Remove all log files
-      try? FileManager.default.removeItem(at: logURL)
-      try? FileManager.default.removeItem(at: logURL.appendingPathExtension("1"))
-      try? FileManager.default.removeItem(at: logURL.appendingPathExtension("2"))
+      // Remove all known log files
+      for url in self.knownLogFileURLs() {
+        try? FileManager.default.removeItem(at: url)
+      }
 
         // Re-setup logging
         self._setupFileLoggingSync(logURL: logURL)
     }
   }
-    
+
+    // All log files with code origin: the app log triple plus the XPC host
+    // log triple. The host always writes to the default Logs folder, even
+    // when the user sets a custom log folder for the app log.
+    private func knownLogFileURLs() -> [URL] {
+        let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
+        let defaultFolder = appSupport.appendingPathComponent("TruchiEmu/Logs")
+        var bases = [
+            defaultFolder.appendingPathComponent(LogManager.defaultLogFileName),
+            defaultFolder.appendingPathComponent(LogManager.hostLogFileName),
+        ]
+        if let current = currentLogURL,
+           !bases.contains(where: { $0.path == current.path }) {
+            bases.append(current)
+        }
+        return bases.flatMap { base in
+            [base, base.appendingPathExtension("1"), base.appendingPathExtension("2")]
+        }
+    }
+
     // Get the current log file size in bytes.
     func currentLogFileSize() -> Int64 {
         guard let logURL = currentLogURL else { return 0 }
-        return (try? FileManager.default.attributesOfItem(atPath: logURL.path)[.size] as? Int64) ?? 0
+        return (try? FileManager.default.attributesOfItem(atPath: logURL.path)[.size] as? NSNumber)?.int64Value ?? 0
     }
 
     func totalLogFileSize() -> Int64 {
-        guard let logURL = currentLogURL else { return 0 }
         var total: Int64 = 0
-        for ext in ["", "1", "2"] {
-            let url = ext.isEmpty ? logURL : logURL.appendingPathExtension(ext)
-            if let size = try? FileManager.default.attributesOfItem(atPath: url.path)[.size] as? Int64 {
+        for url in knownLogFileURLs() {
+            if let size = (try? FileManager.default.attributesOfItem(atPath: url.path)[.size] as? NSNumber)?.int64Value {
                 total += size
             }
         }

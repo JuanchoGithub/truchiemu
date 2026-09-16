@@ -13,6 +13,9 @@ final class LogManager: @unchecked Sendable {
     
     // Default log file name
     static let defaultLogFileName = "TruchiEmu.log"
+
+    // XPC host log file name (written by TruchiEmuCoreHost, always in the default folder)
+    static let hostLogFileName = "TruchiEmuCoreHost.log"
     
     // AppSettings key for custom log folder URL
     private static let customLogFolderKey = "custom_log_folder_url"
