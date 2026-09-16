@@ -39,6 +39,20 @@ final class SwiftDataContainer: ObservableObject {
 
     // Maximum number of pre-migration backups to retain under .migrationBackups/.
     private static let maxBackups = 3
+
+    // UserDefaults key for the last fingerprint that opened the store OK.
+    // Uses UserDefaults, not AppSettings. AppSettings needs SwiftData.
+    // SwiftData needs this container. That order causes a circular dependency.
+    private static let backupFingerprintKey = "swiftdata_backup_fingerprint"
+
+    // Fingerprint of app version plus schema. Backup runs only when it changes.
+    // This stops a backup on each launch. Normal launches skip the backup.
+    private static func currentBackupFingerprint(modelNames: [String]) -> String {
+        let info = Bundle.main.infoDictionary
+        let shortVersion = info?["CFBundleShortVersionString"] as? String ?? "0"
+        let build = info?["CFBundleVersion"] as? String ?? "0"
+        return "\(shortVersion)|\(build)|\(modelNames.joined(separator: ","))"
+    }
     
     // Primary context for MainActor writes
     var mainContext: ModelContext {
@@ -108,6 +122,16 @@ final class SwiftDataContainer: ObservableObject {
         return copiedAny
     }
 
+    // True when fingerprint differs from last OK launch, or no fingerprint
+    // exists yet. False on normal launches with no version or schema change.
+    // Also false when no store file exists. There is nothing to back up then.
+    private static func shouldMakePreMigrationBackup(storeURL: URL,
+                                                     fingerprint: String) -> Bool {
+        guard FileManager.default.fileExists(atPath: storeURL.path) else { return false }
+        let last = UserDefaults.standard.string(forKey: backupFingerprintKey)
+        return last != fingerprint
+    }
+
     // Restore the most recent pre-migration backup to the live store path. Called
     // on the failure path when ModelContainer(for:) threw: the catch block may have
     // touched the live SQLite files (delete+retry), so we put the known-good copy
@@ -149,7 +173,7 @@ final class SwiftDataContainer: ObservableObject {
     private init() {
         // Don't log during init - could cause circular dependency with AppSettings
         
-        let schema = Schema([
+        let modelTypes: [any PersistentModel.Type] = [
             ROMEntry.self,
             ROMMetadataEntry.self,
             GameDBEntry.self,
@@ -179,7 +203,8 @@ final class SwiftDataContainer: ObservableObject {
         // Move list (favorites, overrides, custom moves, custom games)
         MoveListEntry.self,
         CustomGameDataEntry.self
-        ])
+        ]
+        let schema = Schema(modelTypes)
 
         let fileManager = FileManager.default
         let appSupport = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
@@ -192,18 +217,23 @@ final class SwiftDataContainer: ObservableObject {
         let walURL = directoryURL.appendingPathComponent("TruchiEmu.sqlite-wal")
         let shmURL = directoryURL.appendingPathComponent("TruchiEmu.sqlite-shm")
 
-        // Take a backup of the existing store BEFORE attempting ModelContainer init,
-        // so the user always has a known-good copy irrespective of what migration does.
+        // Backup only when version or schema changed since last OK launch.
+        // Normal launches skip the backup. No backup log shows then.
         // (Returned Bool tracked for App Update Mode UI.)
-        createdPreMigrationBackup = Self.makePreMigrationBackup(storeURL: storeURL,
-                                                                  walURL: walURL,
-                                                                  shmURL: shmURL)
+        let modelNames = modelTypes.map { String(describing: $0) }
+        let fingerprint = Self.currentBackupFingerprint(modelNames: modelNames)
+        if Self.shouldMakePreMigrationBackup(storeURL: storeURL, fingerprint: fingerprint) {
+            createdPreMigrationBackup = Self.makePreMigrationBackup(storeURL: storeURL,
+                                                                     walURL: walURL,
+                                                                     shmURL: shmURL)
+        }
 
         let config = ModelConfiguration(url: storeURL)
-        
+
         do {
             container = try ModelContainer(for: schema, configurations: [config])
             migrationFlag = PersistenceMigrationFlag()
+            UserDefaults.standard.set(fingerprint, forKey: Self.backupFingerprintKey)
         } catch {
             // Schema migration / store-open failed. Surface the error so App Update
             // Mode UI can present the recovery flow, restore the pre-migration backup
