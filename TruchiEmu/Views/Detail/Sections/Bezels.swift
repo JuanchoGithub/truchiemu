@@ -38,16 +38,7 @@ Text(loc.localized("bezel.currentBezel")).font(.subheadline).fontWeight(.medium)
 Text(currentBezelDisplayName).font(.caption).foregroundColor(AppColors.textSecondary(colorScheme))
 }
 Spacer()
-        Button { presentBezelSelectorWindow() } label: {
-Text(loc.localized("bezel.browseBezels"))
-        .font(.subheadline)
-        .foregroundColor(AppColors.textOnAccent(colorScheme))
-                .padding(.horizontal, AppSpacing.lg)
-                .padding(.vertical, AppSpacing.sm)
-                .background(AppColors.brandAccent)
-                .cornerRadius(AppRadius.md)
-        }
-        .buttonStyle(.plain)
+        SettingsActionButton(loc.localized("bezel.browseBezels"), prominent: true) { presentBezelSelectorWindow() }
 }
 .padding(.vertical, AppSpacing.xs)
 
@@ -67,36 +58,10 @@ Text(loc.localized("bezel.browseBezels"))
             Divider().overlay(AppColors.divider(colorScheme))
 
 VStack(spacing: 8) {
-            Button { autoMatchBezel() } label: {
-                HStack {
-                    Image(systemName: "magnifyingglass").frame(width: 20)
-                    Text(loc.localized("bezel.autoMatchBezel"))
-Spacer()
-    }
-    .font(.subheadline)
-    .foregroundColor(AppColors.textOnAccent(colorScheme))
-    .padding(.vertical, AppSpacing.xs)
-    .padding(.horizontal, AppSpacing.lg)
-    .background(AppColors.brandAccent)
-    .cornerRadius(AppRadius.sm)
-            }
-            .buttonStyle(.plain)
+            SettingsActionButton(loc.localized("bezel.autoMatchBezel"), systemImage: "magnifyingglass", prominent: true, fullWidth: true) { autoMatchBezel() }
             .disabled(currentROM.settings.bezelFileName == "none")
 
-            Button { clearBezel() } label: {
-                HStack {
-                    Image(systemName: "nosign").frame(width: 20)
-                    Text(loc.localized("bezel.clearBezel"))
-                    Spacer()
-                }
-                .font(.subheadline)
-                .foregroundColor(AppColors.brandAccent)
-                .padding(.vertical, AppSpacing.xs)
-                .padding(.horizontal, AppSpacing.lg)
-                .background(AppColors.brandAccent.opacity(0.15))
-                .cornerRadius(AppRadius.sm)
-            }
-            .buttonStyle(.plain)
+            SettingsActionButton(loc.localized("bezel.clearBezel"), systemImage: "nosign", role: .destructive, fullWidth: true) { clearBezel() }
             .disabled(currentROM.settings.bezelFileName == "none")
 }
 .padding(.vertical, AppSpacing.xs)

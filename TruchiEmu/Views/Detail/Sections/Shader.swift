@@ -19,27 +19,9 @@ Text(ShaderManager.displayName(for: currentROM.settings.shaderPresetID))
 .foregroundColor(AppColors.textSecondary(colorScheme))
 }
 Spacer()
-        Button { presentShaderWindow() } label: {
-Text(loc.localized("shader.customize"))
-        .font(.subheadline)
-        .foregroundColor(AppColors.textOnAccent(colorScheme))
-                .padding(.horizontal, AppSpacing.lg)
-                .padding(.vertical, AppSpacing.sm)
-                .background(AppColors.brandAccent)
-                .cornerRadius(AppRadius.md)
-        }
-        .buttonStyle(.plain)
+        SettingsActionButton(loc.localized("shader.customize"), prominent: true) { presentShaderWindow() }
 
-        Button { presentLiveShaderEdit() } label: {
-            Text(loc.localized("shader.liveShaderEdit"))
-                .font(.subheadline)
-                .foregroundColor(AppColors.brandAccent)
-                .padding(.horizontal, AppSpacing.lg)
-                .padding(.vertical, AppSpacing.sm)
-                .background(AppColors.brandAccent.opacity(0.15))
-                .cornerRadius(AppRadius.md)
-        }
-        .buttonStyle(.plain)
+        SettingsActionButton(loc.localized("shader.liveShaderEdit")) { presentLiveShaderEdit() }
 }
 .padding(.vertical, AppSpacing.xs)
 
@@ -80,16 +62,7 @@ HStack {
                         Text(loc.localized("shader.resetToDefault")).font(.caption).foregroundColor(AppColors.textTertiary(colorScheme))
                     }
                     Spacer()
-        Button { updateSettings { $0.resetShaderSettings() } } label: {
-            Text(loc.localized("shader.useDefault"))
-                .font(.caption)
-                .foregroundColor(AppColors.brandAccent)
-                .padding(.horizontal, AppSpacing.lg)
-                .padding(.vertical, AppSpacing.xs)
-                .background(AppColors.brandAccent.opacity(0.15))
-                .cornerRadius(AppRadius.sm)
-        }
-        .buttonStyle(.plain)
+        SettingsActionButton(loc.localized("shader.useDefault")) { updateSettings { $0.resetShaderSettings() } }
         .disabled(!isShaderCustomized)
 }
 .padding(.vertical, AppSpacing.xs)

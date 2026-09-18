@@ -164,10 +164,7 @@ var body: some View {
               // Maintenance Section - put at bottom
               if visibleSections.contains(.maintenance) {
                   Section {
-                      Button(action: { showFullRescanConfirmation = true }) {
-                          Label { Text(loc.localized("library.fullLibraryRescan")) } icon: { Image(systemName: "arrow.clockwise.circle.fill") }
-                      }
-                      .buttonStyle(.bordered)
+                      SettingsActionButton(loc.localized("library.fullLibraryRescan"), systemImage: "arrow.clockwise.circle.fill") { showFullRescanConfirmation = true }
                       .disabled(library.isScanning)
                       .confirmationDialog(
                           loc.localized("library.fullRescanConfirmationTitle"),
@@ -182,10 +179,7 @@ var body: some View {
                           Text(loc.localized("library.fullRescanConfirmationMessage"))
                       }
                      
-                      Button(action: { showWizardConfirmation = true }) {
-                          Label { Text(loc.localized("library.runSetupWizard")) } icon: { Image(systemName: "wand.and.stars") }
-                      }
-                      .buttonStyle(.bordered)
+                      SettingsActionButton(loc.localized("library.runSetupWizard"), systemImage: "wand.and.stars") { showWizardConfirmation = true }
                       .confirmationDialog(
                           loc.localized("library.runSetupWizardConfirmationTitle"),
                           isPresented: $showWizardConfirmation,
@@ -503,41 +497,28 @@ struct LibraryFolderRowView: View {
 
             Spacer()
 
-            Button(action: {
-                Task {
-                    isRefreshing = true
-                    scanningFolders.insert(folder.url.path)
-                    await library.refreshFolder(at: folder.url)
-                    scanningFolders.remove(folder.url.path)
-                    isRefreshing = false
+            if isRefreshing {
+                ProgressView().controlSize(.small)
+            } else {
+                SettingsActionButton(loc.localized("library.refresh"), systemImage: "arrow.clockwise") {
+                    Task {
+                        isRefreshing = true
+                        scanningFolders.insert(folder.url.path)
+                        await library.refreshFolder(at: folder.url)
+                        scanningFolders.remove(folder.url.path)
+                        isRefreshing = false
+                    }
                 }
-            }) {
-                if isRefreshing {
-                    ProgressView().controlSize(.small)
-                } else {
-                    Label { Text(loc.localized("library.refresh")) } icon: { Image(systemName: "arrow.clockwise") }
-                }
+                .disabled(isRefreshing || library.isScanning)
             }
-            .buttonStyle(.bordered)
-            .controlSize(.small)
-            .disabled(isRefreshing || library.isScanning)
 
-            Button(action: { onRebuild(folder) }) {
-                Label { Text(loc.localized("library.rebuild")) } icon: { Image(systemName: "gearshape.2") }
-            }
-            .buttonStyle(.bordered)
-            .controlSize(.small)
+            SettingsActionButton(loc.localized("library.rebuild"), systemImage: "gearshape.2") { onRebuild(folder) }
             .disabled(isRefreshing || library.isScanning)
 
             if depth > 0 && !folder.isPrimary {
-                Button(role: .destructive) {
+                SettingsActionButton("", systemImage: "trash", role: .destructive) {
                     showDeleteConfirmation = true
-                } label: {
-                    Image(systemName: "trash")
                 }
-                .buttonStyle(.bordered)
-                .tint(AppColors.error(colorScheme))
-                .controlSize(.small)
                 .confirmationDialog(
                     loc.localized("library.removeSubfolder"),
                     isPresented: $showDeleteConfirmation,
@@ -556,14 +537,9 @@ struct LibraryFolderRowView: View {
                     }
                 }
             } else if depth == 0 {
-                Button(role: .destructive) {
+                SettingsActionButton("", systemImage: "trash", role: .destructive) {
                     showDeleteConfirmation = true
-                } label: {
-                    Image(systemName: "trash")
                 }
-                .buttonStyle(.bordered)
-                .tint(AppColors.error(colorScheme))
-                .controlSize(.small)
                 .confirmationDialog(
                     loc.localized("library.removeFolderConfirmation"),
                     isPresented: $showDeleteConfirmation,

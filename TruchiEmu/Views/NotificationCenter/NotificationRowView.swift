@@ -8,6 +8,7 @@ struct NotificationRowView: View {
 
     @Environment(\.colorScheme) private var colorScheme
     @State private var isActionHovering = false
+    @State private var isDismissHovering = false
 
     var body: some View {
         HStack(spacing: 10) {
@@ -49,12 +50,12 @@ struct NotificationRowView: View {
                 } label: {
                     Text(actionLabel)
                         .font(.system(size: 10, weight: .semibold))
-                        .foregroundColor(AppColors.brandAccent)
+                        .foregroundColor(isActionHovering ? AppColors.textOnAccent(colorScheme) : AppColors.brandAccent)
                         .padding(.horizontal, 8)
                         .padding(.vertical, 3)
                         .background(
                             Capsule()
-                                .fill(AppColors.brandAccent.opacity(isActionHovering ? 0.15 : 0.08))
+                                .fill(isActionHovering ? AppColors.brandAccent : AppColors.accentBackground(colorScheme))
                         )
                 }
                 .buttonStyle(.plain)
@@ -71,9 +72,15 @@ struct NotificationRowView: View {
                 } label: {
                     Image(systemName: "xmark")
                         .font(.system(size: 8, weight: .bold))
-                        .foregroundColor(AppColors.textTertiary(colorScheme))
+                        .foregroundColor(isDismissHovering ? AppColors.textPrimary(colorScheme) : AppColors.textSecondary(colorScheme))
+                        .frame(width: 20, height: 20)
+                        .background(
+                            RoundedRectangle(cornerRadius: 6)
+                                .fill(isDismissHovering ? AppColors.cardBackgroundSubtle(colorScheme) : .clear)
+                        )
                 }
                 .buttonStyle(.plain)
+                .onHover { isDismissHovering = $0 }
             }
         }
         .padding(.horizontal, 12)

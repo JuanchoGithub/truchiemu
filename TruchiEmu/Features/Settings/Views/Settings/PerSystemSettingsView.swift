@@ -335,23 +335,15 @@ struct PerSystemSettingsView: View {
                                     .foregroundStyle(AppColors.textSecondary(colorScheme))
                                     .font(.caption)
                             }
-                        } else {
-                            Button {
-                                Task { await coreManager.performFullSystemUpdate() }
-                            } label: {
-                                HStack {
-                                    if coreManager.isFetchingCoreList || LibretroInfoManager.shared.isRefreshing {
-                                        ProgressView().controlSize(.small)
-                                        Text(loc.localized("cores.updatingSystemsCores"))
-                                    } else {
-                                        Image(systemName: "arrow.triangle.2.circlepath")
-                                        Text(loc.localized("cores.checkForUpdates"))
-                                    }
-                                }
+                        } else if coreManager.isFetchingCoreList || LibretroInfoManager.shared.isRefreshing {
+                            HStack {
+                                ProgressView().controlSize(.small)
+                                Text(loc.localized("cores.updatingSystemsCores"))
                             }
-                            .buttonStyle(.bordered)
-                            .controlSize(.small)
-                            .disabled(coreManager.isFetchingCoreList || LibretroInfoManager.shared.isRefreshing)
+                        } else {
+                            SettingsActionButton(loc.localized("cores.checkForUpdates"), systemImage: "arrow.triangle.2.circlepath") {
+                                Task { await coreManager.performFullSystemUpdate() }
+                            }
                         }
 
                         Spacer()
@@ -470,13 +462,9 @@ struct PerSystemSettingsView: View {
                 .buttonStyle(.borderedProminent)
                 .controlSize(.large)
 
-                Button {
+                SettingsActionButton(loc.localized("perSystem.browseCores"), systemImage: "magnifyingglass.circle") {
                     browseCores(for: system)
-                } label: {
-                    Label(loc.localized("perSystem.browseCores"), systemImage: "magnifyingglass.circle")
-                        .padding(.horizontal, 16)
                 }
-                .buttonStyle(.bordered)
                 .controlSize(.large)
             }
 
@@ -513,6 +501,7 @@ private struct PerSystemSystemRow: View, Equatable {
     let isInactive: Bool
     let colorScheme: ColorScheme
     let action: () -> Void
+    @State private var isHovered = false
 
     static func == (lhs: PerSystemSystemRow, rhs: PerSystemSystemRow) -> Bool {
         lhs.system.id == rhs.system.id &&
@@ -525,12 +514,12 @@ private struct PerSystemSystemRow: View, Equatable {
             HStack(spacing: 8) {
                 Image(systemName: system.iconName)
                     .font(.system(size: 16, weight: .medium))
-                    .foregroundColor(isSelected ? AppColors.brandAccent : AppColors.textSecondary(colorScheme))
+                    .foregroundColor(isSelected ? AppColors.brandAccent : (isHovered ? AppColors.brandAccent : AppColors.textSecondary(colorScheme)))
                     .frame(width: 24)
 
                 Text(system.name)
                     .font(AppTypography.callout)
-                    .foregroundColor(isSelected ? AppColors.textPrimary(colorScheme) : AppColors.textSecondary(colorScheme))
+                    .foregroundColor(AppColors.textPrimary(colorScheme))
                     .fontWeight(isSelected ? .medium : .regular)
                     .lineLimit(1)
 
@@ -539,7 +528,7 @@ private struct PerSystemSystemRow: View, Equatable {
                 if isInactive {
                     Image(systemName: "circle.dotted")
                         .font(.caption2)
-                        .foregroundColor(AppColors.textMuted(colorScheme))
+                        .foregroundColor(AppColors.textSecondary(colorScheme))
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -547,11 +536,12 @@ private struct PerSystemSystemRow: View, Equatable {
             .padding(.horizontal, 10)
             .background(
                 RoundedRectangle(cornerRadius: AppRadius.md)
-                    .fill(isSelected ? AppColors.accentBackground(colorScheme) : .clear)
+                    .fill(isSelected ? AppColors.accentBackground(colorScheme) : (isHovered ? AppColors.cardBackgroundSubtle(colorScheme) : .clear))
             )
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        .onHover { isHovered = $0 }
     }
 }
 
@@ -566,6 +556,7 @@ private struct PerSystemShaderView: View {
     @ObservedObject private var slangDiscovery = SlangPresetDiscoveryService.shared
     @State private var shaderWindowSettings: ShaderWindowSettings?
     @State private var selectedCategory: CategoryFilter = .all
+    @State private var chipHover: CategoryFilter? = nil
     @State private var localSearchText: String = ""
     @State private var expandedSlangGroups: Set<String> = []
     @State private var savedPresets: [SavedShaderPreset] = []
@@ -684,7 +675,8 @@ private struct PerSystemShaderView: View {
     }
 
     private func categoryChip(title: String, filter: CategoryFilter, count: Int, isActive: Bool) -> some View {
-        Button {
+        let activeFill = AppColors.selectedFill(for: AppColors.brandAccent)
+        return Button {
             withAnimation {
                 selectedCategory = filter
             }
@@ -694,15 +686,23 @@ private struct PerSystemShaderView: View {
                     .font(.caption)
                 Text("(\(count))")
                     .font(.caption2)
-                    .foregroundColor(isActive ? AppColors.textOnAccent(colorScheme).opacity(0.7) : AppColors.textSecondaryNeutral(colorScheme))
             }
             .padding(.horizontal, 10)
             .padding(.vertical, 4)
-            .background(isActive ? AppColors.brandAccent : AppColors.cardBackgroundSubtle(colorScheme))
-            .foregroundColor(isActive ? AppColors.textOnAccent(colorScheme) : .primary)
+            .background(
+                Capsule().fill(
+                    isActive ? activeFill
+                        : (chipHover == filter ? AppColors.accentBackground(colorScheme) : AppColors.cardBackgroundSubtle(colorScheme))
+                )
+            )
+            .foregroundColor(
+                isActive ? AppColors.textOnAccent(for: activeFill, colorScheme: colorScheme)
+                    : (chipHover == filter ? AppColors.brandAccent : .primary)
+            )
             .cornerRadius(12)
         }
         .buttonStyle(.plain)
+        .onHover { chipHover = $0 ? filter : nil }
     }
 
     // MARK: - Preset List

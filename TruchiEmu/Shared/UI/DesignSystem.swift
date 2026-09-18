@@ -110,6 +110,20 @@ struct AppColors {
     static func cardBackgroundSubtle(_ colorScheme: ColorScheme) -> Color {
         cardBackground(colorScheme).opacity(0.6)
     }
+
+    // Rest fill for action buttons. Same neutral base as the panel but with
+    // a stronger accent tint, so the button reads as themed rather than gray
+    // while staying distinct from the untinted panel behind it.
+    static func buttonBackground(_ colorScheme: ColorScheme) -> Color {
+        let tintStrength: CGFloat = colorScheme == .dark ? 0.10 : 0.08
+        let accent = accentSecondaryForScheme(colorScheme)
+        guard let baseNS = NSColor.controlBackgroundColor.usingColorSpace(.sRGB),
+              let accentNS = NSColor(accent).usingColorSpace(.sRGB),
+              let blended = baseNS.blended(withFraction: tintStrength, of: accentNS) else {
+            return cardBackground(colorScheme)
+        }
+        return Color(nsColor: blended)
+    }
     
     // Card border with subtle visibility
     static func cardBorder(_ colorScheme: ColorScheme) -> Color {
@@ -153,21 +167,94 @@ struct AppColors {
     }
 
     private static func textColorOnBackground(_ bg: Color, colorScheme: ColorScheme) -> Color {
-        guard let nsColor = NSColor(bg).usingColorSpace(.sRGB) else {
-            return colorScheme == .dark
-                ? .oklch(0.97, 0.005, 55)
-                : .oklch(0.98, 0.005, 55)
+        let light = colorScheme == .dark
+            ? Color.oklch(0.97, 0.005, 55)
+            : Color.oklch(0.98, 0.005, 55)
+        return bestText(on: bg, from: [light, .oklch(0.18, 0.02, 55)], colorScheme: colorScheme)
+    }
+
+    /// Relative luminance of a color in sRGB space (WCAG definition).
+    /// Returns nil when the color cannot be converted.
+    static func luminance(of color: Color) -> CGFloat? {
+        guard let nsColor = NSColor(color).usingColorSpace(.sRGB) else { return nil }
+        func lin(_ c: CGFloat) -> CGFloat {
+            c <= 0.04045 ? c / 12.92 : pow((c + 0.055) / 1.055, 2.4)
         }
-        let r = nsColor.redComponent
-        let g = nsColor.greenComponent
-        let b = nsColor.blueComponent
-        let linR = r <= 0.04045 ? r / 12.92 : pow((r + 0.055) / 1.055, 2.4)
-        let linG = g <= 0.04045 ? g / 12.92 : pow((g + 0.055) / 1.055, 2.4)
-        let linB = b <= 0.04045 ? b / 12.92 : pow((b + 0.055) / 1.055, 2.4)
-        let luminance = 0.2126 * linR + 0.7152 * linG + 0.0722 * linB
-        return luminance > 0.35
-            ? .oklch(0.18, 0.02, 55)
-            : (colorScheme == .dark ? .oklch(0.97, 0.005, 55) : .oklch(0.98, 0.005, 55))
+        return 0.2126 * lin(nsColor.redComponent)
+            + 0.7152 * lin(nsColor.greenComponent)
+            + 0.0722 * lin(nsColor.blueComponent)
+    }
+
+    /// WCAG contrast ratio between two colors (1 to 21). Nil when either
+    /// color cannot be converted.
+    static func contrastRatio(_ fg: Color, _ bg: Color) -> CGFloat? {
+        guard let l1 = luminance(of: fg), let l2 = luminance(of: bg) else { return nil }
+        let hi = max(l1, l2), lo = min(l1, l2)
+        return (hi + 0.05) / (lo + 0.05)
+    }
+
+    /// Selected-state fill: the deep variant wins on neon themes (calmer,
+    /// light text holds contrast); the bright fill wins where it already
+    /// contrasts better (e.g. kirby/zelda dark). Returns whichever scores
+    /// higher with its best text. Pair with `textOnAccent(for:)` on the
+    /// result so text always matches the chosen fill.
+    static func selectedFill(for accent: Color) -> Color {
+        let deep = AccentColorTheme.darkColor(from: accent)
+        func bestRatio(_ fill: Color) -> CGFloat {
+            let light = Color.oklch(0.97, 0.005, 55)
+            let dark = Color.oklch(0.18, 0.02, 55)
+            return max(contrastRatio(light, fill) ?? 0, contrastRatio(dark, fill) ?? 0)
+        }
+        return bestRatio(deep) >= bestRatio(accent) ? deep : accent
+    }
+
+    /// Return the candidate with the highest contrast ratio on `bg`.
+    /// Falls back to `textPrimary` when nothing converts. Use for any text
+    /// placed on a filled background so hue always yields to legibility.
+    static func bestText(on bg: Color, from candidates: [Color], colorScheme: ColorScheme) -> Color {
+        var best: Color? = nil
+        var bestRatio: CGFloat = 0
+        for candidate in candidates {
+            guard let ratio = contrastRatio(candidate, bg), ratio > bestRatio else { continue }
+            bestRatio = ratio
+            best = candidate
+        }
+        return best ?? textPrimary(colorScheme)
+    }
+
+    /// Keep `preferred` (usually an accent tint) when it reaches `minimum`
+    /// contrast on `bg;` otherwise fall back to the highest-ratio candidate.
+    /// This preserves hue wherever it is legible and only neutralizes it
+    /// where it fails.
+    static func legibleText(
+        prefer preferred: Color,
+        on bg: Color,
+        minimum: CGFloat = 4.5,
+        fallback: Color? = nil,
+        colorScheme: ColorScheme
+    ) -> Color {
+        let primary = fallback ?? softPrimary(colorScheme)
+        if let ratio = contrastRatio(preferred, bg), ratio >= minimum {
+            return preferred
+        }
+        return bestText(on: bg, from: [preferred, primary], colorScheme: colorScheme)
+    }
+
+    /// Fallback button text: primary with a whisper of secondary accent,
+    /// pulled slightly darker so it does not glare on tinted fills.
+    /// Contrast stays far above AA because primary starts with wide margin.
+    static func softPrimary(_ colorScheme: ColorScheme) -> Color {
+        let base = textPrimary(colorScheme)
+        let accent = accentSecondaryForScheme(colorScheme)
+        guard let baseNS = NSColor(base).usingColorSpace(.sRGB),
+              let accentNS = NSColor(accent).usingColorSpace(.sRGB),
+              let blended = baseNS.blended(withFraction: 0.18, of: accentNS) else { return base }
+        let deepen: CGFloat = colorScheme == .dark ? 0.90 : 0.96
+        return Color(.sRGB,
+                     red: blended.redComponent * deepen,
+                     green: blended.greenComponent * deepen,
+                     blue: blended.blueComponent * deepen,
+                     opacity: 1.0)
     }
 
     static func textSecondaryNeutral(_ colorScheme: ColorScheme) -> Color {
@@ -518,13 +605,7 @@ struct AppDataRow: View {
             Spacer()
             
             if let copyAction = copyAction {
-                Button(action: copyAction) {
-                    Image(systemName: "doc.on.doc")
-                        .foregroundColor(AppColors.textTertiary(colorScheme))
-                        .font(.caption)
-                }
-                .buttonStyle(.plain)
-                .help("Copy to clipboard")
+                AppIconButton(icon: "doc.on.doc", help: "Copy to clipboard", action: copyAction)
             }
         }
         .padding(.vertical, AppSpacing.sm)
@@ -570,7 +651,7 @@ enum AppPillStyle {
         case .primary:
             return AppColors.textOnAccent(colorScheme)
         case .secondary:
-            return AppColors.textSecondary(colorScheme)
+            return AppColors.textPrimary(colorScheme)
         case .success:
             return AppColors.success(colorScheme)
         case .warning:
@@ -887,15 +968,15 @@ struct AppPrimaryButtonStyle: ButtonStyle {
 // Secondary/outlined button style
 struct AppSecondaryButtonStyle: ButtonStyle {
     @Environment(\.colorScheme) private var colorScheme
-    
+
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .foregroundColor(AppColors.textSecondary(colorScheme))
+            .foregroundColor(AppColors.textPrimary(colorScheme))
             .padding(.vertical, AppSpacing.sm)
             .padding(.horizontal, AppSpacing.lg)
             .background(
                 Capsule()
-                    .fill(AppColors.cardBackgroundSubtle(colorScheme))
+                    .fill(configuration.isPressed ? AppColors.accentBackground(colorScheme) : AppColors.cardBackgroundSubtle(colorScheme))
                     .overlay(
                         Capsule()
                             .stroke(AppColors.cardBorder(colorScheme), lineWidth: 1)
@@ -903,6 +984,185 @@ struct AppSecondaryButtonStyle: ButtonStyle {
             )
             .scaleEffect(configuration.isPressed ? 0.97 : 1.0)
             .animation(.easeOut(duration: 0.1), value: configuration.isPressed)
+    }
+}
+
+// Action button for settings forms. Unlike native `.bordered`, it has an
+// explicit solid background (visible against grouped-form panels) and an
+// unmistakable hover state: fill shifts to accent, text shifts to accent.
+struct SettingsActionButton: View {
+    enum Role { case standard, destructive, success }
+
+    let title: String
+    var systemImage: String? = nil
+    var role: Role = .standard
+    /// Prominent buttons rest on a solid fill (for primary actions); standard
+    /// buttons rest on a neutral fill and bloom on hover. Prominent also uses
+    /// roomier padding.
+    var prominent: Bool = false
+    /// Stretch the label to fill available width (for full-bleed rows).
+    var fullWidth: Bool = false
+    let action: () -> Void
+
+    init(_ title: String, systemImage: String? = nil, role: Role = .standard, prominent: Bool = false, fullWidth: Bool = false, action: @escaping () -> Void) {
+        self.title = title
+        self.systemImage = systemImage
+        self.role = role
+        self.prominent = prominent
+        self.fullWidth = fullWidth
+        self.action = action
+    }
+
+    @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.isEnabled) private var isEnabled
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var isHovered = false
+    @FocusState private var isFocused: Bool
+
+    private var accent: Color { AppColors.accentSecondaryForScheme(colorScheme) }
+    private var roleFill: Color {
+        switch role {
+        case .standard:
+            return accent
+        case .destructive:
+            return AppColors.error(colorScheme)
+        case .success:
+            return AppColors.success(colorScheme)
+        }
+    }
+    /// Rest-state tint: deep accent on light mode (keeps hue, holds contrast
+    /// on pale fills), bright accent on dark mode.
+    private var restTint: Color {
+        switch role {
+        case .standard:
+            return colorScheme == .dark ? accent : AppColors.accentDarkForScheme(colorScheme)
+        case .destructive:
+            return AppColors.error(colorScheme)
+        case .success:
+            return AppColors.success(colorScheme)
+        }
+    }
+    private var isActive: Bool { isHovered || isFocused }
+    private var hoverAnimation: Animation {
+        reduceMotion
+            ? .easeOut(duration: 0.1)
+            : .interpolatingSpring(stiffness: 320, damping: 20)
+    }
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 4) {
+                if let systemImage {
+                    Image(systemName: systemImage)
+                        .font(.system(size: prominent ? 13 : 11, weight: .medium))
+                        .frame(width: prominent ? 20 : nil)
+                }
+                if !title.isEmpty {
+                    Text(title)
+                        .font(.system(size: prominent ? 14 : 12))
+                }
+                if fullWidth {
+                    Spacer(minLength: 0)
+                }
+            }
+            .foregroundColor(foreground)
+            .padding(.horizontal, title.isEmpty ? 7 : (prominent ? 16 : 10))
+            .padding(.vertical, prominent ? 8 : 4)
+            .frame(maxWidth: fullWidth ? .infinity : nil, minHeight: prominent ? 32 : 22)
+            .background(
+                RoundedRectangle(cornerRadius: prominent ? 8 : 6)
+                    .fill(background)
+                    .shadow(color: shadowColor, radius: isActive ? 6 : 0, y: isActive ? 1 : 0)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: prominent ? 8 : 6)
+                    .strokeBorder(stroke, lineWidth: 1)
+            )
+            .scaleEffect(isActive && !reduceMotion ? 1.04 : 1.0)
+            .brightness(isActive && prominent ? 0.07 : 0)
+            .animation(hoverAnimation, value: isHovered)
+            .animation(hoverAnimation, value: isFocused)
+            .focused($isFocused)
+        }
+        .buttonStyle(SettingsActionPressStyle())
+        .onHover { isHovered = $0 }
+        .opacity(isEnabled ? 1 : 0.45)
+    }
+
+    private var foreground: Color {
+        if prominent || isActive {
+            return AppColors.textOnAccent(for: roleFill, colorScheme: colorScheme)
+        }
+        // Rest tint keeps hue only while it holds contrast on the rest
+        // fill; otherwise the helper falls back to primary text.
+        return AppColors.legibleText(
+            prefer: restTint,
+            on: AppColors.buttonBackground(colorScheme),
+            colorScheme: colorScheme
+        )
+    }
+
+    private var background: Color {
+        if prominent { return roleFill }
+        guard isActive else { return AppColors.buttonBackground(colorScheme) }
+        return roleFill
+    }
+
+    private var stroke: Color {
+        if isActive { return .clear }
+        return Color(nsColor: .separatorColor)
+    }
+
+    private var shadowColor: Color {
+        switch role {
+        case .standard:
+            return accent.opacity(0.35)
+        case .destructive:
+            return AppColors.error(colorScheme).opacity(0.35)
+        case .success:
+            return AppColors.success(colorScheme).opacity(0.35)
+        }
+    }
+}
+
+private struct SettingsActionPressStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .opacity(configuration.isPressed ? 0.7 : 1.0)
+            .scaleEffect(configuration.isPressed ? 0.97 : 1.0)
+    }
+}
+
+// Icon-only button with hover fill. Base text meets minimum contrast
+// (textSecondary); hover raises to textPrimary on a subtle fill.
+struct AppIconButton: View {
+    let icon: String
+    var font: Font = .caption
+    var help: String? = nil
+    let action: () -> Void
+    @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var isHovered = false
+
+    var body: some View {
+        Button(action: action) {
+            Image(systemName: icon)
+                .font(font)
+                .foregroundColor(isHovered ? AppColors.textPrimary(colorScheme) : AppColors.textSecondary(colorScheme))
+                .frame(width: 22, height: 22)
+                .background(
+                    RoundedRectangle(cornerRadius: 6)
+                        .fill(isHovered ? AppColors.cardBackgroundSubtle(colorScheme) : .clear)
+                )
+                .scaleEffect(isHovered && !reduceMotion ? 1.08 : 1.0)
+                .animation(
+                    reduceMotion ? .easeOut(duration: 0.1) : .interpolatingSpring(stiffness: 320, damping: 20),
+                    value: isHovered
+                )
+        }
+        .buttonStyle(.plain)
+        .help(help ?? "")
+        .onHover { isHovered = $0 }
     }
 }
 
@@ -975,12 +1235,7 @@ struct AppSearchField: View {
                 .onSubmit { onSubmit?() }
             
             if !text.isEmpty {
-                Button(action: { text = "" }) {
-                    Image(systemName: "xmark.circle.fill")
-                        .foregroundColor(AppColors.textTertiary(colorScheme))
-                        .font(.footnote)
-                }
-                .buttonStyle(.plain)
+                AppIconButton(icon: "xmark.circle.fill", font: .footnote, action: { text = "" })
             }
         }
         .padding(.horizontal, AppSpacing.md)
@@ -1097,6 +1352,7 @@ struct AppChip: View, Identifiable {
     
     var body: some View {
         let resolvedAccent = accent ?? AppColors.accentSecondaryForScheme(colorScheme)
+        let selectedFill = AppColors.selectedFill(for: resolvedAccent)
         return Button(action: action) {
             HStack(spacing: AppSpacing.xs) {
                 if let icon = icon {
@@ -1108,10 +1364,10 @@ struct AppChip: View, Identifiable {
             }
             .padding(.horizontal, AppSpacing.md)
             .padding(.vertical, AppSpacing.sm)
-            .foregroundColor(isSelected ? AppColors.textOnAccent(for: resolvedAccent, colorScheme: colorScheme) : AppColors.textSecondary(colorScheme))
+            .foregroundColor(isSelected ? AppColors.textOnAccent(for: selectedFill, colorScheme: colorScheme) : AppColors.textPrimary(colorScheme))
             .background(
                 Capsule()
-                    .fill(isSelected ? resolvedAccent.opacity(0.85) : AppColors.cardBackgroundSubtle(colorScheme))
+                    .fill(isSelected ? selectedFill : AppColors.cardBackgroundSubtle(colorScheme))
             )
             .scaleEffect(isSelected ? 1.05 : 1.0)
         }
@@ -1362,13 +1618,9 @@ struct AppPathRow: View {
 
     var body: some View {
         AppInfoRow(label, value: url.path, monospaced: monospaced) {
-            Button {
+            AppIconButton(icon: "folder", help: "Reveal in Finder") {
                 NSWorkspace.shared.activateFileViewerSelecting([url])
-            } label: {
-                Image(systemName: "folder")
             }
-            .buttonStyle(.plain)
-            .help("Reveal in Finder")
         }
     }
 }

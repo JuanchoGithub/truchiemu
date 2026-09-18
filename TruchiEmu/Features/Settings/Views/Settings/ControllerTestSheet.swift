@@ -628,10 +628,9 @@ struct ControllerTestSheet: View {
                     .font(.caption2)
                     .foregroundStyle(AppColors.textSecondary(colorScheme))
                 HStack(spacing: 8) {
-                    Button(loc.localized("controllers.calibrateCancel")) {
+                    SettingsActionButton(loc.localized("controllers.calibrateCancel")) {
                         calibrationSession.stop()
                     }
-                    .buttonStyle(.bordered)
                     .controlSize(.small)
                     Button(loc.localized("controllers.calibrateSave")) {
                         saveCalibration()
@@ -649,10 +648,9 @@ struct ControllerTestSheet: View {
                     .controlSize(.small)
                     .tint(AppColors.brandAccent)
                     if !storedCalibration.isDefault {
-                        Button(loc.localized("controllers.calibrateReset")) {
+                        SettingsActionButton(loc.localized("controllers.calibrateReset"), role: .destructive) {
                             clearCalibration()
                         }
-                        .buttonStyle(.bordered)
                         .controlSize(.small)
                         .tint(AppColors.error(colorScheme))
                     }

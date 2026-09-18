@@ -58,24 +58,12 @@ extension GameDetailView {
 
                 HStack {
                     Spacer()
-                    Button {
+                    SettingsActionButton(loc.localized("gameInfo.coreOptions"), systemImage: "slider.horizontal.3") {
                         if let coreID = activeCoreID {
                             let context = CoreOptionsContext(coreID: coreID, systemID: currentROM.systemID, gameFilename: currentROM.filenameWithoutExtension)
                             openWindow(id: "core-options", value: context)
                         }
-                    } label: {
-                        HStack(spacing: 6) {
-                            Image(systemName: "slider.horizontal.3")
-                            Text(loc.localized("gameInfo.coreOptions"))
-                        }
-                        .font(.subheadline)
-                        .foregroundColor(AppColors.brandAccent)
-                        .padding(.horizontal, AppSpacing.lg)
-                        .padding(.vertical, AppSpacing.sm)
-                        .background(AppColors.brandAccent.opacity(0.15))
-                        .cornerRadius(AppRadius.md)
                     }
-                    .buttonStyle(.plain)
                     .disabled(selectedCoreID == nil || installedCores.isEmpty)
 
                     Button { applyCoreConfiguration() } label: {
@@ -444,20 +432,17 @@ Label(loc.localized("achievement.searchRetroAchievements"), systemImage: "checkm
 
     private var achievementsHeaderTrailing: AnyView? {
         if let raGameId = currentROM.raGameId, raGameId > 0, achievementsService.isLoggedIn {
-            let refreshButton = Button {
-                Task {
-                    isAchievementsLoading = true
-                    _ = await loadAchievementsAndReturnCount(raGameId: raGameId, force: true)
-                }
-            } label: {
-                if isAchievementsLoading {
-                    ProgressView().controlSize(.small)
-                } else {
-                    Image(systemName: "arrow.clockwise")
-                }
+            let refreshButton: AnyView
+            if isAchievementsLoading {
+                refreshButton = AnyView(ProgressView().controlSize(.small))
+            } else {
+                refreshButton = AnyView(AppIconButton(icon: "arrow.clockwise", help: loc.localized("achievement.refreshFromServer")) {
+                    Task {
+                        isAchievementsLoading = true
+                        _ = await loadAchievementsAndReturnCount(raGameId: raGameId, force: true)
+                    }
+                })
             }
-            .buttonStyle(.borderless)
-            .help(loc.localized("achievement.refreshFromServer"))
 
             if let link = viewOnRALinkAnyView {
                 return AnyView(HStack(spacing: AppSpacing.sm) { refreshButton; link })

@@ -279,22 +279,15 @@ struct CoreSettingsView: View {
                         .foregroundStyle(AppColors.textSecondary(colorScheme))
                         .font(.caption)
                 }
-            } else {
-                Button {
-                    Task { await coreManager.performFullSystemUpdate() }
-                } label: {
-                    HStack {
-                        if coreManager.isFetchingCoreList || LibretroInfoManager.shared.isRefreshing {
-                            ProgressView().controlSize(.small)
-                            Text(loc.localized("cores.updatingSystemsCores"))
-                        } else {
-                            Image(systemName: "arrow.triangle.2.circlepath")
-                            Text(loc.localized("cores.checkForUpdates"))
-                        }
-                    }
+            } else if coreManager.isFetchingCoreList || LibretroInfoManager.shared.isRefreshing {
+                HStack {
+                    ProgressView().controlSize(.small)
+                    Text(loc.localized("cores.updatingSystemsCores"))
                 }
-                .buttonStyle(.bordered)
-                .controlSize(.small)
+            } else {
+                SettingsActionButton(loc.localized("cores.checkForUpdates"), systemImage: "arrow.triangle.2.circlepath") {
+                    Task { await coreManager.performFullSystemUpdate() }
+                }
                 .disabled(coreManager.isFetchingCoreList || LibretroInfoManager.shared.isRefreshing)
             }
         }
@@ -592,13 +585,11 @@ struct DownloadableCoreRowView: View {
                 Image(systemName: "checkmark.circle.fill")
                     .foregroundColor(AppColors.success(colorScheme))
             } else {
-                Button(loc.localized("cores.download")) {
+                SettingsActionButton(loc.localized("cores.download")) {
                     Task {
                         await coreManager.downloadCore(remoteCore)
                     }
                 }
-                .buttonStyle(.bordered)
-                .controlSize(.small)
                 .disabled(coreManager.isDownloadingCore)
             }
         }

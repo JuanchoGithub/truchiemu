@@ -50,19 +50,15 @@ struct ScreenshotsTabView: View {
                         .lineLimit(1)
                         .truncationMode(.middle)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                    Button(loc.localized("settings.streaming.browse")) {
+                    SettingsActionButton(loc.localized("settings.streaming.browse")) {
                         showFolderPicker = true
                     }
-                    .buttonStyle(.bordered)
-                    .controlSize(.small)
                     if config.screenshot.hasCustomPath {
-                        Button(loc.localized("settings.media.reset")) {
+                        SettingsActionButton(loc.localized("settings.media.reset")) {
                             config.screenshot.outputPath = ""
                             config.screenshot.save()
                             customPath = ""
                         }
-                        .buttonStyle(.bordered)
-                        .controlSize(.small)
                     }
                 }
                 .folderDialog(

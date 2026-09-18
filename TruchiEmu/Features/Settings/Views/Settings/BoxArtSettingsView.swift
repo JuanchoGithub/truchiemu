@@ -81,13 +81,11 @@ struct BoxArtSettingsView: View {
                 Section {
                     TextField(loc.localized("boxArt.username"), text: $username)
                     SecureField(loc.localized("boxArt.password"), text: $password)
-                    Button(loc.localized("boxArt.saveCredentials")) {
+                    SettingsActionButton(loc.localized("boxArt.saveCredentials")) {
                         BoxArtService.shared.saveCredentials(
                             BoxArtService.ScreenScraperCredentials(username: username, password: password))
                         saved = true
                     }
-                    .buttonStyle(.bordered)
-                    .controlSize(.small)
                     if saved {
                         Label { Text(loc.localized("boxArt.credentialsSaved")) } icon: { Image(systemName: "checkmark.circle.fill") }
                             .foregroundStyle(AppColors.success(colorScheme))
@@ -141,21 +139,18 @@ struct BoxArtSettingsView: View {
                             loc.localized("boxArt.assetIndexing"),
                             description: loc.localized("boxArt.assetIndexingDescription")
                         ) {
-                            Button(action: {
-                                Task { await manifestService.refreshAllManifests() }
-                            }) {
-                                if manifestService.isRefreshing {
-                                    HStack(spacing: AppSpacing.sm) {
-                                        ProgressView()
-                                            .controlSize(.small)
-                                        Text(loc.localized("boxArt.indexing"))
-                                    }
-                                } else {
-                                    Label { Text(loc.localized("boxArt.refreshIndex")) } icon: { Image(systemName: "arrow.clockwise") }
+                            if manifestService.isRefreshing {
+                                HStack(spacing: AppSpacing.sm) {
+                                    ProgressView()
+                                        .controlSize(.small)
+                                    Text(loc.localized("boxArt.indexing"))
                                 }
+                            } else {
+                                SettingsActionButton(loc.localized("boxArt.refreshIndex"), systemImage: "arrow.clockwise") {
+                                    Task { await manifestService.refreshAllManifests() }
+                                }
+                                .disabled(manifestService.isRefreshing)
                             }
-                            .buttonStyle(.bordered)
-                            .disabled(manifestService.isRefreshing)
                         }
 
                         if manifestService.isRefreshing {
@@ -254,7 +249,7 @@ struct BoxArtSettingsView: View {
                         .foregroundStyle(.secondary)
                 }
             }
-            Button(loc.localized("launchbox.syncNow")) {
+            SettingsActionButton(loc.localized("launchbox.syncNow")) {
                 Task {
                     await syncCoordinator.forceSync(library: library)
                     launchBoxLastSync = LaunchBoxGamesDBService.shared.lastSyncDate

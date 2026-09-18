@@ -538,6 +538,7 @@
   "library.lastAdded": "最後に追加",
   "library.genre": "ジャンル",
   "library.otherFilters": "その他",
+  "library.clearFilters": "クリア",
   "library.otherSort": "その他",
   "library.region": "地域",
   "library.gameRegion": "ゲームの地域",

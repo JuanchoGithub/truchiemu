@@ -220,7 +220,7 @@ Text(loc.localized("core.active"))
                         .fontWeight(.medium)
                     }
                     .buttonStyle(.borderedProminent)
-                    .tint(.purple)
+                    .tint(AppColors.brandAccentSecondary)
                 }
             }
         }

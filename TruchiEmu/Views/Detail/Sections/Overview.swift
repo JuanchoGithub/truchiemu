@@ -226,6 +226,9 @@ extension GameDetailView {
                         Text(loc.localized("gameDetail.manageAllSaves"))
                             .font(.caption)
                             .foregroundColor(AppColors.brandAccent)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(Capsule().fill(AppColors.accentBackground(colorScheme)))
                     }
                     .buttonStyle(.plain)
                 )
@@ -296,6 +299,9 @@ extension GameDetailView {
                     Text(loc.localized("gameDetail.viewAllAchievements"))
                         .font(.caption)
                         .foregroundColor(AppColors.brandAccent)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(Capsule().fill(AppColors.accentBackground(colorScheme)))
                 }
                 .buttonStyle(.plain)
             )

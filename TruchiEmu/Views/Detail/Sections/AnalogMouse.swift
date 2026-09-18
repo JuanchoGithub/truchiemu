@@ -56,18 +56,9 @@ extension GameDetailView {
                             .foregroundColor(AppColors.textTertiary(colorScheme))
                     }
                     Spacer()
-                    Button {
+                    SettingsActionButton(loc.localized("analogMouse.useDefault")) {
                         updateSettings { $0.analogMouseEnabled = nil }
-                    } label: {
-                        Text(loc.localized("analogMouse.useDefault"))
-                            .font(.caption)
-                            .foregroundColor(AppColors.brandAccent)
-                            .padding(.horizontal, AppSpacing.lg)
-                            .padding(.vertical, AppSpacing.xs)
-                            .background(AppColors.brandAccent.opacity(0.15))
-                            .cornerRadius(AppRadius.sm)
                     }
-                    .buttonStyle(.plain)
                     .disabled(!isAnalogMouseCustomized)
                 }
                 .padding(.vertical, AppSpacing.xs)

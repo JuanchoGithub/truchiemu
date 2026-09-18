@@ -126,16 +126,14 @@ struct TVModeMainSettingsView: View {
                         }
 
                         HStack {
-                            Button(loc.localized("settings.tvModePickDefaultScreen")) {
+                            SettingsActionButton(loc.localized("settings.tvModePickDefaultScreen")) {
                                 showScreenPicker = true
                             }
-                            .buttonStyle(.bordered)
 
-                            Button(loc.localized("tvMode.settings.resetScreen")) {
+                            SettingsActionButton(loc.localized("tvMode.settings.resetScreen")) {
                                 TVModeSettings.resetRememberedScreen()
                                 generation &+= 1
                             }
-                            .buttonStyle(.bordered)
                             .disabled(TVModeSettings.rememberedScreenID == nil)
                         }
 

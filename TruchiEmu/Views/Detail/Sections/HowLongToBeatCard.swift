@@ -269,14 +269,9 @@ struct HowLongToBeatCard: View {
                     manualPasteRow
                     HStack {
                         Spacer()
-                        Button {
+                        SettingsActionButton(loc.localized("gameDetail.hltb.refresh"), systemImage: "arrow.clockwise") {
                             retryAuto()
-                        } label: {
-                            Label(loc.localized("gameDetail.hltb.refresh"), systemImage: "arrow.clockwise")
-                                .font(.caption)
                         }
-                        .buttonStyle(.plain)
-                        .foregroundColor(AppColors.brandAccent)
                     }
                 }
 

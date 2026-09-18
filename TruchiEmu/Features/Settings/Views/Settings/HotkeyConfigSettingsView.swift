@@ -294,10 +294,9 @@ private struct HotkeyTabContent: View {
                     .font(.caption)
                     .foregroundStyle(AppColors.textSecondary(colorScheme))
 
-                Button(loc.localized(resetActionKey)) {
+                SettingsActionButton(loc.localized(resetActionKey)) {
                     hotkeyManager.resetActionsToDefaults(allTabActions)
                 }
-                .buttonStyle(.bordered)
                 .controlSize(.small)
                 .disabled(allTabActions.allSatisfy { hotkeyManager.isAtDefault($0) })
             }

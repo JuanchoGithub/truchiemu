@@ -97,15 +97,10 @@ struct BoxArtPickerView: View {
                 .foregroundColor(AppColors.textPrimary(colorScheme))
                 .fixedSize(horizontal: false, vertical: true)
             Spacer()
-            Button {
+            AppIconButton(icon: "xmark.circle.fill", help: loc.localized("library.cancel")) {
                 coachDismissed = true
                 AppSettings.setBool("boxArtPickerCoachDismissed", value: true)
-            } label: {
-                Image(systemName: "xmark.circle.fill")
-                    .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
             }
-            .buttonStyle(.plain)
-            .help(loc.localized("library.cancel"))
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
@@ -123,12 +118,11 @@ struct BoxArtPickerView: View {
                 .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
             }
             Spacer()
-            Button(loc.localized("boxArt.pickLocalFile")) { showLocalFilePicker = true }
-                .buttonStyle(.bordered)
-            Button(loc.localized("core.cancel")) { dismiss() }
-                .buttonStyle(.bordered)
+            SettingsActionButton(loc.localized("boxArt.pickLocalFile")) { showLocalFilePicker = true }
+            SettingsActionButton(loc.localized("core.cancel")) { dismiss() }
             Button(loc.localized("boxArt.close")) { dismiss() }
                 .buttonStyle(.borderedProminent)
+                .tint(AppColors.brandAccentSecondary)
         }
         .padding()
     }

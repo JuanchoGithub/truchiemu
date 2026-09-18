@@ -48,11 +48,7 @@ extension GameDetailView {
                 title: loc.localized("gameDetail.openCritic"),
                 icon: "star.fill",
                 headerTrailing: AnyView(
-                    Button(action: { fetchOpenCritic() }) {
-                        Label(loc.localized("openCritic.refresh"), systemImage: "arrow.clockwise")
-                    }
-                    .buttonStyle(.borderless)
-                    .controlSize(.small)
+                    SettingsActionButton(loc.localized("openCritic.refresh"), systemImage: "arrow.clockwise", action: { fetchOpenCritic() })
                 )
             ) {
                 VStack(alignment: .leading, spacing: 14) {

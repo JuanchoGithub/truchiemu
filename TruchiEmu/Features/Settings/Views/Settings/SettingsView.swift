@@ -504,10 +504,10 @@ struct SettingsView: View {
                     .symbolVariant(isSelected ? .fill : .none)
                     .frame(width: 20)
                     .fixedSize()
-                    .foregroundColor(isSelected ? AppColors.brandAccent : AppColors.textSecondary(colorScheme))
+                    .foregroundColor(isSelected ? AppColors.brandAccent : (isHovered ? AppColors.brandAccent : AppColors.textSecondary(colorScheme)))
                 Text(page.label)
                     .font(AppTypography.callout)
-                    .foregroundColor(isSelected ? AppColors.textPrimary(colorScheme) : AppColors.textSecondary(colorScheme))
+                    .foregroundColor(AppColors.textPrimary(colorScheme))
                     .fontWeight(isSelected ? .medium : .regular)
 
                 if coreManager.isDownloadingCore && page == .perSystem {

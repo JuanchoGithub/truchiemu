@@ -273,7 +273,7 @@ init(pending: CoreManager.PendingCoreDownload, selectedCoreID: Binding<String>? 
             HStack(spacing: 10) {
                 if entry.id == selectedCoreID {
                     Image(systemName: "checkmark.circle.fill")
-                        .foregroundColor(.purple)
+                        .foregroundColor(AppColors.brandAccent)
                 } else {
 		Image(systemName: "circle")
 						.foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
@@ -483,7 +483,7 @@ init(pending: CoreManager.PendingCoreDownload, selectedCoreID: Binding<String>? 
                     }
                 }
                 .buttonStyle(.borderedProminent)
-                .tint(selectedCoreEntry.isInstalled ? .green : .purple)
+                .tint(selectedCoreEntry.isInstalled ? AppColors.success(colorScheme) : AppColors.brandAccentSecondary)
                 .keyboardShortcut(.defaultAction)
                 .controlSize(.large)
             }

@@ -151,9 +151,7 @@ private struct MoveListOverviewView: View {
                 .font(.caption)
                 .foregroundStyle(AppColors.textSecondary(colorScheme))
 
-            Button(action: onBrowseGames) {
-                Label(loc.localized("settings.moveList.manageGames"), systemImage: "list.bullet.clipboard")
-            }
+            SettingsActionButton(loc.localized("settings.moveList.manageGames"), systemImage: "list.bullet.clipboard", action: onBrowseGames)
         }
     }
 

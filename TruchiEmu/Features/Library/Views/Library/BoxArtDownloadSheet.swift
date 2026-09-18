@@ -9,6 +9,8 @@ struct BoxArtDownloadSheet: View {
     @ObservedObject private var loc = LocalizationManager.shared
     @State private var selectedOption: DownloadOption = .missingOnly
     @State private var generateHoloMasks: Bool = AppSettings.getBool("auto_generate_holo_masks", defaultValue: false)
+    @State private var missingHover = false
+    @State private var redownloadHover = false
 
     private enum DownloadOption {
         case missingOnly
@@ -69,10 +71,11 @@ struct BoxArtDownloadSheet: View {
                         }
                     }
                     .padding(AppSpacing.lg)
-                    .background(selectedOption == .missingOnly ? AppColors.brandAccent.opacity(0.1) : Color.clear)
+                    .background(selectedOption == .missingOnly ? AppColors.accentBackground(colorScheme) : (missingHover ? AppColors.cardBackgroundSubtle(colorScheme) : Color.clear))
                     .cornerRadius(AppRadius.md)
                 }
                 .buttonStyle(.plain)
+                .onHover { missingHover = $0 }
 
                 Button {
                     selectedOption = .reDownload
@@ -100,10 +103,11 @@ struct BoxArtDownloadSheet: View {
                         }
                     }
                     .padding(AppSpacing.lg)
-                    .background(selectedOption == .reDownload ? AppColors.brandAccent.opacity(0.1) : Color.clear)
+                    .background(selectedOption == .reDownload ? AppColors.accentBackground(colorScheme) : (redownloadHover ? AppColors.cardBackgroundSubtle(colorScheme) : Color.clear))
                     .cornerRadius(AppRadius.md)
                 }
                 .buttonStyle(.plain)
+                .onHover { redownloadHover = $0 }
             }
 
             Divider()

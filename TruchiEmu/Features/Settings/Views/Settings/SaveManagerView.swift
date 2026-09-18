@@ -113,12 +113,7 @@ struct SaveManagerView: View {
                         .font(.caption)
                         .foregroundStyle(AppColors.textSecondary(colorScheme))
                 }
-                Button(action: { dismiss() }) {
-                    Image(systemName: "xmark.circle.fill")
-                        .font(.title2)
-                        .foregroundStyle(AppColors.textTertiary(colorScheme))
-                }
-                .buttonStyle(.plain)
+                AppIconButton(icon: "xmark.circle.fill", font: .title2) { dismiss() }
             }
             .padding()
 
@@ -213,11 +208,7 @@ struct SaveManagerView: View {
                     .textFieldStyle(.plain)
                     .font(.body)
                 if !searchText.isEmpty {
-                    Button(action: { searchText = "" }) {
-                        Image(systemName: "xmark.circle.fill")
-                            .foregroundStyle(AppColors.textTertiary(colorScheme))
-                    }
-                    .buttonStyle(.plain)
+                    AppIconButton(icon: "xmark.circle.fill") { searchText = "" }
                 }
             }
             .padding(.horizontal, 10)
@@ -543,10 +534,9 @@ struct SaveManagerView: View {
                     .foregroundStyle(AppColors.textTertiary(colorScheme))
             }
 
-            Button(loc.localized("settings.saves.delete")) {
+            SettingsActionButton(loc.localized("settings.saves.delete"), role: .destructive) {
                 deleteSlot(slot, game: game)
             }
-            .buttonStyle(.bordered)
             .controlSize(.small)
             .tint(AppColors.error(colorScheme))
             .disabled(!slot.slotInfo.exists)
@@ -582,10 +572,9 @@ struct SaveManagerView: View {
                 .font(.caption)
                 .foregroundStyle(AppColors.textSecondary(colorScheme))
 
-            Button(loc.localized("settings.saves.delete")) {
+            SettingsActionButton(loc.localized("settings.saves.delete"), role: .destructive) {
                 deleteFile(file, game: game)
             }
-            .buttonStyle(.bordered)
             .controlSize(.small)
             .tint(AppColors.error(colorScheme))
         }

@@ -135,10 +135,7 @@ struct BezelSettingsView: View {
             }
             .pickerStyle(.segmented)
             
-            Button(action: { storageManager.openInFinder() }) {
-                Label { Text(loc.localized("bezel.showInFinder")) } icon: { Image(systemName: "folder") }
-            }
-            .buttonStyle(.bordered)
+            SettingsActionButton(loc.localized("bezel.showInFinder"), systemImage: "folder", action: { storageManager.openInFinder() })
             .controlSize(.small)
         } header: {
             Label { Text(loc.localized("bezel.storage")) } icon: { Image(systemName: "folder.fill") }
@@ -230,14 +227,9 @@ VStack(alignment: .leading, spacing: AppSpacing.xs) {
 
     private var dangerZoneSection: some View {
         Section {
-            Button(role: .destructive) {
+            SettingsActionButton(loc.localized("bezel.deleteAllBezels"), systemImage: "trash.fill", role: .destructive) {
                 showClearConfirmation = true
-            } label: {
-                Label { Text(loc.localized("bezel.deleteAllBezels")) } icon: { Image(systemName: "trash.fill") }
             }
-            .buttonStyle(.bordered)
-            .tint(AppColors.error(colorScheme))
-            .controlSize(.small)
         } header: {
             Label { Text(loc.localized("bezel.dangerZone")) } icon: { Image(systemName: "exclamationmark.triangle.fill") }
         }

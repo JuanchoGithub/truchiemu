@@ -219,16 +219,14 @@ LazyVGrid(columns: [GridItem(.adaptive(minimum: 60))], spacing: 2) {
                     SettingsRow(loc.localized("settings.systemNotifications")) {
                         HStack(spacing: AppSpacing.sm) {
                             if NotificationService.shared.isAuthorized {
-                                Button(loc.localized("settings.notificationsTest")) {
+                                SettingsActionButton(loc.localized("settings.notificationsTest")) {
                                     NotificationService.shared.sendNotification(
                                         title: loc.localized("settings.notificationsTestTitle"),
                                         body: loc.localized("settings.notificationsTestBody")
                                     )
                                 }
-                                .buttonStyle(.bordered)
-                                .controlSize(.small)
                             }
-                            Button(NotificationService.shared.isAuthorized ? loc.localized("settings.enabled") : loc.localized("settings.enable")) {
+                            SettingsActionButton(NotificationService.shared.isAuthorized ? loc.localized("settings.enabled") : loc.localized("settings.enable")) {
                                 Task {
                                     let granted = await NotificationService.shared.requestAuthorization()
                                     if granted {
@@ -240,8 +238,6 @@ LazyVGrid(columns: [GridItem(.adaptive(minimum: 60))], spacing: 2) {
                                 }
                             }
                             .disabled(NotificationService.shared.isAuthorized)
-                            .buttonStyle(.bordered)
-                            .controlSize(.small)
                         }
                     }
                 }
@@ -263,15 +259,13 @@ LazyVGrid(columns: [GridItem(.adaptive(minimum: 60))], spacing: 2) {
                             ProgressView()
                                 .controlSize(.small)
                         }
-                        Button(openCritic.isTestingConnection
+                        SettingsActionButton(openCritic.isTestingConnection
                                ? loc.localized("settings.openCritic.testing")
                                : loc.localized("settings.openCritic.testConnection")) {
                             Task {
                                 await OpenCriticService.shared.testAPIConnection()
                             }
                         }
-                        .buttonStyle(.bordered)
-                        .controlSize(.small)
                         .disabled(openCritic.isTestingConnection)
                     }
                     if let msg = openCritic.connectionTestMessage {
@@ -444,7 +438,7 @@ private struct ThemeIconButton: View {
 
                 Text(label)
                     .font(.system(size: 9))
-                    .foregroundStyle(isSelected ? AppColors.textPrimary(colorScheme) : AppColors.textTertiary(colorScheme))
+                    .foregroundStyle(isSelected || isHovered ? AppColors.textPrimary(colorScheme) : AppColors.textSecondary(colorScheme))
                     .lineLimit(1)
             }
         }
@@ -474,7 +468,7 @@ private struct CustomThemeButton: View {
 
                 Text(LocalizationManager.shared.localized("settings.theme.custom"))
                     .font(.system(size: 9))
-                    .foregroundStyle(isSelected ? AppColors.textPrimary(colorScheme) : AppColors.textTertiary(colorScheme))
+                    .foregroundStyle(isSelected || isHovered ? AppColors.textPrimary(colorScheme) : AppColors.textSecondary(colorScheme))
                     .lineLimit(1)
             }
         }

@@ -41,16 +41,11 @@ struct MoveDataMovesView: View {
 
     private var navBar: some View {
         HStack(spacing: 4) {
-            Button(action: onBack) {
-                HStack(spacing: 4) {
-                    Image(systemName: "chevron.left")
-                        .font(.system(size: 13, weight: .semibold))
-                    Text(isCommonMoveset ? loc.localized("settings.moveList.commonMoveset") : characterName)
-                        .font(.system(size: 13))
-                }
-            }
-            .buttonStyle(.plain)
-            .foregroundStyle(AppColors.brandAccent)
+            SettingsActionButton(
+                isCommonMoveset ? loc.localized("settings.moveList.commonMoveset") : characterName,
+                systemImage: "chevron.left",
+                action: onBack
+            )
 
             Spacer()
 
@@ -61,12 +56,11 @@ struct MoveDataMovesView: View {
             Spacer()
 
             HStack(spacing: AppSpacing.sm) {
-                Button(action: { showAddMoveSheet = true }) {
-                    Label(loc.localized("settings.moveList.editor.addMove"), systemImage: "plus.circle")
-                        .font(.system(size: 12))
-                }
-                .buttonStyle(.plain)
-                .foregroundStyle(.green)
+                SettingsActionButton(
+                    loc.localized("settings.moveList.editor.addMove"),
+                    systemImage: "plus.circle",
+                    role: .success
+                ) { showAddMoveSheet = true }
 
             }
         }

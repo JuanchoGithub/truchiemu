@@ -169,22 +169,19 @@ extension GameDetailView {
                     Text(loc.localized("header.continue"))
                         .font(.subheadline)
                         .fontWeight(.semibold)
-                        .foregroundColor(AppColors.brandAccent)
+                        .foregroundColor(AppColors.textOnAccent(colorScheme))
                     if let date = slot.modificationDate {
                         Text(loc.localized("gameDetail.continueDate")
                             .replacingOccurrences(of: "{date}", with: Self.relativeDateFormatter.localizedString(for: date, relativeTo: Date())))
                             .font(.caption2)
-                            .foregroundColor(AppColors.textSecondary(colorScheme))
+                            .foregroundColor(AppColors.textOnAccent(colorScheme))
                     }
                 }
             }
             .padding(.horizontal, 18)
             .padding(.vertical, 8)
-            .background(AppColors.brandAccent.opacity(0.12))
-            .overlay(
-                Capsule()
-                    .stroke(AppColors.brandAccent.opacity(0.5), lineWidth: 1)
-            )
+            .background(AppColors.brandAccent)
+            .clipShape(Capsule())
         }
         .buttonStyle(.plain)
         .liquidGlassSheen()

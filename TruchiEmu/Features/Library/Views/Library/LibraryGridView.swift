@@ -239,6 +239,9 @@ struct LibraryGridView: View {
     @State private var selectedGenres: Set<String> = []
     @State private var showGenrePicker: Bool = false
     @State private var showOtherFilters: Bool = false
+    @State private var otherChipHovered = false
+    @State private var genreChipHovered = false
+    @State private var clearChipHovered = false
     @State private var r3CycleIndex: Int = 0
     @ObservedObject private var notificationHistory = NotificationHistoryManager.shared
     @State private var showNotificationPopover: Bool = false
@@ -1926,13 +1929,14 @@ viewModel.updateFilters(
                                 .font(.system(size: 10))
                         }
                     }
-                    .foregroundColor(otherBadgeCount > 0 ? AppColors.textOnAccent(colorScheme) : .secondary)
+                    .foregroundColor(otherBadgeCount > 0 ? AppColors.textOnAccent(for: AppColors.selectedFill(for: AppColors.brandAccent), colorScheme: colorScheme) : (otherChipHovered ? AppColors.brandAccent : AppColors.textPrimary(colorScheme)))
                     .padding(.horizontal, 10)
                     .padding(.vertical, 6)
                     .frame(minHeight: 30)
-                    .background(Capsule().fill(otherBadgeCount > 0 ? AppColors.brandAccent : AppColors.cardBackgroundSubtle(colorScheme)))
+                    .background(Capsule().fill(otherBadgeCount > 0 ? AppColors.selectedFill(for: AppColors.brandAccent) : (otherChipHovered ? AppColors.accentBackground(colorScheme) : AppColors.cardBackgroundSubtle(colorScheme))))
                 }
                 .buttonStyle(.plain)
+                .onHover { otherChipHovered = $0 }
                 .popover(isPresented: $showOtherFilters) {
                     OtherFiltersPopover(
                         activeFilters: $activeFilters,
@@ -1963,13 +1967,14 @@ viewModel.updateFilters(
                             }
                         }
                     }
-                    .foregroundColor(selectedGenres.isEmpty ? .secondary : AppColors.textOnAccent(colorScheme))
+                    .foregroundColor(selectedGenres.isEmpty ? (genreChipHovered ? AppColors.brandAccent : AppColors.textPrimary(colorScheme)) : AppColors.textOnAccent(for: AppColors.selectedFill(for: AppColors.brandAccent), colorScheme: colorScheme))
                     .padding(.horizontal, 10)
                     .padding(.vertical, 6)
                     .frame(minHeight: 30)
-                    .background(Capsule().fill(selectedGenres.isEmpty ? AppColors.cardBackgroundSubtle(colorScheme) : AppColors.brandAccent))
+                    .background(Capsule().fill(selectedGenres.isEmpty ? (genreChipHovered ? AppColors.accentBackground(colorScheme) : AppColors.cardBackgroundSubtle(colorScheme)) : AppColors.selectedFill(for: AppColors.brandAccent)))
                 }
                 .buttonStyle(.plain)
+                .onHover { genreChipHovered = $0 }
                 .popover(isPresented: $showGenrePicker) {
                     GenrePickerView(
                         selectedGenres: $selectedGenres,
@@ -2005,7 +2010,7 @@ viewModel.updateFilters(
                         HStack(spacing: 3) {
                             Image(systemName: "xmark")
                                 .font(.system(size: 9, weight: .medium))
-                            Text("Clear")
+                            Text(loc.localized("library.clearFilters"))
                                 .font(.system(size: 10, weight: .medium))
                         }
 		.foregroundColor(AppColors.textOnAccent(colorScheme))
@@ -2014,8 +2019,12 @@ viewModel.updateFilters(
 		.frame(minHeight: 30)
 		.background(AppColors.brandAccent)
 		.clipShape(Capsule())
+		.shadow(color: AppColors.brandAccent.opacity(clearChipHovered ? 0.35 : 0), radius: clearChipHovered ? 5 : 0, y: 1)
+		.scaleEffect(clearChipHovered ? 1.05 : 1.0)
                     }
                     .buttonStyle(.plain)
+                    .onHover { clearChipHovered = $0 }
+                    .animation(.interpolatingSpring(stiffness: 320, damping: 20), value: clearChipHovered)
                     .padding(.leading, 2)
                 }
             }
@@ -2427,13 +2436,12 @@ private struct DeleteConfirmationView: View {
                 Button {
                     onHide()
                 } label: {
-                    Text("Hide from Library Only")
+                    Text(loc.localized("library.hideFromLibrary"))
                         .font(.body.weight(.medium))
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 10)
                 }
                 .buttonStyle(.bordered)
-                .tint(AppColors.textSecondary(colorScheme))
                 .controlSize(.large)
 
                 Button(role: .cancel) {
@@ -2445,7 +2453,6 @@ private struct DeleteConfirmationView: View {
                         .padding(.vertical, 10)
                 }
                 .buttonStyle(.bordered)
-                .tint(AppColors.textSecondary(colorScheme))
                 .controlSize(.large)
             }
             .padding(.horizontal, 32)

@@ -91,28 +91,46 @@ private struct PlayerSlotToggle: View {
     let slot: Int
     let isAssigned: Bool
     let action: () -> Void
+    @State private var isHovered = false
 
     var body: some View {
         Button(action: action) {
             if slot == 0 {
-                Text("\u{2014}")
+                Text("—")
                     .font(.caption)
                     .fontWeight(.regular)
-                    .foregroundColor(isAssigned ? AppColors.textTertiary(colorScheme) : .white)
+                    .foregroundColor(
+                        isAssigned ? AppColors.textSecondary(colorScheme)
+                            : AppColors.textOnAccent(for: AppColors.error(colorScheme), colorScheme: colorScheme)
+                    )
                     .frame(width: 22, height: 22)
-                    .background(isAssigned ? AppColors.cardBackgroundSubtle(colorScheme) : AppColors.error(colorScheme))
+                    .background(
+                        RoundedRectangle(cornerRadius: 4).fill(
+                            isHovered ? AppColors.accentBackground(colorScheme)
+                                : (isAssigned ? AppColors.cardBackgroundSubtle(colorScheme) : AppColors.error(colorScheme))
+                        )
+                    )
                     .cornerRadius(4)
             } else {
                 Text("P\(slot)")
                     .font(.caption)
                     .fontWeight(isAssigned ? .bold : .regular)
-                    .foregroundColor(isAssigned ? AppColors.textOnAccent(colorScheme) : AppColors.textTertiary(colorScheme))
+                    .foregroundColor(
+                        isAssigned ? AppColors.textOnAccent(for: AppColors.selectedFill(for: AppColors.brandAccent), colorScheme: colorScheme)
+                            : (isHovered ? AppColors.textPrimary(colorScheme) : AppColors.textSecondary(colorScheme))
+                    )
                     .frame(width: 28, height: 22)
-                    .background(isAssigned ? AppColors.brandAccent : AppColors.cardBackgroundSubtle(colorScheme))
+                    .background(
+                        RoundedRectangle(cornerRadius: 4).fill(
+                            isAssigned ? AppColors.selectedFill(for: AppColors.brandAccent)
+                                : (isHovered ? AppColors.cardBackgroundSubtle(colorScheme) : .clear)
+                        )
+                    )
                     .cornerRadius(4)
             }
         }
         .buttonStyle(.plain)
+        .onHover { isHovered = $0 }
     }
 }
 
@@ -363,21 +381,14 @@ struct ControllerSettingsView: View {
                     TextField(loc.localized("controllers.configName"), text: $configName)
                     .textFieldStyle(.roundedBorder)
 
-                    Button(loc.localized("controllers.save")) {
+                    SettingsActionButton(loc.localized("controllers.save")) {
                         saveCurrentConfig()
                     }
                     .disabled(configName.isEmpty)
-                    .buttonStyle(.bordered)
-                    .controlSize(.small)
 
-                    Button {
+                    SettingsActionButton("", systemImage: "trash", role: .destructive) {
                         deleteConfig(name: configName)
-                    } label: {
-                        Image(systemName: "trash")
                     }
-                    .buttonStyle(.bordered)
-                    .tint(AppColors.error(colorScheme))
-                    .controlSize(.small)
                     .disabled(configName.isEmpty || savedConfigs[configName] == nil)
 
                     Picker("", selection: $configName) {
@@ -656,12 +667,9 @@ struct ControllerSettingsView: View {
                         }
                     }
                 )
-                Button {
+                SettingsActionButton("", systemImage: "arrow.uturn.backward") {
                     hotkeyManager.resetSystemOverride(action, systemID: systemID)
-                } label: {
-                    Image(systemName: "arrow.uturn.backward")
                 }
-                .buttonStyle(.bordered)
                 .controlSize(.small)
                 .help(loc.localized("controllers.resetToGlobal"))
                 .disabled(!hasOverride)
@@ -700,11 +708,10 @@ struct ControllerSettingsView: View {
 
                 Spacer()
 
-                Button(loc.localized("controllers.resetToDefaults")) {
+                SettingsActionButton(loc.localized("controllers.resetToDefaults")) {
                     let defaults = KeyboardMapping.defaults(for: selectedSystemID, handedness: controllerService.handedness)
                     controllerService.updateKeyboardMapping(defaults, for: selectedSystemID, player: 1)
                 }
-                .buttonStyle(.bordered)
                 .controlSize(.small)
             }
             .padding()
@@ -1017,10 +1024,7 @@ struct StickCalibrationSection: View {
                     .foregroundColor(AppColors.textPrimary(colorScheme))
                 Spacer()
                 if session.isActive {
-                    Button(loc.localized("controllers.calibrateCancel")) { session.stop() }
-                        .buttonStyle(.bordered)
-                        .controlSize(.mini)
-                        .tint(AppColors.textSecondary(colorScheme))
+                    SettingsActionButton(loc.localized("controllers.calibrateCancel")) { session.stop() }
                     Button(loc.localized("controllers.calibrateSave")) { save() }
                         .buttonStyle(.borderedProminent)
                         .controlSize(.mini)
@@ -1031,10 +1035,7 @@ struct StickCalibrationSection: View {
                         .controlSize(.mini)
                         .tint(AppColors.brandAccent)
                     if !storedCalibration.isDefault {
-                        Button(loc.localized("controllers.calibrateReset")) { reset() }
-                            .buttonStyle(.bordered)
-                            .controlSize(.mini)
-                            .tint(AppColors.error(colorScheme))
+                        SettingsActionButton(loc.localized("controllers.calibrateReset"), role: .destructive) { reset() }
                     }
                 }
             }
@@ -1624,10 +1625,9 @@ struct MappingRowView: View {
 
             Spacer(minLength: 4)
 
-            Button(isListening ? loc.localized("controllers.press") : (displayAlias ?? "—")) {
+            SettingsActionButton(isListening ? loc.localized("controllers.press") : (displayAlias ?? "—")) {
                 if !isButtonDisabled { onStartListening() }
             }
-            .buttonStyle(.bordered)
             .controlSize(.small)
             .tint(isListening ? AppColors.warning(colorScheme) : AppColors.textSecondary(colorScheme))
             .fixedSize()
@@ -1821,11 +1821,10 @@ struct KeyboardContentView: View {
                 .pickerStyle(.segmented)
                 .frame(width: 180)
 
-                Button(loc.localized("controllers.resetToDefaults")) {
+                SettingsActionButton(loc.localized("controllers.resetToDefaults")) {
                     let defaults = KeyboardMapping.defaults(for: systemID, handedness: controllerService.handedness)
                     controllerService.updateKeyboardMapping(defaults, for: systemID, player: selectedKeyboardPlayer)
                 }
-                .buttonStyle(.bordered)
                 .controlSize(.small)
             }
             .padding()

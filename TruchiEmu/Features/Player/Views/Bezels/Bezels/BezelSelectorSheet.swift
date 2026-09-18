@@ -83,11 +83,7 @@ struct BezelSelectorSheet: View {
                         TextField(loc.localized("bezel.searchBezels"), text: $searchQuery)
                             .textFieldStyle(.plain)
                         if !searchQuery.isEmpty {
-                            Button(action: { searchQuery = "" }) {
-                Image(systemName: "xmark.circle.fill")
-                    .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
-                            }
-                            .buttonStyle(.plain)
+                            AppIconButton(icon: "xmark.circle.fill") { searchQuery = "" }
                         }
                     }
                     .padding(8)
@@ -291,6 +287,7 @@ struct BezelSelectorSheet: View {
                 Task { await loadRemoteBezels() }
             }
             .buttonStyle(.borderedProminent)
+            .tint(AppColors.brandAccentSecondary)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
@@ -428,6 +425,7 @@ struct BezelSelectorSheet: View {
                             .frame(maxWidth: .infinity)
                     }
                     .buttonStyle(.borderedProminent)
+                    .tint(AppColors.brandAccentSecondary)
                     .controlSize(.large)
                 case .remote(let remote):
                     if remote.isDownloaded {
@@ -436,6 +434,7 @@ struct BezelSelectorSheet: View {
                                 .frame(maxWidth: .infinity)
                         }
                         .buttonStyle(.borderedProminent)
+                        .tint(AppColors.brandAccentSecondary)
                         .controlSize(.large)
                     } else {
                         Button(action: { downloadAndApply(remote) }) {
@@ -447,6 +446,7 @@ struct BezelSelectorSheet: View {
                             }
                         }
                         .buttonStyle(.borderedProminent)
+                        .tint(AppColors.brandAccentSecondary)
                         .controlSize(.large)
                         .disabled(isDownloading)
                     }

@@ -54,26 +54,16 @@ struct AboutView: View {
                 Spacer()
 
                 HStack(spacing: AppSpacing.sm) {
-                    Button {
+                    SettingsActionButton(loc.localized("update.whatsNew"), systemImage: "doc.text") {
                         showWhatsNew = true
-                    } label: {
-                        Label(loc.localized("update.whatsNew"), systemImage: "doc.text")
-                            .font(.caption)
                     }
-                    .buttonStyle(.bordered)
-                    .controlSize(.small)
                     .popover(isPresented: $showWhatsNew) { WhatsNewView()
                         .gamepadDismissable { showWhatsNew = false }
                     }
 
-                    Button {
+                    SettingsActionButton(loc.localized("update.changelog"), systemImage: "list.bullet.rectangle") {
                         showChangelog = true
-                    } label: {
-                        Label(loc.localized("update.changelog"), systemImage: "list.bullet.rectangle")
-                            .font(.caption)
                     }
-                    .buttonStyle(.bordered)
-                    .controlSize(.small)
                     .popover(isPresented: $showChangelog) { ChangelogView()
                         .gamepadDismissable { showChangelog = false }
                     }
@@ -82,7 +72,7 @@ struct AboutView: View {
             ProgressView()
                 .controlSize(.small)
         } else {
-            Button {
+            SettingsActionButton(loc.localized("update.checkForUpdates"), systemImage: "arrow.triangle.2.circlepath") {
                 Task {
                     isCheckingUpdates = true
                     upToDateMessage = nil
@@ -96,12 +86,7 @@ struct AboutView: View {
                     }
                     isCheckingUpdates = false
                 }
-            } label: {
-                Label(loc.localized("update.checkForUpdates"), systemImage: "arrow.triangle.2.circlepath")
-                    .font(.caption)
             }
-            .buttonStyle(.bordered)
-            .controlSize(.small)
         }
                 }
             }
@@ -124,6 +109,7 @@ struct AboutView: View {
             Link(destination: URL(string: "https://github.com/JuanchoGithub/truchiemu/releases")!) {
                 Label(loc.localized("update.checkManually"), systemImage: "safari")
                     .font(.caption)
+                    .foregroundStyle(AppColors.brandAccent)
             }
         }
 

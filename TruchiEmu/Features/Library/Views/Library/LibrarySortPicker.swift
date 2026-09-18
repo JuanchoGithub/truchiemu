@@ -161,7 +161,8 @@ private struct SortRow: View {
     // MARK: Capsule chip row (matches existing sort-chip styling)
 
     private var chipRow: some View {
-        Button {
+        let activeFill = AppColors.selectedFill(for: AppColors.brandAccent)
+        return Button {
             cycle()
         } label: {
             HStack(spacing: 4) {
@@ -171,13 +172,13 @@ private struct SortRow: View {
                 Text(loc.localized(order.localizationKey))
                     .font(.system(size: 11, weight: .medium))
             }
-            .foregroundColor(phase != nil ? AppColors.textOnAccent(colorScheme) : (isHovered ? AppColors.brandAccent : AppColors.textSecondaryNeutral(colorScheme)))
+            .foregroundColor(phase != nil ? AppColors.textOnAccent(for: activeFill, colorScheme: colorScheme) : (isHovered ? AppColors.brandAccent : AppColors.textPrimary(colorScheme)))
             .padding(.horizontal, 10)
             .padding(.vertical, 6)
             .frame(minHeight: 30)
             .background(
                 Capsule()
-                    .fill(phase != nil ? AppColors.brandAccent : (isHovered ? AppColors.brandAccent.opacity(0.12) : AppColors.cardBackgroundSubtle(colorScheme)))
+                    .fill(phase != nil ? activeFill : (isHovered ? AppColors.accentBackground(colorScheme) : AppColors.cardBackgroundSubtle(colorScheme)))
                     .scaleEffect(isHovered ? 1.05 : 1)
                     .shadow(color: phase != nil ? AppColors.brandAccent.opacity(0.3) : (isHovered ? AppColors.brandAccent.opacity(0.2) : .clear), radius: isHovered ? 4 : 0, y: 2)
             )
@@ -199,7 +200,8 @@ private struct SortRow: View {
     // shows a uniform list of capsule pills).
 
     private var popoverRow: some View {
-        Button {
+        let activeFill = AppColors.selectedFill(for: AppColors.brandAccent)
+        return Button {
             cycle()
         } label: {
             HStack(spacing: 4) {
@@ -209,13 +211,13 @@ private struct SortRow: View {
                 Text(loc.localized(order.localizationKey))
                     .font(.system(size: 11, weight: .medium, design: .rounded))
             }
-            .foregroundColor(phase != nil ? .white : (isHovered ? AppColors.brandAccent : .secondary))
+            .foregroundColor(phase != nil ? AppColors.textOnAccent(for: activeFill, colorScheme: colorScheme) : (isHovered ? AppColors.brandAccent : AppColors.textPrimary(colorScheme)))
             .padding(.horizontal, 10)
             .padding(.vertical, 6)
             .frame(maxWidth: .infinity, minHeight: 30)
             .background(
                 Capsule()
-                    .fill(phase != nil ? AppColors.brandAccent : (isHovered ? AppColors.brandAccent.opacity(0.12) : AppColors.cardBackgroundSubtle(colorScheme)))
+                    .fill(phase != nil ? activeFill : (isHovered ? AppColors.accentBackground(colorScheme) : AppColors.cardBackgroundSubtle(colorScheme)))
                     .scaleEffect(isHovered ? 1.05 : 1)
                     .shadow(color: phase != nil ? AppColors.brandAccent.opacity(0.3) : (isHovered ? AppColors.brandAccent.opacity(0.2) : .clear), radius: isHovered ? 4 : 0, y: 2)
             )

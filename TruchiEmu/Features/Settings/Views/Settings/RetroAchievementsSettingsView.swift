@@ -262,20 +262,15 @@ struct RetroAchievementsSettingsView: View {
                     }
                 }
                 Spacer()
-                Button {
+                SettingsActionButton("", systemImage: "arrow.clockwise") {
                     Task { await raService.refreshUserSummary() }
-                } label: {
-                    Image(systemName: "arrow.clockwise")
                 }
-                .buttonStyle(.bordered)
                 .help(loc.localized("retroAchievements.refreshStats"))
-                Button(loc.localized("retroAchievements.logout")) {
+                SettingsActionButton(loc.localized("retroAchievements.logout"), role: .destructive) {
                     raService.logout()
                     username = ""
                     webApiKey = ""
                 }
-                .buttonStyle(.bordered)
-                .tint(AppColors.error(colorScheme))
             }
 
             if let userInfo = raService.userInfo {
@@ -374,32 +369,18 @@ struct RetroAchievementsSettingsView: View {
             .foregroundColor(AppColors.textSecondary(colorScheme))
 
         HStack(spacing: AppSpacing.xl) {
-            Button(action: onRefreshConsoles) {
-                if isCacheRefreshing.wrappedValue {
-                    ProgressView()
-                        .controlSize(.small)
-                } else {
-                    Label(loc.localized("retroAchievements.refreshSystems"), systemImage: "arrow.clockwise")
-                }
+            if isCacheRefreshing.wrappedValue {
+                ProgressView()
+                    .controlSize(.small)
+            } else {
+                SettingsActionButton(loc.localized("retroAchievements.refreshSystems"), systemImage: "arrow.clockwise", action: onRefreshConsoles)
+                    .disabled(raCacheCoordinator.isActive || isCacheRefreshing.wrappedValue || !raService.isLoggedIn)
             }
-            .buttonStyle(.bordered)
+
+            SettingsActionButton(loc.localized("retroAchievements.refreshGames"), systemImage: "gamecontroller", action: onRefreshGames)
             .disabled(raCacheCoordinator.isActive || isCacheRefreshing.wrappedValue || !raService.isLoggedIn)
 
-            Button(action: onRefreshGames) {
-                if isCacheRefreshing.wrappedValue {
-                    ProgressView()
-                        .controlSize(.small)
-                } else {
-                    Label(loc.localized("retroAchievements.refreshGames"), systemImage: "gamecontroller")
-                }
-            }
-            .buttonStyle(.bordered)
-            .disabled(raCacheCoordinator.isActive || isCacheRefreshing.wrappedValue || !raService.isLoggedIn)
-
-            Button(action: onMatchAllGames) {
-                Label(loc.localized("retroAchievements.matchAllGames"), systemImage: "trophy")
-            }
-            .buttonStyle(.bordered)
+            SettingsActionButton(loc.localized("retroAchievements.matchAllGames"), systemImage: "trophy", action: onMatchAllGames)
             .disabled(raCacheCoordinator.isActive || raService.isMatchingAll || !raService.isLoggedIn)
         }
 

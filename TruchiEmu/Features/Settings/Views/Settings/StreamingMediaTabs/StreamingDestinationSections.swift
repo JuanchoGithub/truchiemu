@@ -16,11 +16,7 @@ struct VerifyButton: View {
     var body: some View {
         switch state {
         case .idle:
-            Button(action: { Task { await performVerify() } }) {
-                Label(loc.localized("settings.streaming.verify"), systemImage: "checkmark.circle")
-                    .font(.system(size: 12))
-            }
-            .buttonStyle(.bordered)
+            SettingsActionButton(loc.localized("settings.streaming.verify"), systemImage: "checkmark.circle") { Task { await performVerify() } }
             .controlSize(.small)
             .help(loc.localized("settings.streaming.verifyDescription"))
         case .verifying:

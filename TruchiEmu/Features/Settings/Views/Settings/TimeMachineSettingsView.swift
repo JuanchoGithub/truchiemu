@@ -199,13 +199,9 @@ struct TimeMachineSettingsView: View {
                     .font(.caption)
                     .foregroundStyle(AppColors.textSecondary(colorScheme))
 
-                Button {
+                SettingsActionButton(loc.localized("settings.timeMachine.configureHotkeys"), systemImage: "keyboard") {
                     selectedPage = .hotkeys
-                } label: {
-                    Label(loc.localized("settings.timeMachine.configureHotkeys"), systemImage: "keyboard")
                 }
-                .buttonStyle(.borderless)
-                .foregroundStyle(AppColors.brandAccent)
             } header: {
                 Label(loc.localized("settings.timeMachine.hotkeys"), systemImage: "keyboard")
             }
@@ -226,13 +222,9 @@ struct TimeMachineSettingsView: View {
                         .foregroundStyle(AppColors.warning(colorScheme))
                 }
 
-                Button {
+                SettingsActionButton(loc.localized("settings.timeMachine.hardcoreConfigure"), systemImage: "chevron.right") {
                     selectedPage = .retroAchievements
-                } label: {
-                    Label(loc.localized("settings.timeMachine.hardcoreConfigure"), systemImage: "chevron.right")
                 }
-                .buttonStyle(.borderless)
-                .foregroundStyle(AppColors.brandAccent)
             } header: {
                 Label(loc.localized("settings.timeMachine.hardcore"), systemImage: "shield.lefthalf.filled")
             }

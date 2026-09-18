@@ -15,6 +15,8 @@ struct SetupWizardView: View {
     @State private var raLoginError: RAError?
     @State private var isRALoggingIn: Bool = false
     @State private var raLoginSuccess: Bool = false
+    @State private var themeHover: AccentColorTheme? = nil
+    @State private var regionHover: EmulatorLanguage? = nil
 
     var body: some View {
         ZStack {
@@ -103,11 +105,9 @@ struct SetupWizardView: View {
             Spacer()
 
             if wizard.currentStep.canSkip {
-Button(loc.localized("wizard.skip")) {
+SettingsActionButton(loc.localized("wizard.skip")) {
                 wizard.nextStep()
             }
-            .buttonStyle(.plain)
-            .foregroundColor(AppColors.textSecondary(colorScheme))
             }
 
             if wizard.currentStep == .completion {
@@ -312,12 +312,13 @@ extension SetupWizardView {
                                         .font(.caption2)
                                     Text("wizard.region.\(region.name.lowercased().replacingOccurrences(of: " ", with: ""))")
                                         .font(.system(size: 9))
+                                        .foregroundColor(wizard.selectedRegion == region || regionHover == region ? AppColors.brandAccent : AppColors.textPrimary(colorScheme))
                                 }
                                 .frame(maxWidth: .infinity)
                                 .padding(6)
                                 .background(
                                     RoundedRectangle(cornerRadius: 6)
-                                        .fill(wizard.selectedRegion == region ? AppColors.brandAccent.opacity(0.12) : AppColors.cardBackgroundSubtle(colorScheme))
+                                        .fill(wizard.selectedRegion == region ? AppColors.accentBackground(colorScheme) : (regionHover == region ? AppColors.accentBackground(colorScheme).opacity(0.5) : AppColors.cardBackgroundSubtle(colorScheme)))
                                 )
                                 .overlay(
                                     RoundedRectangle(cornerRadius: 6)
@@ -325,6 +326,7 @@ extension SetupWizardView {
                                 )
                             }
                             .buttonStyle(.plain)
+                            .onHover { regionHover = $0 ? region : nil }
                         }
                     }
                 }
@@ -348,13 +350,9 @@ extension SetupWizardView {
                                         .lineLimit(1)
                                 }
                                 Spacer()
-                                Button {
+                                AppIconButton(icon: "trash") {
                                     wizard.removeLibraryFolder(at: idx)
-                                } label: {
-                                    Image(systemName: "trash")
-                                        .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
                                 }
-                                .buttonStyle(.plain)
                             }
                             .padding(8)
                             .background(AppColors.cardBackgroundSubtle(colorScheme))
@@ -562,12 +560,12 @@ extension SetupWizardView {
                 Text(theme.displayName)
                     .font(.system(size: 9))
                     .lineLimit(1)
-                    .foregroundColor(isSelected ? AppColors.brandAccent : .primary)
+                    .foregroundColor(isSelected ? AppColors.brandAccent : (themeHover == theme ? AppColors.brandAccent : .primary))
             }
             .padding(6)
             .background(
                 RoundedRectangle(cornerRadius: 8)
-                    .fill(isSelected ? AppColors.brandAccent.opacity(0.12) : AppColors.cardBackgroundSubtle(colorScheme))
+                    .fill(isSelected ? AppColors.accentBackground(colorScheme) : (themeHover == theme ? AppColors.accentBackground(colorScheme).opacity(0.5) : AppColors.cardBackgroundSubtle(colorScheme)))
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 8)
@@ -575,6 +573,7 @@ extension SetupWizardView {
             )
         }
         .buttonStyle(.plain)
+        .onHover { themeHover = $0 ? theme : nil }
     }
 
 }
@@ -791,11 +790,9 @@ extension SetupWizardView {
                     .foregroundColor(AppColors.error(colorScheme))
                     .fixedSize(horizontal: false, vertical: true)
                 if let url = error.helpURL {
-                    Button(loc.localized("ra.error.openSettings")) {
+                    SettingsActionButton(loc.localized("ra.error.openSettings")) {
                         NSWorkspace.shared.open(url)
                     }
-                    .buttonStyle(.link)
-                    .font(.caption)
                 }
             }
 

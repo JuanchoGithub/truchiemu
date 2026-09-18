@@ -27,14 +27,14 @@ struct CategoryRowButton: View {
 
         Text(category.name)
         .lineLimit(1)
-        .foregroundColor(isSelected ? .primary : .secondary)
+        .foregroundColor(isSelected ? .primary : AppColors.textPrimary(colorScheme))
         .fontWeight(isSelected ? .medium : .regular)
 
         Spacer()
 
         Text("\(count)")
         .font(.caption2.monospacedDigit())
-        .foregroundColor(isSelected ? (Color(hex: category.colorHex) ?? .blue) : .secondary)
+        .foregroundColor(isSelected ? (Color(hex: category.colorHex) ?? .blue) : AppColors.textPrimary(colorScheme))
         .padding(.horizontal, 6)
         .padding(.vertical, 2)
         .padding(.trailing, (isHovered || isSelected) ? 22 : 0)
@@ -83,7 +83,7 @@ struct CategoryRowButton: View {
                 } label: {
                     Image(systemName: "ellipsis")
                         .font(.system(size: 12, weight: .bold))
-                        .foregroundColor(.secondary)
+                        .foregroundColor(AppColors.textSecondary(colorScheme))
                         .padding(.horizontal, 4)
                         .padding(.vertical, 6)
                 }

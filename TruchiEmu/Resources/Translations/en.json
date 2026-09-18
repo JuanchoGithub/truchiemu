@@ -538,6 +538,7 @@
   "library.lastAdded": "Last Added",
   "library.genre": "Genre",
   "library.otherFilters": "Other",
+  "library.clearFilters": "Clear",
   "library.otherSort": "Other",
   "library.region": "Region",
   "library.gameRegion": "Game Region",

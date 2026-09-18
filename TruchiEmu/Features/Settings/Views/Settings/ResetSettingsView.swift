@@ -54,11 +54,13 @@ struct ResetSettingsView: View {
             }
 
             Section {
-                Button(role: .destructive) {
+                SettingsActionButton(
+                    loc.localized("settings.reset.restoreAll"),
+                    systemImage: "exclamationmark.triangle.fill",
+                    role: .destructive
+                ) {
                     resetTarget = .all
                     showResetConfirmation = true
-                } label: {
-                    Label(loc.localized("settings.reset.restoreAll"), systemImage: "exclamationmark.triangle.fill")
                 }
             } footer: {
                 Text(loc.localized("settings.reset.restoreAllDescription"))
@@ -90,13 +92,24 @@ struct ResetSettingsView: View {
 
     @ViewBuilder
     private func row(_ target: ResetTarget, title: String, description: String, onConfirm: @escaping () -> Void) -> some View {
-        Button {
-            onConfirm()
-        } label: {
+        ResetRow(title: title, description: description, onConfirm: onConfirm)
+    }
+}
+
+private struct ResetRow: View {
+    let title: String
+    let description: String
+    let onConfirm: () -> Void
+    @Environment(\.colorScheme) private var colorScheme
+    @State private var isHovered = false
+
+    var body: some View {
+        Button(action: onConfirm) {
             HStack(alignment: .top, spacing: AppSpacing.md) {
                 VStack(alignment: .leading, spacing: AppSpacing.xxs) {
                     Text(title)
                         .font(.body)
+                        .foregroundColor(isHovered ? AppColors.brandAccent : AppColors.textPrimary(colorScheme))
                     Text(description)
                         .font(.caption)
                         .foregroundColor(AppColors.textSecondary(colorScheme))
@@ -105,7 +118,14 @@ struct ResetSettingsView: View {
                 Image(systemName: "arrow.uturn.backward")
                     .foregroundColor(AppColors.brandAccent)
             }
+            .padding(AppSpacing.sm)
+            .background(
+                RoundedRectangle(cornerRadius: AppRadius.md)
+                    .fill(isHovered ? AppColors.accentBackground(colorScheme) : .clear)
+            )
+            .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        .onHover { isHovered = $0 }
     }
 }

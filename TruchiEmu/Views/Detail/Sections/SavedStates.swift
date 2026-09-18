@@ -175,11 +175,11 @@ private struct ProgressiveSlotStackView: View {
                 )
                 Text("(\(progressives.count))")
                     .font(.caption2)
-                    .foregroundColor(AppColors.textTertiary(colorScheme))
+                    .foregroundColor(AppColors.textSecondary(colorScheme))
                 Spacer()
                 Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
                     .font(.system(size: 8, weight: .bold))
-                    .foregroundColor(AppColors.textTertiary(colorScheme))
+                    .foregroundColor(AppColors.textSecondary(colorScheme))
             }
 
             stackedThumbnailView
@@ -311,6 +311,8 @@ private struct ProgressiveSaveStateExpandedView: View {
                 Image(systemName: "play.circle.fill")
                     .font(.system(size: 22))
                     .foregroundColor(AppColors.brandAccent)
+                    .padding(4)
+                    .background(Circle().fill(AppColors.accentBackground(colorScheme)))
             }
             .buttonStyle(.plain)
             .liquidGlassSheen()

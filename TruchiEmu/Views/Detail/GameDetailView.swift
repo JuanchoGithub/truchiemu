@@ -779,13 +779,9 @@ struct GameDetailView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
             if case .result = manualAction.status {
-                Button {
+                AppIconButton(icon: "xmark.circle.fill", help: "Dismiss") {
                     manualAction.clear()
-                } label: {
-                    Image(systemName: "xmark.circle.fill").foregroundStyle(AppColors.textMuted(colorScheme))
                 }
-                .buttonStyle(.plain)
-                .help("Dismiss")
             }
         }
         .padding(.horizontal, 16)

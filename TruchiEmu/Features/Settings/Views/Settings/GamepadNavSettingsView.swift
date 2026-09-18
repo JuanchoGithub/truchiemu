@@ -104,11 +104,9 @@ struct GamepadNavContent: View {
                         .font(.caption)
                         .foregroundStyle(AppColors.textSecondary(colorScheme))
                         .fixedSize(horizontal: false, vertical: true)
-                    Button(loc.localized("gamepadNav.resetToDefaults")) {
+                    SettingsActionButton(loc.localized("gamepadNav.resetToDefaults")) {
                         configManager.resetToDefaults()
                     }
-                    .buttonStyle(.bordered)
-                    .controlSize(.small)
                 }
             }
             .id("section-reset")

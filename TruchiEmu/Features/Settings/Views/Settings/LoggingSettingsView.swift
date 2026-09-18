@@ -64,11 +64,9 @@ struct LoggingSettingsView: View {
                                     .foregroundStyle(AppColors.textSecondary(colorScheme))
                                     .lineLimit(1)
                                     .truncationMode(.middle)
-                                Button(loc.localized("logging.showInFinder")) {
+                                SettingsActionButton(loc.localized("logging.showInFinder")) {
                                     viewModel.showLogInFinder()
                                 }
-                                .buttonStyle(.bordered)
-                                .controlSize(.small)
                             }
                         }
 
@@ -91,18 +89,14 @@ struct LoggingSettingsView: View {
                         }
 
                         HStack {
-                            Button(loc.localized("logging.changeLocation")) {
+                            SettingsActionButton(loc.localized("logging.changeLocation")) {
                                 viewModel.changeLogFolder()
                             }
-                            .buttonStyle(.bordered)
-                            .controlSize(.small)
 
                             if viewModel.hasCustomLogFolder {
-                                Button(loc.localized("logging.reset")) {
+                                SettingsActionButton(loc.localized("logging.reset")) {
                                     viewModel.resetToDefaultFolder()
                                 }
-                                .buttonStyle(.bordered)
-                                .controlSize(.small)
                             }
                         }
                     } header: {
@@ -135,17 +129,13 @@ struct LoggingSettingsView: View {
                             .padding(.vertical, AppSpacing.xs)
 
                         HStack {
-                            Button(loc.localized("logging.trimOldEntries")) {
+                            SettingsActionButton(loc.localized("logging.trimOldEntries")) {
                                 viewModel.trimOldLogs()
                             }
-                            .buttonStyle(.bordered)
-                            .controlSize(.small)
 
-                            Button(loc.localized("logging.clearAllLogs")) {
+                            SettingsActionButton(loc.localized("logging.clearAllLogs")) {
                                 viewModel.clearAllLogs()
                             }
-                            .buttonStyle(.bordered)
-                            .controlSize(.small)
                         }
                     } header: {
                         Label { Text(loc.localized("logging.logMaintenance")) } icon: { Image(systemName: "trash") }

@@ -151,15 +151,10 @@ struct CheatSettingsView: View {
             // MARK: - Actions Section
             if (!isSearching || matchesSearch("Actions Show in Finder Clear Downloaded Cheats")) && sectionVisible("section-actions") {
                 Section(header: Label(loc.localized("cheats.actions"), systemImage: "hammer")) {
-                    Button(action: openCheatDirectory) {
-                        Label { Text(loc.localized("cheats.showInFinder")) } icon: { Image(systemName: "folder") }
-                    }
+                    SettingsActionButton(loc.localized("cheats.showInFinder"), systemImage: "folder", action: openCheatDirectory)
 
-                    Button(role: .destructive) {
+                    SettingsActionButton(loc.localized("cheats.clearDownloadedCheats"), systemImage: "trash", role: .destructive) {
                         showClearConfirmation = true
-                    } label: {
-                        Label { Text(loc.localized("cheats.clearDownloadedCheats")) } icon: { Image(systemName: "trash") }
-                            .foregroundStyle(AppColors.error(colorScheme))
                     }
                 }
                 .id("section-actions")
@@ -294,7 +289,7 @@ struct CheatSettingsView: View {
             .buttonStyle(.borderedProminent)
 
             if let sid = systemID, let sys = systemDatabase.system(forID: sid) {
-                Button("\(loc.localized("cheats.updateSystem")) \(sys.name)") {
+                SettingsActionButton("\(loc.localized("cheats.updateSystem")) \(sys.name)") {
                     showSystemDownloadConfirmation = true
                 }
             } else {

@@ -374,21 +374,12 @@ struct CoreOptionsView: View {
                             .autocorrectionDisabled()
 
                         if !viewModel.searchText.isEmpty {
-                            Button(action: { viewModel.searchText = "" }) {
-                                Image(systemName: "xmark.circle.fill")
-                                    .foregroundColor(AppColors.textSecondary(colorScheme))
-                            }
-                            .buttonStyle(.plain)
+                            AppIconButton(icon: "xmark.circle.fill") { viewModel.searchText = "" }
                         }
 
-                        Button {
+                        AppIconButton(icon: "questionmark.circle", help: "Search tips") {
                             showSearchTips.toggle()
-                        } label: {
-                            Image(systemName: "questionmark.circle")
-                                .foregroundColor(AppColors.textTertiary(colorScheme))
                         }
-                        .buttonStyle(.plain)
-                        .help("Search tips")
                         .popover(isPresented: $showSearchTips, arrowEdge: .trailing) {
                             VStack(alignment: .leading, spacing: 8) {
                                 Text("Search Tips")
@@ -648,8 +639,7 @@ struct ResetFooter: View {
     @Environment(\.colorScheme) private var colorScheme
     var body: some View {
         VStack(spacing: 8) {
-            Button(loc.localized("coreOptions.resetAllToDefaults")) { viewModel.resetAll() }
-                .buttonStyle(.bordered)
+            SettingsActionButton(loc.localized("coreOptions.resetAllToDefaults")) { viewModel.resetAll() }
             Text(loc.localized("coreOptions.effectiveOnNextLaunch")).font(.caption2).foregroundColor(AppColors.textSecondary(colorScheme))
         }
     }

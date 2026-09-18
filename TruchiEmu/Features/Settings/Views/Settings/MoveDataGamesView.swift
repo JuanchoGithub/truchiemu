@@ -125,11 +125,7 @@ struct MoveDataGamesView: View {
                 .controlSize(.small)
                 .tint(.green)
 
-                Button(action: { showImportPanel = true }) {
-                    Label(loc.localized("settings.moveList.importJSON"), systemImage: "square.and.arrow.down")
-                }
-                .buttonStyle(.bordered)
-                .controlSize(.small)
+                SettingsActionButton(loc.localized("settings.moveList.importJSON"), systemImage: "square.and.arrow.down") { showImportPanel = true }
 
                 Spacer()
             }

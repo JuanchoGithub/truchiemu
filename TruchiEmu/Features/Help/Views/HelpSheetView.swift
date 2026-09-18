@@ -5,6 +5,7 @@ struct HelpSheetView: View {
     @Environment(\.dismiss) private var dismiss
     @ObservedObject private var loc = LocalizationManager.shared
     @State private var selectedSection: HelpWindowView.HelpSection = .quickStart
+    @State private var sectionHover: HelpWindowView.HelpSection? = nil
 
     var body: some View {
         VStack(spacing: 0) {
@@ -49,26 +50,22 @@ struct HelpSheetView: View {
                     .padding(.horizontal, 12)
                     .background(
                         RoundedRectangle(cornerRadius: AppRadius.lg)
-                            .fill(selectedSection == section ? AppColors.accentBackground(colorScheme) : .clear)
+                            .fill(selectedSection == section ? AppColors.accentBackground(colorScheme) : (sectionHover == section ? AppColors.cardBackgroundSubtle(colorScheme) : .clear))
                     )
                     .overlay(
                         RoundedRectangle(cornerRadius: AppRadius.lg)
                             .stroke(selectedSection == section ? AppColors.brandAccent.opacity(0.3) : AppColors.cardBorder(colorScheme), lineWidth: 1)
                     )
-                    .foregroundStyle(selectedSection == section ? AppColors.brandAccent : AppColors.textSecondary(colorScheme))
+                    .foregroundStyle(selectedSection == section ? AppColors.brandAccent : (sectionHover == section ? AppColors.textPrimary(colorScheme) : AppColors.textSecondary(colorScheme)))
                     .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
+                .onHover { sectionHover = $0 ? section : nil }
             }
             Spacer()
-            Button {
+            AppIconButton(icon: "xmark.circle.fill", font: .system(size: 16)) {
                 dismiss()
-            } label: {
-                Image(systemName: "xmark.circle.fill")
-                    .font(.system(size: 16))
-                    .foregroundStyle(AppColors.textTertiary(colorScheme))
             }
-            .buttonStyle(.plain)
         }
         .padding(.horizontal, AppSpacing.xl3)
         .padding(.vertical, AppSpacing.lg)
@@ -129,30 +126,9 @@ struct HelpSheetView: View {
                             .foregroundStyle(AppColors.textSecondary(colorScheme))
                             .fixedSize(horizontal: false, vertical: true)
                         if let linkLabelKey = item.linkLabelKey, let page = item.deepLinkPage {
-                            Button {
+                            SettingsActionButton(loc.localized(linkLabelKey), systemImage: page.icon) {
                                 openSettingsPage(page)
-                            } label: {
-                                HStack(spacing: 4) {
-                                    Image(systemName: page.icon)
-                                        .font(.system(size: 11, weight: .medium))
-                                    Text(loc.localized(linkLabelKey))
-                                        .font(.callout.weight(.medium))
-                                    Image(systemName: "arrow.right.circle")
-                                        .font(.system(size: 10))
-                                }
-                                .foregroundStyle(AppColors.brandAccent)
-                                .padding(.vertical, 4)
-                                .padding(.horizontal, 10)
-                                .background(
-                                    RoundedRectangle(cornerRadius: AppRadius.lg)
-                                        .fill(AppColors.accentBackground(colorScheme))
-                                )
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: AppRadius.lg)
-                                        .stroke(AppColors.brandAccent.opacity(0.2), lineWidth: 1)
-                                )
                             }
-                            .buttonStyle(.plain)
                         }
                     }
                     .padding(AppSpacing.lg)
@@ -186,6 +162,7 @@ struct HelpSheetView: View {
             Link(destination: HelpContent.docURL("getting-started")) {
                 Label(loc.localized("help.viewFullGuide"), systemImage: "book")
                     .font(.callout)
+                    .foregroundStyle(AppColors.brandAccent)
             }
         }
     }

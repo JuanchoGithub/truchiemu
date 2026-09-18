@@ -17,14 +17,13 @@ struct ChangelogView: View {
                     ProgressView()
                         .controlSize(.small)
                 } else {
-                    Button(loc.localized("update.refresh")) {
+                    SettingsActionButton(loc.localized("update.refresh")) {
                         Task {
                             isLoading = true
                             _ = await updateService.checkForUpdates()
                             isLoading = false
                         }
                     }
-                    .buttonStyle(.bordered)
                     .controlSize(.small)
                 }
             }

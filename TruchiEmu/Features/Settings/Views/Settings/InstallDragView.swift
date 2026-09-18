@@ -78,11 +78,9 @@ struct InstallDragView: View {
                 .controlSize(.large)
                 .disabled(isInstalling)
 
-                Button(loc.localized("install.openAnyway")) {
+                SettingsActionButton(loc.localized("install.openAnyway")) {
                     markInstallSkipped()
                 }
-                .buttonStyle(.bordered)
-                .controlSize(.regular)
 
                 Text(loc.localized("install.openAnywayDescription"))
                     .font(.caption2)

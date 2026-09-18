@@ -118,13 +118,10 @@ struct HoloSettingsView: View {
                     loc.localized("holo.variantWeightsReset"),
                     description: loc.localized("holo.variantWeightsResetDescription")
                 ) {
-                    Button {
+                    SettingsActionButton(loc.localized("holo.reset"), systemImage: "arrow.counterclockwise") {
                         HoloSettingsStore.shared.resetVariantWeights()
                         variantWeights = HoloSettingsStore.shared.variantWeights
-                    } label: {
-                        Label { Text(loc.localized("holo.reset")) } icon: { Image(systemName: "arrow.counterclockwise") }
                     }
-                    .buttonStyle(.bordered)
                 }
             }, header: {
                 Label { Text(loc.localized("holo.variantWeights")) } icon: { Image(systemName: "rectangle.stack.badge.play") }
@@ -433,13 +430,10 @@ struct HoloSettingsView: View {
                     loc.localized("holo.masksFolder"),
                     description: loc.localized("holo.masksFolderDescription")
                 ) {
-                    Button {
+                    SettingsActionButton(loc.localized("holo.revealMasks"), systemImage: "folder") {
                         let dir = HoloSaliencyService.storageDirectory
                         NSWorkspace.shared.open(dir)
-                    } label: {
-                        Label { Text(loc.localized("holo.revealMasks")) } icon: { Image(systemName: "folder") }
                     }
-                    .buttonStyle(.bordered)
                 }
             }, header: {
                 Label { Text(loc.localized("holo.section")) } icon: { Image(systemName: "sparkles") }

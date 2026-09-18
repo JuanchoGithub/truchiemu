@@ -161,10 +161,9 @@ struct UpdateWizardView: View {
                         .font(.callout)
                         .foregroundStyle(AppColors.textSecondary(colorScheme))
                 }
-                Button(loc.localized("update.viewOnGitHub")) {
+                SettingsActionButton(loc.localized("update.viewOnGitHub")) {
                     if let url = URL(string: release.htmlURL) { NSWorkspace.shared.open(url) }
                 }
-                .buttonStyle(.bordered)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         } else if let error = errorMessage {
@@ -172,10 +171,9 @@ struct UpdateWizardView: View {
                 Text(error)
                     .font(.callout)
                     .foregroundStyle(.red)
-                Button(loc.localized("update.viewOnGitHub")) {
+                SettingsActionButton(loc.localized("update.viewOnGitHub")) {
                     if let url = URL(string: release.htmlURL) { NSWorkspace.shared.open(url) }
                 }
-                .buttonStyle(.bordered)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         } else if updateService.isDownloading {
@@ -235,15 +233,10 @@ struct UpdateWizardView: View {
                 .buttonStyle(.bordered)
                 .controlSize(.large)
 
-                Button {
+                SettingsActionButton(loc.localized("update.skipVersion")) {
                     AppUpdateService.shared.skipVersion(release.version)
                     onDismiss()
-                } label: {
-                    Text(loc.localized("update.skipVersion"))
-                        .font(.caption)
-                        .foregroundStyle(AppColors.textTertiary(colorScheme))
                 }
-                .buttonStyle(.plain)
             }
         }
     }

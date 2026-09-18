@@ -26,6 +26,7 @@ struct CheatBrowserList: View {
     @State private var downloadMessage: String? = nil
     @State private var downloadMessageTone: ManualStatusTone = .info
     @State private var isDownloading = false
+    @State private var settingsRowHovered = false
     @State private var newCheatName = ""
     @State private var newCheatCode = ""
 
@@ -118,10 +119,7 @@ struct CheatBrowserList: View {
             }
             Text(message).font(.subheadline).foregroundColor(AppColors.textSecondary(colorScheme))
             Spacer()
-            Button { downloadMessage = nil } label: {
-                Image(systemName: "xmark.circle.fill").foregroundColor(AppColors.textMuted(colorScheme))
-            }
-            .buttonStyle(.plain)
+            AppIconButton(icon: "xmark.circle.fill") { downloadMessage = nil }
         }
         .padding(AppSpacing.sm)
         .background(AppColors.brandAccent.opacity(0.12))
@@ -180,37 +178,29 @@ struct CheatBrowserList: View {
     private var actionButtons: some View {
         HStack(spacing: 8) {
             if showAddButton {
-                Button { showAddCheat = true } label: {
-                    Label(loc.localized("cheat.addCustomCheat"), systemImage: "plus")
-                        .padding(.horizontal, 12).padding(.vertical, 6)
-                }
+                SettingsActionButton(loc.localized("cheat.addCustomCheat"), systemImage: "plus") { showAddCheat = true }
                 .help(loc.localized("cheat.addCustomCheatHelp"))
             }
 
             if showImportButton {
-                Button { showImportFile = true } label: {
-                    Label(loc.localized("cheat.importFile"), systemImage: "square.and.arrow.down")
-                        .padding(.horizontal, 12).padding(.vertical, 6)
-                }
+                SettingsActionButton(loc.localized("cheat.importFile"), systemImage: "square.and.arrow.down") { showImportFile = true }
                 .help(loc.localized("cheat.importFileHelp"))
             }
 
             if showDownloadButton {
-                Button {
-                    Task { await downloadCheats() }
-                } label: {
+                if isDownloading {
                     HStack(spacing: 4) {
-                        if isDownloading {
-                            ProgressView().controlSize(.small)
-                        } else {
-                            Image(systemName: "arrow.down.circle")
-                        }
-                        Text(isDownloading ? loc.localized("cheat.searching") : loc.localized("cheat.download"))
+                        ProgressView().controlSize(.small)
+                        Text(loc.localized("cheat.searching"))
                     }
                     .padding(.horizontal, 12).padding(.vertical, 6)
+                } else {
+                    SettingsActionButton(loc.localized("cheat.download"), systemImage: "arrow.down.circle") {
+                        Task { await downloadCheats() }
+                    }
+                    .help(loc.localized("cheat.downloadHelp"))
+                    .disabled(isDownloading)
                 }
-                .help(loc.localized("cheat.downloadHelp"))
-                .disabled(isDownloading)
             }
 
             Spacer()
@@ -305,18 +295,17 @@ struct CheatBrowserList: View {
 
     private var enableDisableAllRow: some View {
         HStack {
-            Button {
+            SettingsActionButton(
+                enabledCount > 0 ? loc.localized("cheats.disableAll") : loc.localized("cheats.enableAll"),
+                systemImage: enabledCount > 0 ? "stop.circle" : "play.circle"
+            ) {
                 if enabledCount > 0 {
                     cheatManager.disableAllCheats(for: rom)
                 } else {
                     cheatManager.enableAllCheats(for: rom)
                 }
                 loadCheats()
-            } label: {
-                Label(enabledCount > 0 ? loc.localized("cheats.disableAll") : loc.localized("cheats.enableAll"), systemImage: enabledCount > 0 ? "stop.circle" : "play.circle")
-                    .font(.subheadline).foregroundColor(AppColors.textSecondary(colorScheme))
             }
-            .buttonStyle(.plain)
             Spacer()
             Text(loc.localized("cheats.enabledOfTotal")
                 .replacingOccurrences(of: "{0}", with: "\(enabledCount)")
@@ -345,13 +334,21 @@ struct CheatBrowserList: View {
     private var cheatSettingsRow: some View {
         Button { openCheatSettings() } label: {
             HStack {
-                Image(systemName: "gearshape").foregroundColor(AppColors.textSecondary(colorScheme))
-                Text(loc.localized("cheats.cheatSettings")).font(.subheadline).foregroundColor(AppColors.textSecondary(colorScheme))
+                Image(systemName: "gearshape").foregroundColor(settingsRowHovered ? AppColors.brandAccent : AppColors.textSecondary(colorScheme))
+                Text(loc.localized("cheats.cheatSettings")).font(.subheadline).foregroundColor(AppColors.textPrimary(colorScheme))
                 Spacer()
-                Image(systemName: "chevron.right").font(.subheadline).foregroundColor(AppColors.textMuted(colorScheme))
+                Image(systemName: "chevron.right").font(.subheadline).foregroundColor(AppColors.textSecondary(colorScheme))
             }
+            .padding(.horizontal, 8)
+            .padding(.vertical, 6)
+            .background(
+                RoundedRectangle(cornerRadius: 6)
+                    .fill(settingsRowHovered ? AppColors.cardBackgroundSubtle(colorScheme) : .clear)
+            )
+            .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        .onHover { settingsRowHovered = $0 }
         .padding(.vertical, AppSpacing.xs)
     }
 

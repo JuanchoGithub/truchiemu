@@ -141,11 +141,10 @@ struct RecordingTabView: View {
                     .font(.caption)
                     .foregroundColor(AppColors.textSecondary(colorScheme))
 
-                Button(loc.localized("settings.media.customize")) {
+                SettingsActionButton(loc.localized("settings.media.customize")) {
                     qualityExpanded.toggle()
                     config.setQualityCustomizationExpanded(qualityExpanded, for: config.quality.preset)
                 }
-                .buttonStyle(.bordered)
                 .controlSize(.small)
             } header: {
                 Label(loc.localized("settings.streaming.localQuality"), systemImage: "slider.horizontal.3")
@@ -249,10 +248,9 @@ struct RecordingTabView: View {
                     .lineLimit(1)
                     .truncationMode(.middle)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                Button(loc.localized("settings.streaming.browse")) {
+                SettingsActionButton(loc.localized("settings.streaming.browse")) {
                     showFolderPicker = true
                 }
-                .buttonStyle(.bordered)
                 .controlSize(.small)
                 .folderDialog(
                     isPresented: $showFolderPicker,

@@ -55,16 +55,7 @@ Text(loc.localized("controls.edit"))
                         Text(loc.localized("controls.resetToDefaultControls")).font(.caption).foregroundColor(AppColors.textTertiary(colorScheme))
                     }
                     Spacer()
-        Button { resetControlsToSystemDefault() } label: {
-            Text(loc.localized("controls.reset"))
-                .font(.subheadline)
-                .foregroundColor(AppColors.brandAccent)
-                .padding(.horizontal, AppSpacing.lg)
-                .padding(.vertical, AppSpacing.xs)
-                .background(AppColors.brandAccent.opacity(0.15))
-                .cornerRadius(AppRadius.sm)
-        }
-        .buttonStyle(.plain)
+        SettingsActionButton(loc.localized("controls.reset")) { resetControlsToSystemDefault() }
 }
 .padding(.vertical, AppSpacing.xs)
             }

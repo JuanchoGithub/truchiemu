@@ -12,7 +12,10 @@ struct FilterChipView: View {
     @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
-        Button(action: action) {
+        // Selected rests on the computed fill (deep on neon themes, bright
+        // where it already contrasts); text always matches the fill.
+        let activeFill = AppColors.selectedFill(for: option.activeColor)
+        return Button(action: action) {
             HStack(spacing: 4) {
                 Image(systemName: option.icon)
                     .font(.system(size: 10, weight: .medium))
@@ -20,13 +23,13 @@ struct FilterChipView: View {
                 Text(option.label)
                     .font(.system(size: 11, weight: .medium, design: .rounded))
             }
-            .foregroundColor(isActive ? .white : (isHovered ? AppColors.brandAccent : .secondary))
+            .foregroundColor(isActive ? AppColors.textOnAccent(for: activeFill, colorScheme: colorScheme) : (isHovered ? AppColors.brandAccent : AppColors.textPrimary(colorScheme)))
             .padding(.horizontal, 10)
             .padding(.vertical, 6)
             .frame(maxWidth: fillsWidth ? .infinity : nil, minHeight: 30)
             .background(
                 Capsule()
-                    .fill(isActive ? option.activeColor : (isHovered ? AppColors.brandAccent.opacity(0.12) : AppColors.cardBackgroundSubtle(colorScheme)))
+                    .fill(isActive ? activeFill : (isHovered ? AppColors.accentBackground(colorScheme) : AppColors.cardBackgroundSubtle(colorScheme)))
                     .scaleEffect(isHovered ? 1.05 : 1)
                     .shadow(color: isActive ? option.activeColor.opacity(0.3) : (isHovered ? AppColors.brandAccent.opacity(0.2) : .clear), radius: isHovered ? 4 : 0, y: 2)
             )

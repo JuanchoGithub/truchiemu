@@ -571,6 +571,7 @@
   "library.lastAdded": "Últimos",
   "library.genre": "Género",
   "library.otherFilters": "Otros",
+  "library.clearFilters": "Borrar",
   "library.otherSort": "Otros",
   "library.region": "Región",
   "library.gameRegion": "Región de juegos",

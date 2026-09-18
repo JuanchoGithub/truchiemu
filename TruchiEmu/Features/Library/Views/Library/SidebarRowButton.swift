@@ -35,14 +35,14 @@ struct SidebarRowButton: View {
                 
                 Text(label)
                     .lineLimit(1)
-                    .foregroundColor(isSelected ? .primary : .secondary)
+                    .foregroundColor(isSelected ? .primary : (isHovered ? .primary : AppColors.textPrimary(colorScheme)))
                     .fontWeight(isSelected ? .medium : .regular)
                 
                 Spacer()
                 
                 Text("\(count)")
                     .font(.caption2.monospacedDigit())
-                    .foregroundColor(isSelected ? .primary : .secondary)
+                    .foregroundColor(isSelected ? .primary : AppColors.textPrimary(colorScheme))
                     .padding(.horizontal, 6)
                     .padding(.vertical, 2)
                     .background(isSelected ? AppColors.accentBackground(colorScheme) : AppColors.cardBackgroundSubtle(colorScheme))
@@ -61,7 +61,7 @@ struct SidebarRowButton: View {
                 } label: {
                     Image(systemName: "ellipsis")
                         .font(.system(size: 12, weight: .bold))
-                        .foregroundColor(.secondary)
+                        .foregroundColor(AppColors.textSecondary(colorScheme))
                         .padding(.horizontal, 4)
                         .padding(.vertical, 6)
                 }

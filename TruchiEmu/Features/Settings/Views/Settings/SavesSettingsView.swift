@@ -116,13 +116,9 @@ struct SavesSettingsView: View {
                     Label { Text(loc.localized("saveDirectories.existingSavesFound")) } icon: { Image(systemName: "exclamationmark.triangle") }
                         .font(.caption)
                         .foregroundStyle(AppColors.warning(colorScheme))
-                    Button {
+                    SettingsActionButton(loc.localized("saveDirectories.migrateSaveFiles"), systemImage: "arrow.right.doc.on.clipboard") {
                         showingMigrationAlert = true
-                    } label: {
-                        Label { Text(loc.localized("saveDirectories.migrateSaveFiles")) } icon: { Image(systemName: "arrow.right.doc.on.clipboard") }
                     }
-                    .buttonStyle(.bordered)
-                    .controlSize(.small)
                 }
 
                 Divider()
@@ -146,13 +142,9 @@ struct SavesSettingsView: View {
                     .padding(.vertical, AppSpacing.xs)
 
                 HStack {
-                    Button {
+                    SettingsActionButton(loc.localized("saveDirectories.changeSaveDirectory"), systemImage: "folder") {
                         pickSaveDirectory()
-                    } label: {
-                        Label { Text(loc.localized("saveDirectories.changeSaveDirectory")) } icon: { Image(systemName: "folder") }
                     }
-                    .buttonStyle(.bordered)
-                    .controlSize(.small)
                 }
             }
             .id("section-saveDirectories")
@@ -176,13 +168,9 @@ struct SavesSettingsView: View {
                 Text(loc.localized("settings.saves.saveManagerDescription"))
                     .font(.caption)
                     .foregroundStyle(AppColors.textSecondary(colorScheme))
-                Button {
+                SettingsActionButton(loc.localized("settings.saves.saveManager"), systemImage: "externaldrive") {
                     showSaveManager = true
-                } label: {
-                    Label(loc.localized("settings.saves.saveManager"), systemImage: "externaldrive")
                 }
-                .buttonStyle(.bordered)
-                .controlSize(.small)
             } header: {
                 Label(loc.localized("settings.saves.manage"), systemImage: "wrench.and.screwdriver")
             }
@@ -194,16 +182,9 @@ struct SavesSettingsView: View {
                 Text(loc.localized("settings.saves.repairDescription"))
                     .font(.caption)
                     .foregroundStyle(AppColors.textSecondary(colorScheme))
-                Button {
+                SettingsActionButton(loc.localized(isRepairing ? "settings.saves.repairRunning" : "settings.saves.repairButton"), systemImage: "wrench.and.screwdriver") {
                     runRepair()
-                } label: {
-                    Label(
-                        loc.localized(isRepairing ? "settings.saves.repairRunning" : "settings.saves.repairButton"),
-                        systemImage: "wrench.and.screwdriver"
-                    )
                 }
-                .buttonStyle(.bordered)
-                .controlSize(.small)
                 .disabled(isRepairing)
                 if let repairResult {
                     Text(repairResult)

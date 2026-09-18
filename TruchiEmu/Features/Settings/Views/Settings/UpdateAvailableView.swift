@@ -82,10 +82,9 @@ struct UpdateAvailableView: View {
                     .buttonStyle(.borderedProminent)
                     .controlSize(.large)
 
-                    Button(loc.localized("update.viewOnGitHub")) {
+                    SettingsActionButton(loc.localized("update.viewOnGitHub")) {
                         if let url = URL(string: release.htmlURL) { NSWorkspace.shared.open(url) }
                     }
-                    .buttonStyle(.bordered)
                     .controlSize(.large)
                 }
             }

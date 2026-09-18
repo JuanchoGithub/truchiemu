@@ -39,12 +39,7 @@ struct CheatListRowView: View {
                     .cornerRadius(4)
 
                 if let onDelete {
-                    Button(action: onDelete) {
-                        Image(systemName: "trash")
-                            .foregroundColor(AppColors.error(colorScheme))
-                    }
-                    .buttonStyle(.plain)
-                    .help(loc.localized("cheat.delete"))
+                    AppIconButton(icon: "trash", help: loc.localized("cheat.delete"), action: onDelete)
                 }
             }
         }

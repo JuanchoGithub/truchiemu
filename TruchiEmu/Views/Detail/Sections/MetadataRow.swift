@@ -28,23 +28,11 @@ struct MetadataRow: View {
 
             HStack(spacing: AppSpacing.md) {
                 if let useNameAction = useNameAction {
-                    Button(action: useNameAction) {
-                        Image(systemName: "pencil")
-                            .foregroundColor(AppColors.brandAccent)
-                            .font(.caption)
-                    }
-                    .buttonStyle(.plain)
-                    .help(loc.localized("metadata.useAsGameTitle"))
+                    AppIconButton(icon: "pencil", help: loc.localized("metadata.useAsGameTitle"), action: useNameAction)
                 }
 
                 if let copyAction = copyAction {
-                    Button(action: copyAction) {
-                        Image(systemName: "doc.on.doc")
-                            .foregroundColor(AppColors.brandAccent)
-                            .font(.caption)
-                    }
-                    .buttonStyle(.plain)
-                    .help(loc.localized("metadata.copy"))
+                    AppIconButton(icon: "doc.on.doc", help: loc.localized("metadata.copy"), action: copyAction)
                 }
             }
         }

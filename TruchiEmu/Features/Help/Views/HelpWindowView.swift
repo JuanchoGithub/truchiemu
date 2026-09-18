@@ -4,6 +4,7 @@ struct HelpWindowView: View {
     @Environment(\.colorScheme) private var colorScheme
     @ObservedObject private var loc = LocalizationManager.shared
     @State private var selectedSection: HelpSection = .shortcuts
+    @State private var sectionHover: HelpSection? = nil
 
     enum HelpSection: String, CaseIterable, Identifiable {
         case shortcuts, faq, quickStart, links
@@ -55,10 +56,10 @@ struct HelpWindowView: View {
                                 .font(.system(size: 14, weight: .medium))
                                 .frame(width: 20)
                                 .fixedSize()
-                                .foregroundColor(selectedSection == section ? AppColors.brandAccent : AppColors.textSecondary(colorScheme))
+                                .foregroundColor(selectedSection == section ? AppColors.brandAccent : (sectionHover == section ? AppColors.brandAccent : AppColors.textSecondary(colorScheme)))
                             Text(section.label(loc: loc))
                                 .font(AppTypography.callout)
-                                .foregroundColor(selectedSection == section ? AppColors.textPrimary(colorScheme) : AppColors.textSecondary(colorScheme))
+                                .foregroundColor(AppColors.textPrimary(colorScheme))
                                 .fontWeight(selectedSection == section ? .medium : .regular)
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
@@ -66,7 +67,7 @@ struct HelpWindowView: View {
                         .padding(.horizontal, 10)
                         .background(
                             RoundedRectangle(cornerRadius: 6)
-                                .fill(selectedSection == section ? AppColors.accentBackground(colorScheme) : .clear)
+                                .fill(selectedSection == section ? AppColors.accentBackground(colorScheme) : (sectionHover == section ? AppColors.cardBackgroundSubtle(colorScheme) : .clear))
                         )
                         .overlay(alignment: .leading) {
                             if selectedSection == section {
@@ -79,6 +80,7 @@ struct HelpWindowView: View {
                         .contentShape(Rectangle())
                     }
                     .buttonStyle(.plain)
+                    .onHover { sectionHover = $0 ? section : nil }
                 }
             }
             .padding(.horizontal, 8)
@@ -163,30 +165,9 @@ struct HelpWindowView: View {
                             .foregroundStyle(AppColors.textSecondary(colorScheme))
                             .fixedSize(horizontal: false, vertical: true)
                         if let linkLabelKey = item.linkLabelKey, let page = item.deepLinkPage {
-                            Button {
+                            SettingsActionButton(loc.localized(linkLabelKey), systemImage: page.icon) {
                                 openSettingsPage(page)
-                            } label: {
-                                HStack(spacing: 4) {
-                                    Image(systemName: page.icon)
-                                        .font(.system(size: 11, weight: .medium))
-                                    Text(loc.localized(linkLabelKey))
-                                        .font(.callout.weight(.medium))
-                                    Image(systemName: "arrow.right.circle")
-                                        .font(.system(size: 10))
-                                }
-                                .foregroundStyle(AppColors.brandAccent)
-                                .padding(.vertical, 4)
-                                .padding(.horizontal, 10)
-                                .background(
-                                    RoundedRectangle(cornerRadius: AppRadius.lg)
-                                        .fill(AppColors.accentBackground(colorScheme))
-                                )
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: AppRadius.lg)
-                                        .stroke(AppColors.brandAccent.opacity(0.2), lineWidth: 1)
-                                )
                             }
-                            .buttonStyle(.plain)
                         }
                     }
                     .padding(AppSpacing.lg)
@@ -220,6 +201,7 @@ struct HelpWindowView: View {
             Link(destination: HelpContent.docURL("getting-started")) {
                 Label(loc.localized("help.viewFullGuide"), systemImage: "book")
                     .font(.callout)
+                    .foregroundStyle(AppColors.brandAccent)
             }
         }
     }

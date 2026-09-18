@@ -270,15 +270,7 @@ struct MoveEditorView: View {
                 Text(loc.localized("settings.moveList.editor.category"))
                     .font(.system(size: 13, weight: .medium))
                 Spacer()
-                Button(action: { showCategoryPicker = true }) {
-                    HStack(spacing: 4) {
-                        Text(categoryDisplayName)
-                            .font(.system(size: 13))
-                        Image(systemName: "chevron.down")
-                            .font(.caption2)
-                    }
-                }
-                .buttonStyle(.bordered)
+                SettingsActionButton(categoryDisplayName, systemImage: "chevron.down") { showCategoryPicker = true }
                 .popover(isPresented: $showCategoryPicker) {
                     categoryPickerContent
                         .gamepadDismissable { showCategoryPicker = false }
@@ -363,14 +355,13 @@ struct MoveEditorView: View {
             HStack {
                 TextField(loc.localized("settings.moveList.editor.customCategory"), text: $customCategoryText)
                     .textFieldStyle(.roundedBorder)
-                Button(loc.localized("movelist.ok")) {
+                SettingsActionButton(loc.localized("movelist.ok")) {
                     if !customCategoryText.isEmpty {
                         moveCategory = "_@\(customCategoryText.lowercased())"
                         customCategoryText = ""
                         showCategoryPicker = false
                     }
                 }
-                .buttonStyle(.bordered)
                 .disabled(customCategoryText.isEmpty)
             }
             .padding(.horizontal)
@@ -619,12 +610,7 @@ struct MoveEditorView: View {
 
                 Spacer(minLength: 4)
 
-                Button(action: { addBranchStep() }) {
-                    Image(systemName: "arrow.triangle.branch")
-                    Text(loc.localized("settings.moveList.editor.addBranch"))
-                }
-                .font(.system(size: 11))
-                .buttonStyle(.bordered)
+                SettingsActionButton(loc.localized("settings.moveList.editor.addBranch"), systemImage: "arrow.triangle.branch", action: { addBranchStep() })
                 .controlSize(.small)
             }
         }
@@ -773,13 +759,10 @@ struct MoveEditorView: View {
     private var actionButtons: some View {
         HStack {
             if let onDelete {
-                Button(loc.localized("settings.moveList.editor.delete"), role: .destructive, action: { onDelete() })
-                    .buttonStyle(.bordered)
-                    .foregroundStyle(.red)
+                SettingsActionButton(loc.localized("settings.moveList.editor.delete"), role: .destructive, action: { onDelete() })
             }
             Spacer()
-            Button(loc.localized("movelist.cancel")) { onBack?() }
-                .buttonStyle(.bordered)
+            SettingsActionButton(loc.localized("movelist.cancel")) { onBack?() }
             Button(loc.localized("settings.moveList.editor.save")) { saveMove() }
                 .buttonStyle(.borderedProminent)
                 .disabled(moveName.isEmpty || steps.isEmpty)

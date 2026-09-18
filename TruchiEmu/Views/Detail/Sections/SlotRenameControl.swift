@@ -57,15 +57,9 @@ struct SlotRenameControl: View {
                     .lineLimit(1)
 
                 if isHovering {
-                    Button {
+                    AppIconButton(icon: "pencil", font: .system(size: 9, weight: .medium), help: loc.localized("savedStates.rename")) {
                         startEditing()
-                    } label: {
-                        Image(systemName: "pencil")
-                            .font(.system(size: 9, weight: .medium))
-                            .foregroundColor(AppColors.textSecondary(colorScheme))
                     }
-                    .buttonStyle(.plain)
-                    .help(loc.localized("savedStates.rename"))
                     .transition(.opacity)
                 }
             }
@@ -125,25 +119,13 @@ private struct SlotRenameEditor: View {
                     }
                 }
 
-            Button {
+            AppIconButton(icon: "checkmark", font: .system(size: 9, weight: .bold), help: loc.localized("savedStates.saveSlotName")) {
                 onSave(text)
-            } label: {
-                Image(systemName: "checkmark")
-                    .font(.system(size: 9, weight: .bold))
-                    .foregroundColor(AppColors.brandAccent)
             }
-            .buttonStyle(.plain)
-            .help(loc.localized("savedStates.saveSlotName"))
 
-            Button {
+            AppIconButton(icon: "xmark", font: .system(size: 9, weight: .bold), help: loc.localized("savedStates.cancelSlotName")) {
                 onCancel()
-            } label: {
-                Image(systemName: "xmark")
-                    .font(.system(size: 9, weight: .bold))
-                    .foregroundColor(AppColors.textSecondary(colorScheme))
             }
-            .buttonStyle(.plain)
-            .help(loc.localized("savedStates.cancelSlotName"))
         }
     }
 }

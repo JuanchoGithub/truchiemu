@@ -423,7 +423,7 @@ struct ShaderPresetRowView: View {
 			Image(systemName: shaderIcon(for: preset.shaderType))
 			.font(.body)
 			.frame(width: 24)
-			.foregroundColor(isSelected ? AppColors.brandAccent : .secondary)
+			.foregroundColor(isSelected ? AppColors.brandAccent : .primary)
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(preset.name)
@@ -575,6 +575,7 @@ struct ShaderPresetPickerView: View {
 @Environment(\.colorScheme) private var colorScheme
 
 @State private var selectedCategory: CategoryFilter = .all
+@State private var chipHover: CategoryFilter? = nil
 @State private var searchText: String = ""
 @State private var expandedSlangGroups: Set<String> = []
 @State private var savedPresets: [SavedShaderPreset] = []
@@ -926,13 +927,11 @@ controller.close()
 
             Spacer()
 
-            Button(loc.localized("shader.reset")) {
+            SettingsActionButton(loc.localized("shader.reset")) {
                 settings.shaderPresetID = ShaderPreset.defaultPreset.id
                 settings.uniformValues.removeAll()
                 ShaderManager.shared.resetToDefault()
             }
-            .font(.caption)
-            .controlSize(.small)
         }
 .padding(8)
     .background(AppColors.cardBackgroundSubtle(colorScheme))
@@ -986,7 +985,8 @@ controller.close()
     }
 
     private func categoryChip(title: String, filter: CategoryFilter, count: Int, isActive: Bool) -> some View {
-        Button {
+        let activeFill = AppColors.selectedFill(for: AppColors.brandAccent)
+        return Button {
             withAnimation {
                 selectedCategory = filter
             }
@@ -996,15 +996,23 @@ controller.close()
                     .font(.caption)
                 Text("(\(count))")
                     .font(.caption2)
-                    .foregroundColor(isActive ? AppColors.textOnAccent(colorScheme).opacity(0.7) : AppColors.textSecondaryNeutral(colorScheme))
             }
             .padding(.horizontal, 10)
             .padding(.vertical, 4)
-            .background(isActive ? AppColors.brandAccent : AppColors.cardBackgroundSubtle(colorScheme))
-            .foregroundColor(isActive ? AppColors.textOnAccent(colorScheme) : .primary)
+            .background(
+                Capsule().fill(
+                    isActive ? activeFill
+                        : (chipHover == filter ? AppColors.accentBackground(colorScheme) : AppColors.cardBackgroundSubtle(colorScheme))
+                )
+            )
+            .foregroundColor(
+                isActive ? AppColors.textOnAccent(for: activeFill, colorScheme: colorScheme)
+                    : (chipHover == filter ? AppColors.brandAccent : .primary)
+            )
             .cornerRadius(12)
         }
         .buttonStyle(.plain)
+        .onHover { chipHover = $0 ? filter : nil }
     }
 
     // MARK: - Preset List
@@ -1350,7 +1358,7 @@ controller.close()
                 Image(systemName: "sparkle.magnifyingglass")
                     .font(.body)
                     .frame(width: 24)
-                    .foregroundColor(preset.path.path == settings.shaderPresetID ? AppColors.brandAccent : .secondary)
+                    .foregroundColor(preset.path.path == settings.shaderPresetID ? AppColors.brandAccent : .primary)
 
                 VStack(alignment: .leading, spacing: 4) {
                     Text(preset.displayName)

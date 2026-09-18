@@ -239,10 +239,10 @@ extension GameDetailView {
                         Text(loc.localized("gameInfo.fetchMetadata"))
                     }
                     .font(.subheadline)
-                    .foregroundColor(AppColors.brandAccent)
+                    .foregroundColor(AppColors.textOnAccent(colorScheme))
                     .padding(.horizontal, AppSpacing.lg)
                     .padding(.vertical, AppSpacing.sm)
-                    .background(AppColors.brandAccent.opacity(0.15))
+                    .background(AppColors.brandAccent)
                     .cornerRadius(AppRadius.md)
                 }
                 .buttonStyle(.plain)
@@ -302,10 +302,10 @@ extension GameDetailView {
                         Text(loc.localized("gameInfo.fetchArt"))
                     }
                     .font(.subheadline)
-                    .foregroundColor(AppColors.brandAccent)
+                    .foregroundColor(AppColors.textOnAccent(colorScheme))
                     .padding(.horizontal, AppSpacing.lg)
                     .padding(.vertical, AppSpacing.sm)
-                    .background(AppColors.brandAccent.opacity(0.15))
+                    .background(AppColors.brandAccent)
                     .cornerRadius(AppRadius.md)
                 }
                 .buttonStyle(.plain)
