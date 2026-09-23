@@ -334,8 +334,11 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
     }
 
     private func pittmanUniforms(snapshot: [String: Float], frameTex: MTLTexture,
-                                vpW: Float, vpH: Float) -> CRTPittmanUniforms {
+                                 vpW: Float, vpH: Float) -> CRTPittmanUniforms {
         func get(_ name: String, fallback: Float) -> Float { snapshot[name] ?? fallback }
+        // Legacy "bloomSpread" key feeds the downsample spread so saved
+        // overrides keep working after the down/up split.
+        let downSpread = snapshot["bloomDownspread"] ?? snapshot["bloomSpread"] ?? 0.025
         return CRTPittmanUniforms(
             tuningSharp: get("tuningSharp", fallback: 0.8),
             persistR: get("persistR", fallback: 0.7),
@@ -343,7 +346,9 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
             persistB: get("persistB", fallback: 0.42),
             tuningBleed: get("tuningBleed", fallback: 0.5),
             tuningArtifacts: get("tuningArtifacts", fallback: 0.5),
-            bloomSpread: get("bloomSpread", fallback: 0.025),
+            ntscStable: get("ntscStable", fallback: 0.0),
+            bloomDownspread: downSpread,
+            bloomUpspread: snapshot["bloomUpspread"] ?? downSpread,
             bloomPower: get("bloomPower", fallback: 2.0),
             bloomIntensity: get("bloomIntensity", fallback: 0.25),
             tuningSatur: get("tuningSatur", fallback: 1.35),
@@ -351,6 +356,7 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
             maskOpacity: get("maskOpacity", fallback: 1.0),
             overscan: get("overscan", fallback: 1.0),
             barrel: get("barrel", fallback: -0.115),
+            pixelRatio: get("pixelRatio", fallback: 8.0 / 7.0),
             dimming: get("dimming", fallback: 0.5),
             time: 0,
             texSizeX: Float(frameTex.width),
@@ -364,13 +370,16 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
 
     private func pittmanLighting(snapshot: [String: Float]) -> PittmanMeshLighting {
         func get(_ name: String, fallback: Float) -> Float { snapshot[name] ?? fallback }
+        // Tuning_LightPos (-10, -5, 10), Tuning_FrameColor 0.06 gray,
+        // Tuning_ReflScalar 0.3 from Parameters.cpp.
+        let frameGray = get("pittmanFrameColor", fallback: 0.06)
         return PittmanMeshLighting(
             diffBrightness: get("pittmanDiff", fallback: 0.5),
             specBrightness: get("pittmanSpec", fallback: 0.35),
             specPower: get("pittmanSpecPower", fallback: 50.0),
             fresBrightness: get("pittmanFres", fallback: 1.0),
-            frameColor: SIMD4<Float>(0.06, 0.06, 0.06, 1.0),
-            reflScalar: 0.3,
+            frameColor: SIMD4<Float>(frameGray, frameGray, frameGray, 1.0),
+            reflScalar: get("pittmanReflScalar", fallback: 0.3),
             dimming: get("dimming", fallback: 0.5),
             pad: 0)
     }
@@ -407,7 +416,12 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
         enc.setCullMode(.back)
         enc.setFrontFacing(.counterClockwise)
         let aspect = Float(screenTex.width) / Float(max(1, screenTex.height))
-        let (wvp, camPos, lightPos) = PittmanCamera.wvp(aspect: aspect)
+        let (wvp, camPos, _) = PittmanCamera.wvp(aspect: aspect)
+        // Tuning_LightPos is a snapshot uniform; the camera helper only
+        // supplies the view matrix and eye position.
+        let lightPos = SIMD4<Float>(snapshot["lightPosX"] ?? -10,
+                                    snapshot["lightPosY"] ?? -5,
+                                    snapshot["lightPosZ"] ?? 10, 0)
         var mats = PittmanMeshUniforms(wvpMat: wvp, worldMat: matrix_identity_float4x4,
                                        camPos: camPos, lightPos: lightPos)
         var light = pittmanLighting(snapshot: snapshot)
@@ -545,7 +559,7 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
         // Poisson downsample then upsample (post.fx), kernels circular in
         // each render target's pixels via the aspect term.
         var bDown = PittmanBlurUniforms(
-            spread: u.bloomSpread,
+            spread: u.bloomDownspread,
             aspect: Float(downTex.height) / Float(max(1, downTex.width)),
             swapXY: 0.0, pad: 0.0)
         withUnsafeBytes(of: &bDown) { raw in
@@ -555,7 +569,7 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
             }
         }
         var bUp = PittmanBlurUniforms(
-            spread: u.bloomSpread,
+            spread: u.bloomUpspread,
             aspect: Float(upTex.height) / Float(max(1, upTex.width)),
             swapXY: 1.0, pad: 0.0)
         withUnsafeBytes(of: &bUp) { raw in

@@ -63,6 +63,12 @@ using namespace metal;
  * - The unsharp-mask tap step uses 1/sourceWidth (libretro behavior)
  *   instead of the hardcoded 1/256 of the HLSL, so wide systems
  *   (e.g. Genesis 320px) do not overshoot.
+ * - The NES color-grading LUT (YIQ palette correction from the blog)
+ *   is not ported: no ntsc.fx ships in CRTSim/bin, and the app is
+ *   system-agnostic. Colors are core-output RGB as-is.
+ * - The camera is pulled back to fit the whole cabinet with a 3%
+ *   margin (M3DMeshLoader PittmanCamera); the original distance fills
+ *   only the screen and crops the cabinet.
  */
 
 // --- [ UNIFORMS ] ---
@@ -75,14 +81,17 @@ struct CRTPittmanUniforms {
     float persistB;         // [0,1] blue phosphor persistence (orig 0.42)
     float tuningBleed;      // [0,1] neighbor blend of previous frame (orig 0.5)
     float tuningArtifacts;  // [0,1] NTSC artifact weight (orig 0.5)
-    float bloomSpread;      // Poisson blur radius in UV (orig 0.025)
+    float ntscStable;       // 0 = per-field flicker (orig NTSCLerp 0/1), 1 = stable 0.5 blend
+    float bloomDownspread;  // Downsample blur radius in UV (orig 0.025)
+    float bloomUpspread;    // Upsample blur radius in UV (orig 0.025)
     float bloomPower;       // Color-preserving power curve (orig 2.0)
     float bloomIntensity;   // Bloom add scalar (orig 0.25)
     float tuningSatur;      // Saturation (orig 1.35)
     float maskBrightness;   // Mask lift, added before opacity (orig 0.45)
     float maskOpacity;      // Mask blend (orig 1.0)
-    float overscan;         // Zoom factor (orig 1.0; applied as 1/overscan)
+    float overscan;         // Zoom factor (orig 1.0; screen uses 1/overscan, frame uses overscan)
     float barrel;           // UV warp, negative curves inward (orig -0.115)
+    float pixelRatio;       // Pixel width/height (orig Tuning_PixelRatio 8/7)
     float dimming;          // Screen dimming (orig 0.5; skipped, see above)
     float time;             // Animation clock (unused, kept for parity)
     float texSizeX;         // Source frame width
@@ -188,7 +197,10 @@ fragment float4 fragmentPittmanComposite(VertexOut in [[stage_in]],
     // so pittMod3 re-bases into [0,3) explicitly.
     float3 art1 = pittArtifactColor(pittMod3(ax - ay));
     float3 art2 = pittArtifactColor(pittMod3(ax - ay2));
-    float3 ntArtifact = mix(art1, art2, step(0.5, fmod(u.frameIndex, 2.0)));
+    // Upstream NTSCLerp is a float: 0/1 per field at 60fps vsync, 0.5 when
+    // unsynced. ntscStable blends toward the stable 0.5 midpoint.
+    float fieldPhase = step(0.5, fmod(u.frameIndex, 2.0));
+    float3 ntArtifact = mix(art1, art2, mix(fieldPhase, 0.5, clamp(u.ntscStable, 0.0, 1.0)));
 
     float3 curL = cur.sample(pointS, uv - float2(rcp.x, 0.0)).rgb;
     float3 curC = cur.sample(pointS, uv).rgb;
@@ -298,14 +310,22 @@ vertex PittmanMeshOut pittmanVertexMesh(PittmanMeshVertex in [[stage_in]],
     return out;
 }
 
-// Shared SampleCRT core (crtbase.fx): shadow mask from the UNWARPED uv,
+// Shared SampleCRT core (crtbase.fx): pixel-ratio letterbox (UVScalar +
+// UVOffset from Main.cpp), shadow mask from the scaled (pre-overscan) uv,
 // then overscan + barrel warp applied to the composite lookup only,
 // then saturation. dimming intentionally excluded (mesh color instead).
+// isFrame selects the cabinet mapping: half-height mask scale
+// (CRTMask_Scale SrcH*0.5, Main.cpp step 2B) and direct overscan, while
+// the screen uses full-height mask scale and 1/overscan (step 2A).
 static inline float3 pittScreenEmissive(float2 screenUV, texture2d<float> comp,
-                                       sampler s, constant CRTPittmanUniforms &u) {
-    float2 srcPx = screenUV * float2(u.texSizeX, u.texSizeY);
+                                        sampler s, constant CRTPittmanUniforms &u,
+                                        bool isFrame) {
+    float pr = max(u.pixelRatio, 1e-3);
+    float uvScaleY = (u.texSizeX / max(u.texSizeY, 1e-3) / (4.0 / 3.0)) * pr;
+    float2 suv = float2(screenUV.x, screenUV.y * uvScaleY + (1.0 - uvScaleY) * 0.5);
+    float2 srcPx = suv * float2(u.texSizeX, u.texSizeY);
     float mx = fmod(srcPx.x * 32.0, 64.0);
-    float my = fract(srcPx.y) * 32.0;
+    float my = (isFrame ? fract(srcPx.y * 0.5) : fract(srcPx.y)) * 32.0;
     float u32 = fmod(mx, 32.0);
     float yy = fmod(my + 16.0 * step(32.0, mx), 32.0);
     float dR = pittWrappedDist(u32, PittLobeR);
@@ -317,8 +337,8 @@ static inline float3 pittScreenEmissive(float2 screenUV, texture2d<float> comp,
     scantex += u.maskBrightness;
     scantex = mix(float3(1.0), scantex, clamp(u.maskOpacity, 0.0, 1.0));
 
-    float over = 1.0 / max(u.overscan, 1e-3);
-    float2 overUV = (screenUV * over) - ((over - 1.0) * 0.5);
+    float over = isFrame ? max(u.overscan, 1e-3) : 1.0 / max(u.overscan, 1e-3);
+    float2 overUV = (suv * over) - ((over - 1.0) * 0.5);
     float2 c = overUV - 0.5;
     float rsq = dot(c, c);
     float2 buv = c + c * (u.barrel * rsq) + 0.5;
@@ -349,7 +369,7 @@ fragment float4 fragmentPittmanScreenMesh(PittmanMeshOut in [[stage_in]],
     fres = (fres * fres) * l.fresBrightness;
     float3 colorfres = float3(0.45, 0.4, 0.5) * fres;
 
-    float3 emissive = pittScreenEmissive(in.uv, comp, s, u);
+    float3 emissive = pittScreenEmissive(in.uv, comp, s, u, false);
     float3 nearfinal = colorfres + colordiff + colorspec + emissive;
     return float4(nearfinal * mix(float3(1.0), in.color.rgb, l.dimming), 1.0);
 }
@@ -372,7 +392,7 @@ fragment float4 fragmentPittmanFrameMesh(PittmanMeshOut in [[stage_in]],
     float spec = pow(saturate(dot(norm, halfVec)), l.specPower);
     float3 colorspec = float3(0.25) * spec * l.specBrightness;
 
-    float3 emissive = pittScreenEmissive(in.uv, comp, s, u);
+    float3 emissive = pittScreenEmissive(in.uv, comp, s, u, true);
     colorspec += emissive * in.blend * l.reflScalar;
 
     float fres = 1.0 - dot(camDir, norm);
@@ -383,48 +403,15 @@ fragment float4 fragmentPittmanFrameMesh(PittmanMeshOut in [[stage_in]],
     return float4(nearfinal * mix(float3(1.0), in.color.rgb, l.dimming), 1.0);
 }
 // --- [ PASS 3: SCREEN (flat fallback) ---
-// SampleCRT (crtbase.fx) without the 3D mesh: shadow mask, overscan,
-// barrel warp, saturation. Renders the full-size pre-bloom image that
-// post.fx downsamples.
+// SampleCRT (crtbase.fx) without the 3D mesh: delegates to the shared
+// core with the screen mapping. Renders the full-size pre-bloom image
+// that post.fx downsamples.
 
 fragment float4 fragmentPittmanScreen(VertexOut in [[stage_in]],
                                      texture2d<float> comp [[texture(0)]],
                                      constant CRTPittmanUniforms &u [[buffer(0)]]) {
     constexpr sampler linS(filter::linear, address::clamp_to_edge);
-    // Main.cpp passes 1/Tuning_Overscan to the screen shader.
-    float over = 1.0 / max(u.overscan, 1e-3);
-    float2 overUV = (in.texCoord * over) - ((over - 1.0) * 0.5);
-    float2 c = overUV - 0.5;
-    float rsq = dot(c, c);
-    float2 buv = c + c * (u.barrel * rsq) + 0.5;
-
-    // Shadow mask in source-pixel space, sampled from the UNWARPED uv
-    // like the original (only the composite lookup takes the warp): the
-    // 64-texel tile covers 2 source pixels, one 32-row tile covers one
-    // source row, and the right half staggers down 16 rows (slot mask).
-    // mask.bmp is sampled LINEAR+WRAP in the original, so the smooth
-    // analytic fit evaluates equivalently.
-    float2 srcPx = in.texCoord * float2(u.texSizeX, u.texSizeY);
-    float mx = fmod(srcPx.x * 32.0, 64.0);
-    float my = fract(srcPx.y) * 32.0;
-    float u32 = fmod(mx, 32.0);
-    float yy = fmod(my + 16.0 * step(32.0, mx), 32.0);
-    float dR = pittWrappedDist(u32, PittLobeR);
-    float dG = pittWrappedDist(u32, PittLobeG);
-    float dB = pittWrappedDist(u32, PittLobeB);
-    float env = smoothstep(2.5, 7.0, yy) * (1.0 - smoothstep(24.0, 28.5, yy));
-    float3 lobes = float3(pittLobe(dR), pittLobe(dG), pittLobe(dB));
-    float3 scantex = (79.0 + float3(176.0, 147.0, 176.0) * lobes * env) / 255.0;
-
-    scantex += u.maskBrightness;
-    scantex = mix(float3(1.0), scantex, clamp(u.maskOpacity, 0.0, 1.0));
-
-    // compFrameSampler uses BORDER black in the original.
-    float3 comptex = (buv.x < 0.0 || buv.x > 1.0 || buv.y < 0.0 || buv.y > 1.0)
-        ? float3(0.0) : comp.sample(linS, buv).rgb;
-    float3 emissive = comptex * scantex;
-    float desat = dot(emissive, float3(0.299, 0.587, 0.114));
-    emissive = mix(float3(desat), emissive, u.tuningSatur);
+    float3 emissive = pittScreenEmissive(in.texCoord, comp, linS, u, false);
     // dimming intentionally not applied: screen.fx modulates by the 3D
     // mesh vertex color, which is constant for a fullscreen quad.
 

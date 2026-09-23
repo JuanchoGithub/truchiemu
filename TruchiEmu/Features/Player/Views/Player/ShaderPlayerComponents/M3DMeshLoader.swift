@@ -132,6 +132,19 @@ enum M3DMeshLoader {
             interleaved[o + 11] = uvs[i * 2 + 1]
             interleaved[o + 12] = blends[i]
         }
+#if LOG_DEBUG
+        // frame.m3d carries per-vertex reflection weights (usage 6); if all
+        // zero the cabinet reflection would be invisible. Verified 0..1.
+        if name == "frame" {
+            var bmin = Float.greatestFiniteMagnitude
+            var bmax = -Float.greatestFiniteMagnitude
+            for b in blends {
+                if b < bmin { bmin = b }
+                if b > bmax { bmax = b }
+            }
+            LoggerService.debug(category: "Pittman", "frame.m3d blend range: \(bmin)..\(bmax)")
+        }
+#endif
         guard let vbo = device.makeBuffer(bytes: interleaved,
                                           length: interleaved.count * 4, options: []),
               let ibo = device.makeBuffer(bytes: indices,

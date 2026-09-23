@@ -256,7 +256,9 @@ struct CRTPittmanUniforms {
     var persistB: Float
     var tuningBleed: Float
     var tuningArtifacts: Float
-    var bloomSpread: Float
+    var ntscStable: Float
+    var bloomDownspread: Float
+    var bloomUpspread: Float
     var bloomPower: Float
     var bloomIntensity: Float
     var tuningSatur: Float
@@ -264,6 +266,7 @@ struct CRTPittmanUniforms {
     var maskOpacity: Float
     var overscan: Float
     var barrel: Float
+    var pixelRatio: Float
     var dimming: Float
     var time: Float
     var texSizeX: Float
