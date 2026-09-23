@@ -50,7 +50,7 @@ enum TVPerfTrace {
     static func log(_: String) {}
     static func flush() {}
     @discardableResult
-    static func time<T>(_: String, _ work: () -> T) -> T { work() }
+    static func time<T>(_: String, thresholdMs _: Double = 3, _ work: () -> T) -> T { work() }
 #endif
 }
 
