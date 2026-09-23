@@ -18,12 +18,26 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
     private var temporalIndex: Int = 0 // Cycles 0-4, points to "current" frame
     private var frameCounter: UInt32 = 0
     // Intermediate targets for the Pittman CRTSim chain (MinorKeyGames CRTSim
-    // port): composite pass output at source size + Poisson blur at quarter
-    // size. Rebuilt when the source frame size changes.
+    // port): composite + previous-composite at source size (even/odd RTT
+    // ping-pong in the original), screen + upsample at full size, Poisson
+    // downsample at full/16. Rebuilt when sizes change.
     private var pittmanCompTex: MTLTexture?
-    private var pittmanBlurTex: MTLTexture?
-    private var pittmanCompSize: (w: Int, h: Int) = (0, 0)
-    private var pittmanBlurSize: (w: Int, h: Int) = (0, 0)
+    private var pittmanPrevTex: MTLTexture?
+    private var pittmanScreenTex: MTLTexture?
+    private var pittmanDownTex: MTLTexture?
+    private var pittmanUpTex: MTLTexture?
+    private var pittmanSrcSize: (w: Int, h: Int) = (0, 0)
+    private var pittmanFullSize: (w: Int, h: Int) = (0, 0)
+    // False until the first composite has been fed back, so a preset switch
+    // or resize never trails one stale frame of an older image.
+    private var pittmanPrevReady = false
+    // CRTSim 3D meshes (screen.m3d cabinet screen, frame.m3d cabinet).
+    // Loaded once per coordinator; depth target rebuilt on resize.
+    private var pittmanScreenMesh: PittmanMesh?
+    private var pittmanFrameMesh: PittmanMesh?
+    private var pittmanDepthTex: MTLTexture?
+    private var pittmanDepthSize: (w: Int, h: Int) = (0, 0)
+    private var pittmanMeshPipelines: [String: MTLRenderPipelineState] = [:]
     // Fragment shader names that require the post-encode temporal-feedback
     // blit copy (rolling history copy of the source frame into T-1's slot).
     // O(1) membership test used per-frame in draw(); replaces a four-way
@@ -33,7 +47,6 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
         "fragmentGBAShader",
         "fragmentPSPShader",
         "fragmentCRTMultipass",
-        "fragmentPittmanPresent",
     ]
 
     // Cached "is runner.rom?.systemID a known system in SystemDatabase" —
@@ -123,9 +136,18 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
     func cleanup() {
         temporalTextures = [nil, nil, nil, nil, nil]
         pittmanCompTex = nil
-        pittmanBlurTex = nil
-        pittmanCompSize = (0, 0)
-        pittmanBlurSize = (0, 0)
+        pittmanPrevTex = nil
+        pittmanScreenTex = nil
+        pittmanDownTex = nil
+        pittmanUpTex = nil
+        pittmanSrcSize = (0, 0)
+        pittmanFullSize = (0, 0)
+        pittmanPrevReady = false
+        pittmanScreenMesh = nil
+        pittmanFrameMesh = nil
+        pittmanDepthTex = nil
+        pittmanDepthSize = (0, 0)
+        pittmanMeshPipelines.removeAll()
         pipelineCache.removeAll()
         forceAlphaPipelineCache = nil
         commandQueue = nil
@@ -203,29 +225,46 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
     }
 
     /// Ensure the Pittman chain's intermediate targets exist for the current
-    /// source size. Composite runs at source size; the Poisson blur runs at
-    /// quarter size (bilinear upscale in the present pass doubles as the
-    /// original upsample step). Targets are always `.bgra8Unorm` so the
-    /// shared `.bgra8Unorm` pipelines match regardless of core pixel format.
-    private func ensurePittmanTextures(frameW: Int, frameH: Int, device: MTLDevice) {
-        let blurW = max(1, frameW / 4)
-        let blurH = max(1, frameH / 4)
-        if pittmanCompTex != nil, pittmanBlurTex != nil,
-           pittmanCompSize.w == frameW, pittmanCompSize.h == frameH,
-           pittmanBlurSize.w == blurW, pittmanBlurSize.h == blurH {
+    /// source and game sizes. Composite/prev run at source size; screen,
+    /// upsample, and depth run at the GAME-RECT size (not the drawable:
+    /// the main encoder letterboxes into the game rect, so game-sized
+    /// targets map 1:1 with no squeeze); the Poisson downsample runs at
+    /// game/16 like the original's dst/16 RTT. Targets are always
+    /// `.bgra8Unorm` so the shared `.bgra8Unorm` pipelines match
+    /// regardless of core format.
+    private func ensurePittmanTextures(frameW: Int, frameH: Int,
+                                      gameW: Int, gameH: Int, device: MTLDevice) {
+        let downW = max(1, gameW / 16)
+        let downH = max(1, gameH / 16)
+        if pittmanCompTex != nil, pittmanPrevTex != nil,
+           pittmanScreenTex != nil, pittmanDownTex != nil, pittmanUpTex != nil,
+           pittmanSrcSize.w == frameW, pittmanSrcSize.h == frameH,
+           pittmanFullSize.w == gameW, pittmanFullSize.h == gameH {
             return
         }
         func makeTarget(w: Int, h: Int) -> MTLTexture? {
             let desc = MTLTextureDescriptor.texture2DDescriptor(
                 pixelFormat: .bgra8Unorm, width: w, height: h, mipmapped: false)
-            desc.usage = [.renderTarget, .shaderRead]
+            desc.usage = [.renderTarget, .shaderRead, .shaderWrite]
             desc.storageMode = .private
             return device.makeTexture(descriptor: desc)
         }
         pittmanCompTex = makeTarget(w: frameW, h: frameH)
-        pittmanBlurTex = makeTarget(w: blurW, h: blurH)
-        pittmanCompSize = (frameW, frameH)
-        pittmanBlurSize = (blurW, blurH)
+        pittmanPrevTex = makeTarget(w: frameW, h: frameH)
+        pittmanScreenTex = makeTarget(w: gameW, h: gameH)
+        pittmanDownTex = makeTarget(w: downW, h: downH)
+        pittmanUpTex = makeTarget(w: gameW, h: gameH)
+        if pittmanDepthTex == nil || pittmanDepthSize.w != gameW || pittmanDepthSize.h != gameH {
+            let desc = MTLTextureDescriptor.texture2DDescriptor(
+                pixelFormat: .depth32Float, width: gameW, height: gameH, mipmapped: false)
+            desc.usage = [.renderTarget]
+            desc.storageMode = .private
+            pittmanDepthTex = device.makeTexture(descriptor: desc)
+            pittmanDepthSize = (gameW, gameH)
+        }
+        pittmanSrcSize = (frameW, frameH)
+        pittmanFullSize = (gameW, gameH)
+        pittmanPrevReady = false
     }
 
     private func pittmanPassDescriptor(target: MTLTexture) -> MTLRenderPassDescriptor {
@@ -235,6 +274,63 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
         rpd.colorAttachments[0].clearColor = MTLClearColor(red: 0, green: 0, blue: 0, alpha: 1)
         rpd.colorAttachments[0].storeAction = .store
         return rpd
+    }
+
+    /// Interleaved mesh layout from M3DMeshLoader: pos3 + norm3 + color4 +
+    /// uv2 + blend1 = 13 floats, stride 52.
+    private func pittmanMeshVertexDescriptor() -> MTLVertexDescriptor {
+        let vd = MTLVertexDescriptor()
+        let attrs: [(MTLVertexFormat, Int)] = [
+            (.float3, 0), (.float3, 12), (.float4, 24), (.float2, 40), (.float, 48),
+        ]
+        for (i, (format, offset)) in attrs.enumerated() {
+            vd.attributes[i].format = format
+            vd.attributes[i].offset = offset
+            vd.attributes[i].bufferIndex = 0
+        }
+        vd.layouts[0].stride = 52
+        vd.layouts[0].stepFunction = .perVertex
+        return vd
+    }
+
+    /// Depth-tested pipeline for a Pittman mesh fragment function. Cached
+    /// separately: mesh pipelines carry a vertex descriptor and a depth
+    /// attachment the shared cache entries lack.
+    private func pittmanMeshPipeline(for fragmentName: String, device: MTLDevice) -> MTLRenderPipelineState? {
+        if let cached = pittmanMeshPipelines[fragmentName] { return cached }
+        guard let library = loadShaderLibrary(device: device),
+              let vertexFunction = library.makeFunction(name: "pittmanVertexMesh"),
+              let fragmentFunction = library.makeFunction(name: fragmentName) else {
+            LoggerService.error(category: "Pittman", "Missing mesh shader function '\(fragmentName)'")
+            return nil
+        }
+        let desc = MTLRenderPipelineDescriptor()
+        desc.vertexDescriptor = pittmanMeshVertexDescriptor()
+        desc.vertexFunction = vertexFunction
+        desc.fragmentFunction = fragmentFunction
+        desc.colorAttachments[0].pixelFormat = .bgra8Unorm
+        desc.depthAttachmentPixelFormat = .depth32Float
+        // NOTE: face culling is encoder state, not pipeline state: the mesh
+        // encoder sets .back culling to match D3D CULL_CW (clockwise-wound
+        // triangles culled, counter-clockwise fronts kept).
+        do {
+            let pipeline = try device.makeRenderPipelineState(descriptor: desc)
+            pittmanMeshPipelines[fragmentName] = pipeline
+            return pipeline
+        } catch {
+            LoggerService.error(category: "Pittman", "Mesh pipeline build failed '\(fragmentName)': \(error)")
+            return nil
+        }
+    }
+
+    private func ensurePittmanMeshes(device: MTLDevice) -> Bool {
+        if pittmanScreenMesh == nil {
+            pittmanScreenMesh = M3DMeshLoader.load(name: "screen", device: device)
+        }
+        if pittmanFrameMesh == nil {
+            pittmanFrameMesh = M3DMeshLoader.load(name: "frame", device: device)
+        }
+        return pittmanScreenMesh != nil && pittmanFrameMesh != nil
     }
 
     private func pittmanUniforms(snapshot: [String: Float], frameTex: MTLTexture,
@@ -247,12 +343,9 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
             persistB: get("persistB", fallback: 0.42),
             tuningBleed: get("tuningBleed", fallback: 0.5),
             tuningArtifacts: get("tuningArtifacts", fallback: 0.5),
-            ntscLerp: get("ntscLerp", fallback: 1.0),
-            artifactScale: get("artifactScale", fallback: 255.0),
             bloomSpread: get("bloomSpread", fallback: 0.025),
             bloomPower: get("bloomPower", fallback: 2.0),
             bloomIntensity: get("bloomIntensity", fallback: 0.25),
-            maskScale: get("maskScale", fallback: 0.25),
             tuningSatur: get("tuningSatur", fallback: 1.35),
             maskBrightness: get("maskBrightness", fallback: 0.45),
             maskOpacity: get("maskOpacity", fallback: 1.0),
@@ -269,51 +362,207 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
         )
     }
 
-    /// Encode the Pittman composite + blur passes into intermediate targets.
-    /// Runs before the main drawable encoder; the main `fragmentPittmanPresent`
-    /// case then composites those targets to the screen. History comes from
-    /// the shared temporal ring (first frames fall back to the live frame).
+    private func pittmanLighting(snapshot: [String: Float]) -> PittmanMeshLighting {
+        func get(_ name: String, fallback: Float) -> Float { snapshot[name] ?? fallback }
+        return PittmanMeshLighting(
+            diffBrightness: get("pittmanDiff", fallback: 0.5),
+            specBrightness: get("pittmanSpec", fallback: 0.35),
+            specPower: get("pittmanSpecPower", fallback: 50.0),
+            fresBrightness: get("pittmanFres", fallback: 1.0),
+            frameColor: SIMD4<Float>(0.06, 0.06, 0.06, 1.0),
+            reflScalar: 0.3,
+            dimming: get("dimming", fallback: 0.5),
+            pad: 0)
+    }
+
+    /// Draw the curved screen mesh then the cabinet frame mesh into
+    /// screenTex with depth testing, exactly like Main.cpp steps 2A/2B.
+    /// Mesh vertex colors carry dimming; the cabinet reflects the picture
+    /// via its blend weights. Lighting/material values mirror the HLSL.
+    private func runPittmanMeshPasses(commandBuffer: MTLCommandBuffer,
+                                     compTex: MTLTexture,
+                                     screenTex: MTLTexture,
+                                     depthTex: MTLTexture,
+                                     screenMesh: PittmanMesh,
+                                     frameMesh: PittmanMesh,
+                                     screenMeshPipe: MTLRenderPipelineState,
+                                     frameMeshPipe: MTLRenderPipelineState,
+                                     uniforms: UnsafeRawPointer,
+                                     uniformsLength: Int,
+                                     snapshot: [String: Float]) {
+        let rpd = MTLRenderPassDescriptor()
+        rpd.colorAttachments[0].texture = screenTex
+        rpd.colorAttachments[0].loadAction = .clear
+        rpd.colorAttachments[0].clearColor = MTLClearColor(red: 0, green: 0, blue: 0, alpha: 1)
+        rpd.colorAttachments[0].storeAction = .store
+        rpd.depthAttachment.texture = depthTex
+        rpd.depthAttachment.loadAction = .clear
+        rpd.depthAttachment.clearDepth = 1.0
+        rpd.depthAttachment.storeAction = .dontCare
+        guard let enc = commandBuffer.makeRenderCommandEncoder(descriptor: rpd) else { return }
+        enc.setViewport(MTLViewport(originX: 0, originY: 0,
+                                    width: Double(screenTex.width), height: Double(screenTex.height),
+                                    znear: 0.0, zfar: 1.0))
+        // Match D3D CULL_CW: cull clockwise-wound (back) faces.
+        enc.setCullMode(.back)
+        enc.setFrontFacing(.counterClockwise)
+        let aspect = Float(screenTex.width) / Float(max(1, screenTex.height))
+        let (wvp, camPos, lightPos) = PittmanCamera.wvp(aspect: aspect)
+        var mats = PittmanMeshUniforms(wvpMat: wvp, worldMat: matrix_identity_float4x4,
+                                       camPos: camPos, lightPos: lightPos)
+        var light = pittmanLighting(snapshot: snapshot)
+        enc.setFragmentTexture(compTex, index: 0)
+        withUnsafeBytes(of: &mats) { rawMats in
+            withUnsafeBytes(of: &light) { rawLight in
+                enc.setVertexBytes(rawMats.baseAddress!,
+                                   length: MemoryLayout<PittmanMeshUniforms>.stride, index: 1)
+                // Curved screen first (writes depth), then the cabinet.
+                enc.setRenderPipelineState(screenMeshPipe)
+                enc.setVertexBuffer(screenMesh.vertexBuffer, offset: 0, index: 0)
+                enc.setFragmentBytes(uniforms, length: uniformsLength, index: 0)
+                enc.setFragmentBytes(rawLight.baseAddress!,
+                                     length: MemoryLayout<PittmanMeshLighting>.stride, index: 2)
+                enc.drawIndexedPrimitives(type: .triangle, indexCount: screenMesh.indexCount,
+                                          indexType: .uint16, indexBuffer: screenMesh.indexBuffer,
+                                          indexBufferOffset: 0)
+                enc.setRenderPipelineState(frameMeshPipe)
+                enc.setVertexBuffer(frameMesh.vertexBuffer, offset: 0, index: 0)
+                enc.setFragmentBytes(uniforms, length: uniformsLength, index: 0)
+                enc.setFragmentBytes(rawLight.baseAddress!,
+                                     length: MemoryLayout<PittmanMeshLighting>.stride, index: 2)
+                enc.drawIndexedPrimitives(type: .triangle, indexCount: frameMesh.indexCount,
+                                          indexType: .uint16, indexBuffer: frameMesh.indexBuffer,
+                                          indexBufferOffset: 0)
+            }
+        }
+        enc.endEncoding()
+    }
+
+    /// Encode the Pittman composite + 3D screen/cabinet + downsample +
+    /// upsample passes into intermediate targets. Runs before the main
+    /// drawable encoder; the main `fragmentPittmanPresent` case then
+    /// blends screen and upsample to the screen. Previous-composite
+    /// feedback mirrors the original even/odd RTT ping-pong (first
+    /// frames fall back to the live frame).
     private func runPittmanIntermediatePasses(device: MTLDevice,
                                              commandBuffer: MTLCommandBuffer,
                                              frameTex: MTLTexture,
                                              viewSize: CGSize) {
-        ensureTemporalTextures(width: frameTex.width, height: frameTex.height,
-                               device: device, sourceFormat: frameTex.pixelFormat)
-        ensurePittmanTextures(frameW: frameTex.width, frameH: frameTex.height, device: device)
-        guard let compTex = pittmanCompTex, let blurTex = pittmanBlurTex,
+        // Game-rect size (what the main encoder letterboxes into): mesh
+        // targets are game-sized so the final present maps 1:1 with no
+        // squeeze; the camera fits the cabinet to this rect.
+        let gameRotated = (runner.currentFrameRotation == 1 || runner.currentFrameRotation == 3)
+        let gameAspect = computeTargetAspect(
+            frameTex: frameTex, isRotated: gameRotated, systemID: runner.rom?.systemID)
+        let gameVP = computeViewport(targetAspect: gameAspect, viewSize: viewSize)
+        let gameW = max(1, Int(gameVP.width)), gameH = max(1, Int(gameVP.height))
+        ensurePittmanTextures(frameW: frameTex.width, frameH: frameTex.height,
+                              gameW: gameW, gameH: gameH,
+                              device: device)
+        guard let compTex = pittmanCompTex, let prevTex = pittmanPrevTex,
+              let screenTex = pittmanScreenTex,
+              let downTex = pittmanDownTex, let upTex = pittmanUpTex,
               let compPipe = pipelineState(for: "fragmentPittmanComposite", device: device),
               let blurPipe = pipelineState(for: "fragmentPittmanBlur", device: device) else {
             return
         }
         let snapshot = ShaderManager.shared.getUniformSnapshot()
+        // TV cabinet toggle (new; the source always renders its meshes).
+        // Off falls back to the flat screen pass: same picture, no cabinet.
+        let useCabinet = (snapshot["useCabinet"] ?? 1.0) > 0.5
+        var screenMeshPipe: MTLRenderPipelineState?
+        var frameMeshPipe: MTLRenderPipelineState?
+        var screenMesh: PittmanMesh?
+        var frameMesh: PittmanMesh?
+        var depthTex: MTLTexture?
+        var flatScreenPipe: MTLRenderPipelineState?
+        if useCabinet {
+            guard ensurePittmanMeshes(device: device),
+                  let sm = pittmanScreenMesh, let fm = pittmanFrameMesh,
+                  let dt = pittmanDepthTex,
+                  let smp = pittmanMeshPipeline(for: "fragmentPittmanScreenMesh", device: device),
+                  let fmp = pittmanMeshPipeline(for: "fragmentPittmanFrameMesh", device: device) else {
+                return
+            }
+            screenMesh = sm; frameMesh = fm; depthTex = dt
+            screenMeshPipe = smp; frameMeshPipe = fmp
+        } else {
+            guard let fsp = pipelineState(for: "fragmentPittmanScreen", device: device) else {
+                return
+            }
+            flatScreenPipe = fsp
+        }
         var u = pittmanUniforms(snapshot: snapshot, frameTex: frameTex,
                                 vpW: Float(viewSize.width), vpH: Float(viewSize.height))
-        let prevTex = getTemporalTexture(at: (temporalIndex - 1 + 5) % 5) ?? frameTex
+        // First frames have no previous composite yet; the live frame means
+        // "no trail" instead of garbage, matching a cleared RTT.
+        let prevSrc: MTLTexture = pittmanPrevReady ? prevTex : frameTex
 
-        if let enc = commandBuffer.makeRenderCommandEncoder(descriptor: pittmanPassDescriptor(target: compTex)) {
-            enc.setViewport(MTLViewport(originX: 0, originY: 0,
-                                        width: Double(compTex.width), height: Double(compTex.height),
-                                        znear: 0.0, zfar: 1.0))
-            enc.setRenderPipelineState(compPipe)
-            enc.setFragmentTexture(frameTex, index: 0)
-            enc.setFragmentTexture(prevTex, index: 1)
-            enc.setFragmentBytes(&u, length: MemoryLayout<CRTPittmanUniforms>.stride, index: 0)
+        func viewport(for tex: MTLTexture) -> MTLViewport {
+            MTLViewport(originX: 0, originY: 0,
+                        width: Double(tex.width), height: Double(tex.height),
+                        znear: 0.0, zfar: 1.0)
+        }
+        func runPass(pipe: MTLRenderPipelineState, target: MTLTexture,
+                     tex0: MTLTexture, tex1: MTLTexture? = nil,
+                     setBytes: (MTLRenderCommandEncoder) -> Void) {
+            guard let enc = commandBuffer.makeRenderCommandEncoder(
+                descriptor: pittmanPassDescriptor(target: target)) else { return }
+            enc.setViewport(viewport(for: target))
+            enc.setRenderPipelineState(pipe)
+            enc.setFragmentTexture(tex0, index: 0)
+            if let tex1 = tex1 { enc.setFragmentTexture(tex1, index: 1) }
+            setBytes(enc)
             enc.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
             enc.endEncoding()
         }
-        // The user-facing spread is tuned in full-res UV units (orig 0.025);
-        // scale it into the quarter-size blur target's UV space.
-        let uvScale = Float(frameTex.width) / Float(max(1, blurTex.width))
-        var b = PittmanBlurUniforms(spread: u.bloomSpread * uvScale, swapXY: 0.0)
-        if let enc = commandBuffer.makeRenderCommandEncoder(descriptor: pittmanPassDescriptor(target: blurTex)) {
-            enc.setViewport(MTLViewport(originX: 0, originY: 0,
-                                        width: Double(blurTex.width), height: Double(blurTex.height),
-                                        znear: 0.0, zfar: 1.0))
-            enc.setRenderPipelineState(blurPipe)
-            enc.setFragmentTexture(compTex, index: 0)
-            enc.setFragmentBytes(&b, length: MemoryLayout<PittmanBlurUniforms>.stride, index: 0)
-            enc.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
-            enc.endEncoding()
+
+        var uu = u
+        withUnsafeBytes(of: &uu) { raw in
+            let ptr = raw.baseAddress!
+            let len = MemoryLayout<CRTPittmanUniforms>.stride
+            runPass(pipe: compPipe, target: compTex, tex0: frameTex, tex1: prevSrc) { enc in
+                enc.setFragmentBytes(ptr, length: len, index: 0)
+            }
+            // Feed this frame's composite back for the next frame.
+            if let blit = commandBuffer.makeBlitCommandEncoder() {
+                blit.copy(from: compTex, to: prevTex)
+                blit.endEncoding()
+            }
+            if useCabinet {
+                runPittmanMeshPasses(commandBuffer: commandBuffer, compTex: compTex,
+                                     screenTex: screenTex, depthTex: depthTex!,
+                                     screenMesh: screenMesh!, frameMesh: frameMesh!,
+                                     screenMeshPipe: screenMeshPipe!, frameMeshPipe: frameMeshPipe!,
+                                     uniforms: ptr, uniformsLength: len, snapshot: snapshot)
+            } else if let flatScreenPipe {
+                runPass(pipe: flatScreenPipe, target: screenTex, tex0: compTex) { enc in
+                    enc.setFragmentBytes(ptr, length: len, index: 0)
+                }
+            }
+        }
+        pittmanPrevReady = true
+        // Poisson downsample then upsample (post.fx), kernels circular in
+        // each render target's pixels via the aspect term.
+        var bDown = PittmanBlurUniforms(
+            spread: u.bloomSpread,
+            aspect: Float(downTex.height) / Float(max(1, downTex.width)),
+            swapXY: 0.0, pad: 0.0)
+        withUnsafeBytes(of: &bDown) { raw in
+            runPass(pipe: blurPipe, target: downTex, tex0: screenTex) { enc in
+                enc.setFragmentBytes(raw.baseAddress!,
+                                     length: MemoryLayout<PittmanBlurUniforms>.stride, index: 0)
+            }
+        }
+        var bUp = PittmanBlurUniforms(
+            spread: u.bloomSpread,
+            aspect: Float(upTex.height) / Float(max(1, upTex.width)),
+            swapXY: 1.0, pad: 0.0)
+        withUnsafeBytes(of: &bUp) { raw in
+            runPass(pipe: blurPipe, target: upTex, tex0: downTex) { enc in
+                enc.setFragmentBytes(raw.baseAddress!,
+                                     length: MemoryLayout<PittmanBlurUniforms>.stride, index: 0)
+            }
         }
     }
 
@@ -1098,17 +1347,18 @@ outputHeight: Float(viewport.height)
                         }
                         frameCounter += 1
                     case "fragmentPittmanPresent":
-                        // Kyle Pittman CRTSim chain (final present). Composite
-                        // + blur already ran in runPittmanIntermediatePasses;
-                        // combine them here with mask/overscan/barrel/satur.
+                        // Kyle Pittman CRTSim chain (final present). Composite,
+                        // screen, downsample, and upsample already ran in
+                        // runPittmanIntermediatePasses; blend screen and
+                        // upsample here.
                         // Missing intermediates fall back to the live frame so
                         // a failed allocation degrades instead of crashing.
                         var u = pittmanUniforms(snapshot: uniformSnapshot, frameTex: frameTex,
                                                 vpW: vpW, vpH: vpH)
                         u.time = time
                         enc.setFragmentBytes(&u, length: MemoryLayout<CRTPittmanUniforms>.stride, index: 0)
-                        enc.setFragmentTexture(pittmanCompTex ?? frameTex, index: 0)
-                        enc.setFragmentTexture(pittmanBlurTex ?? frameTex, index: 1)
+                        enc.setFragmentTexture(pittmanScreenTex ?? frameTex, index: 0)
+                        enc.setFragmentTexture(pittmanUpTex ?? pittmanDownTex ?? frameTex, index: 1)
                         frameCounter += 1
                     default:
                         // Fallback to basic passthrough/CRT style

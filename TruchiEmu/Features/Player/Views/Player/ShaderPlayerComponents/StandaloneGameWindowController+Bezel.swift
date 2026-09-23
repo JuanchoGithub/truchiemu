@@ -5,6 +5,24 @@ import SwiftUI
 
 extension StandaloneGameWindowController {
 
+    /// True while the Pittman CRT preset (with its own 3D cabinet) drives
+    /// rendering with the cabinet switched on. App bezels stay off so the
+    /// two frames never stack; with the cabinet off, bezels behave normally.
+    var isPittmanCabinetActive: Bool {
+        ShaderManager.shared.getCurrentFragmentFunctionName() == "fragmentPittmanPresent"
+            && ShaderManager.shared.getUniform("useCabinet") > 0.5
+    }
+
+    /// Re-applies bezel layout after a shader preset switch.
+    func refreshBezelForShaderPreset() {
+        if isPittmanCabinetActive {
+            bezelBackgroundLayer?.isHidden = true
+        } else if bezelImage != nil {
+            bezelBackgroundLayer?.isHidden = false
+        }
+        updateMetalViewFrameForBezel()
+    }
+
     // Called when the window is resized. Dynamically scales bezel to fit new window size.
     func onWindowResized() {
         guard let containerView = window?.contentView as? GameContainerView,
@@ -48,8 +66,15 @@ extension StandaloneGameWindowController {
 
     // Updates the Metal view frame to match the playable area of the bezel.
     // This ensures the bezel is visible around the edges of the game content.
+    // Pittman CRT owns its 3D cabinet: the Metal view fills the container
+    // and no playable-area inset applies while its preset is active.
     private func updateMetalViewFrameForBezel() {
         guard let containerView = window?.contentView as? GameContainerView else {
+            return
+        }
+
+        if isPittmanCabinetActive {
+            metalView?.frame = containerView.bounds
             return
         }
 
@@ -77,8 +102,15 @@ extension StandaloneGameWindowController {
 
     // Load bezel for a game and set up the background layer.
     // Constrains window size to screen bounds if bezel is larger than screen.
+    // Pittman CRT draws its own 3D cabinet: app bezels stay off entirely.
     @MainActor
     func loadBezelForGame(systemID: String, rom: ROM) async {
+        if isPittmanCabinetActive {
+            #if LOG_DEBUG
+            LoggerService.debug(category: "Bezel", "Skipping app bezel: Pittman cabinet active")
+            #endif
+            return
+        }
         // Initialize bezel view model if needed
         if bezelViewModel == nil {
             bezelViewModel = BezelViewModel()

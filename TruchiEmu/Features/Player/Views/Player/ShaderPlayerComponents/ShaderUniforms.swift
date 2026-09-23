@@ -256,12 +256,9 @@ struct CRTPittmanUniforms {
     var persistB: Float
     var tuningBleed: Float
     var tuningArtifacts: Float
-    var ntscLerp: Float
-    var artifactScale: Float
     var bloomSpread: Float
     var bloomPower: Float
     var bloomIntensity: Float
-    var maskScale: Float
     var tuningSatur: Float
     var maskBrightness: Float
     var maskOpacity: Float
@@ -280,7 +277,30 @@ struct CRTPittmanUniforms {
 // Pittman Poisson blur uniforms - matches PittmanBlurUniforms in CRTPittman.metal
 struct PittmanBlurUniforms {
     var spread: Float
+    var aspect: Float
     var swapXY: Float
+    var pad: Float
+}
+
+// Pittman mesh matrices - matches PittmanMeshUniforms in CRTPittman.metal
+struct PittmanMeshUniforms {
+    var wvpMat: simd_float4x4
+    var worldMat: simd_float4x4
+    var camPos: SIMD4<Float>
+    var lightPos: SIMD4<Float>
+}
+
+// Pittman mesh lighting - matches PittmanLightUniforms in CRTPittman.metal.
+// Field order must match exactly (floats, then float4, then floats).
+struct PittmanMeshLighting {
+    var diffBrightness: Float
+    var specBrightness: Float
+    var specPower: Float
+    var fresBrightness: Float
+    var frameColor: SIMD4<Float>
+    var reflScalar: Float
+    var dimming: Float
+    var pad: Float
 }
 
 // Legacy alias for CRT passthrough

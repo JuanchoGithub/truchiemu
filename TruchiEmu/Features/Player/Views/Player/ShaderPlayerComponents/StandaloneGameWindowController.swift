@@ -145,6 +145,7 @@ var p2JoinStatusOverlayView: NSHostingView<AnyView>?
 private var p2JoinStatusCancellable: AnyCancellable?
     private var trainingConfigCancellable: AnyCancellable?
     private var timeMachineCancellable: AnyCancellable?
+    private var pittmanBezelCancellable: AnyCancellable?
 var guideSidebarView: NSHostingView<AnyView>?
     @MainActor @Published public var isShaderEditorShown: Bool = false
     var shaderEditorView: SafeHostingView<AnyView>?
@@ -207,6 +208,7 @@ return MoveListOverlayViewModel(runner: runner)
         p2JoinStatusOverlayView = nil
         p2JoinStatusCancellable = nil
         trainingConfigCancellable = nil
+        pittmanBezelCancellable = nil
         guideSidebarView?.removeFromSuperview()
 guideSidebarView = nil
         shaderEditorView?.removeFromSuperview()
@@ -941,6 +943,16 @@ gameGuideViewModel.loadForGame(rom)
                 Task { @MainActor in
                     self.persistFightOverlayState()
                 }
+            }
+
+        // Pittman CRT owns its 3D cabinet: hide app bezels while its
+        // preset is active, restore them when leaving it.
+        pittmanBezelCancellable = ShaderManager.shared.$activePreset
+            .receive(on: DispatchQueue.main)
+            .dropFirst()
+            .sink { [weak self] _ in
+                guard let self, !self.isClosingWindow else { return }
+                self.refreshBezelForShaderPreset()
             }
 
         // Store progressive version for later use in loadSaveStatesAfterLaunch
