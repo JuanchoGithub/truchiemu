@@ -1,0 +1,55 @@
+---
+layout: default
+title: v1.14.0 - TruchiEmu Documentation
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/changelog.html' | relative_url }}">Changelog</a>
+        <span class="separator">/</span>
+        <span class="current">v1.14.0</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.14.0</h1>
+        <div class="release-meta">
+            <span class="release-date">September 23, 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>This release makes save states survive database loss and re-adding games with stable game identity and orphan repair, turns TV mode fast scroll into a smooth carousel with an icon-only system row and external-display prompt, adds reverse-holo foil parity with a hue control, ships a new CRT Pittman shader, and adds a titlebar notification ticker with contrast-safe playful buttons.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Highlights</h2>
+        <ul class="feature-list">
+            <li><strong>Stable game identity:</strong> Save states now survive database loss and re-adding games. A stable key (content hash first, filename stem fallback) replaces the random UUID, legacy keys merge on read, orphans auto-relink with manual repair, a new Orphaned Saves section in Save Manager offers single and bulk delete, and favorites/playtime/core choice/categories get an external metadata backup with a versioned one-shot migration.</li>
+            <li><strong>TV mode carousel + icon row:</strong> L1/R1 and L2/R2 fast scroll runs as chained unit steps with overlapping linear motion and continuous center focus, the systems row goes icon-only with an enlarged center icon, system flights defer the games refresh to the drain with a fade-in, and TV mode prompts to move to an external display.</li>
+            <li><strong>Reverse holo parity + hue slider:</strong> Denser rainbow foil with random-mode hue parity, corrected rainbow transparency and punch, and solid/background visibility, plus a hue slider control.</li>
+            <li><strong>CRT Pittman shader:</strong> New CRTSim port with composite, mask, and bloom passes.</li>
+            <li><strong>Titlebar notification ticker:</strong> Queued notification pills with icon spin in the titlebar.</li>
+            <li><strong>Contrast-safe playful buttons:</strong> Computed button text for contrast safety, playful hover states, and deep selected fills; plus a playful delete confirm with instant box art, shake and bounce on arm.</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Detailed Changes</h2>
+        <ul>
+            <li>Saves — stable game identity: save states survive database loss and re-add (content-hash key with filename-stem fallback, legacy key merge, orphan auto-relink plus manual repair, Orphaned Saves section with single and bulk delete, external metadata backup for favorites/playtime/core choice/categories, versioned one-shot migration)</li>
+            <li>TV mode — fast scroll as smooth carousel with edge-faded holo (chained unit steps, continuous center focus, deferred games refresh with fade-in, memoized counts, warmed-up icons); system row goes icon-only with enlarged center icon; prompt external display move while in TV mode</li>
+            <li>Holo FX — reverse foil parity: denser rainbow foil, random mode hue parity and slider, corrected rainbow transparency and punch, solid/background visibility</li>
+            <li>Shaders — new CRT Pittman shader: MinorKeyGames CRTSim port with composite, mask, and bloom passes</li>
+            <li>Notifications — titlebar notification ticker with queued pills and icon spin</li>
+            <li>UI — contrast-safe buttons with computed text, playful hover, deep selected fills; playful delete confirm with instant box art, shake and bounce on arm</li>
+            <li>Reliability — backup SwiftData store only on version or schema change; count XPC host logs in total log size and clear-all</li>
+            <li>Bump marketing version to 1.14.0 and build number to 37 across <code>project.yml</code>, both <code>Info.plist</code>s, and <code>docs/_config.yml</code>.</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/changelog/v1.13.0.html' | relative_url }}" class="release-prev">&larr; v1.13.0</a>
+        <a href="{{ '/changelog.html' | relative_url }}" class="release-all">All Releases</a>
+    </nav>
+</div>

@@ -1,0 +1,55 @@
+---
+layout: default
+title: v1.14.0 - Documentação do TruchiEmu
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/pt/changelog.html' | relative_url }}">Registro de mudanças</a>
+        <span class="separator">/</span>
+        <span class="current">v1.14.0</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.14.0</h1>
+        <div class="release-meta">
+            <span class="release-date">23 de setembro de 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>Esta versão faz os save states sobreviverem à perda do banco de dados e à readição de jogos com identidade estável e reparo de órfãos, transforma a rolagem rápida do modo TV em um carrossel suave com linha de sistemas só de ícones e aviso de tela externa, adiciona paridade do foil holo reverso com controle de matiz, traz um novo shader CRT Pittman, e adiciona um ticker de notificações na barra de título com botões lúdicos de contraste seguro.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Destaques</h2>
+        <ul class="feature-list">
+            <li><strong>Identidade estável de jogo:</strong> Os save states agora sobrevivem à perda do banco de dados e à readição de jogos. Uma chave estável (hash de conteúdo primeiro, nome de arquivo como fallback) substitui o UUID aleatório, chaves antigas são mescladas na leitura, órfãos se revinculam sozinhos com reparo manual, uma nova seção de Saves Órfãos no gerenciador oferece exclusão simples e em massa, e favoritos/tempo de jogo/núcleo/categorias ganham um backup externo de metadados com migração única versionada.</li>
+            <li><strong>Carrossel do modo TV + linha de ícones:</strong> A rolagem rápida com L1/R1 e L2/R2 funciona como passos encadeados com movimento linear sobreposto e foco central contínuo, a linha de sistemas vira só ícones com ícone central ampliado, os voos adiam a atualização de jogos com fade-in, e o modo TV sugere mover para uma tela externa.</li>
+            <li><strong>Paridade holo reversa + slider de matiz:</strong> Foil arco-íris mais denso com paridade de matiz no modo aleatório, transparência e força do arco-íris corrigidas, e visibilidade de sólido/fundo, mais um controle deslizante de matiz.</li>
+            <li><strong>Shader CRT Pittman:</strong> Novo port do CRTSim com passes de composite, máscara e bloom.</li>
+            <li><strong>Ticker de notificações:</strong> Pílulas de notificação em fila com giro de ícone na barra de título.</li>
+            <li><strong>Botões lúdicos de contraste seguro:</strong> Texto de botão calculado para contraste seguro, hovers lúdicos e preenchimentos profundos na seleção; mais uma confirmação de exclusão lúdica com capa instantânea, sacudida e quique ao armar.</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Mudanças detalhadas</h2>
+        <ul>
+            <li>Saves — identidade estável de jogo: save states sobrevivem à perda do banco e à readição (chave por hash de conteúdo com fallback de nome, mesclagem de chaves antigas, revinculação automática de órfãos mais reparo manual, seção de Saves Órfãos com exclusão simples e em massa, backup externo de favoritos/tempo/núcleo/categorias, migração única versionada)</li>
+            <li>Modo TV — rolagem rápida como carrossel suave com holo de bordas esmaecidas (passos encadeados, foco central contínuo, atualização adiada com fade-in, contagens memoizadas, ícones pré-aquecidos); linha de sistemas só de ícones com ícone central ampliado; aviso de mover para tela externa no modo TV</li>
+            <li>Efeitos Holo — paridade do foil reverso: foil arco-íris mais denso, paridade de matiz no modo aleatório e slider, transparência e força corrigidas, visibilidade de sólido/fundo</li>
+            <li>Shaders — novo shader CRT Pittman: port do CRTSim da MinorKeyGames com passes de composite, máscara e bloom</li>
+            <li>Notificações — ticker na barra de título com pílulas em fila e giro de ícone</li>
+            <li>UI — botões de contraste seguro com texto calculado, hover lúdico, preenchimentos profundos; confirmação de exclusão lúdica com capa instantânea, sacudida e quique</li>
+            <li>Confiabilidade — backup do store SwiftData só ao mudar versão ou esquema; conta os logs do host XPC no tamanho total e na limpeza total</li>
+            <li>Versão de marketing atualizada para 1.14.0 e número de build para 37 em <code>project.yml</code>, ambos os <code>Info.plist</code> e <code>docs/_config.yml</code>.</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/pt/changelog/v1.13.0.html' | relative_url }}" class="release-prev">&larr; v1.13.0</a>
+        <a href="{{ '/pt/changelog.html' | relative_url }}" class="release-all">Todas as versões</a>
+    </nav>
+</div>

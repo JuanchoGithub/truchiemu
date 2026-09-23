@@ -1,0 +1,55 @@
+---
+layout: default
+title: v1.14.0 - Documentación de TruchiEmu
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/es/changelog.html' | relative_url }}">Registro de cambios</a>
+        <span class="separator">/</span>
+        <span class="current">v1.14.0</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.14.0</h1>
+        <div class="release-meta">
+            <span class="release-date">23 de septiembre de 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>Esta versión hace que los save states sobrevivan a la pérdida de la base de datos y a volver a añadir juegos con identidad estable y reparación de huérfanos, convierte el desplazamiento rápido del modo TV en un carrusel suave con fila de sistemas solo de iconos y aviso de pantalla externa, añade paridad del foil holo inverso con control de tono, incorpora un nuevo shader CRT Pittman, y añade un ticker de notificaciones en la barra de título con botones juguetones de contraste seguro.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Destacados</h2>
+        <ul class="feature-list">
+            <li><strong>Identidad estable de juego:</strong> Los save states ahora sobreviven a la pérdida de la base de datos y a volver a añadir juegos. Una clave estable (hash de contenido primero, nombre de archivo como respaldo) reemplaza el UUID aleatorio, las claves antiguas se fusionan al leer, los huérfanos se revinculan solos con reparación manual, una nueva sección de Guardados Huérfanos en el gestor ofrece borrado simple y masivo, y los favoritos/tiempo de juego/núcleo/categorías reciben un respaldo externo de metadatos con migración única versionada.</li>
+            <li><strong>Carrusel del modo TV + fila de iconos:</strong> El desplazamiento rápido con L1/R1 y L2/R2 funciona como pasos encadenados con movimiento lineal solapado y foco central continuo, la fila de sistemas pasa a solo iconos con icono central ampliado, los vuelos difieren el refresco de juegos con fundido de entrada, y el modo TV sugiere mover a una pantalla externa.</li>
+            <li><strong>Paridad holo inversa + deslizador de tono:</strong> Foil arcoíris más denso con paridad de tono en modo aleatorio, transparencia y fuerza del arcoíris corregidas, y visibilidad de sólido/fondo, más un control deslizante de tono.</li>
+            <li><strong>Shader CRT Pittman:</strong> Nuevo port de CRTSim con pasadas de composite, máscara y bloom.</li>
+            <li><strong>Ticker de notificaciones:</strong> Píldoras de notificación en cola con giro de icono en la barra de título.</li>
+            <li><strong>Botones juguetones de contraste seguro:</strong> Texto de botón calculado para contraste seguro, hovers juguetones y rellenos profundos en selección; más una confirmación de borrado juguetona con carátula instantánea, sacudida y rebote al armar.</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Cambios detallados</h2>
+        <ul>
+            <li>Guardados — identidad estable de juego: los save states sobreviven a la pérdida de la base de datos y a re-añadir (clave por hash de contenido con respaldo de nombre, fusión de claves antiguas, revinculado automático de huérfanos más reparación manual, sección de Guardados Huérfanos con borrado simple y masivo, respaldo externo de favoritos/tiempo/núcleo/categorías, migración única versionada)</li>
+            <li>Modo TV — desplazamiento rápido como carrusel suave con holo de bordes difuminados (pasos encadenados, foco central continuo, refresco diferido con fundido, conteos memoizados, iconos precalentados); fila de sistemas solo de iconos con icono central ampliado; aviso de mover a pantalla externa en modo TV</li>
+            <li>Efectos Holo — paridad del foil inverso: foil arcoíris más denso, paridad de tono en modo aleatorio y deslizador, transparencia y fuerza corregidas, visibilidad de sólido/fondo</li>
+            <li>Shaders — nuevo shader CRT Pittman: port de CRTSim de MinorKeyGames con pasadas de composite, máscara y bloom</li>
+            <li>Notificaciones — ticker en la barra de título con píldoras en cola y giro de icono</li>
+            <li>UI — botones de contraste seguro con texto calculado, hover juguetón, rellenos profundos; confirmación de borrado juguetona con carátula instantánea, sacudida y rebote</li>
+            <li>Fiabilidad — respaldo del store de SwiftData solo al cambiar versión o esquema; se cuentan los logs del host XPC en el tamaño total y en el borrado total</li>
+            <li>Versión de marketing subida a 1.14.0 y número de compilación a 37 en <code>project.yml</code>, ambos <code>Info.plist</code> y <code>docs/_config.yml</code>.</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/es/changelog/v1.13.0.html' | relative_url }}" class="release-prev">&larr; v1.13.0</a>
+        <a href="{{ '/es/changelog.html' | relative_url }}" class="release-all">Todas las versiones</a>
+    </nav>
+</div>
