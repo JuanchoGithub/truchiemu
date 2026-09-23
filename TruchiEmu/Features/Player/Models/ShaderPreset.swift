@@ -765,6 +765,43 @@ description: "Game Boy Color with temporal feedback, ghosting, and iridescent LC
             recommendedSystems: ["nes", "snes", "gba", "arcade"]
         ),
 
+        // CRT Pittman (MinorKeyGames CRTSim port: composite + mask + bloom)
+        ShaderPreset(
+            id: "builtin-crt-pittman",
+            name: "CRT Pittman (Super Win)",
+            shaderType: .crt,
+            passes: [
+                ShaderPass(
+                    shaderFile: "CRTPittman",
+                    filter: .linear,
+                    scaleX: 1.0, scaleY: 1.0,
+                    scaleTypeX: .viewport, scaleTypeY: .viewport
+                )
+            ],
+            globalUniforms: [
+                ShaderUniform(name: "tuningSharp", defaultValue: 0.8, minValue: 0.0, maxValue: 1.0, displayName: "Composite Sharp"),
+                ShaderUniform(name: "persistR", defaultValue: 0.7, minValue: 0.0, maxValue: 1.0, displayName: "Red Persistence"),
+                ShaderUniform(name: "persistG", defaultValue: 0.525, minValue: 0.0, maxValue: 1.0, displayName: "Green Persistence"),
+                ShaderUniform(name: "persistB", defaultValue: 0.42, minValue: 0.0, maxValue: 1.0, displayName: "Blue Persistence"),
+                ShaderUniform(name: "tuningBleed", defaultValue: 0.5, minValue: 0.0, maxValue: 1.0, displayName: "Composite Bleed"),
+                ShaderUniform(name: "tuningArtifacts", defaultValue: 0.5, minValue: 0.0, maxValue: 1.0, displayName: "Composite Artifacts"),
+                ShaderUniform(name: "ntscLerp", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, displayName: "NTSC Field Blend"),
+                ShaderUniform(name: "artifactScale", defaultValue: 255.0, minValue: 0.0, maxValue: 1000.0, step: 5.0, displayName: "NTSC Artifact Scale"),
+                ShaderUniform(name: "bloomSpread", defaultValue: 0.025, minValue: 0.0, maxValue: 0.1, step: 0.001, displayName: "Bloom Spread"),
+                ShaderUniform(name: "bloomPower", defaultValue: 2.0, minValue: 0.0, maxValue: 10.0, step: 0.1, displayName: "Bloom Power"),
+                ShaderUniform(name: "bloomIntensity", defaultValue: 0.25, minValue: 0.0, maxValue: 1.0, displayName: "Bloom Intensity"),
+                ShaderUniform(name: "maskScale", defaultValue: 0.25, minValue: 0.0, maxValue: 0.5, step: 0.01, displayName: "CRT Mask Scale"),
+                ShaderUniform(name: "tuningSatur", defaultValue: 1.35, minValue: 0.0, maxValue: 2.0, displayName: "Saturation"),
+                ShaderUniform(name: "maskBrightness", defaultValue: 0.45, minValue: 0.0, maxValue: 1.0, displayName: "Mask Brightness"),
+                ShaderUniform(name: "maskOpacity", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, displayName: "Mask Opacity"),
+                ShaderUniform(name: "overscan", defaultValue: 1.0, minValue: 0.9, maxValue: 1.1, step: 0.005, displayName: "Overscan"),
+                ShaderUniform(name: "barrel", defaultValue: -0.115, minValue: -0.5, maxValue: 0.5, step: 0.005, displayName: "Barrel Distortion"),
+                ShaderUniform(name: "dimming", defaultValue: 0.5, minValue: 0.0, maxValue: 1.0, displayName: "Screen Dimming"),
+            ],
+            description: "CRT simulation by J. Kyle Pittman (Super Win the Game). Faux-NTSC composite, phosphor persistence, shadow mask, and bloom.",
+            recommendedSystems: ["nes", "snes", "genesis", "psx", "arcade"]
+        ),
+
         // No Filter (raw pixels)
         ShaderPreset(
             id: "builtin-none",

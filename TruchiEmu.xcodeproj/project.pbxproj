@@ -533,6 +533,7 @@
 		66222470B1CB0A7E41E13747 /* input_systemLabels_p2000t.json in Resources */ = {isa = PBXBuildFile; fileRef = 5C6C5AB9AFFF3B6E22A0E2DA /* input_systemLabels_p2000t.json */; };
 		66224EA8DE77310B84B77F10 /* appIcon256.jpg in Resources */ = {isa = PBXBuildFile; fileRef = CC6D983ADA6F2058A430F875 /* appIcon256.jpg */; };
 		667975EF2750F253A19162FB /* GameListRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07A377CFF1945DD917DC921B /* GameListRowView.swift */; };
+		667BF4A1F43E1C78A69BD50A /* CRTPittman.metal in Sources */ = {isa = PBXBuildFile; fileRef = 4C54C12B5612E8D1855E9A0B /* CRTPittman.metal */; };
 		66C987B41A3E926DFEBD78CA /* fightdata_aof2.json in Resources */ = {isa = PBXBuildFile; fileRef = B05BA07B177F750792D78E4A /* fightdata_aof2.json */; };
 		6709589B4CB4AC79F3C17278 /* input_coreOverrides_mkxp-z.json in Resources */ = {isa = PBXBuildFile; fileRef = 48C98C7FCED4E670B826D7E7 /* input_coreOverrides_mkxp-z.json */; };
 		674D4683BC0F2CDAA199CF4B /* OpenCritic.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF4E53391BFE3DECE7B3CA42 /* OpenCritic.swift */; };
@@ -1804,6 +1805,7 @@
 		4B69FDCD052D4CB0C3006C85 /* input_systemLabels_nds.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_nds.json; sourceTree = "<group>"; };
 		4C0D8487DF2A9BB2EAB70BAB /* GameCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameCardView.swift; sourceTree = "<group>"; };
 		4C459265720761CCC9C13B51 /* DAPHNE.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = DAPHNE.png; sourceTree = "<group>"; };
+		4C54C12B5612E8D1855E9A0B /* CRTPittman.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = CRTPittman.metal; sourceTree = "<group>"; };
 		4CB8D85B3EE52977B0324896 /* gamegear.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = gamegear.ico; sourceTree = "<group>"; };
 		4CCBCE020AE481CD1A7F004F /* input_coreLabels_stone_soup.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_stone_soup.json; sourceTree = "<group>"; };
 		4D0CC7F9B8824DFF3250BFB2 /* fightdata_blandia.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_blandia.json; sourceTree = "<group>"; };
@@ -3262,6 +3264,7 @@
 				2FF46494B22F41F5D1CD519B /* 8bGameBoyColor.metal */,
 				62B4EE0802A69845537290E2 /* CRTFilter_multipass.metal */,
 				26D95B905CF18035469C4C59 /* CRTFilter.metal */,
+				4C54C12B5612E8D1855E9A0B /* CRTPittman.metal */,
 				BF7A3D8D17275C396BE21173 /* DotMatrixLCD.metal */,
 				625852EC0A71AE15C0A0F6AE /* FamicomRF.metal */,
 				61341295EE2B8A9A3EE7AF16 /* ForceAlpha.metal */,
@@ -6170,6 +6173,7 @@
 				89999BCF6C86749975156810 /* CLILauncher.swift in Sources */,
 				EEFB801BD3A80132FB475EB6 /* CRTFilter.metal in Sources */,
 				5C15E6B7D2E89E337CB85B84 /* CRTFilter_multipass.metal in Sources */,
+				667BF4A1F43E1C78A69BD50A /* CRTPittman.metal in Sources */,
 				49D2EEDF34D3968A17D6E64E /* CategoryManager.swift in Sources */,
 				F478F42099085BD179E833A5 /* CategoryRowButton.swift in Sources */,
 				F33C60D08AB5B8F8FCD8A40F /* CategoryViews.swift in Sources */,

@@ -247,6 +247,42 @@ struct FamicomRFUniforms {
     var barsAmount: Float
 }
 
+// CRT Pittman (MinorKeyGames CRTSim port) uniforms - matches CRTPittmanUniforms in CRTPittman.metal.
+// Field order must match the Metal struct exactly (all Float, sequential layout).
+struct CRTPittmanUniforms {
+    var tuningSharp: Float
+    var persistR: Float
+    var persistG: Float
+    var persistB: Float
+    var tuningBleed: Float
+    var tuningArtifacts: Float
+    var ntscLerp: Float
+    var artifactScale: Float
+    var bloomSpread: Float
+    var bloomPower: Float
+    var bloomIntensity: Float
+    var maskScale: Float
+    var tuningSatur: Float
+    var maskBrightness: Float
+    var maskOpacity: Float
+    var overscan: Float
+    var barrel: Float
+    var dimming: Float
+    var time: Float
+    var texSizeX: Float
+    var texSizeY: Float
+    var outputWidth: Float
+    var outputHeight: Float
+    var frameIndex: Float
+    var padding: Float
+}
+
+// Pittman Poisson blur uniforms - matches PittmanBlurUniforms in CRTPittman.metal
+struct PittmanBlurUniforms {
+    var spread: Float
+    var swapXY: Float
+}
+
 // Legacy alias for CRT passthrough
 typealias ShaderUniforms = CRTUniforms
 
