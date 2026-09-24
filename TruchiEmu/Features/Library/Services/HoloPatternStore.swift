@@ -855,9 +855,9 @@ struct HoloSettingsSnapshot: Equatable {
         let all = HoloPattern.allCases
         guard !all.isEmpty else { return (nil, 1.0, nil, 1.0, .overlay) }
         let p1 = all[Int(seed % UInt64(all.count))]
-        // Tighter tile scale (0.5…1.0×) so the per-card etch isn't blown up tiny
-        // or stretched — subtler than the old 0.1…1.0× wild swing.
-        let s1: CGFloat = variation ? CGFloat(0.5 + Double(seed % 1000) / 1000.0 * 0.5) : 1.0
+        // Denser tile scale (0.25…0.5×) so bundled etches read as fine
+        // texture close to the generated lattice density.
+        let s1: CGFloat = variation ? CGFloat(0.25 + Double(seed % 1000) / 1000.0 * 0.25) : 0.5
         var p2: HoloPattern? = nil
         var s2: CGFloat = 1.0
         var blend2: HoloTextureBlend = .overlay
@@ -874,7 +874,7 @@ struct HoloSettingsSnapshot: Equatable {
         let p1IsWhitelisted = whitelist.contains(p1)
         if variation, !p1IsWhitelisted, !whitelist.isEmpty, Int((seed >> 20) % 100) < 15 {
             p2 = whitelist[Int((seed >> 40) % UInt64(whitelist.count))]
-            s2 = CGFloat(0.5 + Double((seed >> 10) % 1000) / 1000.0 * 0.5)
+            s2 = CGFloat(0.25 + Double((seed >> 10) % 1000) / 1000.0 * 0.25)
             blend2 = HoloTextureBlend.allCases[Int((seed >> 50) % UInt64(HoloTextureBlend.allCases.count))]
         }
         return (p1, s1, p2, s2, blend2)

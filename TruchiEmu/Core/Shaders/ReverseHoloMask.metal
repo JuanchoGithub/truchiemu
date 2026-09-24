@@ -32,3 +32,19 @@ half4 reverseHoloMask(float2 position, half4 color) {
     // Pre-multiplied opaque white at alpha `a`; only the alpha drives the mask.
     return half4(half3(a), half(a));
 }
+
+[[ stitchable ]]
+half4 reverseHoloMaskStrong(float2 position, half4 color) {
+    // Same paper response as `reverseHoloMask`, but tuned for bundled
+    // `holo_*.png` etches: their mid-grey pixels fall below the standard
+    // band, so this lifts the peak and opens the low edge. Generated lattice
+    // keeps the original curve.
+    float v = saturate(dot(float3(color.rgb), float3(0.299, 0.587, 0.114)));
+
+    constexpr float peakAlpha = 0.75;                // stronger sheen for image foils
+    float lo = smoothstep(0.06, 0.45, v);            // wider low edge keeps mid-grey
+    float hi = 1.0 - smoothstep(0.60, 0.90, v);      // same highlight falloff
+    float a = peakAlpha * lo * hi;
+
+    return half4(half3(a), half(a));
+}

@@ -844,7 +844,9 @@ struct HoloFoilLayers: View, Equatable {
             // colour-dodged so it would otherwise cover the whole card — only
             // plays through the etch's visible (mid-bright) cells, so the dark
             // valleys and blown-out highlights let the card art show through.
-            .mask(foilLuminanceMask(period: period, w: w, h: h))
+            // Image foils use the strong curve so bundled etches match the
+            // generated lattice coverage.
+            .mask(foilLuminanceMask(period: period, w: w, h: h, strong: settings.reverseTextureMode != .generated && settings.reverseTexturePattern != nil))
         }
         .compositingGroup()
         // source: filter: brightness(.55) contrast(1.5) saturate(1).
@@ -871,14 +873,14 @@ struct HoloFoilLayers: View, Equatable {
     /// So both the hue AND the moving ray/radial only touch the texture's lit
     /// cells — the dark cells stay untouched (card shows through).
     @ViewBuilder
-    private func foilLuminanceMask(period: CGFloat, w: CGFloat, h: CGFloat) -> some View {
+    private func foilLuminanceMask(period: CGFloat, w: CGFloat, h: CGFloat, strong: Bool = false) -> some View {
         if settings.reverseTextureMode != .generated,
            let p = settings.reverseTexturePattern,
            let m = HoloPatternStore.shared.tiledAlphaMask(for: p, size: NSSize(width: w * 2, height: h * 2), scale: settings.reverseTextureScale * reverseEtchScaleFactor) {
             Image(nsImage: m)
                 .resizable()
                 .frame(width: w * 2, height: h * 2)
-                .colorEffect(Shader(function: ShaderLibrary.reverseHoloMask, arguments: []))
+                .colorEffect(Shader(function: strong ? ShaderLibrary.reverseHoloMaskStrong : ShaderLibrary.reverseHoloMask, arguments: []))
         } else {
             ZStack {
                 RepeatingLinearGradientView(colors: [.white, .clear], angle: 45, period: period)
@@ -898,7 +900,7 @@ struct HoloFoilLayers: View, Equatable {
     /// the moving `difference` ray in `reverseShine` sweeps/inverts it like
     /// the source does to the textured foil.
     @ViewBuilder
-    private func rainbowHue(period: CGFloat, w: CGFloat, h: CGFloat) -> some View {
+    private func rainbowHue(period: CGFloat, w: CGFloat, h: CGFloat, imageFoilLift: Bool = false) -> some View {
         let intensity = settings.reverseRainbowIntensity // 0..1 slider
         let t = intensity * intensity // quadratic: clean fade-out, punchy top
         let spectrum = LinearGradient(
@@ -915,8 +917,9 @@ struct HoloFoilLayers: View, Equatable {
         spectrum
             .blendMode(.screen)
             .saturation(1.0 + 4.0 * t)
+            .brightness(imageFoilLift ? 0.1 : 0.0)
             .opacity(t)
-            .mask(foilLuminanceMask(period: period, w: w, h: h))
+            .mask(foilLuminanceMask(period: period, w: w, h: h, strong: imageFoilLift))
             .frame(width: w * 2, height: h * 2)
     }
 
@@ -973,7 +976,9 @@ struct HoloFoilLayers: View, Equatable {
                 // shows through — there is no metallic base to go dark/light.
                 // Bright texture areas light up in the rainbow hue, exactly as
                 // wanted. Per-card variety comes from the per-card etch/scale.
-                rainbowHue(period: period, w: w, h: h)
+                // `imageFoilLift` uses the strong mask curve + brightness lift
+                // so bundled etches match the generated lattice strength.
+                rainbowHue(period: period, w: w, h: h, imageFoilLift: true)
             } else {
                 ZStack {
                     Image(nsImage: img1)
@@ -989,12 +994,12 @@ struct HoloFoilLayers: View, Equatable {
                     }
                 }
                 .frame(width: w * 2, height: h * 2)
-                // Mask the foil by its own luminance so dark cells fade to
-                // transparent (linear, proportional). Before this the dark
-                // valleys of the foil survived the contrast/dodge pass as
-                // near-opaque black, which read as a black mesh instead of a
-                // metallic holo pattern.
-                .mask(foilLuminanceMask(period: period, w: w, h: h))
+                // Image-foil strength match: lift the bundled etch contrast so
+                // mid-grey pixels dodge as strong as the generated lattice
+                // whites, then gate coverage with the strong mask curve.
+                .contrast(1.4)
+                .brightness(0.08)
+                .mask(foilLuminanceMask(period: period, w: w, h: h, strong: true))
                 .colorMultiply(mode == .solid ? settings.reverseSolidColor : mode == .background ? reverseBackgroundTint : Color.white)
             }
         } else {
