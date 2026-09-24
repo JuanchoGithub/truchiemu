@@ -845,8 +845,19 @@ struct HoloFoilLayers: View, Equatable {
             // plays through the etch's visible (mid-bright) cells, so the dark
             // valleys and blown-out highlights let the card art show through.
             // Image foils use the strong curve so bundled etches match the
-            // generated lattice coverage.
+            // generated lattice coverage. In hue modes the sweep also gets
+            // the cursor gate: without it the white ray stays visible in
+            // dark areas even when the hue base is fully transparent.
             .mask(foilLuminanceMask(period: period, w: w, h: h, strong: settings.reverseTextureMode != .generated && settings.reverseTexturePattern != nil))
+            .mask(
+                Group {
+                    if isHueMode {
+                        rainbowCursorGate(w: w, h: h)
+                    } else {
+                        Color.white.frame(width: w * 2, height: h * 2)
+                    }
+                }
+            )
         }
         .compositingGroup()
         // source: filter: brightness(.55) contrast(1.5) saturate(1).
@@ -892,6 +903,24 @@ struct HoloFoilLayers: View, Equatable {
         }
     }
 
+    /// Cursor gate shared by rainbow hue and rainbow sweep. White at the
+    /// light spot, transparent outside. Full dark means fully transparent:
+    /// no foil shows where the light is gone.
+    @ViewBuilder
+    private func rainbowCursorGate(w: CGFloat, h: CGFloat) -> some View {
+        RadialGradient(
+            stops: [
+                Gradient.Stop(color: .white.opacity(1.0), location: 0.0),
+                Gradient.Stop(color: .white.opacity(0.55), location: 0.5),
+                Gradient.Stop(color: .white.opacity(0.0), location: 1.0),
+            ],
+            center: UnitPoint(x: pointerX, y: pointerY),
+            startRadius: 0,
+            endRadius: max(w, h) * 0.75
+        )
+        .frame(width: w * 2, height: h * 2)
+    }
+
     /// Rainbow hue for Reverse Holo: a smooth spectrum gated by the FOIL's
     /// luminance (the heightmap). Dark foil areas get ZERO hue; bright areas get
     /// hue whose strength follows the intensity slider quadratically (t = i*i):
@@ -920,6 +949,11 @@ struct HoloFoilLayers: View, Equatable {
             .brightness(imageFoilLift ? 0.1 : 0.0)
             .opacity(t)
             .mask(foilLuminanceMask(period: period, w: w, h: h, strong: imageFoilLift))
+            // Cursor gate: confine hue to the light spot like solid foils.
+            // Solid darkens away from cursor via softLight black crush; rainbow
+            // base is bright everywhere, so intersect a cursor radial here.
+            // Full dark = fully transparent, no residual foil.
+            .mask(rainbowCursorGate(w: w, h: h))
             .frame(width: w * 2, height: h * 2)
     }
 
