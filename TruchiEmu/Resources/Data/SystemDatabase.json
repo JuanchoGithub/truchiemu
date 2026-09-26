@@ -3004,6 +3004,34 @@
   },
   {
     "displayInUI": true,
+    "id": "switch",
+    "year": "2017",
+    "pathKeywords": [
+      "switch",
+      "nintendo switch",
+      "nx"
+    ],
+    "magicHeaders": [],
+    "filenamePatterns": [],
+    "name": "Switch",
+    "extensions": [
+      "nca",
+      "nro",
+      "nsp",
+      "xci"
+    ],
+    "defaultBoxType": "Vertical",
+    "iconName": "gamecontroller",
+    "sortOrder": 82,
+    "manufacturer": "Nintendo",
+    "database": [
+      "Nintendo - Nintendo Switch"
+    ],
+    "defaultCoreID": "suyu_libretro",
+    "defaultShaderPresetID": "builtin-none"
+  },
+  {
+    "displayInUI": true,
     "id": "taylor",
     "name": "C713",
     "extensions": [],

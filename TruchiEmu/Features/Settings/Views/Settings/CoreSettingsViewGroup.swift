@@ -1,6 +1,7 @@
 import SwiftUI
 import Combine
 import GameController
+import UniformTypeIdentifiers
 
 // MARK: - Cores
 struct CoreSettingsView: View {
@@ -16,6 +17,8 @@ struct CoreSettingsView: View {
     @State private var selectedSystemID: String? = nil
     @State private var expandedCoreID: String? = nil
     @State private var showAvailableSystems = true
+    @State private var showCoreImporter = false
+    @State private var importError: String? = nil
 
     private var selectedSystem: SystemInfo? {
         if let id = selectedSystemID {
@@ -39,7 +42,8 @@ struct CoreSettingsView: View {
     }
 
     private func systemHasAvailableCore(_ sys: SystemInfo) -> Bool {
-        coreManager.availableCores.contains { remoteCore in
+        if CoreManager.customCoreAvailable(for: sys.id) { return true }
+        return coreManager.availableCores.contains { remoteCore in
             let normalizedIDs = remoteCore.systemIDs.map { SystemDatabase.normalizeSystemID($0) }
             return normalizedIDs.contains(sys.id) || sys.defaultCoreID == remoteCore.coreID
         }
@@ -289,10 +293,43 @@ struct CoreSettingsView: View {
                     Task { await coreManager.performFullSystemUpdate() }
                 }
                 .disabled(coreManager.isFetchingCoreList || LibretroInfoManager.shared.isRefreshing)
+                SettingsActionButton(loc.localized("cores.importCustom"), systemImage: "square.and.arrow.down") {
+                    showCoreImporter = true
+                }
+                .disabled(coreManager.isDownloadingCore)
             }
         }
         .padding(.horizontal, AppSpacing.xl)
         .padding(.vertical, AppSpacing.md)
+        .fileImporter(isPresented: $showCoreImporter, allowedContentTypes: [.zip, .item], allowsMultipleSelection: false) { result in
+            switch result {
+            case .success(let urls):
+                guard let url = urls.first else { return }
+                let ext = url.pathExtension.lowercased()
+                guard ext == "zip" || ext == "dylib" else {
+                    importError = url.lastPathComponent
+                    return
+                }
+                Task {
+                    do {
+                        let targetSystem = selectedSystemID ?? selectedSystem?.id ?? "switch"
+                        _ = try await coreManager.installCustomCore(from: url, systemIDs: [targetSystem])
+                    } catch {
+                        importError = error.localizedDescription
+                    }
+                }
+            case .failure(let error):
+                importError = error.localizedDescription
+            }
+        }
+        .alert(loc.localized("cores.importFailed"), isPresented: Binding(
+            get: { importError != nil },
+            set: { if !$0 { importError = nil } }
+        )) {
+            Button(loc.localized("general.cancel"), role: .cancel) { importError = nil }
+        } message: {
+            Text(importError ?? "")
+        }
     }
 }
 
@@ -305,6 +342,8 @@ struct SystemCoresView: View {
     @Environment(\.colorScheme) private var colorScheme
     @State private var expandedCoreID: String? = nil
     @State private var showOptionsFor: String? = nil
+    @State private var showImporter = false
+    @State private var importError: String? = nil
 
     var coresForSystem: [RemoteCoreInfo] {
         coreManager.availableCores.filter { remoteCore in
@@ -330,6 +369,10 @@ struct SystemCoresView: View {
                         Text(loc.localized("cores.noCoresAvailable"))
                             .foregroundColor(AppColors.textSecondary(colorScheme))
                             .multilineTextAlignment(.center)
+                        SettingsActionButton(loc.localized("cores.importCustom"), systemImage: "square.and.arrow.down") {
+                            showImporter = true
+                        }
+                        .disabled(coreManager.isDownloadingCore)
                     }
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, AppSpacing.xl2)
@@ -386,6 +429,34 @@ struct SystemCoresView: View {
         }
         .formStyle(.grouped)
         .scrollContentBackground(.hidden)
+        .fileImporter(isPresented: $showImporter, allowedContentTypes: [.zip, .item], allowsMultipleSelection: false) { result in
+            switch result {
+            case .success(let urls):
+                guard let url = urls.first else { return }
+                let ext = url.pathExtension.lowercased()
+                guard ext == "zip" || ext == "dylib" else {
+                    importError = url.lastPathComponent
+                    return
+                }
+                Task {
+                    do {
+                        _ = try await coreManager.installCustomCore(from: url, systemIDs: [system.id])
+                    } catch {
+                        importError = error.localizedDescription
+                    }
+                }
+            case .failure(let error):
+                importError = error.localizedDescription
+            }
+        }
+        .alert(loc.localized("cores.importFailed"), isPresented: Binding(
+            get: { importError != nil },
+            set: { if !$0 { importError = nil } }
+        )) {
+            Button(loc.localized("general.cancel"), role: .cancel) { importError = nil }
+        } message: {
+            Text(importError ?? "")
+        }
         .sheet(isPresented: Binding(
             get: { showOptionsFor != nil },
             set: { if !$0 { showOptionsFor = nil } }
@@ -422,9 +493,19 @@ struct InstalledCoreRowView: View {
                         .frame(width: 24, height: 24)
 
                     VStack(alignment: .leading, spacing: 2) {
-                        Text(core.displayName)
-                            .font(.body)
-                            .fontWeight(.medium)
+                        HStack(spacing: AppSpacing.xs) {
+                            Text(core.displayName)
+                                .font(.body)
+                                .fontWeight(.medium)
+                            if core.isCustom {
+                                Text(loc.localized("cores.custom"))
+                                    .font(.caption2)
+                                    .padding(.horizontal, AppSpacing.xs)
+                                    .padding(.vertical, 1)
+                                    .background(AppColors.cardBackground(colorScheme))
+                                    .cornerRadius(AppRadius.xs)
+                            }
+                        }
                         Text(core.id)
                             .font(.caption)
                             .foregroundColor(AppColors.textSecondary(colorScheme))

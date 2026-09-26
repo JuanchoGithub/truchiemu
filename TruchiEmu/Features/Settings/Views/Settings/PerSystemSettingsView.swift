@@ -1,4 +1,5 @@
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct PerSystemSettingsView: View {
     @Environment(\.colorScheme) private var colorScheme
@@ -19,6 +20,9 @@ struct PerSystemSettingsView: View {
     @Binding var pendingSystemID: String?
     @State private var showAvailableSystems = true
     @State private var forceShowTabs = false
+    @State private var showCoreImporter = false
+    @State private var coreImportError: String? = nil
+    @State private var coreImportSystemID: String? = nil
 
     enum PerSystemTab: String, CaseIterable, Identifiable {
         case shader = "Shader"
@@ -468,9 +472,44 @@ struct PerSystemSettingsView: View {
                 .controlSize(.large)
             }
 
+            SettingsActionButton(loc.localized("cores.importCustom"), systemImage: "square.and.arrow.down") {
+                coreImportSystemID = system.id
+                showCoreImporter = true
+            }
+            .controlSize(.large)
+            .disabled(coreManager.isDownloadingCore)
+
             Spacer()
         }
         .frame(maxWidth: .infinity)
+        .fileImporter(isPresented: $showCoreImporter, allowedContentTypes: [.zip, .item], allowsMultipleSelection: false) { result in
+            switch result {
+            case .success(let urls):
+                guard let url = urls.first else { return }
+                let ext = url.pathExtension.lowercased()
+                guard ext == "zip" || ext == "dylib" else {
+                    coreImportError = url.lastPathComponent
+                    return
+                }
+                Task {
+                    do {
+                        _ = try await coreManager.installCustomCore(from: url, systemIDs: [coreImportSystemID ?? system.id])
+                    } catch {
+                        coreImportError = error.localizedDescription
+                    }
+                }
+            case .failure(let error):
+                coreImportError = error.localizedDescription
+            }
+        }
+        .alert(loc.localized("cores.importFailed"), isPresented: Binding(
+            get: { coreImportError != nil },
+            set: { if !$0 { coreImportError = nil } }
+        )) {
+            Button(loc.localized("general.cancel"), role: .cancel) { coreImportError = nil }
+        } message: {
+            Text(coreImportError ?? "")
+        }
     }
 
     private func addLibraryFolder(for system: SystemInfo) {

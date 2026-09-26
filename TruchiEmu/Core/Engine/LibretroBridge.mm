@@ -3,6 +3,7 @@
 #import "LibretroGlobals.h"
 #import "LibretroCallbacks.h"
 #import "SaveDirectoryBridge.h"
+#import "VulkanLibraryHelper.h"
 
 #include <setjmp.h>
 #include <signal.h>
@@ -116,6 +117,11 @@ g_frame_poll_callback = callback;
     // the global may still be 0, falling back to plain Wiimote. Embedding the
     // device type in the launch call guarantees it's set before launchROM.
     g_wiiControllerType = wiiControllerType;
+
+    // Cores with a private Vulkan renderer (e.g. suyu headless) probe
+    // $LIBVULKAN_PATH before loading. Point it at the vendored MoltenVK so
+    // the lookup works in both the app and the XPC service process.
+    [VulkanLibraryHelper ensureVulkanEnvironment];
 
     // Same pattern for the DOSBox-Pure joystick subtype (Gravis / 2-button /
     // ThrustMaster / Both). The fire-and-forget setDOSDeviceType XPC message

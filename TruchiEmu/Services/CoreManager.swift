@@ -870,14 +870,23 @@ class CoreManager: ObservableObject {
                     } ?? [])
 
                     if !installedVersions.isEmpty {
+                        // Custom cores keep their persisted mapping. Buildbot cores recompute.
+                        let systemIDs: [String]
+                        if persistedCore?.source == .custom, let kept = persistedCore?.systemIDs, !kept.isEmpty {
+                            systemIDs = kept
+                        } else {
+                            systemIDs = CoreManager.supportedSystems(for: coreID)
+                        }
                         let core = LibretroCore(
                             id: coreID,
                             displayName: persistedCore?.displayName ?? coreID,
-                            systemIDs: CoreManager.supportedSystems(for: coreID),
+                            systemIDs: systemIDs,
                             installedVersions: combinedVersions,
                             activeVersionTag: activeVersionTag,
                             isDownloading: false,
-                            downloadProgress: 0
+                            downloadProgress: 0,
+                            source: persistedCore?.source ?? .buildbot,
+                            originURL: persistedCore?.originURL
                         )
                         validCores.append(core)
                     }
@@ -1020,7 +1029,12 @@ class CoreManager: ObservableObject {
     }
 
     static func supportedSystems(for coreID: String) -> [String] {
-        // 1. Get systems that explicitly list this core as their 'defaultCoreID'
+        // 0. Builtin map for custom cores with no buildbot or info entry
+        if coreID == "suyu_libretro" {
+            var switchIDs = Set(["switch"])
+            switchIDs.formUnion(SystemDatabase.compatibleIDs(for: "switch"))
+            return Array(switchIDs)
+        }        // 1. Get systems that explicitly list this core as their 'defaultCoreID'
         var ids = Set(SystemDatabase.systems.filter { $0.defaultCoreID == coreID }.map { $0.id })
 
         // 2. Dynamic map lookup
@@ -1043,6 +1057,15 @@ class CoreManager: ObservableObject {
         }
         
         return Array(finalIDs)
+    }
+
+    /// Core IDs installable only via custom import (no buildbot entry).
+    static let knownCustomCoreIDs: Set<String> = ["suyu_libretro"]
+
+    /// True when a system can be enabled via custom import even with no buildbot core.
+    static func customCoreAvailable(for systemID: String) -> Bool {
+        guard let sys = SystemDatabase.system(forID: systemID), let def = sys.defaultCoreID else { return false }
+        return knownCustomCoreIDs.contains(def)
     }
 
     // MARK: - Minimal ZIP extraction
@@ -1102,7 +1125,7 @@ class CoreManager: ObservableObject {
     func prepareCore(at path: String) async {
         // Remove quarantine attribute using C API
         removexattr(path, "com.apple.quarantine", 0)
-        
+
         // On ARM64/Apple Silicon, dylibs MUST be at least ad-hoc signed to be loaded.
         // Even if already signed, re-signing ensures it's valid for this machine.
         #if arch(arm64)
@@ -1118,6 +1141,154 @@ class CoreManager: ObservableObject {
         LoggerService.debug(category: "CoreManager", "Core codesigned: \(path)")
         #endif
         #endif
+    }
+
+    // MARK: - Custom core import (non-buildbot, e.g. suyu)
+
+    /// Installs a custom core from a local .zip or .dylib file.
+    /// Keeps companion files (e.g. suyu_libretro_libs) beside the dylib.
+    func installCustomCore(from pickedURL: URL, systemIDs: [String], originURL: URL? = nil) async throws -> LibretroCore {
+        let fm = FileManager.default
+        let needsStop = pickedURL.startAccessingSecurityScopedResource()
+        defer { if needsStop { pickedURL.stopAccessingSecurityScopedResource() } }
+
+        let stagingDir = fm.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        try fm.createDirectory(at: stagingDir, withIntermediateDirectories: true)
+        defer { try? fm.removeItem(at: stagingDir) }
+
+        // Copy picked file into staging so sandbox reads stay valid.
+        let stagedInput = stagingDir.appendingPathComponent(pickedURL.lastPathComponent)
+        try fm.copyItem(at: pickedURL, to: stagedInput)
+
+        // Resolve payload dir: unzip zips, use dylib dir directly.
+        let payloadDir = stagingDir.appendingPathComponent("payload", isDirectory: true)
+        try fm.createDirectory(at: payloadDir, withIntermediateDirectories: true)
+        if stagedInput.pathExtension.lowercased() == "zip" {
+            let proc = Process()
+            proc.executableURL = URL(fileURLWithPath: "/usr/bin/ditto")
+            proc.arguments = ["-xk", stagedInput.path, payloadDir.path]
+            try proc.run()
+            proc.waitUntilExit()
+            guard proc.terminationStatus == 0 else {
+                throw NSError(domain: "CoreManager", code: Int(proc.terminationStatus), userInfo: [NSLocalizedDescriptionKey: "Unzip failed."])
+            }
+        } else {
+            try fm.copyItem(at: stagedInput, to: payloadDir.appendingPathComponent(stagedInput.lastPathComponent))
+        }
+
+        // Find the core dylib. Prefer *_libretro.dylib, else first .dylib.
+        guard let dylibURL = findCoreDylib(in: payloadDir) else {
+            throw NSError(domain: "CoreManager", code: 404, userInfo: [NSLocalizedDescriptionKey: "No .dylib found in the picked file."])
+        }
+        let coreID = dylibURL.deletingPathExtension().lastPathComponent
+        let dylibName = dylibURL.lastPathComponent
+
+        let dateFmt = DateFormatter()
+        dateFmt.dateFormat = "yyyyMMdd-HHmm"
+        let buildDate = dateFmt.string(from: Date())
+        let coreFolder = appSupportURL.appendingPathComponent(coreID, isDirectory: true)
+        let versionFolder = coreFolder.appendingPathComponent("custom-\(buildDate)", isDirectory: true)
+        try fm.createDirectory(at: versionFolder, withIntermediateDirectories: true)
+
+        // Move full payload contents so companion libs stay beside the dylib.
+        // If the dylib sits in a subfolder, move its siblings. Else move top level.
+        let sourceDir = dylibURL.deletingLastPathComponent()
+        let payloadItems = try fm.contentsOfDirectory(at: sourceDir, includingPropertiesForKeys: nil)
+        for item in payloadItems {
+            let dest = versionFolder.appendingPathComponent(item.lastPathComponent)
+            try? fm.removeItem(at: dest)
+            try fm.moveItem(at: item, to: dest)
+        }
+
+        let installedDylib = versionFolder.appendingPathComponent(dylibName)
+        await prepareBinaries(in: versionFolder)
+        guard fm.fileExists(atPath: installedDylib.path) else {
+            throw NSError(domain: "CoreManager", code: 404, userInfo: [NSLocalizedDescriptionKey: "Core dylib missing after install."])
+        }
+
+        let displayName = coreID
+            .replacingOccurrences(of: "_libretro", with: "")
+            .replacingOccurrences(of: "_", with: " ")
+            .split(separator: " ").map { $0.capitalized }.joined(separator: " ")
+        let resolvedSystems = Array(Set(systemIDs + CoreManager.supportedSystems(for: coreID)))
+        let coreVersion = CoreVersion(
+            version: "custom",
+            buildDate: buildDate,
+            dylibPath: installedDylib,
+            downloadedAt: Date(),
+            remoteURL: originURL,
+            isActive: true
+        )
+
+        // Symlink Cores/<id>/<id>.dylib points at the installed dylib.
+        let symlinkPath = coreFolder.appendingPathComponent(coreID + ".dylib")
+        if fm.fileExists(atPath: symlinkPath.path) { try? fm.removeItem(at: symlinkPath) }
+        try fm.createSymbolicLink(at: symlinkPath, withDestinationURL: installedDylib)
+
+        if let idx = installedCores.firstIndex(where: { $0.id == coreID }) {
+            installedCores[idx].installedVersions.removeAll { $0.dylibPath.path == installedDylib.path }
+            installedCores[idx].installedVersions.append(coreVersion)
+            installedCores[idx].activeVersionTag = coreVersion.tag
+            installedCores[idx].displayName = installedCores[idx].displayName.isEmpty ? displayName : installedCores[idx].displayName
+            installedCores[idx].source = .custom
+            if originURL != nil { installedCores[idx].originURL = originURL }
+            if !resolvedSystems.isEmpty { installedCores[idx].systemIDs = resolvedSystems }
+        } else {
+            installedCores.append(LibretroCore(
+                id: coreID,
+                displayName: displayName,
+                systemIDs: resolvedSystems,
+                installedVersions: [coreVersion],
+                activeVersionTag: coreVersion.tag,
+                source: .custom,
+                originURL: originURL
+            ))
+        }
+
+        await CoreOptionsManager.shared.discoverOptions(for: coreID, dylibPath: installedDylib.path, romPath: nil)
+        saveInstalledCores()
+        LoggerService.info(category: "CoreManager", "Installed custom core \(coreID)")
+        return installedCores.first(where: { $0.id == coreID })!
+    }
+
+    /// Downloads a custom core zip from a URL (e.g. GitHub release) then installs it.
+    func installCustomCore(fromURL url: URL, systemIDs: [String]) async throws -> LibretroCore {
+        downloadPhase = .fetchingFromURL
+        downloadCoreName = url.lastPathComponent
+        defer { downloadPhase = .idle; downloadCoreName = "" }
+        var request = URLRequest(url: url)
+        request.setValue("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36", forHTTPHeaderField: "User-Agent")
+        let (tmpURL, response) = try await URLSession.shared.download(for: request)
+        if let http = response as? HTTPURLResponse, http.statusCode != 200 {
+            throw NSError(domain: "CoreManager", code: http.statusCode, userInfo: [NSLocalizedDescriptionKey: "Server returned HTTP \(http.statusCode)."])
+        }
+        downloadPhase = .installing
+        // Move to a stable temp path with the remote filename so extension checks work.
+        let staged = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString + "-" + url.lastPathComponent)
+        try? FileManager.default.removeItem(at: staged)
+        try FileManager.default.moveItem(at: tmpURL, to: staged)
+        return try await installCustomCore(from: staged, systemIDs: systemIDs, originURL: url)
+    }
+
+    private func findCoreDylib(in dir: URL) -> URL? {
+        let enumerator = FileManager.default.enumerator(at: dir, includingPropertiesForKeys: nil)
+        var fallback: URL?
+        while let file = enumerator?.nextObject() as? URL {
+            guard file.pathExtension.lowercased() == "dylib" else { continue }
+            if file.lastPathComponent.contains("_libretro") { return file }
+            fallback = fallback ?? file
+        }
+        return fallback
+    }
+
+    /// Clears quarantine and ad-hoc signs every binary in a custom core folder.
+    private func prepareBinaries(in folder: URL) async {
+        let enumerator = FileManager.default.enumerator(at: folder, includingPropertiesForKeys: nil)
+        while let file = enumerator?.nextObject() as? URL {
+            let ext = file.pathExtension.lowercased()
+            guard ext == "dylib" || ext == "so" else { continue }
+            await prepareCore(at: file.path)
+        }
     }
     @MainActor
     func performFullSystemUpdate() async {

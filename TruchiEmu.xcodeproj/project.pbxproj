@@ -20,12 +20,14 @@
 		024AA9F0C40AE97D1A17D252 /* lynx@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C15E93AD0BC5E8C99A37FA9 /* lynx@132w.png */; };
 		02648E51BB763E3EAD39203D /* ATOMISWAVE.png in Resources */ = {isa = PBXBuildFile; fileRef = 1EE18489B15F3771442DAF5F /* ATOMISWAVE.png */; };
 		0264BA41980DD15079BBA731 /* N64Runner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 264FB90DD6CD26D513E6C58C /* N64Runner.swift */; };
+		028327D99E010637DE4BDC61 /* reign_tube_arcade.png in Resources */ = {isa = PBXBuildFile; fileRef = 2BB700C1892B0A1723532CB5 /* reign_tube_arcade.png */; };
 		02FE6C06BD0D2043ABE070CF /* input_systemLabels_ngp.json in Resources */ = {isa = PBXBuildFile; fileRef = BD1730AB73DF60803E567643 /* input_systemLabels_ngp.json */; };
 		03186CB22B055CEA9CB16028 /* TapeDeck.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE971EA2E2A3B852CA7C7401 /* TapeDeck.swift */; };
 		0388CE552DA4F28D8C38B7D1 /* StreamingMediaSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4077D568E47AFA32B755F967 /* StreamingMediaSettingsView.swift */; };
 		038D899DBA3C2E13047051AA /* fightdata_nwarr.json in Resources */ = {isa = PBXBuildFile; fileRef = 4D9A56AED1C74C8EE30DF3C0 /* fightdata_nwarr.json */; };
 		039731494625D25654020EB9 /* mame2000_libretro_default.json in Resources */ = {isa = PBXBuildFile; fileRef = FAE59479082A912BBCECFEAA /* mame2000_libretro_default.json */; };
 		039838A8A745B6A591C096F9 /* input_coreOverrides_easyrpg.json in Resources */ = {isa = PBXBuildFile; fileRef = DC0C982FEF93C98EB85EF8EE /* input_coreOverrides_easyrpg.json */; };
+		03A7B251E45D9D990CC7B885 /* reign_tube_crt.png in Resources */ = {isa = PBXBuildFile; fileRef = 6003041A9A80F686602AC865 /* reign_tube_crt.png */; };
 		0428C3DA4E31D0F182343B3B /* input_coreLabels_bsnes_mercury_performance.json in Resources */ = {isa = PBXBuildFile; fileRef = 1E2B15ECD4A7DD005132B14C /* input_coreLabels_bsnes_mercury_performance.json */; };
 		044A3D49AD77CC38624D183B /* fightdata_hook.json in Resources */ = {isa = PBXBuildFile; fileRef = A022CF62068D4FC4B2E6A7A7 /* fightdata_hook.json */; };
 		04961661863DFA1705CF8482 /* md@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = D364FBBF3C523EEE767B3D65 /* md@132w.png */; };
@@ -44,6 +46,7 @@
 		065DD05DB8027DE68DCAEA5B /* mame2003_plus_libretro_default.json in Resources */ = {isa = PBXBuildFile; fileRef = 91AFAA29AB15660C5C099AEB /* mame2003_plus_libretro_default.json */; };
 		0666565C627C660C02FEC1EF /* SDLControllerMapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E6AF76D7552E90F0C9FEAD1 /* SDLControllerMapping.swift */; };
 		0680F2C5DEAC96D48B0B789F /* fightdata_sfiii3.json in Resources */ = {isa = PBXBuildFile; fileRef = 5C1D28A37D8DCC9C22D318D0 /* fightdata_sfiii3.json */; };
+		06DB279929F6129A8451CD0B /* reign_tube_scanlines2.png in Resources */ = {isa = PBXBuildFile; fileRef = B661CE8536C2318845565184 /* reign_tube_scanlines2.png */; };
 		070FA872D7AF5DCF634D99F0 /* input_coreLabels_picodrive.json in Resources */ = {isa = PBXBuildFile; fileRef = 250932A8207064590D7802DC /* input_coreLabels_picodrive.json */; };
 		07162B9B8CCB6C91E4FE8697 /* intellivision-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = 7DBEB5C0B592088AD4E07DEF /* intellivision-cheats.zip */; };
 		071BE304A3EEFDA17AAFB3D4 /* LibraryBackupService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1432F9680D00AB51A7B817C8 /* LibraryBackupService.swift */; };
@@ -95,6 +98,7 @@
 		0ED177247876F7E07452F775 /* holo_illusion2_alpha.png in Resources */ = {isa = PBXBuildFile; fileRef = 406CB0F3D830B409093D072F /* holo_illusion2_alpha.png */; };
 		0F7D9FF0D51CF611A7BC83B1 /* ATARI800.png in Resources */ = {isa = PBXBuildFile; fileRef = 028968D965BBF8007BE1DC73 /* ATARI800.png */; };
 		0F89504CF8C7F21B1BD67C9F /* zelda_oot_europe_hero.png in Resources */ = {isa = PBXBuildFile; fileRef = F670C04EC19DA343B4D0E920 /* zelda_oot_europe_hero.png */; };
+		0F98F2D72DE35884484E6028 /* reign_pallet_gb_4.png in Resources */ = {isa = PBXBuildFile; fileRef = 374A76609B32E83A674A7AD8 /* reign_pallet_gb_4.png */; };
 		0FBBD16D1BC4F6442F8ED6F8 /* input_systemLabels_cpc.json in Resources */ = {isa = PBXBuildFile; fileRef = 5803663F2F57F8B8212A8444 /* input_systemLabels_cpc.json */; };
 		103E5E29437831047C298031 /* 3ds@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 7A59464C7503827DB2909A95 /* 3ds@132w.png */; };
 		104D7496A5BF50D24818AE3E /* HelpSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CAB488D81605318420F701F /* HelpSheetView.swift */; };
@@ -141,6 +145,7 @@
 		161AE4D067729CBD2E14A115 /* VIDEOPAC.png in Resources */ = {isa = PBXBuildFile; fileRef = 0B6E64CAC32E5F8FE49FE85C /* VIDEOPAC.png */; };
 		163C1320D6A0F2270C060699 /* input_coreOverrides_dice.json in Resources */ = {isa = PBXBuildFile; fileRef = 099CB2A7DA5F883DF51B285E /* input_coreOverrides_dice.json */; };
 		167576EAE6CAC82BB1003FCD /* msu1@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 2CC2FA12059751AA88870ECA /* msu1@132w.png */; };
+		16A5F8C83C475178310C84DA /* reign_tube_bvm2.png in Resources */ = {isa = PBXBuildFile; fileRef = D703FDAA1E42CAF188F82599 /* reign_tube_bvm2.png */; };
 		16CEE1FC91FE8FBE871AF673 /* input_coreLabels_desmume.json in Resources */ = {isa = PBXBuildFile; fileRef = 3366F2EFEA27DA071F3FD1E3 /* input_coreLabels_desmume.json */; };
 		1722F9AFF0C43394DFA02AC1 /* snes-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = 64F80BDBD0858B8801487FE5 /* snes-cheats.zip */; };
 		17302C69CB599C03AE0565A9 /* input_systemOverrides_32x.json in Resources */ = {isa = PBXBuildFile; fileRef = 0BBB848AD29E40173B241173 /* input_systemOverrides_32x.json */; };
@@ -220,6 +225,7 @@
 		24C43F2B7E9A89245FB020CF /* NGC.png in Resources */ = {isa = PBXBuildFile; fileRef = 8AB64FE05102EE7FCDFCFAB8 /* NGC.png */; };
 		24D0292433CEDB7F8D8D1E18 /* MAME.dat in Resources */ = {isa = PBXBuildFile; fileRef = AA2C23F00FCED9410E65FB86 /* MAME.dat */; };
 		24F962DCDA320CFD9BB16838 /* ntsc_decoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D605FAA1A390ADB88CF8EDC4 /* ntsc_decoder.cpp */; };
+		24FDF5C203C6962C3C2222ED /* reign_pallet_gb_32.png in Resources */ = {isa = PBXBuildFile; fileRef = 1E1679B4155DE4AB1EB107B3 /* reign_pallet_gb_32.png */; };
 		25119477F7E497E137857728 /* dos@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 15BABC320B8C10BD4C7F32F8 /* dos@132w.png */; };
 		25319669E04C5881283661AF /* input_coreOverrides_gearlynx.json in Resources */ = {isa = PBXBuildFile; fileRef = 44960EF263C76FF32F8CF7FF /* input_coreOverrides_gearlynx.json */; };
 		25434B0D2B06334198637B19 /* GameCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65A4A31E6B2E47A1C3F13256 /* GameCategory.swift */; };
@@ -267,6 +273,7 @@
 		2B9825A721FDA0F1C6DD4F5F /* Technical.swift in Sources */ = {isa = PBXBuildFile; fileRef = A712FED2F557D01548C2747B /* Technical.swift */; };
 		2C0B2084279F991E2305FE51 /* CursorAutoHideManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DAF1E2107BE928D81F50371 /* CursorAutoHideManager.swift */; };
 		2C6E4ADDC404B2350DF1A01C /* input_coreLabels_ep128emu.json in Resources */ = {isa = PBXBuildFile; fileRef = 278B2E466CEE5561AE793161 /* input_coreLabels_ep128emu.json */; };
+		2C9024BA5490B4581DE6A7B3 /* VulkanLibraryHelper.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3096FDE9747F1C356CCEA84B /* VulkanLibraryHelper.mm */; };
 		2CBDE63A7BBB494B08D642D0 /* fightdata_armwar.json in Resources */ = {isa = PBXBuildFile; fileRef = 2FA18B71CE642123BA909BCF /* fightdata_armwar.json */; };
 		2CC1EEDACE85C4295919761D /* fightdata_rvschool.json in Resources */ = {isa = PBXBuildFile; fileRef = BE1D21745D47B366C16D8F00 /* fightdata_rvschool.json */; };
 		2D2E54774FC1772D3B0EA81D /* holo_wave_alpha.png in Resources */ = {isa = PBXBuildFile; fileRef = 753487F425C97CF8AA6E40AC /* holo_wave_alpha.png */; };
@@ -307,6 +314,7 @@
 		3521349E5001440547982A69 /* input_systemLabels_atari5200.json in Resources */ = {isa = PBXBuildFile; fileRef = 20CB4EE2A4BDA71FE3BC0CA0 /* input_systemLabels_atari5200.json */; };
 		3555DAC7DA14C79A32B4F96E /* input_systemOverrides_segacd.json in Resources */ = {isa = PBXBuildFile; fileRef = 9C2D4457E6499AA2F5779FF4 /* input_systemOverrides_segacd.json */; };
 		356169128282D364CEF71082 /* fightdata_slammast.json in Resources */ = {isa = PBXBuildFile; fileRef = B06FCF64CFEBBF5B7EDD245F /* fightdata_slammast.json */; };
+		356247D1B9B14531C6AA752E /* ReignTubeDisplay.metal in Sources */ = {isa = PBXBuildFile; fileRef = E5691518D516847701562671 /* ReignTubeDisplay.metal */; };
 		3577330C6AFEF55A0821D35B /* PCFX.png in Resources */ = {isa = PBXBuildFile; fileRef = A51EC5B948387F84D6AA081B /* PCFX.png */; };
 		3588D9A445FA7F8DD0A17F91 /* fightdata_sfiii.json in Resources */ = {isa = PBXBuildFile; fileRef = C8197A3CD7930768E84C3380 /* fightdata_sfiii.json */; };
 		358FCB9C598590064AD72091 /* SaturnRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DAB30E2932C1B1075A8FD59 /* SaturnRunner.swift */; };
@@ -342,6 +350,7 @@
 		3C862B7239FAD0AF2C98BD00 /* fightdata_rbff2.json in Resources */ = {isa = PBXBuildFile; fileRef = 93E8602A6E52216C65C002F8 /* fightdata_rbff2.json */; };
 		3CFAF1A0F4B743FCAC2117B7 /* input_systemLabels_anarch.json in Resources */ = {isa = PBXBuildFile; fileRef = E4BED3A7AFE26FE54B54224B /* input_systemLabels_anarch.json */; };
 		3D0524EE4A02DDCA58B4C568 /* MAMEVerificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8150011A3202237E7584D4C /* MAMEVerificationService.swift */; };
+		3D1561687C3CE36763B99515 /* VulkanLibraryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 007BD86CF8B519A328696079 /* VulkanLibraryService.swift */; };
 		3D1B3E0F90A86CB3D8543AFC /* LibraryMetadataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94FDE0F388F6221A7090D7C2 /* LibraryMetadataStore.swift */; };
 		3D579AAB439E3E359A1CEF40 /* fightdata_ggx.json in Resources */ = {isa = PBXBuildFile; fileRef = 1DDF81D808FDA57B2B4BA3EE /* fightdata_ggx.json */; };
 		3D949A279B978EA924B07E42 /* input_coreLabels_3d_engine.json in Resources */ = {isa = PBXBuildFile; fileRef = 7D49DC16154AEF67185DC961 /* input_coreLabels_3d_engine.json */; };
@@ -369,6 +378,7 @@
 		43AB9C79420109CF2BEE6AFA /* ChangelogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A3A05A8FA72F563D3261FE1 /* ChangelogView.swift */; };
 		43E2ED84BF7140F18C9999E8 /* input_coreLabels_gearlynx.json in Resources */ = {isa = PBXBuildFile; fileRef = 4FB616CB00534022D940BF4B /* input_coreLabels_gearlynx.json */; };
 		43F9C487E7C214ECAF4A5789 /* fightdata_asurabld.json in Resources */ = {isa = PBXBuildFile; fileRef = ECFAE4ADD179727AD7A5BC47 /* fightdata_asurabld.json */; };
+		44386C6CAB82E587204D8C4E /* reign_tube_scanlines.png in Resources */ = {isa = PBXBuildFile; fileRef = CD252DDCA4EA74BD485F2CBA /* reign_tube_scanlines.png */; };
 		44A923C96B0F6884DD50D096 /* ResetSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7870FCC07B8464EA6562D4B /* ResetSettingsView.swift */; };
 		44E9F92B47D9C36ED82A70CE /* fightdata_wh1.json in Resources */ = {isa = PBXBuildFile; fileRef = E66100CBB581703CDEAA56B8 /* fightdata_wh1.json */; };
 		44EFFB94FADCBA17133E8057 /* cosmos_bottom.png in Resources */ = {isa = PBXBuildFile; fileRef = 6C936F46D33D3E2C2836508D /* cosmos_bottom.png */; };
@@ -395,6 +405,7 @@
 		49A82C18C949F5D5838AEA50 /* RcheevosWrapper.c in Sources */ = {isa = PBXBuildFile; fileRef = C6A669A1E4230EBBC0D9A2F4 /* RcheevosWrapper.c */; };
 		49C54B79CA96648E9B9F7069 /* BoxArtService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A96AAF72C7F18D45D235347 /* BoxArtService.swift */; };
 		49D2EEDF34D3968A17D6E64E /* CategoryManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A14A3003974DDDF09684961B /* CategoryManager.swift */; };
+		49FD3C8789E34EDD03C30CCD /* reign_tube_arcade2.png in Resources */ = {isa = PBXBuildFile; fileRef = 26D21214E2CE6E55C5840D81 /* reign_tube_arcade2.png */; };
 		4A07DDB0761DFDC3155B6DDC /* input_coreOverrides_race.json in Resources */ = {isa = PBXBuildFile; fileRef = 9F857158D0C94BC7AE97A3B0 /* input_coreOverrides_race.json */; };
 		4A65014F46AD14A2DE821B00 /* DOOM.png in Resources */ = {isa = PBXBuildFile; fileRef = 6557EBEE7592CD9DFA261356 /* DOOM.png */; };
 		4AA22C503673B2E5F3F45C81 /* fightdata_plegends.json in Resources */ = {isa = PBXBuildFile; fileRef = 41B1EFF5A0121E4712825DB0 /* fightdata_plegends.json */; };
@@ -452,8 +463,10 @@
 		5446550872E0129CC0BE3722 /* input_coreOverrides_gam4980.json in Resources */ = {isa = PBXBuildFile; fileRef = A487B63C4BA991FFD20139C0 /* input_coreOverrides_gam4980.json */; };
 		545259B14327244109A4047F /* PS.png in Resources */ = {isa = PBXBuildFile; fileRef = 7A50556F28AD971D0494AD88 /* PS.png */; };
 		54B0500290F48170ED7E9772 /* input_systemLabels_gba.json in Resources */ = {isa = PBXBuildFile; fileRef = 165AEEDBCBAA0EDF4C6A229B /* input_systemLabels_gba.json */; };
+		54E9B9B52785DA4C34384A98 /* reign_tube_crt4.png in Resources */ = {isa = PBXBuildFile; fileRef = E6262689A2A8BB3B84417868 /* reign_tube_crt4.png */; };
 		54F6C2EC347F272ACD5B7433 /* dc@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 1E2D936B5C0CCDBBFB77FDA5 /* dc@132w.png */; };
 		5599E148D482884C3658AEA5 /* SettingsSearchable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02CF8EF66CB8C3E5967901A7 /* SettingsSearchable.swift */; };
+		55C1FE52DA8F0391D71B27E2 /* reign_dots_gbc3.png in Resources */ = {isa = PBXBuildFile; fileRef = EB084A249C9D6DA7CB79CF75 /* reign_dots_gbc3.png */; };
 		55E584113B19DCBC4058608E /* ScreenCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5F26EC044E2537040F0323F /* ScreenCatalog.swift */; };
 		55E6B9AB9FB2C589930FB29F /* input_coreLabels_bsnes_performance.json in Resources */ = {isa = PBXBuildFile; fileRef = CAF67BA0EDE6DB1E53D8381C /* input_coreLabels_bsnes_performance.json */; };
 		562FE8460EC832F3319BAB35 /* ResourceCacheRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C4C61168B31EC18C33BE903 /* ResourceCacheRepository.swift */; };
@@ -508,6 +521,7 @@
 		60693F589F90C2D9CA80CE8B /* RAAchievementCacheEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE7DB9A2FC3A04212D72F049 /* RAAchievementCacheEntry.swift */; };
 		60B058E2BC8CBCE38184C618 /* PGM.png in Resources */ = {isa = PBXBuildFile; fileRef = FF8544B99E1A29C52878E218 /* PGM.png */; };
 		60BCABD5F4DB812663ACBA32 /* fightdata_dino.json in Resources */ = {isa = PBXBuildFile; fileRef = 0F4DA247EB32B5A9BEC74766 /* fightdata_dino.json */; };
+		6117A700B2EDE53F2EA13325 /* reign_tube_pvm.png in Resources */ = {isa = PBXBuildFile; fileRef = C2C6B3C60EAD01B7746B9473 /* reign_tube_pvm.png */; };
 		6122C7598552350E9FC2BFAD /* CoreSettingsViewGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50F0C395AC7AC42E3144C256 /* CoreSettingsViewGroup.swift */; };
 		6136115D76821D01C47BE846 /* fightdata_sf2ce.json in Resources */ = {isa = PBXBuildFile; fileRef = 5D70975DBD07119CF82935ED /* fightdata_sf2ce.json */; };
 		613D7D67993C20968FC03960 /* doom@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 5CDC3C79BAFC397D5CB8E5ED /* doom@132w.png */; };
@@ -591,6 +605,7 @@
 		6F0840292E8F9C970F9A4FB8 /* ControllerIdentityKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFD762AF10BDB023C7F0DB26 /* ControllerIdentityKey.swift */; };
 		6F2C1E8482FEDF81E4C30930 /* AMIGA.png in Resources */ = {isa = PBXBuildFile; fileRef = DC11E976179410D451158A7A /* AMIGA.png */; };
 		6F33447857143BD5EBCB4A13 /* fightdata_cvs2.json in Resources */ = {isa = PBXBuildFile; fileRef = B390C1FF301195D44A9FACE5 /* fightdata_cvs2.json */; };
+		6F3D8AA22AA2F14B4708AF21 /* reign_dots_gbc_bg.png in Resources */ = {isa = PBXBuildFile; fileRef = F344DD8FDEEC2411AA148911 /* reign_dots_gbc_bg.png */; };
 		6F40193C9A9BCC936F152ED1 /* SavedStates.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C4859B682A869506B406B2 /* SavedStates.swift */; };
 		6F7C39782A0E545ED709A424 /* fightdata_capsnk.json in Resources */ = {isa = PBXBuildFile; fileRef = C5C3E57020AB94499BF98B56 /* fightdata_capsnk.json */; };
 		6F84B7886CE8645E3DD551AA /* input_coreLabels_dinothawr.json in Resources */ = {isa = PBXBuildFile; fileRef = AAAFBB29963B639FAAAFDFDF /* input_coreLabels_dinothawr.json */; };
@@ -605,6 +620,7 @@
 		70A8376A03E3B09069D1B118 /* fightdata_gowcaizr.json in Resources */ = {isa = PBXBuildFile; fileRef = B75F53EA285C2E4D4ADC0642 /* fightdata_gowcaizr.json */; };
 		70F4DB83A82880E7F2A28D97 /* atari7800@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 15A5E5BF6348143202BAA8F9 /* atari7800@132w.png */; };
 		714D657AEDB409F1DFA924E8 /* HotkeyActionRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1454A3CD638307C2DD9561DA /* HotkeyActionRow.swift */; };
+		715F1105725C8FC23D4D2645 /* VulkanLibraryHelper.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3096FDE9747F1C356CCEA84B /* VulkanLibraryHelper.mm */; };
 		717AAF26840E1DE390B8BC42 /* snes.ico in Resources */ = {isa = PBXBuildFile; fileRef = CBBBBE931B6BD349FC47C4F8 /* snes.ico */; };
 		71E0838C7961379AF8CFAD4A /* input_coreOverrides_mesen.json in Resources */ = {isa = PBXBuildFile; fileRef = 40A7B97302EE7EAFEA6F62ED /* input_coreOverrides_mesen.json */; };
 		722EB4FE9C71931649999615 /* holo_stylish.png in Resources */ = {isa = PBXBuildFile; fileRef = C708C6081B22F03E4E6AA0BE /* holo_stylish.png */; };
@@ -735,6 +751,7 @@
 		86E1C292EC5C940FF5103A8F /* C64.png in Resources */ = {isa = PBXBuildFile; fileRef = EBA905B7DDD743F2F782FA28 /* C64.png */; };
 		8713C99E4E0C13BA0DED064C /* input_coreLabels_bsnes_cplusplus98.json in Resources */ = {isa = PBXBuildFile; fileRef = 58D13A1BA2A086DFF84123BB /* input_coreLabels_bsnes_cplusplus98.json */; };
 		874CAE8CADC5BECF3AA6CA58 /* fightdata_kof99.json in Resources */ = {isa = PBXBuildFile; fileRef = F04AE8A330E9E5DB2EF8ECDC /* fightdata_kof99.json */; };
+		8750CF9C8BD3C6C4EBDC1CCD /* reign_dots_gbc4.png in Resources */ = {isa = PBXBuildFile; fileRef = F18E265442C9616FB023F9E0 /* reign_dots_gbc4.png */; };
 		87730A8888387C2E267DFBD8 /* col@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = E31FD522297D20DF9F6C466F /* col@132w.png */; };
 		8788A3C13451E6B3631958CC /* input_coreLabels_kronos.json in Resources */ = {isa = PBXBuildFile; fileRef = 2834DE0370867FC233E28F6F /* input_coreLabels_kronos.json */; };
 		87912707E4459B2DC05487E5 /* SequenceRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5999F97B4E6C47B228D2F1B /* SequenceRunner.swift */; };
@@ -756,6 +773,7 @@
 		8B30C6965C0378F683FB437C /* input_coreOverrides_mame2010.json in Resources */ = {isa = PBXBuildFile; fileRef = 27B228925202DC495CE8144E /* input_coreOverrides_mame2010.json */; };
 		8B545A11C0E3144767C9EF73 /* fightdata_ninjamas.json in Resources */ = {isa = PBXBuildFile; fileRef = 3B3A18079105AA50F2BFD108 /* fightdata_ninjamas.json */; };
 		8B55DD9BEF0575C60B3C0D4C /* ports@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 2999559B85D1BC7A2C264304 /* ports@132w.png */; };
+		8B67A2E72B31DC8314FA2CC4 /* reign_pallet_gb_8.png in Resources */ = {isa = PBXBuildFile; fileRef = BE6BB47DCEBE4B07A3A369DD /* reign_pallet_gb_8.png */; };
 		8BDF0925312A2D039A06C052 /* fightdata_kinst2.json in Resources */ = {isa = PBXBuildFile; fileRef = B36FAF6EF43B7A941B9F4B40 /* fightdata_kinst2.json */; };
 		8C3DB989C12A59BAD8C9B0BB /* XPCBridgeAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B173126E8CA26EE063086241 /* XPCBridgeAdapter.swift */; };
 		8C46EC2A332833B7153FBD58 /* input_coreOverrides_fuse.json in Resources */ = {isa = PBXBuildFile; fileRef = D1C3F2EAA5F94802838933CC /* input_coreOverrides_fuse.json */; };
@@ -772,6 +790,8 @@
 		8E9014B4C9FE8AF898D36B7B /* saturn.ico in Resources */ = {isa = PBXBuildFile; fileRef = 2BDE8392FAA2A4AF92386D04 /* saturn.ico */; };
 		8EA0AE9915E4C73BDFD4342F /* fightdata_drgnmst.json in Resources */ = {isa = PBXBuildFile; fileRef = 08583960EFE60BDC1B849D84 /* fightdata_drgnmst.json */; };
 		8EE6078DB034AB7CB9AE5801 /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF63A8BB2AE99EA8E721D3E9 /* AboutView.swift */; };
+		8F32BF20E05A0EE4CCD1EAB1 /* reign_tube_crt2.png in Resources */ = {isa = PBXBuildFile; fileRef = AE162AFA93443011BB81EA07 /* reign_tube_crt2.png */; };
+		8FBCEAD722EA8483B81A5B88 /* ReignDotsDisplayColor.metal in Sources */ = {isa = PBXBuildFile; fileRef = E43EB332623B28B5A03A2542 /* ReignDotsDisplayColor.metal */; };
 		8FD748023CBCC8DFC0E5517D /* holo_angular_alpha.png in Resources */ = {isa = PBXBuildFile; fileRef = B9794CEF174D51BA54194D9A /* holo_angular_alpha.png */; };
 		9049C2E340E550DE6036FEF7 /* input_coreLabels_theodore.json in Resources */ = {isa = PBXBuildFile; fileRef = 6937A26557EA12463539AC7C /* input_coreLabels_theodore.json */; };
 		90F9EBACE99C59EC91F7859C /* TVModeMainSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4742B5293D8F02279D7A5427 /* TVModeMainSettingsView.swift */; };
@@ -839,6 +859,7 @@
 		9A9F57B6AB7FA7D121E8D24D /* HoloVariants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48CD6D977DCA38ED6A7DC895 /* HoloVariants.swift */; };
 		9AD4CF3DEA500B948D9EF661 /* GameDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6983EA32B13EE9D1F93A6893 /* GameDetailView.swift */; };
 		9AF9814776ED9604B34D33B9 /* input_coreLabels_beetle_sgx.json in Resources */ = {isa = PBXBuildFile; fileRef = 8E620C09D44B588F017C7B16 /* input_coreLabels_beetle_sgx.json */; };
+		9B1692E4B8167C6DF5EE69F6 /* reign_tube_crt3.png in Resources */ = {isa = PBXBuildFile; fileRef = 72AD3216943E7923AED678D1 /* reign_tube_crt3.png */; };
 		9B3B828960D33C81D8E6AF17 /* sufami@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = E3E2B860B54481BF16012387 /* sufami@132w.png */; };
 		9B45568FA08D6E7049F6B62A /* input_coreLabels_beetle_bsnes.json in Resources */ = {isa = PBXBuildFile; fileRef = 5A6FF56C23A80B7D68EA5193 /* input_coreLabels_beetle_bsnes.json */; };
 		9B66E771DDAFE8430109DCF8 /* fightdata_kizuna.json in Resources */ = {isa = PBXBuildFile; fileRef = 3F06DE9467D9C3C67A9AF659 /* fightdata_kizuna.json */; };
@@ -911,6 +932,7 @@
 		A56157FD0F4EC79DBCF7EDD8 /* HowLongToBeatCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5109A11C4631112553810222 /* HowLongToBeatCard.swift */; };
 		A5917D46BE3772B7057EBAF0 /* mupen64plus_libretro_default.json in Resources */ = {isa = PBXBuildFile; fileRef = 286915B3854F9B12D1840B8E /* mupen64plus_libretro_default.json */; };
 		A5A5700F7C1AA1D70851F6DE /* pcsx_rearmed_libretro_default.json in Resources */ = {isa = PBXBuildFile; fileRef = 5AE2907879D793D5504FE9FC /* pcsx_rearmed_libretro_default.json */; };
+		A5A5CA0EC20F20B42327DDC2 /* ReignDotsDisplay.metal in Sources */ = {isa = PBXBuildFile; fileRef = D46292EF3ED924014E91B261 /* ReignDotsDisplay.metal */; };
 		A5E261D1DE62A6A64ACA240E /* dolphin_libretro_default.json in Resources */ = {isa = PBXBuildFile; fileRef = A227DD8C889C0589D944D5B2 /* dolphin_libretro_default.json */; };
 		A636A60074D52DB1ED1F37DB /* MoveDataUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96619349B830F47B3655D652 /* MoveDataUtilities.swift */; };
 		A65710823C4D0A6B42F7EA87 /* ThemeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8935D40F11BF986BE60A840 /* ThemeManager.swift */; };
@@ -944,6 +966,7 @@
 		AB499CF37ED79D2B531D4FFA /* zelda_oot_usa_chrome.png in Resources */ = {isa = PBXBuildFile; fileRef = 5B67918C09374C9D0B0040D3 /* zelda_oot_usa_chrome.png */; };
 		AB85F7B36B9F2A0687A33822 /* appIcon64.jpg in Resources */ = {isa = PBXBuildFile; fileRef = B3862286807DE3CF283A3152 /* appIcon64.jpg */; };
 		AB8FFE28A242061439B11C1B /* input_systemLabels_atari_st.json in Resources */ = {isa = PBXBuildFile; fileRef = 3BD38C52C8520B46C36D80C0 /* input_systemLabels_atari_st.json */; };
+		ABA32E9807C96F16CAFAF84F /* ATTRIBUTION_ReignRP.txt in Resources */ = {isa = PBXBuildFile; fileRef = CF635D6CB2AD20CCC17DEC3B /* ATTRIBUTION_ReignRP.txt */; };
 		ABC142DDA913094BBD34EBDA /* input_systemLabels_nxengine.json in Resources */ = {isa = PBXBuildFile; fileRef = BAB77F37E53788B1C11CD496 /* input_systemLabels_nxengine.json */; };
 		AC0B20C25AFBF758CF466BEE /* wiiu.ico in Resources */ = {isa = PBXBuildFile; fileRef = E91F50D1DD73DE5B179D6681 /* wiiu.ico */; };
 		AC3362AE7E65F578040A444C /* holo_stylish2_alpha.png in Resources */ = {isa = PBXBuildFile; fileRef = 68D1F7B52E9288BD2CF0C275 /* holo_stylish2_alpha.png */; };
@@ -1105,6 +1128,7 @@
 		CAA8EE749769422191133B47 /* input_systemLabels_doom_3.json in Resources */ = {isa = PBXBuildFile; fileRef = 6106DEB15765EDB446958687 /* input_systemLabels_doom_3.json */; };
 		CB748B27B2AB52C52E65EE87 /* X68000.png in Resources */ = {isa = PBXBuildFile; fileRef = 2E8DE8B4D7FF0DCC47683B7B /* X68000.png */; };
 		CBD230633A73427519B27445 /* fightdata_msh.json in Resources */ = {isa = PBXBuildFile; fileRef = 3DDEE6F5136E4698DD6685BE /* fightdata_msh.json */; };
+		CC12504940DF1100C91D48C8 /* reign_dots_gbc.png in Resources */ = {isa = PBXBuildFile; fileRef = E88FA147547EA0F7263B752D /* reign_dots_gbc.png */; };
 		CC30F2090EB3C82F547D6F51 /* fightdata_redearth.json in Resources */ = {isa = PBXBuildFile; fileRef = A13C2058B733314F54359866 /* fightdata_redearth.json */; };
 		CC49EEE0B00287C66A46F40C /* input_systemLabels_doom.json in Resources */ = {isa = PBXBuildFile; fileRef = 3002C6B53EADAB31934AD897 /* input_systemLabels_doom.json */; };
 		CC4C936CF4AAB9EBE49E8F47 /* GeneralSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0135BC846E6477A8389B7FC /* GeneralSettingsView.swift */; };
@@ -1159,6 +1183,7 @@
 		D66D18734803DF49EBD1B61B /* appIcon128.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 2E4D9A8F1E7FEDBCD0A9B62D /* appIcon128.jpg */; };
 		D6737C5333699754970E51E8 /* input_systemLabels_pokemon_mini.json in Resources */ = {isa = PBXBuildFile; fileRef = 7ABD85DBD8EF91C89DA606BB /* input_systemLabels_pokemon_mini.json */; };
 		D6AE742A1E61C54218E15183 /* holo_metal.png in Resources */ = {isa = PBXBuildFile; fileRef = 8EB2FA18857A750DDA8C676A /* holo_metal.png */; };
+		D6B687BAB530393F4A8469DC /* reign_dots_gb.png in Resources */ = {isa = PBXBuildFile; fileRef = B117C6F83654FA95B652C8F7 /* reign_dots_gb.png */; };
 		D6F2FCD149D20173B079DB9E /* holo_crossover.png in Resources */ = {isa = PBXBuildFile; fileRef = CBE0822EF493F2A3F9EFA369 /* holo_crossover.png */; };
 		D6FF09E31ACA00FC7494B9E0 /* fightdata_soulclbr.json in Resources */ = {isa = PBXBuildFile; fileRef = F627444ABF1C6A5C798EC26F /* fightdata_soulclbr.json */; };
 		D720E5BECA4BAE2B078C1852 /* fightdata_ggxxac.json in Resources */ = {isa = PBXBuildFile; fileRef = CF35AE3379CB76C025162E52 /* fightdata_ggxxac.json */; };
@@ -1166,6 +1191,7 @@
 		D7F0A5F6F85DF830F94E10BC /* SUPERVISION.png in Resources */ = {isa = PBXBuildFile; fileRef = 5FD91CADCD44C206B8BF2C38 /* SUPERVISION.png */; };
 		D804D2B87362CD5BD3DDCD85 /* GameInfoWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DB287DD57B0134E27B1041F /* GameInfoWindow.swift */; };
 		D82DDB8B44DB0DC32F47E152 /* fightdata_sfex.json in Resources */ = {isa = PBXBuildFile; fileRef = AD9DDC02CE4528E2001A87B1 /* fightdata_sfex.json */; };
+		D82E65067A5DC41E3A1DB457 /* reign_tube_bvm.png in Resources */ = {isa = PBXBuildFile; fileRef = 330BBED87413E50D268F9504 /* reign_tube_bvm.png */; };
 		D86C5BF059EBAA07D55D579E /* DAPHNE.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C459265720761CCC9C13B51 /* DAPHNE.png */; };
 		D8C46EB4ABDA59F0B0A76D8A /* fightdata_jojoba.json in Resources */ = {isa = PBXBuildFile; fileRef = 0ACE5D08FEC5443E32D54E3D /* fightdata_jojoba.json */; };
 		D8FC1B5F3DCE1F83A603A6F5 /* neocd@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 554B05428A53DA220A635F40 /* neocd@132w.png */; };
@@ -1272,6 +1298,7 @@
 		EC8A70B705459076568A22A8 /* nds.ico in Resources */ = {isa = PBXBuildFile; fileRef = 1C10E5CE3E9EE5A4E0AB16F4 /* nds.ico */; };
 		EC9DF02AE7088D2EDDB4EA74 /* fightdata_mk.json in Resources */ = {isa = PBXBuildFile; fileRef = E66FEE978CF4F89C1E166EEA /* fightdata_mk.json */; };
 		ECA419AEE6FF3B94E9AD8838 /* ControllerLongPressDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = F80E267122CAC805554DF6CE /* ControllerLongPressDetector.swift */; };
+		ECD99948BABD1907CBEA32ED /* reign_dots_gbc2.png in Resources */ = {isa = PBXBuildFile; fileRef = 22D9FA91D0151DAA2E1D82B8 /* reign_dots_gbc2.png */; };
 		ECE0B269BDEC6DBCA7CC81AC /* input_coreOverrides_lrps2.json in Resources */ = {isa = PBXBuildFile; fileRef = ADEF8D2F898EB866CFCB4B7D /* input_coreOverrides_lrps2.json */; };
 		ED2CF08B8510DFCFEF40F594 /* dreamcast-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = 13E4A2F34938242C4F50AF42 /* dreamcast-cheats.zip */; };
 		ED3E8D02D55C739CCDEE44F7 /* input_coreLabels_dolphin.json in Resources */ = {isa = PBXBuildFile; fileRef = 735DBF365F9C207EF4E203F4 /* input_coreLabels_dolphin.json */; };
@@ -1340,6 +1367,7 @@
 		F6BCD9E30F0D6EC1CA4B9F0C /* LibretroRDBParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 553202E8BACC113D608625E6 /* LibretroRDBParser.swift */; };
 		F6C6FBCE05B3CD0E06B557BD /* CoreOverrideService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FF63BFF980BE337C49CF0B7 /* CoreOverrideService.swift */; };
 		F6DF42F2CF9B2A425B878D8C /* input_coreLabels_vba_next.json in Resources */ = {isa = PBXBuildFile; fileRef = 6AD752227BC38A71AA63B2DF /* input_coreLabels_vba_next.json */; };
+		F733B72929844B9D865F9C05 /* reign_tube_pvm2.png in Resources */ = {isa = PBXBuildFile; fileRef = E1EADA3018778AA2B1E7FDF5 /* reign_tube_pvm2.png */; };
 		F795BC067809176CEFAEEF29 /* AppUpdateService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DA86D9AC75A19C8EEF18634 /* AppUpdateService.swift */; };
 		F7AE20F51D41E33FE6104234 /* rcheevos in Frameworks */ = {isa = PBXBuildFile; productRef = D2E9BF1074610561D0152456 /* rcheevos */; };
 		F7DBD8DCC04098B24D01934F /* input_coreLabels_beetle_pce_fast.json in Resources */ = {isa = PBXBuildFile; fileRef = B04C638107D90D3005000D2E /* input_coreLabels_beetle_pce_fast.json */; };
@@ -1408,6 +1436,7 @@
 /* Begin PBXFileReference section */
 		0039E3F7684E48070E4FA7DF /* holo_trainerbg_alpha.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = holo_trainerbg_alpha.png; sourceTree = "<group>"; };
 		0068551BDB43512C3EE9D7EC /* input_coreLabels_ardens.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_ardens.json; sourceTree = "<group>"; };
+		007BD86CF8B519A328696079 /* VulkanLibraryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VulkanLibraryService.swift; sourceTree = "<group>"; };
 		007D62D59B68855828E28A77 /* CoreOptionsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreOptionsManager.swift; sourceTree = "<group>"; };
 		00E666D1118167F817DB6B88 /* fightdata_sf.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_sf.json; sourceTree = "<group>"; };
 		0131AF2732320A89574B49A3 /* input_systemLabels_colecovision.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_colecovision.json; sourceTree = "<group>"; };
@@ -1547,6 +1576,7 @@
 		1DDAC49B62FA6270AEA1A1A0 /* ody@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ody@132w.png"; sourceTree = "<group>"; };
 		1DDF81D808FDA57B2B4BA3EE /* fightdata_ggx.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_ggx.json; sourceTree = "<group>"; };
 		1DEBDA2FB6A139BF3A49E636 /* input_coreOverrides_flycast.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_flycast.json; sourceTree = "<group>"; };
+		1E1679B4155DE4AB1EB107B3 /* reign_pallet_gb_32.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = reign_pallet_gb_32.png; sourceTree = "<group>"; };
 		1E1F8977ED21416EA5C44A5C /* HoloCardLayers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HoloCardLayers.swift; sourceTree = "<group>"; };
 		1E2B15ECD4A7DD005132B14C /* input_coreLabels_bsnes_mercury_performance.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_bsnes_mercury_performance.json; sourceTree = "<group>"; };
 		1E2D936B5C0CCDBBFB77FDA5 /* dc@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "dc@132w.png"; sourceTree = "<group>"; };
@@ -1577,6 +1607,7 @@
 		2291C05C19886586122BCAC3 /* input_systemLabels_psp.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_psp.json; sourceTree = "<group>"; };
 		229C521334BCA5CB8DE046E8 /* SwiftDataContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftDataContainer.swift; sourceTree = "<group>"; };
 		22D1B16C6AA1228BE917DC86 /* NESRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NESRunner.swift; sourceTree = "<group>"; };
+		22D9FA91D0151DAA2E1D82B8 /* reign_dots_gbc2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = reign_dots_gbc2.png; sourceTree = "<group>"; };
 		2326F606B0647C6182D3E693 /* input_coreLabels_prboom.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_prboom.json; sourceTree = "<group>"; };
 		23A3E29B9B244BE68DD5CAFF /* fightdata_doa.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_doa.json; sourceTree = "<group>"; };
 		2401598CC4B250B3D30A32A9 /* MediaConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaConfig.swift; sourceTree = "<group>"; };
@@ -1592,6 +1623,7 @@
 		2617937EC8AD6A8E1B5E6DEE /* fightdata_dbz2.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_dbz2.json; sourceTree = "<group>"; };
 		2618E56A6DB94B2ED6E6C68F /* en.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = en.json; sourceTree = "<group>"; };
 		264FB90DD6CD26D513E6C58C /* N64Runner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = N64Runner.swift; sourceTree = "<group>"; };
+		26D21214E2CE6E55C5840D81 /* reign_tube_arcade2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = reign_tube_arcade2.png; sourceTree = "<group>"; };
 		26D95B905CF18035469C4C59 /* CRTFilter.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = CRTFilter.metal; sourceTree = "<group>"; };
 		26E4F7172EFA2D0F141FFA63 /* InputCaptureManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputCaptureManager.swift; sourceTree = "<group>"; };
 		26FDC27EC587284954CC9370 /* supervision@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "supervision@132w.png"; sourceTree = "<group>"; };
@@ -1623,6 +1655,7 @@
 		2B279C5C9BBB3A01C3D99DB4 /* fightdata_64street.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_64street.json; sourceTree = "<group>"; };
 		2B2F97137C42867C603DD69C /* PPSSPAssetDownloadSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PPSSPAssetDownloadSheet.swift; sourceTree = "<group>"; };
 		2B6C405950B80529A3DAB81B /* fightdata_fatfury1.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_fatfury1.json; sourceTree = "<group>"; };
+		2BB700C1892B0A1723532CB5 /* reign_tube_arcade.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = reign_tube_arcade.png; sourceTree = "<group>"; };
 		2BDE8392FAA2A4AF92386D04 /* saturn.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = saturn.ico; sourceTree = "<group>"; };
 		2C1283F9FDAB03FC63950043 /* CPS3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = CPS3.png; sourceTree = "<group>"; };
 		2C21A6516E56F19973BF82B7 /* SearchMatch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchMatch.swift; sourceTree = "<group>"; };
@@ -1658,6 +1691,7 @@
 		302B0A1EBB01D110481DB6DC /* input_systemLabels_2048.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_2048.json; sourceTree = "<group>"; };
 		303E1FAF3550AD545FFB1426 /* input_coreLabels_game_music_emu.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_game_music_emu.json; sourceTree = "<group>"; };
 		306AC1B1E929B069330A9356 /* fc@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "fc@132w.png"; sourceTree = "<group>"; };
+		3096FDE9747F1C356CCEA84B /* VulkanLibraryHelper.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = VulkanLibraryHelper.mm; sourceTree = "<group>"; };
 		30A8C369BBDB954516046501 /* RetroButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetroButton.swift; sourceTree = "<group>"; };
 		30AEE98B6230EBC5113EDB96 /* input_systemLabels_tic80.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_tic80.json; sourceTree = "<group>"; };
 		30CC526A551953B4E9BB08C9 /* LoggerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoggerService.swift; sourceTree = "<group>"; };
@@ -1673,6 +1707,7 @@
 		3230EB435232A6B5AC4FBC1E /* ControllerSettingsViewGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControllerSettingsViewGroup.swift; sourceTree = "<group>"; };
 		329419E38C68F3AC2AE5C3D6 /* input_systemLabels_sms.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_sms.json; sourceTree = "<group>"; };
 		3307D4E5C3106806CF45492A /* AnalogMouse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalogMouse.swift; sourceTree = "<group>"; };
+		330BBED87413E50D268F9504 /* reign_tube_bvm.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = reign_tube_bvm.png; sourceTree = "<group>"; };
 		332FECA0581741B8A3FF8A69 /* atari5200.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = atari5200.ico; sourceTree = "<group>"; };
 		335FB3D776E0D41A27C64844 /* RetroAchievementsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetroAchievementsSettingsView.swift; sourceTree = "<group>"; };
 		3366F2EFEA27DA071F3FD1E3 /* input_coreLabels_desmume.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_desmume.json; sourceTree = "<group>"; };
@@ -1696,6 +1731,7 @@
 		36A9574C25916D8504475C4C /* GameLaunchErrorOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameLaunchErrorOverlay.swift; sourceTree = "<group>"; };
 		36D54E4EEE23966CA6695EDF /* fightdata_survarts.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_survarts.json; sourceTree = "<group>"; };
 		36F405FCC5148CACA78ACD58 /* input_coreOverrides_cannonball.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_cannonball.json; sourceTree = "<group>"; };
+		374A76609B32E83A674A7AD8 /* reign_pallet_gb_4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = reign_pallet_gb_4.png; sourceTree = "<group>"; };
 		377A59ABFA726CC1685B5E3E /* TitlebarNotificationTicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TitlebarNotificationTicker.swift; sourceTree = "<group>"; };
 		3785C1F47A9C4D765D471039 /* GameModeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameModeManager.swift; sourceTree = "<group>"; };
 		37C4859B682A869506B406B2 /* SavedStates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedStates.swift; sourceTree = "<group>"; };
@@ -1921,6 +1957,7 @@
 		5FD91CADCD44C206B8BF2C38 /* SUPERVISION.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SUPERVISION.png; sourceTree = "<group>"; };
 		5FEFA1AD01158133E754B589 /* input_coreLabels_dosbox_pure.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_dosbox_pure.json; sourceTree = "<group>"; };
 		5FEFB78B210EEFF1E3D41907 /* ShaderGameOverrideView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShaderGameOverrideView.swift; sourceTree = "<group>"; };
+		6003041A9A80F686602AC865 /* reign_tube_crt.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = reign_tube_crt.png; sourceTree = "<group>"; };
 		6069F75B4546F64B16E338E2 /* virtualboy.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = virtualboy.ico; sourceTree = "<group>"; };
 		6098B125A9032BDF87A15A96 /* input_coreLabels_chailove.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_chailove.json; sourceTree = "<group>"; };
 		60C90827FAFCC0FC2A6642DB /* fightdata_avsp.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_avsp.json; sourceTree = "<group>"; };
@@ -2026,6 +2063,7 @@
 		7208613730A514B56E32B071 /* supergrafx-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "supergrafx-cheats.zip"; sourceTree = "<group>"; };
 		7264F5FA26E22296A98D1D73 /* fightdata_clayftr.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_clayftr.json; sourceTree = "<group>"; };
 		7287E7A9C371B5E5858ED1EA /* input_systemLabels_game_music.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_game_music.json; sourceTree = "<group>"; };
+		72AD3216943E7923AED678D1 /* reign_tube_crt3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = reign_tube_crt3.png; sourceTree = "<group>"; };
 		72C456B5DB61F0E87676DFE8 /* fightdata_pjustic.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_pjustic.json; sourceTree = "<group>"; };
 		72D05223C8556C9B000996DC /* AdventureGuideMapping.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = AdventureGuideMapping.json; sourceTree = "<group>"; };
 		72DFDF6462D09B051A7093FE /* RomHasher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RomHasher.swift; sourceTree = "<group>"; };
@@ -2352,6 +2390,7 @@
 		ADDF41CC3604E9BF6ADA9D85 /* fightdata_holo.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_holo.json; sourceTree = "<group>"; };
 		ADE34CAD80144C808D1FC81D /* OPENBOR.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = OPENBOR.png; sourceTree = "<group>"; };
 		ADEF8D2F898EB866CFCB4B7D /* input_coreOverrides_lrps2.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_lrps2.json; sourceTree = "<group>"; };
+		AE162AFA93443011BB81EA07 /* reign_tube_crt2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = reign_tube_crt2.png; sourceTree = "<group>"; };
 		AE2C09D3C56810B2B9CCD08F /* LibretroGlobals.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = LibretroGlobals.mm; sourceTree = "<group>"; };
 		AE2C6C9DA37D7576957EF710 /* holo_stylish2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = holo_stylish2.png; sourceTree = "<group>"; };
 		AE565CF1103447CBA9B353C0 /* LibretroCore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibretroCore.swift; sourceTree = "<group>"; };
@@ -2374,6 +2413,7 @@
 		B06FCF64CFEBBF5B7EDD245F /* fightdata_slammast.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_slammast.json; sourceTree = "<group>"; };
 		B09D20EAAADCE4BB4E132CF1 /* atari2600@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "atari2600@132w.png"; sourceTree = "<group>"; };
 		B10ACE737699B0B6D68E5066 /* input_coreLabels_citra_canary.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_citra_canary.json; sourceTree = "<group>"; };
+		B117C6F83654FA95B652C8F7 /* reign_dots_gb.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = reign_dots_gb.png; sourceTree = "<group>"; };
 		B12A98BB2EE2B24AACBFFF1F /* frame.m3d */ = {isa = PBXFileReference; path = frame.m3d; sourceTree = "<group>"; };
 		B1635E744F6AAC5F638DF434 /* CoreOverrideBridge-Swift.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "CoreOverrideBridge-Swift.h"; sourceTree = "<group>"; };
 		B173126E8CA26EE063086241 /* XPCBridgeAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XPCBridgeAdapter.swift; sourceTree = "<group>"; };
@@ -2405,6 +2445,7 @@
 		B5D30E06BD1B8444F1AC5E41 /* MAMEGenreService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MAMEGenreService.swift; sourceTree = "<group>"; };
 		B5E3E5DB793CCE1800B8C7BE /* GenreSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenreSettingsView.swift; sourceTree = "<group>"; };
 		B624916CC58B4F2C2A93E827 /* GameDBLookupResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameDBLookupResult.swift; sourceTree = "<group>"; };
+		B661CE8536C2318845565184 /* reign_tube_scanlines2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = reign_tube_scanlines2.png; sourceTree = "<group>"; };
 		B666AFBA89C9094D3D77ADBE /* input_coreLabels_beetle_psx_hw.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_beetle_psx_hw.json; sourceTree = "<group>"; };
 		B6CE8DDABCE1ABFA58C62123 /* Shader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shader.swift; sourceTree = "<group>"; };
 		B6FF84899910D3F6FAD36B4C /* fightdata_cvsgd.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_cvsgd.json; sourceTree = "<group>"; };
@@ -2439,6 +2480,7 @@
 		BE01BAE4649B80275FA1BBAB /* MAMEUnifiedService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MAMEUnifiedService.swift; sourceTree = "<group>"; };
 		BE1D21745D47B366C16D8F00 /* fightdata_rvschool.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_rvschool.json; sourceTree = "<group>"; };
 		BE2670C448525C7ACB662D42 /* NewGamepadPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewGamepadPresenter.swift; sourceTree = "<group>"; };
+		BE6BB47DCEBE4B07A3A369DD /* reign_pallet_gb_8.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = reign_pallet_gb_8.png; sourceTree = "<group>"; };
 		BE8AAC49E7AC25911394118F /* N64DD.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = N64DD.png; sourceTree = "<group>"; };
 		BF3007EB11BA10C95475888A /* zelda_oot_japan_background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = zelda_oot_japan_background.png; sourceTree = "<group>"; };
 		BF4D3CED7C7C18FB8375C015 /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
@@ -2457,6 +2499,7 @@
 		C15804655F28F2866DFA7C49 /* MAMEMissingROMsAlert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MAMEMissingROMsAlert.swift; sourceTree = "<group>"; };
 		C195B54A0B1C73946726BAF4 /* ntsc_encoder.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ntsc_encoder.hpp; sourceTree = "<group>"; };
 		C25C27746F28191394C4D999 /* VIDEOTON.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = VIDEOTON.png; sourceTree = "<group>"; };
+		C2C6B3C60EAD01B7746B9473 /* reign_tube_pvm.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = reign_tube_pvm.png; sourceTree = "<group>"; };
 		C2D54794F1A800DF2053B9C1 /* ScummVMRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScummVMRunner.swift; sourceTree = "<group>"; };
 		C30A37AE0117299098C190A1 /* ROMIdentifierService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ROMIdentifierService.swift; sourceTree = "<group>"; };
 		C355064193B4B981A25BE79E /* FC.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = FC.png; sourceTree = "<group>"; };
@@ -2515,6 +2558,7 @@
 		CCCD9FDE272E4A9FC1C382DB /* fightdata_jojo.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_jojo.json; sourceTree = "<group>"; };
 		CCF02A2FBE56AF8967FB319E /* SettingsResetter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsResetter.swift; sourceTree = "<group>"; };
 		CCF2B7DE2A69210FFB366F3F /* input_coreOverrides_amiarcadia.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_amiarcadia.json; sourceTree = "<group>"; };
+		CD252DDCA4EA74BD485F2CBA /* reign_tube_scanlines.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = reign_tube_scanlines.png; sourceTree = "<group>"; };
 		CD2FE1ECA3ADA9DB03225538 /* ATARI800-alt.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ATARI800-alt.png"; sourceTree = "<group>"; };
 		CD79FE3027533D9DCC5841EE /* fightdata_mk4.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_mk4.json; sourceTree = "<group>"; };
 		CD7E630F116CE2B0716A34EE /* fightdata_ggxxsla.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_ggxxsla.json; sourceTree = "<group>"; };
@@ -2525,6 +2569,7 @@
 		CECB63EE0225C02723607DB6 /* zxs@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "zxs@132w.png"; sourceTree = "<group>"; };
 		CEE09CB9B7167A8FDA985BAC /* switch.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = switch.ico; sourceTree = "<group>"; };
 		CF35AE3379CB76C025162E52 /* fightdata_ggxxac.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_ggxxac.json; sourceTree = "<group>"; };
+		CF635D6CB2AD20CCC17DEC3B /* ATTRIBUTION_ReignRP.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = ATTRIBUTION_ReignRP.txt; sourceTree = "<group>"; };
 		CFA7EE5F0E680257ECC8A1E4 /* cpc-alt.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cpc-alt.png"; sourceTree = "<group>"; };
 		CFABAFD18C6D9980AA553B3B /* ENTERPRISE.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ENTERPRISE.png; sourceTree = "<group>"; };
 		CFD762AF10BDB023C7F0DB26 /* ControllerIdentityKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControllerIdentityKey.swift; sourceTree = "<group>"; };
@@ -2550,9 +2595,11 @@
 		D3E37FB39EE0D0947F15FC38 /* fightdata_fotns.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_fotns.json; sourceTree = "<group>"; };
 		D406D131E06C70B206A4AC1D /* saturn-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "saturn-cheats.zip"; sourceTree = "<group>"; };
 		D41B70CA0953A752789E4CC1 /* TVModeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVModeViewModel.swift; sourceTree = "<group>"; };
+		D46292EF3ED924014E91B261 /* ReignDotsDisplay.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = ReignDotsDisplay.metal; sourceTree = "<group>"; };
 		D49D5412E3B0292CF1A549EC /* MoveEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoveEditorView.swift; sourceTree = "<group>"; };
 		D4ACCD4464EA6A5F1CD55EAF /* input_systemLabels_lowresnx.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_lowresnx.json; sourceTree = "<group>"; };
 		D4AFED71ACBECD25C5CC55AF /* StandaloneGameWindowController+Toolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StandaloneGameWindowController+Toolbar.swift"; sourceTree = "<group>"; };
+		D4C07934E3C2B16CE6063F8C /* VulkanLibraryHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VulkanLibraryHelper.h; sourceTree = "<group>"; };
 		D4C7D63785273E2BA0B32028 /* input_systemLabels_vaporspec.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_vaporspec.json; sourceTree = "<group>"; };
 		D4F318393A897A37973C4D7A /* fightdata_bigfight.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_bigfight.json; sourceTree = "<group>"; };
 		D4F842A74C8DC38EDF4C8010 /* CodableWrappers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodableWrappers.swift; sourceTree = "<group>"; };
@@ -2568,6 +2615,7 @@
 		D6A7D0325469C2991B746452 /* fightdata_wof.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_wof.json; sourceTree = "<group>"; };
 		D6F75CD352F6CF02387F60E0 /* MAMEModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MAMEModels.swift; sourceTree = "<group>"; };
 		D6F776D4F0B80827F6067861 /* sega_101.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = sega_101.bin; sourceTree = "<group>"; };
+		D703FDAA1E42CAF188F82599 /* reign_tube_bvm2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = reign_tube_bvm2.png; sourceTree = "<group>"; };
 		D7216ED9D6BD09B93FFFEEE3 /* fightdata_lastblad.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_lastblad.json; sourceTree = "<group>"; };
 		D726A1A82A05EEFA659AF95D /* ControllerHotkeyCaptureButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControllerHotkeyCaptureButton.swift; sourceTree = "<group>"; };
 		D72F01C1BA52B012F84B9E9F /* FocusableMTKView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusableMTKView.swift; sourceTree = "<group>"; };
@@ -2623,6 +2671,7 @@
 		E157F75F5D3ED38A10662065 /* fightdata_index.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_index.json; sourceTree = "<group>"; };
 		E17D761AD77BAABC32070FEA /* input_coreLabels_bsnes_accuracy.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_bsnes_accuracy.json; sourceTree = "<group>"; };
 		E1BF10D1500946FC0D877ABC /* TrainingModeOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainingModeOverlay.swift; sourceTree = "<group>"; };
+		E1EADA3018778AA2B1E7FDF5 /* reign_tube_pvm2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = reign_tube_pvm2.png; sourceTree = "<group>"; };
 		E2040211263BC01B0D3C0F77 /* HoloVariantRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HoloVariantRenderer.swift; sourceTree = "<group>"; };
 		E28C9FC682FA4AC974FC7375 /* satella@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "satella@132w.png"; sourceTree = "<group>"; };
 		E31FD522297D20DF9F6C466F /* col@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "col@132w.png"; sourceTree = "<group>"; };
@@ -2631,6 +2680,7 @@
 		E3E2B860B54481BF16012387 /* sufami@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "sufami@132w.png"; sourceTree = "<group>"; };
 		E3FC2CA1E6DEAD08C661DFD0 /* input_coreOverrides_game_music_emu.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_game_music_emu.json; sourceTree = "<group>"; };
 		E40790494389EAF6A9D8528D /* RAGameCacheCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RAGameCacheCoordinator.swift; sourceTree = "<group>"; };
+		E43EB332623B28B5A03A2542 /* ReignDotsDisplayColor.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = ReignDotsDisplayColor.metal; sourceTree = "<group>"; };
 		E446EF3913100F96498CD39E /* MAME.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = MAME.png; sourceTree = "<group>"; };
 		E45DB7322B25EB3346B22045 /* fightdata_doapp.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_doapp.json; sourceTree = "<group>"; };
 		E45F87F47B1F2A9E01DD9315 /* CategoryRowButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryRowButton.swift; sourceTree = "<group>"; };
@@ -2640,8 +2690,10 @@
 		E4C3D3DD6688FB5BECDF9E1C /* fir.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = fir.hpp; sourceTree = "<group>"; };
 		E4E4281A31C49D575A930421 /* ARDUBOY.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ARDUBOY.png; sourceTree = "<group>"; };
 		E51DBD3DD1DC68C0749E4F9F /* CheatParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheatParser.swift; sourceTree = "<group>"; };
+		E5691518D516847701562671 /* ReignTubeDisplay.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = ReignTubeDisplay.metal; sourceTree = "<group>"; };
 		E60D39A667424C4AC79035D5 /* input_systemLabels_chip_8.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_chip_8.json; sourceTree = "<group>"; };
 		E61DCF293FFD1E0B8C9F0F25 /* LibrarySortOrder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibrarySortOrder.swift; sourceTree = "<group>"; };
+		E6262689A2A8BB3B84417868 /* reign_tube_crt4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = reign_tube_crt4.png; sourceTree = "<group>"; };
 		E63A6A6C48F198B32AD2A84F /* ROMRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ROMRepository.swift; sourceTree = "<group>"; };
 		E65528ABEAB97C567F9B73A1 /* FilterChipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterChipView.swift; sourceTree = "<group>"; };
 		E66100CBB581703CDEAA56B8 /* fightdata_wh1.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_wh1.json; sourceTree = "<group>"; };
@@ -2654,6 +2706,7 @@
 		E7A3FCEEB46E51A8BCEA836E /* TrainingModeModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainingModeModels.swift; sourceTree = "<group>"; };
 		E7BC369FFD55119B0FAF4037 /* TVModeHoloBoxart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVModeHoloBoxart.swift; sourceTree = "<group>"; };
 		E7EF32DC42376637E5715064 /* input_systemLabels_saturn.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_saturn.json; sourceTree = "<group>"; };
+		E88FA147547EA0F7263B752D /* reign_dots_gbc.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = reign_dots_gbc.png; sourceTree = "<group>"; };
 		E8AF3225C83E5D89BC360652 /* input_systemLabels_craft.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_craft.json; sourceTree = "<group>"; };
 		E8C0B309CDF7F5C3FA06E6B7 /* input_coreOverrides_dolphin.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_dolphin.json; sourceTree = "<group>"; };
 		E8D51D07865600865794A8DB /* Bandai - WonderSwan.dat */ = {isa = PBXFileReference; path = "Bandai - WonderSwan.dat"; sourceTree = "<group>"; };
@@ -2666,6 +2719,7 @@
 		EA89EEC9F4C8F40F3BDC9E2D /* CoreOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreOption.swift; sourceTree = "<group>"; };
 		EA8BAFCD1F4FB17B528F5C9C /* fightdata_samsho.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_samsho.json; sourceTree = "<group>"; };
 		EAE5F38271292610D94313D6 /* 32x-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "32x-cheats.zip"; sourceTree = "<group>"; };
+		EB084A249C9D6DA7CB79CF75 /* reign_dots_gbc3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = reign_dots_gbc3.png; sourceTree = "<group>"; };
 		EB3C2FF168A6FB90476E49BC /* gg-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "gg-cheats.zip"; sourceTree = "<group>"; };
 		EB775F5E7D4CB3DFCACA89A5 /* GameDragState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameDragState.swift; sourceTree = "<group>"; };
 		EBA408AB90EB95504B2DA54F /* ARCADE.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ARCADE.png; sourceTree = "<group>"; };
@@ -2700,6 +2754,7 @@
 		F061D20BC78148EE13F2B859 /* atari2600-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "atari2600-cheats.zip"; sourceTree = "<group>"; };
 		F0B9076AD7BB7925979F39EE /* x68000@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "x68000@132w.png"; sourceTree = "<group>"; };
 		F165BE0632AAC9584CEB6749 /* THOMSON.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = THOMSON.png; sourceTree = "<group>"; };
+		F18E265442C9616FB023F9E0 /* reign_dots_gbc4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = reign_dots_gbc4.png; sourceTree = "<group>"; };
 		F1D3F92500152FBBD78B02A2 /* CelebrationPillOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CelebrationPillOverlay.swift; sourceTree = "<group>"; };
 		F1F5E29743EF34674D35D6CE /* BezelBrowserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezelBrowserView.swift; sourceTree = "<group>"; };
 		F1FC27A5C1F866F0F0C1F520 /* input_coreLabels_fceumm.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_fceumm.json; sourceTree = "<group>"; };
@@ -2712,6 +2767,7 @@
 		F2B0864FA900DBC4BEF891BB /* AnalogDeadZone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalogDeadZone.swift; sourceTree = "<group>"; };
 		F3210C3AF65F784A65527FC9 /* input_coreLabels_nside_balanced.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_nside_balanced.json; sourceTree = "<group>"; };
 		F33C63134E9A426481033364 /* MoveNotationTokenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoveNotationTokenView.swift; sourceTree = "<group>"; };
+		F344DD8FDEEC2411AA148911 /* reign_dots_gbc_bg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = reign_dots_gbc_bg.png; sourceTree = "<group>"; };
 		F41E405D5837D8139B4A0C69 /* GamepadNavContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GamepadNavContext.swift; sourceTree = "<group>"; };
 		F41F72BAFD9284E3E15ECE90 /* fightdata_fgtlayer.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_fgtlayer.json; sourceTree = "<group>"; };
 		F4AA64C094DEC99FDACE8E85 /* fightdata_groovef.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_groovef.json; sourceTree = "<group>"; };
@@ -3281,6 +3337,9 @@
 				3BD337DAF7B206DF941EB16D /* LottesCRT.metal */,
 				2181ADA6355FD20750F4E018 /* Passthrough.metal */,
 				9C5D64D2262E657B3F007C98 /* PSP.metal */,
+				D46292EF3ED924014E91B261 /* ReignDotsDisplay.metal */,
+				E43EB332623B28B5A03A2542 /* ReignDotsDisplayColor.metal */,
+				E5691518D516847701562671 /* ReignTubeDisplay.metal */,
 				A355544255BE468FAF663229 /* ReverseHoloMask.metal */,
 				FE79415A22D8FF65CB0E2D0D /* RfDisplay.metal */,
 				DB371ABEE63BE1D87FA4114E /* ScaleSmooth.metal */,
@@ -3587,6 +3646,28 @@
 				72D05223C8556C9B000996DC /* AdventureGuideMapping.json */,
 				46789EEF6D67F1A3F1C20E60 /* arcade_button_mappings.json */,
 				2CE4818DFC09EC160E87FC48 /* Assets.xcassets */,
+				CF635D6CB2AD20CCC17DEC3B /* ATTRIBUTION_ReignRP.txt */,
+				B117C6F83654FA95B652C8F7 /* reign_dots_gb.png */,
+				F344DD8FDEEC2411AA148911 /* reign_dots_gbc_bg.png */,
+				E88FA147547EA0F7263B752D /* reign_dots_gbc.png */,
+				22D9FA91D0151DAA2E1D82B8 /* reign_dots_gbc2.png */,
+				EB084A249C9D6DA7CB79CF75 /* reign_dots_gbc3.png */,
+				F18E265442C9616FB023F9E0 /* reign_dots_gbc4.png */,
+				374A76609B32E83A674A7AD8 /* reign_pallet_gb_4.png */,
+				BE6BB47DCEBE4B07A3A369DD /* reign_pallet_gb_8.png */,
+				1E1679B4155DE4AB1EB107B3 /* reign_pallet_gb_32.png */,
+				2BB700C1892B0A1723532CB5 /* reign_tube_arcade.png */,
+				26D21214E2CE6E55C5840D81 /* reign_tube_arcade2.png */,
+				330BBED87413E50D268F9504 /* reign_tube_bvm.png */,
+				D703FDAA1E42CAF188F82599 /* reign_tube_bvm2.png */,
+				6003041A9A80F686602AC865 /* reign_tube_crt.png */,
+				AE162AFA93443011BB81EA07 /* reign_tube_crt2.png */,
+				72AD3216943E7923AED678D1 /* reign_tube_crt3.png */,
+				E6262689A2A8BB3B84417868 /* reign_tube_crt4.png */,
+				C2C6B3C60EAD01B7746B9473 /* reign_tube_pvm.png */,
+				E1EADA3018778AA2B1E7FDF5 /* reign_tube_pvm2.png */,
+				CD252DDCA4EA74BD485F2CBA /* reign_tube_scanlines.png */,
+				B661CE8536C2318845565184 /* reign_tube_scanlines2.png */,
 				18A378D98313D80173A8B0B0 /* AppIcons */,
 				D0CDC1D3C0773FC9C8698346 /* BoxArtSamples */,
 				FE700291499B346B34E3C68A /* cheats */,
@@ -3916,6 +3997,7 @@
 				537B577BF88C9F9050CD1FCF /* SetupWizardState.swift */,
 				616B37C3C13F2D2FE25473E2 /* ShaderPresetStorageService.swift */,
 				7A119E4B19856B61DDCE4AEA /* SlangPresetDiscoveryService.swift */,
+				007BD86CF8B519A328696079 /* VulkanLibraryService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -4608,6 +4690,8 @@
 				2A5F6194C027F95EB23ED33A /* CoreClientProtocol.swift */,
 				FF549897537D3CC05BD11231 /* CoreHostProtocol.swift */,
 				B94E70E2B12D7C50F36C7881 /* ICloudMaterializer.swift */,
+				D4C07934E3C2B16CE6063F8C /* VulkanLibraryHelper.h */,
+				3096FDE9747F1C356CCEA84B /* VulkanLibraryHelper.mm */,
 				84D2D65163527E606B9A8023 /* XPCSharedMemory.h */,
 			);
 			path = Shared;
@@ -5129,6 +5213,7 @@
 				0F7D9FF0D51CF611A7BC83B1 /* ATARI800.png in Resources */,
 				3290145934AA7E2112EB52AD /* ATARIST.png in Resources */,
 				02648E51BB763E3EAD39203D /* ATOMISWAVE.png in Resources */,
+				ABA32E9807C96F16CAFAF84F /* ATTRIBUTION_ReignRP.txt in Resources */,
 				323DC3199D2CF891497564CA /* AdventureGuideMapping.json in Resources */,
 				3F2A07F0C4A40075BBD317C7 /* Assets.xcassets in Resources */,
 				DF3A62CB15EBDD2139FCC119 /* Atari - 2600.dat in Resources */,
@@ -5972,6 +6057,27 @@
 				24776FDF38A92780380C6013 /* puzzlescript-cheats.zip in Resources */,
 				7AB6C958DA92C9CDF9A93EEF /* quake@132w.png in Resources */,
 				594DA226FECF6DC504289788 /* reicast_libretro_default.json in Resources */,
+				D6B687BAB530393F4A8469DC /* reign_dots_gb.png in Resources */,
+				CC12504940DF1100C91D48C8 /* reign_dots_gbc.png in Resources */,
+				ECD99948BABD1907CBEA32ED /* reign_dots_gbc2.png in Resources */,
+				55C1FE52DA8F0391D71B27E2 /* reign_dots_gbc3.png in Resources */,
+				8750CF9C8BD3C6C4EBDC1CCD /* reign_dots_gbc4.png in Resources */,
+				6F3D8AA22AA2F14B4708AF21 /* reign_dots_gbc_bg.png in Resources */,
+				24FDF5C203C6962C3C2222ED /* reign_pallet_gb_32.png in Resources */,
+				0F98F2D72DE35884484E6028 /* reign_pallet_gb_4.png in Resources */,
+				8B67A2E72B31DC8314FA2CC4 /* reign_pallet_gb_8.png in Resources */,
+				028327D99E010637DE4BDC61 /* reign_tube_arcade.png in Resources */,
+				49FD3C8789E34EDD03C30CCD /* reign_tube_arcade2.png in Resources */,
+				D82E65067A5DC41E3A1DB457 /* reign_tube_bvm.png in Resources */,
+				16A5F8C83C475178310C84DA /* reign_tube_bvm2.png in Resources */,
+				03A7B251E45D9D990CC7B885 /* reign_tube_crt.png in Resources */,
+				8F32BF20E05A0EE4CCD1EAB1 /* reign_tube_crt2.png in Resources */,
+				9B1692E4B8167C6DF5EE69F6 /* reign_tube_crt3.png in Resources */,
+				54E9B9B52785DA4C34384A98 /* reign_tube_crt4.png in Resources */,
+				6117A700B2EDE53F2EA13325 /* reign_tube_pvm.png in Resources */,
+				F733B72929844B9D865F9C05 /* reign_tube_pvm2.png in Resources */,
+				44386C6CAB82E587204D8C4E /* reign_tube_scanlines.png in Resources */,
+				06DB279929F6129A8451CD0B /* reign_tube_scanlines2.png in Resources */,
 				ADC5AA77F50EECA68E54E8C7 /* sameboy_libretro_default.json in Resources */,
 				BDAFF589B4A9C8A61EC44302 /* sameboy_libretro_gb.json in Resources */,
 				9D7867FCC41BE0C4631E75A1 /* satella@132w.png in Resources */,
@@ -6135,6 +6241,7 @@
 				969EEC66C98A3CCBD21B86E1 /* RcheevosRuntime.swift in Sources */,
 				49A82C18C949F5D5838AEA50 /* RcheevosWrapper.c in Sources */,
 				4F5D20FFA67634F67EDC299E /* SaveDirectoryBridge.swift in Sources */,
+				2C9024BA5490B4581DE6A7B3 /* VulkanLibraryHelper.mm in Sources */,
 				175914AA2909F5BE44E29AF4 /* main.swift in Sources */,
 				24F962DCDA320CFD9BB16838 /* ntsc_decoder.cpp in Sources */,
 				F1F7D7017DC6AB739504AF96 /* ntsc_encoder.cpp in Sources */,
@@ -6449,6 +6556,9 @@
 				FDB673FBF6AA9921EDFA3337 /* RcheevosWrapper.c in Sources */,
 				39BBB51DD676ABF50F2A4653 /* RecordingBadgeOverlay.swift in Sources */,
 				3B7605901537797C0FC9556D /* RecordingTabView.swift in Sources */,
+				A5A5CA0EC20F20B42327DDC2 /* ReignDotsDisplay.metal in Sources */,
+				8FBCEAD722EA8483B81A5B88 /* ReignDotsDisplayColor.metal in Sources */,
+				356247D1B9B14531C6AA752E /* ReignTubeDisplay.metal in Sources */,
 				44A923C96B0F6884DD50D096 /* ResetSettingsView.swift in Sources */,
 				28369A531757A82F734AA1E0 /* ResourceCacheInterceptor.swift in Sources */,
 				F2903EDB7DD894827E44208C /* ResourceCacheModels.swift in Sources */,
@@ -6563,6 +6673,8 @@
 				E9C0F23EA1F3DB9AEE465065 /* TypeToSearch.swift in Sources */,
 				9EFB1C38E1C77CAC8E872012 /* UpdateAvailableView.swift in Sources */,
 				4AB23F3CFA5D46860C322282 /* UpdateWizardView.swift in Sources */,
+				715F1105725C8FC23D4D2645 /* VulkanLibraryHelper.mm in Sources */,
+				3D1561687C3CE36763B99515 /* VulkanLibraryService.swift in Sources */,
 				677E565E4FE7FA4E55160101 /* WhatsNewView.swift in Sources */,
 				EC4E60F3334C8C4FDB365E94 /* WiiIRSettings.swift in Sources */,
 				8C3DB989C12A59BAD8C9B0BB /* XPCBridgeAdapter.swift in Sources */,

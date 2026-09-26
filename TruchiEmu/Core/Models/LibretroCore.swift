@@ -8,6 +8,11 @@ struct CoreMetadata {
     let recommendation: String?  // e.g. "Recommended for most users"
 }
 
+enum CoreSource: String, Codable {
+    case buildbot
+    case custom
+}
+
 struct LibretroCore: Identifiable, Codable, Hashable {
     var id: String                    // e.g. "nestopia_libretro"
     var displayName: String
@@ -16,6 +21,8 @@ struct LibretroCore: Identifiable, Codable, Hashable {
     var activeVersionTag: String?
     var isDownloading: Bool = false
     var downloadProgress: Double = 0
+    var source: CoreSource = .buildbot
+    var originURL: URL? = nil
 
     var activeVersion: CoreVersion? {
         if let tag = activeVersionTag, let match = installedVersions.first(where: { $0.tag == tag }) {
@@ -26,6 +33,37 @@ struct LibretroCore: Identifiable, Codable, Hashable {
     }
 
     var isInstalled: Bool { !installedVersions.isEmpty }
+    var isCustom: Bool { source == .custom }
+
+    enum CodingKeys: String, CodingKey {
+        case id, displayName, systemIDs, installedVersions, activeVersionTag
+        case isDownloading, downloadProgress, source, originURL
+    }
+
+    init(id: String, displayName: String, systemIDs: [String], installedVersions: [CoreVersion], activeVersionTag: String? = nil, isDownloading: Bool = false, downloadProgress: Double = 0, source: CoreSource = .buildbot, originURL: URL? = nil) {
+        self.id = id
+        self.displayName = displayName
+        self.systemIDs = systemIDs
+        self.installedVersions = installedVersions
+        self.activeVersionTag = activeVersionTag
+        self.isDownloading = isDownloading
+        self.downloadProgress = downloadProgress
+        self.source = source
+        self.originURL = originURL
+    }
+
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        id = try c.decode(String.self, forKey: .id)
+        displayName = try c.decode(String.self, forKey: .displayName)
+        systemIDs = try c.decodeIfPresent([String].self, forKey: .systemIDs) ?? []
+        installedVersions = try c.decodeIfPresent([CoreVersion].self, forKey: .installedVersions) ?? []
+        activeVersionTag = try c.decodeIfPresent(String.self, forKey: .activeVersionTag)
+        isDownloading = try c.decodeIfPresent(Bool.self, forKey: .isDownloading) ?? false
+        downloadProgress = try c.decodeIfPresent(Double.self, forKey: .downloadProgress) ?? 0
+        source = try c.decodeIfPresent(CoreSource.self, forKey: .source) ?? .buildbot
+        originURL = try c.decodeIfPresent(URL.self, forKey: .originURL)
+    }
 
     // Returns metadata for this core if available.
     var metadata: CoreMetadata {
@@ -67,6 +105,12 @@ struct LibretroCore: Identifiable, Codable, Hashable {
             description: "The latest MAME version. Best compatibility and accuracy for rare/complex arcade games. Most demanding on hardware.",
             recommendation: "Best compatibility, requires modern hardware"
         ),
+        "suyu": CoreMetadata(
+            displayName: "suyu (Switch)",
+            version: "Custom",
+            description: "Custom Switch core. Vulkan renderer runs headless inside the core. Needs keys and firmware in the System folder.",
+            recommendation: nil
+        ),
     ]
 }
 
@@ -94,6 +138,32 @@ struct RemoteCoreInfo: Identifiable, Codable {
     var systemIDs: [String]
     var displayName: String
     var version: String? // Parsed from .info file or build date
+    var source: CoreSource = .buildbot
+
+    enum CodingKeys: String, CodingKey {
+        case coreID, fileName, downloadURL, systemIDs, displayName, version, source
+    }
+
+    init(coreID: String, fileName: String, downloadURL: URL, systemIDs: [String], displayName: String, version: String? = nil, source: CoreSource = .buildbot) {
+        self.coreID = coreID
+        self.fileName = fileName
+        self.downloadURL = downloadURL
+        self.systemIDs = systemIDs
+        self.displayName = displayName
+        self.version = version
+        self.source = source
+    }
+
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        coreID = try c.decode(String.self, forKey: .coreID)
+        fileName = try c.decode(String.self, forKey: .fileName)
+        downloadURL = try c.decode(URL.self, forKey: .downloadURL)
+        systemIDs = try c.decodeIfPresent([String].self, forKey: .systemIDs) ?? []
+        displayName = try c.decode(String.self, forKey: .displayName)
+        version = try c.decodeIfPresent(String.self, forKey: .version)
+        source = try c.decodeIfPresent(CoreSource.self, forKey: .source) ?? .buildbot
+    }
 
     // Returns metadata for this core if available.
     var metadata: CoreMetadata {

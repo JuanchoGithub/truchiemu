@@ -234,6 +234,32 @@ func launchGame(
             JaguarBIOSService.shared.ensureExtracted()
         }
 
+        if coreID.lowercased().contains("suyu") {
+            if !suyuKeysPresent() {
+                showSuyuMissingKeysAlert()
+                isLaunching = false
+                currentLaunchROM = nil
+                completion?(nil)
+                return
+            }
+            if !suyuFirmwarePresent() {
+                let proceed = showSuyuMissingFirmwareAlert()
+                if !proceed {
+                    isLaunching = false
+                    currentLaunchROM = nil
+                    completion?(nil)
+                    return
+                }
+            }
+            if await VulkanLibraryService.shared.ensureMoltenVK() == nil {
+                showSuyuMissingVulkanAlert()
+                isLaunching = false
+                currentLaunchROM = nil
+                completion?(nil)
+                return
+            }
+        }
+
         isLaunching = true
         currentLaunchROM = rom
         launchPhase = .preparingConfig
@@ -581,6 +607,81 @@ func launchGame(
         }
     }
     
+    // MARK: - Suyu keys check
+
+    /// suyu's own user dir on macOS. Mirrors suyu path_util: $XDG_DATA_HOME else ~/.local/share, plus "suyu".
+    private func suyuUserDir() -> URL {
+        let fm = FileManager.default
+        if let xdg = ProcessInfo.processInfo.environment["XDG_DATA_HOME"], !xdg.isEmpty {
+            return URL(fileURLWithPath: xdg).appendingPathComponent("suyu", isDirectory: true)
+        }
+        return fm.homeDirectoryForCurrentUser
+            .appendingPathComponent(".local/share/suyu", isDirectory: true)
+    }
+
+    private func suyuKeysPresent() -> Bool {
+        let sysDir = SaveDirectoryManager.shared.systemDirectory
+        let candidates = [
+            sysDir.appendingPathComponent("suyu/keys/prod.keys"),
+            sysDir.appendingPathComponent("keys/prod.keys"),
+            // Already adopted by the core into its own user dir on a past run
+            suyuUserDir().appendingPathComponent("keys/prod.keys"),
+        ]
+        return candidates.contains { FileManager.default.fileExists(atPath: $0.path) }
+    }
+
+    /// Firmware lives in suyu's NAND. The core never copies it over, so it must
+    /// be installed once with suyu's own Install Firmware. Absence only warns:
+    /// games still boot, but Mii screens and some menus can fail.
+    private func suyuFirmwarePresent() -> Bool {
+        let registered = suyuUserDir().appendingPathComponent("nand/system/Contents/registered", isDirectory: true)
+        guard let files = try? FileManager.default.contentsOfDirectory(at: registered, includingPropertiesForKeys: nil) else { return false }
+        return files.contains { $0.pathExtension.lowercased() == "nca" }
+    }
+
+    private func showSuyuMissingKeysAlert() {
+        let loc = LocalizationManager.shared
+        let alert = NSAlert()
+        alert.alertStyle = .warning
+        alert.messageText = loc.localized("game.suyu.missingKeysTitle")
+        alert.informativeText = loc.localized("game.suyu.missingKeysMessage")
+        alert.addButton(withTitle: loc.localized("game.suyu.openSystemFolder"))
+        alert.addButton(withTitle: loc.localized("general.cancel"))
+        if alert.runModal() == .alertFirstButtonReturn {
+            NSWorkspace.shared.open(SaveDirectoryManager.shared.systemDirectory)
+        }
+    }
+    /// Returns true when the user chooses to launch without firmware.
+    private func showSuyuMissingFirmwareAlert() -> Bool {
+
+        let loc = LocalizationManager.shared
+        let registered = suyuUserDir().appendingPathComponent("nand/system/Contents/registered", isDirectory: true)
+        try? FileManager.default.createDirectory(at: registered, withIntermediateDirectories: true)
+        let alert = NSAlert()
+        alert.alertStyle = .warning
+        alert.messageText = loc.localized("game.suyu.missingFirmwareTitle")
+        alert.informativeText = String(format: loc.localized("game.suyu.missingFirmwareMessage"), registered.path)
+        alert.addButton(withTitle: loc.localized("game.suyu.continueAnyway"))
+        alert.addButton(withTitle: loc.localized("game.suyu.openSuyuFolder"))
+        alert.addButton(withTitle: loc.localized("general.cancel"))
+        let response = alert.runModal()
+        if response == .alertSecondButtonReturn {
+            NSWorkspace.shared.open(registered)
+            return false
+        }
+        return response == .alertFirstButtonReturn
+    }
+
+    private func showSuyuMissingVulkanAlert() {
+        let loc = LocalizationManager.shared
+        let alert = NSAlert()
+        alert.alertStyle = .warning
+        alert.messageText = loc.localized("game.suyu.missingVulkanTitle")
+        alert.informativeText = loc.localized("game.suyu.missingVulkanMessage")
+        alert.addButton(withTitle: loc.localized("general.cancel"))
+        alert.runModal()
+    }
+
     // MARK: - Switch Game Alert
 
     enum SwitchGameAction {
