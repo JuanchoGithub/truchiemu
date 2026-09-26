@@ -238,6 +238,16 @@ struct AboutView: View {
                             licenseURL: "https://github.com/GOROman/famicom-rf-hackrf-decoder/blob/main/LICENSE",
                             description: "Source of the DSP and visual pipeline (antenna static, off-tune interference, NTSC composite decode, RF ghosting, CRT scanlines) that powers the Famicom RF shader in TruchiEmu."
                         )
+
+                        Divider()
+
+                        DependencyGroup(
+                            name: "CRTSim by J. Kyle Pittman (Minor Key Games)",
+                            url: "https://github.com/MinorKeyGames/CRTSim",
+                            license: "CC0-1.0",
+                            licenseURL: "https://creativecommons.org/publicdomain/zero/1.0/",
+                            description: "Reference CRT simulation from Super Win the Game and Gunmetal Arcadia (also released as SuperCRT on itch.io). Ported to Metal as the CRT Pittman shader and 3D cabinet in TruchiEmu."
+                        )
                     }
                     
                     // --- Box Art ---
