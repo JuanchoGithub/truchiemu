@@ -1,0 +1,50 @@
+---
+layout: default
+title: v1.15.0 - TruchiEmu Documentation
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/changelog.html' | relative_url }}">Changelog</a>
+        <span class="separator">/</span>
+        <span class="current">v1.15.0</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.15.0</h1>
+        <div class="release-meta">
+            <span class="release-date">September 26, 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>This release adds custom core import with Switch/suyu support and vendored MoltenVK, ships a 3D Pittman cabinet with fitted camera and TV toggle, brings CRTSim parity with pixel ratio and cabinet reflection controls, and tightens holo rainbow foil with light-spot confinement and matched foil strength.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Highlights</h2>
+        <ul class="feature-list">
+            <li><strong>Custom core import:</strong> Import generic zip/dylib cores with companion library handling, binary signing, and system mapping. Adds a Switch database entry, per-system import entry points, suyu keys/firmware checks, and MoltenVK provisioning via LIBVULKAN_PATH for headless Vulkan cores.</li>
+            <li><strong>Pittman 3D cabinet:</strong> Mesh screen and frame with fitted camera and a TV toggle for a cabinet-style presentation.</li>
+            <li><strong>CRTSim parity:</strong> Pixel ratio control, cabinet reflection controls, split bloom, and stable NTSC fields.</li>
+            <li><strong>Holo foil polish:</strong> Rainbow foil confined to the light spot with full dark hiding the foil, and image foils matched to generated foil strength.</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Detailed Changes</h2>
+        <ul>
+            <li>Cores — custom core import with Switch/suyu support and vendored MoltenVK (companion libs, binary signing, system mapping, Switch database entry, per-system import entry points, suyu keys/firmware checks, LIBVULKAN_PATH provisioning)</li>
+            <li>Shaders — CRTSim parity: pixel ratio, cabinet reflection controls, split bloom, stable NTSC fields</li>
+            <li>Cabinet — Pittman 3D cabinet: mesh screen and frame with fitted camera and TV toggle</li>
+            <li>Holo FX — rainbow foil confined to light spot with full dark hiding foil; image foils matched to generated foil strength</li>
+            <li>Bump marketing version to 1.15.0 and build number to 38 across <code>project.yml</code>, both <code>Info.plist</code>s, and <code>docs/_config.yml</code>.</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/changelog/v1.14.0.html' | relative_url }}" class="release-prev">&larr; v1.14.0</a>
+        <a href="{{ '/changelog.html' | relative_url }}" class="release-all">All Releases</a>
+    </nav>
+</div>

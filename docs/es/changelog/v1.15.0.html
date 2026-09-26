@@ -1,0 +1,50 @@
+---
+layout: default
+title: v1.15.0 - Documentación de TruchiEmu
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/es/changelog.html' | relative_url }}">Registro de cambios</a>
+        <span class="separator">/</span>
+        <span class="current">v1.15.0</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.15.0</h1>
+        <div class="release-meta">
+            <span class="release-date">26 de septiembre de 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>Esta versión añade importación de núcleos personalizados con soporte de Switch/suyu y MoltenVK incluido, incorpora un gabinete 3D Pittman con cámara ajustada e interruptor de TV, trae paridad CRTSim con controles de proporción de píxeles y reflejo de gabinete, y refina el foil arcoíris holo con confinamiento al punto de luz y fuerza igualada.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Destacados</h2>
+        <ul class="feature-list">
+            <li><strong>Importación de núcleos personalizados:</strong> Importa núcleos genéricos zip/dylib con manejo de librerías compañeras, firma de binarios y mapeo de sistemas. Añade entrada de Switch en la base de datos, puntos de entrada por sistema, verificaciones de claves/firmware de suyu, y provisión de MoltenVK vía LIBVULKAN_PATH para núcleos Vulkan sin cabeza.</li>
+            <li><strong>Gabinete 3D Pittman:</strong> Pantalla de malla y marco con cámara ajustada e interruptor de TV para una presentación estilo gabinete.</li>
+            <li><strong>Paridad CRTSim:</strong> Control de proporción de píxeles, controles de reflejo de gabinete, bloom dividido y campos NTSC estables.</li>
+            <li><strong>Pulido del foil holo:</strong> Foil arcoíris confinado al punto de luz con oscuridad total que oculta el foil, y foils de imagen igualados a la fuerza generada.</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Cambios detallados</h2>
+        <ul>
+            <li>Núcleos — importación personalizada con soporte Switch/suyu y MoltenVK incluido (librerías compañeras, firma de binarios, mapeo de sistemas, entrada de Switch, puntos de entrada por sistema, claves/firmware de suyu, provisión LIBVULKAN_PATH)</li>
+            <li>Shaders — paridad CRTSim: proporción de píxeles, controles de reflejo de gabinete, bloom dividido, campos NTSC estables</li>
+            <li>Gabinete — gabinete 3D Pittman: pantalla de malla y marco con cámara ajustada e interruptor de TV</li>
+            <li>Efectos Holo — foil arcoíris confinado al punto de luz con oscuridad que lo oculta; foils de imagen igualados a la fuerza generada</li>
+            <li>Versión de marketing subida a 1.15.0 y número de compilación a 38 en <code>project.yml</code>, ambos <code>Info.plist</code> y <code>docs/_config.yml</code>.</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/es/changelog/v1.14.0.html' | relative_url }}" class="release-prev">&larr; v1.14.0</a>
+        <a href="{{ '/es/changelog.html' | relative_url }}" class="release-all">Todas las versiones</a>
+    </nav>
+</div>
