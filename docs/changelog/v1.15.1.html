@@ -1,0 +1,49 @@
+---
+layout: default
+title: v1.15.1 - TruchiEmu Documentation
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/changelog.html' | relative_url }}">Changelog</a>
+        <span class="separator">/</span>
+        <span class="current">v1.15.1</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.15.1</h1>
+        <div class="release-meta">
+            <span class="release-date">September 28, 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>This patch release groups Switch base games with their updates and DLC, fixes a game info hang, and logs Metal validation errors in the XPC service instead of aborting under suyu/MoltenVK.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Highlights</h2>
+        <ul class="feature-list">
+            <li><strong>Switch updates and DLC grouping:</strong> Switch files are classified as base, update, or DLC via the suyu core's own FileSys classes (exact title IDs, including XCI), with ticket and filename fallback. Updates and DLC group under one library card with enable toggles in the detail view; direct launch of add-ons is blocked.</li>
+            <li><strong>Game info hang fix:</strong> Adds an O(1) ROM index and moves save-state scans to the background after sampling showed a 17s main-thread burn when opening game info.</li>
+            <li><strong>Metal validation in XPC service:</strong> Metal validation errors are logged instead of aborting, fixing crashes under suyu/MoltenVK.</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Detailed Changes</h2>
+        <ul>
+            <li>Switch — group base games with updates and DLC (suyu FileSys title-ID classification with ticket and filename fallback, per-content enable toggles, blocked add-on launch)</li>
+            <li>Library — fix game info hang (O(1) ROM index, background save-state scans)</li>
+            <li>XPC — log Metal validation errors instead of aborting (suyu/MoltenVK)</li>
+            <li>About — credit CRTSim by J. Kyle Pittman</li>
+            <li>Bump marketing version to 1.15.1 and build number to 39 across <code>project.yml</code>, both <code>Info.plist</code>s, and <code>docs/_config.yml</code>.</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/changelog/v1.15.0.html' | relative_url }}" class="release-prev">&larr; v1.15.0</a>
+        <a href="{{ '/changelog.html' | relative_url }}" class="release-all">All Releases</a>
+    </nav>
+</div>

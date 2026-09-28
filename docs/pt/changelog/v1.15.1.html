@@ -1,0 +1,49 @@
+---
+layout: default
+title: v1.15.1 - Documentação do TruchiEmu
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/pt/changelog.html' | relative_url }}">Registro de mudanças</a>
+        <span class="separator">/</span>
+        <span class="current">v1.15.1</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.15.1</h1>
+        <div class="release-meta">
+            <span class="release-date">28 de setembro de 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>Esta versão de correção agrupa os jogos base de Switch com seus updates e DLCs, corrige um travamento ao abrir as informações do jogo, e registra erros de validação do Metal no serviço XPC em vez de abortar sob suyu/MoltenVK.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Destaques</h2>
+        <ul class="feature-list">
+            <li><strong>Agrupamento de updates e DLCs de Switch:</strong> Arquivos de Switch são classificados como base, update ou DLC com as classes FileSys do próprio núcleo suyu (title IDs exatos, incluindo XCI), com fallback por ticket e nome de arquivo. Updates e DLCs agrupam-se em um só cartão com alternadores na vista de detalhes; o lançamento direto de complementos é bloqueado.</li>
+            <li><strong>Correção do travamento de informações do jogo:</strong> Adiciona um índice de ROM O(1) e move as varreduras de save states para o fundo após detectar 17s de carga na thread principal ao abrir as informações do jogo.</li>
+            <li><strong>Validação do Metal no serviço XPC:</strong> Erros de validação do Metal são registrados em vez de abortar, corrigindo falhas sob suyu/MoltenVK.</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Mudanças detalhadas</h2>
+        <ul>
+            <li>Switch — agrupa jogos base com updates e DLCs (classificação por title ID com FileSys do suyu, fallback por ticket e nome, alternadores por conteúdo, lançamento de complementos bloqueado)</li>
+            <li>Biblioteca — corrige o travamento de informações do jogo (índice de ROM O(1), varreduras de save states em fundo)</li>
+            <li>XPC — registra erros de validação do Metal em vez de abortar (suyu/MoltenVK)</li>
+            <li>Sobre — crédito ao CRTSim de J. Kyle Pittman</li>
+            <li>Versão de marketing atualizada para 1.15.1 e número de build para 39 em <code>project.yml</code>, ambos os <code>Info.plist</code> e <code>docs/_config.yml</code>.</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/pt/changelog/v1.15.0.html' | relative_url }}" class="release-prev">&larr; v1.15.0</a>
+        <a href="{{ '/pt/changelog.html' | relative_url }}" class="release-all">Todas as versões</a>
+    </nav>
+</div>
