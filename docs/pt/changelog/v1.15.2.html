@@ -1,0 +1,60 @@
+---
+layout: default
+title: v1.15.2 - Documentação do TruchiEmu
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/pt/changelog.html' | relative_url }}">Registro de mudanças</a>
+        <span class="separator">/</span>
+        <span class="current">v1.15.2</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.15.2</h1>
+        <div class="release-meta">
+            <span class="release-date">28 de setembro de 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>Esta versão corrige o atualizador interno (ele podia instalar uma pasta de dados sobressalente em vez do novo aplicativo, deixando você na versão anterior), adiciona um aviso de recuperação passo a passo que detecta atualizações com falha, e repara a classificação do Switch após um downgrade de versão.</p>
+    </div>
+
+    <section id="update-notice">
+        <h2>Aviso de atualização: leia isto se uma atualização desde a v1.14.0 nunca mudou sua versão</h2>
+        <p>Um erro do atualizador podia copiar uma pasta de dados sobressalente (por exemplo <code>com.apple.WebKit.Networking+com.TruchiEmu.app</code>) para <code>/Applications</code> em vez do novo aplicativo. O aplicativo reiniciava na versão anterior e um ícone em branco podia ficar em <code>/Applications</code>. Esta versão corrige o atualizador e detecta o dano, mas usuários afetados precisam de uma instalação manual:</p>
+        <ol>
+            <li>Feche o TruchiEmu.</li>
+            <li>No Finder, mova o item sobressalente para a Lixeira. Não exclua mais nada.</li>
+            <li>Baixe <code>TruchiEmu-v1.15.2.zip</code> na <a href="https://github.com/JuanchoGithub/truchiemu/releases">página de versões</a>.</li>
+            <li>Descompacte e mova <code>TruchiEmu.app</code> para <code>/Applications</code> com Substituir.</li>
+            <li>Abra a partir de <code>/Applications</code> e confira a versão em Ajustes Sobre. Uma instalação manual restaura a atualização automática para as próximas versões.</li>
+        </ol>
+    </section>
+
+    <section id="highlights">
+        <h2>Destaques</h2>
+        <ul class="feature-list">
+            <li><strong>Correção do atualizador interno (#40):</strong> As atualizações são extraídas em uma pasta temporária única, o instalador escolhe <code>TruchiEmu.app</code> pelo nome exato e valida seu bundle ID e executável (pastas isca como <code>com.TruchiEmu.app</code> são ignoradas), falhas de cópia agora mostram erro em vez de sucesso falso, o aplicativo é atualizado onde é executado em vez de sempre escrever em <code>/Applications</code>, e a reinicialização usa <code>NSWorkspace</code>.</li>
+            <li><strong>Aviso de recuperação de atualização:</strong> Ao iniciar, o aplicativo verifica <code>/Applications</code> em busca de restos sobressalentes, cópias quebradas e instalações divididas, e mostra um reparo passo a passo baseado no Finder com botão de reinstalação a partir da cópia em execução. Há uma verificação manual em Ajustes Sobre. Nada é apagado automaticamente.</li>
+            <li><strong>Reparo do Switch após downgrade:</strong> Abrir uma compilação anterior apagava as colunas de classificação do Switch; linhas obsoletas agora são reclassificadas ao iniciar.</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Mudanças detalhadas</h2>
+        <ul>
+            <li>Atualizador — pasta temporária única, escolha por nome exato com validação de <code>CFBundleIdentifier</code> e executável, verificação de códigos de saída de <code>ditto</code>/<code>hdiutil</code>, instalação no local de execução, reinicialização com <code>NSWorkspace</code> (corrige #40)</li>
+            <li>Recuperação — <code>RecoveryPromptView</code> com reparo somente-Finder, reinstalação a partir da cópia em execução, gancho de início, verificação em Ajustes Sobre, strings <code>update.recovery.*</code> em 4 idiomas</li>
+            <li>Switch — repara linhas de classificação obsoletas ao iniciar após um downgrade de versão</li>
+            <li>Versão de marketing subida para 1.15.2 e número de compilação para 40 em <code>project.yml</code>, ambos <code>Info.plist</code> e <code>docs/_config.yml</code>.</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/pt/changelog/v1.15.1.html' | relative_url }}" class="release-prev">&larr; v1.15.1</a>
+        <a href="{{ '/pt/changelog.html' | relative_url }}" class="release-all">Todas as versões</a>
+    </nav>
+</div>

@@ -1,0 +1,60 @@
+---
+layout: default
+title: v1.15.2 - Documentación de TruchiEmu
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/es/changelog.html' | relative_url }}">Registro de cambios</a>
+        <span class="separator">/</span>
+        <span class="current">v1.15.2</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.15.2</h1>
+        <div class="release-meta">
+            <span class="release-date">28 de septiembre de 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>Esta versión repara el actualizador interno (podía instalar una carpeta de datos sobrante en lugar de la nueva aplicación, dejándote en la versión anterior), añade un aviso de recuperación paso a paso que detecta actualizaciones fallidas, y repara la clasificación de Switch tras una baja de versión.</p>
+    </div>
+
+    <section id="update-notice">
+        <h2>Aviso de actualización: lee esto si una actualización desde v1.14.0 nunca cambió tu versión</h2>
+        <p>Un error del actualizador podía copiar una carpeta de datos sobrante (por ejemplo <code>com.apple.WebKit.Networking+com.TruchiEmu.app</code>) en <code>/Applications</code> en lugar de la nueva aplicación. La aplicación se reiniciaba en la versión anterior y un icono en blanco podía quedar en <code>/Applications</code>. Esta versión corrige el actualizador y detecta el daño, pero los usuarios afectados necesitan una instalación manual:</p>
+        <ol>
+            <li>Cierra TruchiEmu.</li>
+            <li>En Finder, mueve el elemento sobrante a la Papelera. No elimines nada más.</li>
+            <li>Descarga <code>TruchiEmu-v1.15.2.zip</code> desde la <a href="https://github.com/JuanchoGithub/truchiemu/releases">página de versiones</a>.</li>
+            <li>Descomprímelo y mueve <code>TruchiEmu.app</code> a <code>/Applications</code> con Reemplazar.</li>
+            <li>Abre desde <code>/Applications</code> y comprueba la versión en Ajustes Acerca de. Una instalación manual restaura la auto-actualización para las siguientes versiones.</li>
+        </ol>
+    </section>
+
+    <section id="highlights">
+        <h2>Destacados</h2>
+        <ul class="feature-list">
+            <li><strong>Reparación del actualizador interno (#40):</strong> Las actualizaciones se extraen en una carpeta temporal única, el instalador elige <code>TruchiEmu.app</code> por nombre exacto y valida su bundle ID y ejecutable (las carpetas señuelo como <code>com.TruchiEmu.app</code> se ignoran), los fallos de copia ahora muestran error en lugar de éxito falso, la aplicación se actualiza donde se ejecuta en vez de escribir siempre en <code>/Applications</code>, y el reinicio usa <code>NSWorkspace</code>.</li>
+            <li><strong>Aviso de recuperación de actualización:</strong> Al iniciar, la aplicación revisa <code>/Applications</code> en busca de restos sobrantes, copias rotas e instalaciones divididas, y muestra una reparación paso a paso basada en Finder con botón de reinstalación desde la copia en ejecución. Hay una comprobación manual en Ajustes Acerca de. Nunca se borra nada automáticamente.</li>
+            <li><strong>Reparación de Switch tras baja de versión:</strong> Abrir una compilación anterior borraba las columnas de clasificación de Switch; las filas obsoletas ahora se reclasifican al iniciar.</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Cambios detallados</h2>
+        <ul>
+            <li>Actualizador — carpeta temporal única, elección por nombre exacto con validación de <code>CFBundleIdentifier</code> y ejecutable, control de códigos de salida de <code>ditto</code>/<code>hdiutil</code>, instalación en la ubicación de ejecución, reinicio con <code>NSWorkspace</code> (corrige #40)</li>
+            <li>Recuperación — <code>RecoveryPromptView</code> con reparación solo-Finder, reinstalación desde la copia en ejecución, gancho de inicio, comprobación en Ajustes Acerca de, cadenas <code>update.recovery.*</code> en 4 idiomas</li>
+            <li>Switch — repara filas de clasificación obsoletas al iniciar tras una baja de versión</li>
+            <li>Versión de marketing subida a 1.15.2 y número de compilación a 40 en <code>project.yml</code>, ambos <code>Info.plist</code> y <code>docs/_config.yml</code>.</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/es/changelog/v1.15.1.html' | relative_url }}" class="release-prev">&larr; v1.15.1</a>
+        <a href="{{ '/es/changelog.html' | relative_url }}" class="release-all">Todas las versiones</a>
+    </nav>
+</div>

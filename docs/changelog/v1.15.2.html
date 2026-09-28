@@ -1,0 +1,60 @@
+---
+layout: default
+title: v1.15.2 - TruchiEmu Documentation
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/changelog.html' | relative_url }}">Changelog</a>
+        <span class="separator">/</span>
+        <span class="current">v1.15.2</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.15.2</h1>
+        <div class="release-meta">
+            <span class="release-date">September 28, 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>This patch release repairs the in-app updater (it could install a stray data folder instead of the new app, leaving you on the old version), adds a step-by-step recovery prompt that detects failed updates, and heals Switch classification after a version downgrade.</p>
+    </div>
+
+    <section id="update-notice">
+        <h2>Update Notice: read this if an update since v1.14.0 never changed your version</h2>
+        <p>A bug in the updater could copy a stray data folder (for example <code>com.apple.WebKit.Networking+com.TruchiEmu.app</code>) into <code>/Applications</code> instead of the new app. The app then restarts on the old version, and a blank app icon may sit in <code>/Applications</code>. This release fixes the updater and detects the damage, but affected users need one manual install:</p>
+        <ol>
+            <li>Quit TruchiEmu.</li>
+            <li>In Finder, move the stray blank item to Trash. Delete nothing else.</li>
+            <li>Download <code>TruchiEmu-v1.15.2.zip</code> from the <a href="https://github.com/JuanchoGithub/truchiemu/releases">releases page</a>.</li>
+            <li>Unzip it and move <code>TruchiEmu.app</code> to <code>/Applications</code> with Replace.</li>
+            <li>Launch from <code>/Applications</code> and check the version in Settings About. One manual install restores auto-update for all later versions.</li>
+        </ol>
+    </section>
+
+    <section id="highlights">
+        <h2>Highlights</h2>
+        <ul class="feature-list">
+            <li><strong>In-app updater repair (#40):</strong> Updates extract into a unique staging folder, the installer picks <code>TruchiEmu.app</code> by exact name and validates its bundle ID and executable (decoy folders like <code>com.TruchiEmu.app</code> are ignored), copy failures now surface as errors instead of fake success, the app updates where it runs from instead of always writing <code>/Applications</code>, and relaunch goes through <code>NSWorkspace</code>.</li>
+            <li><strong>Update recovery prompt:</strong> On launch the app scans <code>/Applications</code> for stray leftovers, broken copies, and split installs, then shows Finder-based step-by-step repair with a reinstall-from-running-copy button. A manual "Update health" check lives in Settings About. Nothing is ever auto-deleted.</li>
+            <li><strong>Switch heal after downgrade:</strong> Launching an older build used to wipe Switch classification columns; stale rows are now reclassified at launch.</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Detailed Changes</h2>
+        <ul>
+            <li>Updater — unique staging dir, exact-name bundle pick with <code>CFBundleIdentifier</code> and executable validation, exit-code checks on <code>ditto</code>/<code>hdiutil</code>, install at running location, <code>NSWorkspace</code> relaunch (fixes #40)</li>
+            <li>Recovery — <code>RecoveryPromptView</code> with Finder-only repair, reinstall from running copy, startup hook, Settings About health check, <code>update.recovery.*</code> strings in 4 languages</li>
+            <li>Switch — heal stale classification rows at launch after a version downgrade</li>
+            <li>Bump marketing version to 1.15.2 and build number to 40 across <code>project.yml</code>, both <code>Info.plist</code>s, and <code>docs/_config.yml</code>.</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/changelog/v1.15.1.html' | relative_url }}" class="release-prev">&larr; v1.15.1</a>
+        <a href="{{ '/changelog.html' | relative_url }}" class="release-all">All Releases</a>
+    </nav>
+</div>
