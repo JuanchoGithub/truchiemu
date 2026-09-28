@@ -35,11 +35,18 @@ final class SuyuCoreContentService {
         }
         let resolved = corePath ?? Self.probeCorePath()
         guard let core = resolved,
-              FileManager.default.fileExists(atPath: core),
-              let keys = Self.prodKeysPath() else { return }
+              FileManager.default.fileExists(atPath: core) else {
+            LoggerService.info(category: "SuyuCore", "Bridge unavailable: no suyu core installed")
+            return
+        }
+        guard let keys = Self.prodKeysPath() else {
+            LoggerService.info(category: "SuyuCore", "Bridge unavailable: no prod.keys found")
+            return
+        }
         let ok = await Task.detached(priority: .utility) {
             SuyuContentBridge.shared().ensureReady(withCorePath: core, keysPath: keys)
         }.value
+        LoggerService.info(category: "SuyuCore", "Bridge warmUp \(ok ? "ready" : "FAILED") (core: \(core))")
         if ok {
             lock.withLock { warmed = true }
         }
@@ -52,7 +59,12 @@ final class SuyuCoreContentService {
         let bridge = SuyuContentBridge.shared()
         guard bridge.isReady else { return nil }
         guard let dict = bridge.identifyFile(atPath: url.path, isXCI: isXCI),
-              let title = dict["titleID"] as? String, !title.isEmpty else { return nil }
+              let title = dict["titleID"] as? String, !title.isEmpty else {
+            if let reason = bridge.lastFailure {
+                LoggerService.info(category: "SuyuCore", "Core identify failed for \(url.lastPathComponent): \(reason)")
+            }
+            return nil
+        }
         let programs = (dict["programIDs"] as? [String]) ?? []
         return SuyuCoreContentResult(titleID: title, programIDs: programs)
     }

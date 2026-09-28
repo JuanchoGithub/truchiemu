@@ -87,6 +87,7 @@ std::string Hex16(unsigned long long v) {
     void *_handle;
     bool _symbolsOK;
     bool _keysOK;
+    NSString *_lastFailure;
     // Resolved symbols.
     FnKeyManagerC1 _keyC1;
     FnKeyManagerLoad _keyLoad;
@@ -129,6 +130,15 @@ std::string Hex16(unsigned long long v) {
 - (BOOL)ready {
     std::lock_guard<std::mutex> lock(_mutex);
     return _symbolsOK && _keysOK && _vfs != nullptr;
+}
+
+- (nullable NSString *)lastFailure {
+    std::lock_guard<std::mutex> lock(_mutex);
+    return _lastFailure;
+}
+
+- (void)setFailure:(const char *)reason {
+    _lastFailure = reason ? @(reason) : nil;
 }
 
 template <typename T>
@@ -216,6 +226,7 @@ static T Resolve(void *handle, const char *name) {
         std::string_view sv(path.UTF8String);
         VFile file = _openFile(_vfs, sv, kOpenModeRead);
         if (!file) {
+            [self setFailure:"open-failed"];
             return nil;
         }
         if (isXCI) {
@@ -230,8 +241,10 @@ static T Resolve(void *handle, const char *name) {
             }
             _xciD1(xci);
             if (tid == 0) {
+                [self setFailure:"xci-no-title"];
                 return nil;
             }
+            [self setFailure:nullptr];
             return @{
                 @"titleID": @(Hex16(tid).c_str()),
                 @"programIDs": @[ @(Hex16(tid).c_str()) ],
@@ -275,6 +288,9 @@ static T Resolve(void *handle, const char *name) {
             }
             _nspD1(nsp);
             if (status != 0) {
+                char buf[32];
+                snprintf(buf, sizeof(buf), "nsp-status-%d", status);
+                [self setFailure:buf];
                 return nil;
             }
             NSMutableArray *progStrs = [NSMutableArray array];
@@ -283,8 +299,10 @@ static T Resolve(void *handle, const char *name) {
             }
             NSString *primary = metaTitle ?: progStrs.firstObject;
             if (!primary) {
+                [self setFailure:"no-program-ids"];
                 return nil;
             }
+            [self setFailure:nullptr];
             return @{
                 @"titleID": primary,
                 @"programIDs": progStrs,
@@ -292,6 +310,7 @@ static T Resolve(void *handle, const char *name) {
             };
         }
     } @catch (...) {
+        [self setFailure:"exception"];
         return nil;
     }
 }

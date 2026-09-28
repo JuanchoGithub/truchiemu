@@ -118,6 +118,42 @@ class ROMLibrary: ObservableObject {
         guard let idx = romIndexByID[id], roms.indices.contains(idx) else { return nil }
         return roms[idx]
     }
+
+    // Repairs Switch rows missing classification (nil content type or title).
+    // Happens when an older build opened a newer store and its migration
+    // dropped the switch columns, or rows predate classification. Runs the
+    // same identifier as the scan pipeline, off the main thread, and saves
+    // only healed rows. Skips while a scan runs (automation heals there).
+    func healSwitchClassificationIfNeeded() async {
+        guard !isScanning else { return }
+        let stale = roms.filter {
+            $0.systemID == "switch" && ($0.switchContentType == nil || $0.switchTitleID == nil)
+        }
+        guard !stale.isEmpty else { return }
+        await SuyuCoreContentService.shared.warmUp()
+        let healed = await Task.detached(priority: .utility) {
+            stale.map { rom -> ROM in
+                var copy = rom
+                SwitchContentIdentifier.apply(to: &copy)
+                return copy
+            }
+        }.value
+        var healedIDs: [UUID] = []
+        for classified in healed {
+            guard let idx = romIndexByID[classified.id],
+                  roms.indices.contains(idx) else { continue }
+            roms[idx].switchTitleID = classified.switchTitleID
+            roms[idx].switchBaseTitleID = classified.switchBaseTitleID
+            roms[idx].switchContentType = classified.switchContentType
+            roms[idx].switchVersion = classified.switchVersion
+            roms[idx].category = classified.category
+            healedIDs.append(classified.id)
+        }
+        guard !healedIDs.isEmpty else { return }
+        saveROMsToDatabase(only: healedIDs)
+        updateCounts()
+        LoggerService.info(category: "ROMLibrary", "Healed Switch classification for \(healedIDs.count) ROMs at launch")
+    }
     @Published var isScanning: Bool = false
     @Published var scanProgress: Double = 0
     private let scanCancellationToken = ScanCancellationToken()
@@ -1260,6 +1296,11 @@ let idsToPurge = orphans.map { $0.id }
         Task { @MainActor in
             StableIdentityMigration.runIfNeeded(library: self)
         }
+
+        // Repair Switch rows left without classification (e.g. an older
+        // build downgrade-migrated the store and dropped the switch
+        // columns). Classifies off-main, applies on Main. No-op when clean.
+        Task { await self.healSwitchClassificationIfNeeded() }
 
         Task { @MainActor in
             // Eagerly pre-generate on-disk thumbnails for the existing library

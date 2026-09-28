@@ -16,6 +16,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly, getter=isReady) BOOL ready;
 
+// Machine-readable reason for the last identify failure (or setup
+// failure): open-failed, nsp-status-N, no-meta-nca, xci-no-title,
+// no-program-ids, exception. Nil when the last call succeeded.
+@property (nonatomic, readonly, nullable) NSString *lastFailure;
+
 // Identify one file. isXCI selects the XCI vs NSP parser.
 // Returns nil on any failure. Otherwise:
 //   @"titleID"    - 16-hex-digit NSString (primary: first Meta NCA for NSP,
