@@ -1,3 +1,4 @@
+import AppKit
 import Foundation
 
 private enum updateLog {
@@ -225,24 +226,79 @@ final class AppUpdateService: ObservableObject {
         downloadContinuation?.resume(throwing: error)
     }
 
-    private func runProcess(executable: String, arguments: [String]) throws {
+    private func runProcess(executable: String, arguments: [String]) throws -> Int32 {
         let process = Process()
         process.executableURL = URL(fileURLWithPath: executable)
         process.arguments = arguments
         try process.run()
         process.waitUntilExit()
+        return process.terminationStatus
+    }
+
+    private func updateError(_ message: String) -> Error {
+        NSError(domain: "AppUpdate", code: 1, userInfo: [NSLocalizedDescriptionKey: message])
     }
 
     private func installFromZip(at zipURL: URL) throws -> URL? {
-        try runProcess(executable: "/usr/bin/ditto", arguments: ["-x", "-k", zipURL.path, zipURL.deletingLastPathComponent().path])
+        // Extract into our own staging folder. Never scan the shared temp
+        // root: it holds WebKit data folders that end with ".app".
+        let stagingDir = FileManager.default.temporaryDirectory
+            .appendingPathComponent("TruchiEmu-update-" + UUID().uuidString)
+        try FileManager.default.createDirectory(at: stagingDir, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: stagingDir) }
 
-        let extractedDir = zipURL.deletingLastPathComponent()
-        guard let appURL = try FileManager.default.contentsOfDirectory(at: extractedDir, includingPropertiesForKeys: nil)
-            .first(where: { $0.pathExtension == "app" }) else {
-            NSWorkspace.shared.open(extractedDir)
+        let dittoStatus = try runProcess(executable: "/usr/bin/ditto", arguments: ["-x", "-k", zipURL.path, stagingDir.path])
+        guard dittoStatus == 0 else {
+            throw updateError("Unzip failed with exit code \(dittoStatus)")
+        }
+
+        guard let appURL = findAppBundle(in: stagingDir) else {
+            updateLog.warning("No valid TruchiEmu.app found in update archive")
             return nil
         }
         return try installApp(at: appURL)
+    }
+
+    /// Finds `TruchiEmu.app` under `directory` and checks it is a real bundle.
+    /// Ignores decoy folders such as `com.TruchiEmu.app` (WebKit data).
+    private func findAppBundle(in directory: URL) -> URL? {
+        guard let enumerator = FileManager.default.enumerator(
+            at: directory,
+            includingPropertiesForKeys: [.isDirectoryKey],
+            options: [.skipsHiddenFiles]
+        ) else { return nil }
+        for case let url as URL in enumerator {
+            guard url.lastPathComponent == "TruchiEmu.app" else { continue }
+            enumerator.skipDescendants()
+            if validatedAppBundle(at: url) {
+                return url
+            }
+            updateLog.warning("Skipping invalid bundle at \(url.path)")
+        }
+        return nil
+    }
+
+    nonisolated private func validatedAppBundle(at url: URL) -> Bool {
+        let fileManager = FileManager.default
+        var isDirectory: ObjCBool = false
+        guard fileManager.fileExists(atPath: url.path, isDirectory: &isDirectory), isDirectory.boolValue else {
+            return false
+        }
+        let infoURL = url.appendingPathComponent("Contents/Info.plist")
+        guard let data = try? Data(contentsOf: infoURL),
+              let plist = try? PropertyListSerialization.propertyList(from: data, options: [], format: nil) as? [String: Any],
+              (plist["CFBundleIdentifier"] as? String) == "com.TruchiEmu.app" else {
+            return false
+        }
+        let executableName = (plist["CFBundleExecutable"] as? String) ?? url.deletingPathExtension().lastPathComponent
+        var isExecutableDirectory: ObjCBool = false
+        guard fileManager.fileExists(
+            atPath: url.appendingPathComponent("Contents/MacOS/\(executableName)").path,
+            isDirectory: &isExecutableDirectory
+        ), !isExecutableDirectory.boolValue else {
+            return false
+        }
+        return true
     }
 
     private func installFromDMG(at dmgURL: URL) throws -> URL? {
@@ -253,6 +309,9 @@ final class AppUpdateService: ObservableObject {
         mountTask.standardOutput = pipe
         try mountTask.run()
         mountTask.waitUntilExit()
+        guard mountTask.terminationStatus == 0 else {
+            throw updateError("hdiutil attach failed with exit code \(mountTask.terminationStatus)")
+        }
 
         let data = pipe.fileHandleForReading.readDataToEndOfFile()
         guard let propertyList = try PropertyListSerialization.propertyList(from: data, options: [], format: nil) as? [[String: Any]] else {
@@ -263,26 +322,51 @@ final class AppUpdateService: ObservableObject {
         }
 
         defer {
-            try? runProcess(executable: "/usr/bin/hdiutil", arguments: ["detach", "-quiet", mountPoint])
+            let detachStatus = try? runProcess(executable: "/usr/bin/hdiutil", arguments: ["detach", "-quiet", mountPoint])
+            if detachStatus != 0 {
+                updateLog.warning("hdiutil detach failed with exit code \(detachStatus ?? -1)")
+            }
         }
 
         let mountURL = URL(fileURLWithPath: mountPoint)
-        guard let appURL = try FileManager.default.contentsOfDirectory(at: mountURL, includingPropertiesForKeys: nil)
-            .first(where: { $0.pathExtension == "app" }) else { return nil }
+        guard let appURL = findAppBundle(in: mountURL) else { return nil }
         let stagingDir = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         try FileManager.default.createDirectory(at: stagingDir, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: stagingDir) }
         let stagingApp = stagingDir.appendingPathComponent(appURL.lastPathComponent)
-        try runProcess(executable: "/usr/bin/ditto", arguments: [appURL.path, stagingApp.path])
+        let dittoStatus = try runProcess(executable: "/usr/bin/ditto", arguments: [appURL.path, stagingApp.path])
+        guard dittoStatus == 0 else {
+            throw updateError("Staging copy failed with exit code \(dittoStatus)")
+        }
         return try installApp(at: stagingApp)
     }
 
     private func installApp(at sourceAppURL: URL) throws -> URL {
-        let dest = URL(fileURLWithPath: "/Applications/\(sourceAppURL.lastPathComponent)")
+        // Update where the app runs from. A fixed /Applications path leaves
+        // a stale copy behind when the app runs from Downloads or Desktop.
+        let bundlePath = Bundle.main.bundlePath
+        let isDevBuild = bundlePath.contains("DerivedData") || bundlePath.contains("Xcode.app")
+        let dest: URL
+        if isDevBuild {
+            dest = URL(fileURLWithPath: "/Applications/\(sourceAppURL.lastPathComponent)")
+        } else {
+            dest = Bundle.main.bundleURL.deletingLastPathComponent()
+                .appendingPathComponent(sourceAppURL.lastPathComponent)
+            if !dest.path.hasPrefix("/Applications/") {
+                updateLog.warning("App runs outside /Applications (\(bundlePath)); updating in place at \(dest.path)")
+            }
+        }
         if FileManager.default.fileExists(atPath: dest.path) {
             try? FileManager.default.removeItem(at: dest)
         }
-        try runProcess(executable: "/usr/bin/ditto", arguments: [sourceAppURL.path, dest.path])
-        try? runProcess(executable: "/usr/bin/xattr", arguments: ["-cr", dest.path])
+        let dittoStatus = try runProcess(executable: "/usr/bin/ditto", arguments: [sourceAppURL.path, dest.path])
+        guard dittoStatus == 0 else {
+            throw updateError("Install copy failed with exit code \(dittoStatus)")
+        }
+        let xattrStatus = try runProcess(executable: "/usr/bin/xattr", arguments: ["-cr", dest.path])
+        if xattrStatus != 0 {
+            updateLog.warning("xattr -cr failed with exit code \(xattrStatus)")
+        }
         updateLog.info("Installed to \(dest.path)")
         return dest
     }
@@ -290,13 +374,13 @@ final class AppUpdateService: ObservableObject {
     private func relaunchAfterUpdate(at appURL: URL) {
         updateLog.info("Relaunching from \(appURL.path)")
         AppSettings.flush()
-        let bundleURL = appURL
-        let executableName = bundleURL.deletingPathExtension().lastPathComponent
-        let executableURL = bundleURL.appendingPathComponent("Contents/MacOS/\(executableName)")
-        let process = Process()
-        process.executableURL = executableURL
-        process.arguments = []
-        try? process.run()
+        let configuration = NSWorkspace.OpenConfiguration()
+        configuration.createsNewApplicationInstance = true
+        NSWorkspace.shared.openApplication(at: appURL, configuration: configuration) { _, error in
+            if let error {
+                updateLog.warning("Relaunch failed: \(error.localizedDescription)")
+            }
+        }
         DispatchQueue.main.async {
             NSApplication.shared.terminate(nil)
         }
@@ -305,6 +389,108 @@ final class AppUpdateService: ObservableObject {
     func openReleasesPage() {
         guard let url = URL(string: changelogURL) else { return }
         NSWorkspace.shared.open(url)
+    }
+
+    // MARK: - Update Health (issue #40 recovery)
+
+    /// Result of the broken-update scan. Only `/Applications` is scanned.
+    /// Never auto-deletes; the UI only offers Show in Finder.
+    struct UpdateHealthReport {
+        var strayPaths: [String] = []
+        var brokenMainCopyPath: String?
+        var splitRunningPath: String?
+        var splitInstalledPath: String?
+        var splitRunningVersion: String?
+        var splitInstalledVersion: String?
+
+        var needsAttention: Bool {
+            !strayPaths.isEmpty || brokenMainCopyPath != nil || splitInstalledPath != nil
+        }
+
+        /// Stable signature so Dismiss persists per finding, not globally.
+        var signature: String {
+            (strayPaths.sorted() + [brokenMainCopyPath, splitInstalledPath, splitRunningVersion, splitInstalledVersion].compactMap { $0 }).joined(separator: "|")
+        }
+    }
+
+    nonisolated func detectUpdateHealth() -> UpdateHealthReport {
+        var report = UpdateHealthReport()
+        let fileManager = FileManager.default
+        let applicationsDir = URL(fileURLWithPath: "/Applications")
+        guard let entries = try? fileManager.contentsOfDirectory(at: applicationsDir, includingPropertiesForKeys: nil) else {
+            return report
+        }
+        for entry in entries {
+            let name = entry.lastPathComponent
+            let isStrayName = name == "com.TruchiEmu.app"
+                || (name.hasPrefix("com.apple.WebKit.") && name.hasSuffix("+com.TruchiEmu.app"))
+            if isStrayName, !validatedAppBundle(at: entry) {
+                report.strayPaths.append(entry.path)
+                updateLog.warning("Stray update leftover in /Applications: \(entry.path)")
+            }
+        }
+        let mainCopy = applicationsDir.appendingPathComponent("TruchiEmu.app")
+        if fileManager.fileExists(atPath: mainCopy.path), !validatedAppBundle(at: mainCopy) {
+            report.brokenMainCopyPath = mainCopy.path
+            updateLog.warning("Broken TruchiEmu.app in /Applications: \(mainCopy.path)")
+        }
+        let bundlePath = Bundle.main.bundlePath
+        let isDevBuild = bundlePath.contains("DerivedData") || bundlePath.contains("Xcode.app")
+        if !isDevBuild, !bundlePath.hasPrefix("/Applications/"), validatedAppBundle(at: mainCopy) {
+            let installedVersion = bundleVersion(at: mainCopy) ?? "?"
+            if installedVersion != AppVersion.current {
+                report.splitRunningPath = bundlePath
+                report.splitInstalledPath = mainCopy.path
+                report.splitRunningVersion = AppVersion.current
+                report.splitInstalledVersion = installedVersion
+                updateLog.warning("Split install: running \(AppVersion.current) from \(bundlePath), /Applications has \(installedVersion)")
+            }
+        }
+        return report
+    }
+
+    nonisolated private func bundleVersion(at appURL: URL) -> String? {
+        guard let data = try? Data(contentsOf: appURL.appendingPathComponent("Contents/Info.plist")),
+              let plist = try? PropertyListSerialization.propertyList(from: data, options: [], format: nil) as? [String: Any] else {
+            return nil
+        }
+        return plist["CFBundleShortVersionString"] as? String
+    }
+
+    func shouldShowRecovery(for report: UpdateHealthReport) -> Bool {
+        guard report.needsAttention, !report.signature.isEmpty else { return false }
+        return AppSettings.getString("recoveryDismissedSignature", defaultValue: "") != report.signature
+    }
+
+    func dismissRecovery(for report: UpdateHealthReport) {
+        AppSettings.setString("recoveryDismissedSignature", value: report.signature)
+    }
+
+    /// Copies the running bundle to `/Applications/TruchiEmu.app`.
+    /// Used by the recovery prompt for the broken-copy and split-install cases.
+    func reinstallFromRunningCopy() async throws -> URL {
+        let source = Bundle.main.bundleURL
+        guard validatedAppBundle(at: source) else {
+            throw updateError("Running copy is not a valid bundle")
+        }
+        let dest = URL(fileURLWithPath: "/Applications/TruchiEmu.app")
+        if FileManager.default.fileExists(atPath: dest.path) {
+            try? FileManager.default.removeItem(at: dest)
+        }
+        updateLog.info("Reinstalling running copy to \(dest.path)")
+        let dittoStatus = try runProcess(executable: "/usr/bin/ditto", arguments: [source.path, dest.path])
+        guard dittoStatus == 0 else {
+            throw updateError("Reinstall copy failed with exit code \(dittoStatus)")
+        }
+        guard validatedAppBundle(at: dest) else {
+            throw updateError("Reinstalled copy failed validation")
+        }
+        let xattrStatus = try runProcess(executable: "/usr/bin/xattr", arguments: ["-cr", dest.path])
+        if xattrStatus != 0 {
+            updateLog.warning("xattr -cr failed with exit code \(xattrStatus)")
+        }
+        updateLog.info("Reinstalled to \(dest.path)")
+        return dest
     }
 
     func shouldAutoCheck() -> Bool {

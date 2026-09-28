@@ -44,6 +44,7 @@
 		065DD05DB8027DE68DCAEA5B /* mame2003_plus_libretro_default.json in Resources */ = {isa = PBXBuildFile; fileRef = 91AFAA29AB15660C5C099AEB /* mame2003_plus_libretro_default.json */; };
 		0666565C627C660C02FEC1EF /* SDLControllerMapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E6AF76D7552E90F0C9FEAD1 /* SDLControllerMapping.swift */; };
 		0680F2C5DEAC96D48B0B789F /* fightdata_sfiii3.json in Resources */ = {isa = PBXBuildFile; fileRef = 5C1D28A37D8DCC9C22D318D0 /* fightdata_sfiii3.json */; };
+		06D1EB3165057CB5840826EC /* RecoveryPromptView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 383484A8BBBE771841E50971 /* RecoveryPromptView.swift */; };
 		070FA872D7AF5DCF634D99F0 /* input_coreLabels_picodrive.json in Resources */ = {isa = PBXBuildFile; fileRef = 250932A8207064590D7802DC /* input_coreLabels_picodrive.json */; };
 		07162B9B8CCB6C91E4FE8697 /* intellivision-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = 7DBEB5C0B592088AD4E07DEF /* intellivision-cheats.zip */; };
 		071BE304A3EEFDA17AAFB3D4 /* LibraryBackupService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1432F9680D00AB51A7B817C8 /* LibraryBackupService.swift */; };
@@ -1714,6 +1715,7 @@
 		37C93683DE17C73F5933064B /* holo_illusion2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = holo_illusion2.png; sourceTree = "<group>"; };
 		3808F4606AB93A4AE90A030F /* LibretroBridgeImpl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LibretroBridgeImpl.h; sourceTree = "<group>"; };
 		380B3A9A0CDC45FD5FE88630 /* Sega - Dreamcast.dat */ = {isa = PBXFileReference; path = "Sega - Dreamcast.dat"; sourceTree = "<group>"; };
+		383484A8BBBE771841E50971 /* RecoveryPromptView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoveryPromptView.swift; sourceTree = "<group>"; };
 		38D9797E060F13CE08CCB254 /* fightdata_aof.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_aof.json; sourceTree = "<group>"; };
 		3923EC666D7D2EBA025850F5 /* DATPrepopulationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DATPrepopulationService.swift; sourceTree = "<group>"; };
 		39463E20150756E0CA0D4DFA /* tic80-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "tic80-cheats.zip"; sourceTree = "<group>"; };
@@ -4722,6 +4724,7 @@
 				D49D5412E3B0292CF1A549EC /* MoveEditorView.swift */,
 				3BC92E3E97A6564FD5EE72BC /* MoveListSettingsView.swift */,
 				A3B40C7C6A8813B47954412E /* PerSystemSettingsView.swift */,
+				383484A8BBBE771841E50971 /* RecoveryPromptView.swift */,
 				D7870FCC07B8464EA6562D4B /* ResetSettingsView.swift */,
 				335FB3D776E0D41A27C64844 /* RetroAchievementsSettingsView.swift */,
 				E3BFA1246A6786356AD01A21 /* SaveManagerView.swift */,
@@ -6472,6 +6475,7 @@
 				FDB673FBF6AA9921EDFA3337 /* RcheevosWrapper.c in Sources */,
 				39BBB51DD676ABF50F2A4653 /* RecordingBadgeOverlay.swift in Sources */,
 				3B7605901537797C0FC9556D /* RecordingTabView.swift in Sources */,
+				06D1EB3165057CB5840826EC /* RecoveryPromptView.swift in Sources */,
 				44A923C96B0F6884DD50D096 /* ResetSettingsView.swift in Sources */,
 				28369A531757A82F734AA1E0 /* ResourceCacheInterceptor.swift in Sources */,
 				F2903EDB7DD894827E44208C /* ResourceCacheModels.swift in Sources */,

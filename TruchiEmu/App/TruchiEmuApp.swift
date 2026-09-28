@@ -582,6 +582,7 @@ struct ContentWithPrepopulationView: View {
   @State private var showInstallDrag = false
   @State private var startupUpdateCheckComplete: Bool
   @State private var showAppUpdateMode: Bool = false
+  @State private var recoveryReport: AppUpdateService.UpdateHealthReport?
   @ObservedObject private var loc = LocalizationManager.shared
   @ObservedObject private var updateService = AppUpdateService.shared
   @EnvironmentObject var library: ROMLibrary
@@ -627,6 +628,10 @@ struct ContentWithPrepopulationView: View {
                     .onReceive(NotificationCenter.default.publisher(for: .installDragCompleted)) { _ in
                         showInstallDrag = false
                     }
+            } else if let recovery = recoveryReport {
+                RecoveryPromptView(report: recovery) {
+                    recoveryReport = nil
+                }
             } else if !startupUpdateCheckComplete || needsLoading {
                 ProgressView(loc.localized("app.initializingDatabase"))
                     .frame(width: 200)
@@ -643,6 +648,10 @@ struct ContentWithPrepopulationView: View {
             }
         }
         .task {
+            let health = AppUpdateService.shared.detectUpdateHealth()
+            if await AppUpdateService.shared.shouldShowRecovery(for: health) {
+                recoveryReport = health
+            }
             guard !startupUpdateCheckComplete else { return }
             if let release = await AppUpdateService.shared.checkForUpdates() {
                 updateService.pendingStartupUpdate = release

@@ -9,6 +9,9 @@ struct AboutView: View {
     @State private var showWhatsNew = false
     @State private var isCheckingUpdates = false
     @State private var upToDateMessage: String?
+    @State private var healthReport: AppUpdateService.UpdateHealthReport?
+    @State private var showHealthSheet = false
+    @State private var healthMessage: String?
     @Binding var focusedSectionID: String?
     @Binding var scopedSectionID: String?
 
@@ -110,6 +113,35 @@ struct AboutView: View {
                 Label(loc.localized("update.checkManually"), systemImage: "safari")
                     .font(.caption)
                     .foregroundStyle(AppColors.brandAccent)
+            }
+        }
+
+        HStack(spacing: AppSpacing.sm) {
+            SettingsActionButton(loc.localized("update.recovery.checkHealth"), systemImage: "wrench.and.screwdriver") {
+                let report = AppUpdateService.shared.detectUpdateHealth()
+                if report.needsAttention {
+                    healthReport = report
+                    healthMessage = nil
+                    showHealthSheet = true
+                } else {
+                    healthMessage = loc.localized("update.recovery.healthy")
+                }
+            }
+            if let health = healthMessage {
+                HStack(spacing: AppSpacing.xs) {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundStyle(.green)
+                    Text(health)
+                        .font(.caption)
+                        .foregroundStyle(AppColors.textSecondary(colorScheme))
+                }
+            }
+        }
+        .sheet(isPresented: $showHealthSheet) {
+            if let report = healthReport {
+                RecoveryPromptView(report: report) {
+                    showHealthSheet = false
+                }
             }
         }
 
