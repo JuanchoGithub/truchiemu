@@ -333,6 +333,13 @@ actor ROMScanner {
             if rom.mameRomType == nil { return [] }
         }
 
+        // Switch: classify base vs update vs DLC so updates/DLC group
+        // under the base game instead of showing as separate games.
+        if system.id == "switch" {
+            await SuyuCoreContentService.shared.warmUp()
+            SwitchContentIdentifier.apply(to: &rom)
+        }
+
         let folder = url.deletingLastPathComponent()
         rom.metadata = xmlCache[folder]?[url.lastPathComponent]
         if let crcFromMeta = rom.metadata?.crc32 { rom.crc32 = crcFromMeta }

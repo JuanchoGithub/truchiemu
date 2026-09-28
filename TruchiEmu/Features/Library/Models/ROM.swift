@@ -31,6 +31,16 @@ struct ROM: Identifiable, Codable, Hashable, Sendable {
     // No-Intro / identification CRC32 (hex), persisted in library metadata file.
     var crc32: String?
     var md5: String?
+    // Switch content classification (suyu): base game, update, or DLC.
+    // Nil for non-Switch systems or unclassified files. Updates and DLC
+    // share switchBaseTitleID with their base game for library grouping.
+    var switchTitleID: String?
+    var switchBaseTitleID: String?
+    // Raw value of SwitchContentType ("base", "update", "dlc", "unknown").
+    var switchContentType: String?
+    var switchVersion: Int?
+    // User toggle for Switch updates/DLC in the game detail view.
+    var switchEnabled: Bool = true
     // Stable identity across database loss and re-add. The random `id`
     // changes on every re-scan; this key (hash first, filename stem as
     // fallback) does not. Nil for ROMs created before this field existed.
@@ -268,6 +278,41 @@ struct ROM: Identifiable, Codable, Hashable, Sendable {
     // Legacy save-state key ("<displayName>__<uuid8>"). Read fallback only.
     var legacyStateKey: String {
         StableGameIdentity.legacyKey(displayName: displayName, id: id)
+    }
+
+    // MARK: - Switch Content Grouping
+
+    // True for Switch update or DLC files. The library grid hides these;
+    // the base game's detail view lists them instead.
+    var isSwitchAddOn: Bool {
+        systemID == "switch" && (switchContentType == "update" || switchContentType == "dlc")
+    }
+
+    // Group key for Switch add-ons: base TitleID when known, else the
+    // file stem so unclassified files never merge by accident.
+    var switchGroupKey: String? {
+        guard systemID == "switch" else { return nil }
+        if let base = switchBaseTitleID, !base.isEmpty { return base }
+        return nil
+    }
+
+    // Grid visibility given the full library. Grouped updates/DLC stay
+    // out of the grid; orphans (no base found) stay visible so the user
+    // can still manage them. Hot paths should precompute
+    // SwitchContentIdentifier.addOnGroups once instead of calling this.
+    func isGridVisible(in roms: [ROM]) -> Bool {
+        if isHidden { return false }
+        guard isSwitchAddOn else { return true }
+        return groupingBase(in: roms) == nil
+    }
+
+    // Finds the base game this Switch add-on belongs to, if present.
+    // Correct but O(N); hot paths should use addOnGroups batching.
+    func groupingBase(in roms: [ROM]) -> ROM? {
+        guard isSwitchAddOn else { return nil }
+        let groups = SwitchContentIdentifier.addOnGroups(in: roms)
+        guard let match = groups[id] else { return nil }
+        return roms.first(where: { $0.id == match })
     }
 
     // Save-state read candidates. Writes use `primary`. Reads try `primary`

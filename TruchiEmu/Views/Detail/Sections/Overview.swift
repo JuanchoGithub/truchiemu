@@ -11,6 +11,8 @@ extension GameDetailView {
 
             infoGrid
 
+            switchAddOnsCard
+
             playtimeCard
 
             howLongToBeatCard
@@ -140,6 +142,71 @@ extension GameDetailView {
                 .foregroundColor(AppColors.textPrimary(colorScheme))
                 .lineLimit(2)
                 .fixedSize(horizontal: false, vertical: true)
+        }
+    }
+
+    // MARK: - Switch updates & DLC
+
+    // Add-ons grouped under the shown game (one batch pass via
+    // SwitchContentIdentifier.addOnGroups). Each row has an enable toggle;
+    // disabled files stay in the library but are ignored.
+    private var switchAddOns: [ROM] {
+        guard currentROM.systemID == "switch", !currentROM.isSwitchAddOn else { return [] }
+        // Single batch pass: per-ROM matching here is O(N^2) and hangs.
+        let groups = SwitchContentIdentifier.addOnGroups(in: library.roms)
+        return library.roms.filter { groups[$0.id] == currentROM.id }
+            .sorted {
+                ($0.switchContentType ?? "") < ($1.switchContentType ?? "")
+                    || ($0.switchVersion ?? 0) < ($1.switchVersion ?? 0)
+            }
+    }
+
+    @ViewBuilder
+    private var switchAddOnsCard: some View {
+        if !switchAddOns.isEmpty {
+            ModernSectionCard(
+                title: loc.localized("gameDetail.switchAddOns"),
+                icon: "puzzlepiece.extension"
+            ) {
+                VStack(alignment: .leading, spacing: AppSpacing.sm) {
+                    ForEach(switchAddOns) { addOn in
+                        HStack(spacing: 8) {
+                            Text(addOn.switchContentType == "dlc"
+                                ? loc.localized("gameDetail.switchDlc")
+                                : loc.localized("gameDetail.switchUpdate"))
+                                .font(.caption2)
+                                .fontWeight(.bold)
+                                .foregroundColor(AppColors.textOnAccent(colorScheme))
+                                .padding(.horizontal, 6)
+                                .padding(.vertical, 2)
+                                .background(AppColors.brandAccent)
+                                .clipShape(Capsule())
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(addOn.path.lastPathComponent)
+                                    .font(.subheadline)
+                                    .foregroundColor(AppColors.textPrimary(colorScheme))
+                                    .lineLimit(1)
+                                if let version = addOn.switchVersion {
+                                    Text("v\(version)")
+                                        .font(.caption)
+                                        .foregroundColor(AppColors.textSecondary(colorScheme))
+                                }
+                            }
+                            Spacer()
+                            Toggle("", isOn: Binding(
+                                get: { addOn.switchEnabled },
+                                set: { newValue in
+                                    var updated = addOn
+                                    updated.switchEnabled = newValue
+                                    library.updateROM(updated)
+                                }
+                            ))
+                            .labelsHidden()
+                            .toggleStyle(.switch)
+                        }
+                    }
+                }
+            }
         }
     }
 

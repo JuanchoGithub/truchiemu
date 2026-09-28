@@ -101,7 +101,23 @@ class ROMLibrary: ObservableObject {
 
     // MARK: - Published Properties
 
-    @Published var roms: [ROM] = []
+    // Full library. Reads must use rom(withID:) — linear scans of this
+    // array (2100+ heavy ROM structs with ARC copy storms) hung the game
+    // detail window for seconds. The index rebuilds on every mutation.
+    @Published var roms: [ROM] = [] {
+        didSet {
+            romIndexByID = Dictionary(uniqueKeysWithValues: roms.enumerated().map { ($0.element.id, $0.offset) })
+        }
+    }
+
+    // O(1) row lookup by ID. Bounds-checked against concurrent mutation.
+    private var romIndexByID: [UUID: Int] = [:]
+
+    // O(1) replacement for roms.first(where: { $0.id == ... }).
+    func rom(withID id: UUID) -> ROM? {
+        guard let idx = romIndexByID[id], roms.indices.contains(idx) else { return nil }
+        return roms[idx]
+    }
     @Published var isScanning: Bool = false
     @Published var scanProgress: Double = 0
     private let scanCancellationToken = ScanCancellationToken()
@@ -305,16 +321,22 @@ let idsToPurge = orphans.map { $0.id }
 
 
     func updateCounts() {
+        // Switch updates/DLC group under their base game. One batch pass.
+        let switchGroups = SwitchContentIdentifier.addOnGroups(in: roms)
+        func isCounted(_ rom: ROM) -> Bool {
+            if rom.isHidden { return false }
+            return !(rom.isSwitchAddOn && switchGroups[rom.id] != nil)
+        }
         var counts: [String: Int] = [:]
-        counts["all"] = roms.filter { !$0.isHidden }.count
-        counts["favorites"] = roms.filter { $0.isFavorite && !$0.isHidden }.count
-        counts["recent"] = roms.filter { $0.lastPlayed != nil && !$0.isHidden }.count
+        counts["all"] = roms.filter { isCounted($0) }.count
+        counts["favorites"] = roms.filter { $0.isFavorite && isCounted($0) }.count
+        counts["recent"] = roms.filter { $0.lastPlayed != nil && isCounted($0) }.count
         counts["hidden"] = roms.filter { $0.isHidden }.count
         counts["mameNonGames"] = roms.filter { $0.systemID == "mame" && $0.mameRomType != nil && $0.mameRomType != "game" }.count
 
         let grouped = Dictionary(grouping: roms) { $0.systemID ?? "unknown" }
         for (sysID, list) in grouped {
-            var visible = list.filter { !$0.isHidden }
+            var visible = list.filter { isCounted($0) }
             if sysID == "mame" { visible = visible.filter { $0.mameRomType == "game" || $0.mameRomType == nil } }
             counts[sysID] = visible.count
         }
@@ -334,7 +356,12 @@ let idsToPurge = orphans.map { $0.id }
 
         var counts: [String: Int] = folderSet.reduce(into: [String: Int]()) { $0[$1] = 0 }
 
-        for rom in roms where !rom.isHidden {
+        let switchGroups = SwitchContentIdentifier.addOnGroups(in: roms)
+        func isFolderCounted(_ rom: ROM) -> Bool {
+            if rom.isHidden { return false }
+            return !(rom.isSwitchAddOn && switchGroups[rom.id] != nil)
+        }
+        for rom in roms where isFolderCounted(rom) {
             let romPath = rom.path.path
             // Try exact match first (ROM path equals folder path itself)
             if folderSet.contains(romPath) {

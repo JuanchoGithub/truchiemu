@@ -137,6 +137,14 @@ func launchGame(
         completion: ((StandaloneGameWindowController?) -> Void)? = nil
 ) async {
  var rom = inputROM
+ // Switch updates/DLC are not launchable on their own: suyu applies them
+ // from NAND when the base game boots. Redirect to the base game.
+        if rom.isSwitchAddOn {
+            LoggerService.info(category: "GameLauncher", "Blocked direct launch of Switch add-on: \(rom.path.lastPathComponent)")
+            showSwitchAddOnAlert()
+            completion?(nil)
+            return
+        }
  // Check if already launching
         #if LOG_EXTREME
         LoggerService.extreme(category: "GameLauncher", "Checking if already launching")
@@ -679,6 +687,18 @@ func launchGame(
         alert.messageText = loc.localized("game.suyu.missingVulkanTitle")
         alert.informativeText = loc.localized("game.suyu.missingVulkanMessage")
         alert.addButton(withTitle: loc.localized("general.cancel"))
+        alert.runModal()
+    }
+
+    // Switch update/DLC files cannot boot directly. They apply from NAND
+    // when the base game launches (suyu PatchManager model).
+    private func showSwitchAddOnAlert() {
+        let loc = LocalizationManager.shared
+        let alert = NSAlert()
+        alert.alertStyle = .informational
+        alert.messageText = loc.localized("game.switchAddOnLaunchTitle")
+        alert.informativeText = loc.localized("game.switchAddOnLaunchMessage")
+        alert.addButton(withTitle: loc.localized("general.ok"))
         alert.runModal()
     }
 

@@ -59,9 +59,14 @@ final class LibraryAutomationCoordinator: ObservableObject {
 
         let needIdentify = scope.filter { $0.needsAutomaticIdentification && !$0.isHidden }
         let needArt = scope.filter { $0.needsAutomaticBoxArt && !$0.isHidden }
-        LoggerService.info(category: "LibraryAutomation", "Phase scope: needIdentify=\(needIdentify.count) needArt=\(needArt.count)")
+        // Library-wide: rows from older scans missing Switch classification
+        // heal on any scan, even ones that add no new files.
+        let unclassifiedSwitch = library.roms.filter {
+            $0.systemID == "switch" && ($0.switchContentType == nil || $0.switchTitleID == nil)
+        }
+        LoggerService.info(category: "LibraryAutomation", "Phase scope: needIdentify=\(needIdentify.count) needArt=\(needArt.count) unclassifiedSwitch=\(unclassifiedSwitch.count)")
 
-        guard !needIdentify.isEmpty || !needArt.isEmpty else {
+        guard !needIdentify.isEmpty || !needArt.isEmpty || !unclassifiedSwitch.isEmpty else {
             LoggerService.info(category: "LibraryAutomation", "=== POST-SCAN AUTOMATION SKIPPED (nothing to do) in \(String(format: "%.2f", Date().timeIntervalSince(automationStart)))s ===")
             return
         }
@@ -102,6 +107,21 @@ final class LibraryAutomationCoordinator: ObservableObject {
 
         // Phase 1: Identification — parallelized + grouped by system for maximum efficiency
         let phase1Start = Date()
+        // Switch backfill (see scope above). Cheap header reads, no DAT/CRC.
+        // Warms the suyu core bridge first so XCI bases resolve to exact IDs.
+        if !unclassifiedSwitch.isEmpty {
+            await SuyuCoreContentService.shared.warmUp()
+            for rom in unclassifiedSwitch {
+                if let idx = libraryIndexByID[rom.id] {
+                    SwitchContentIdentifier.apply(to: &library.roms[idx])
+                    var refreshed = library.roms[idx]
+                    refreshed.refreshDerivedFields()
+                    batchModifiedROMs.append(refreshed)
+                }
+            }
+            library.saveROMsToDatabase(only: unclassifiedSwitch.map { $0.id })
+            LoggerService.info(category: "LibraryAutomation", "Phase 1 (switch classify \(unclassifiedSwitch.count) ROMs) done")
+        }
         if !needIdentify.isEmpty {
             phase = .identifying
             let total = Double(needIdentify.count)
@@ -116,6 +136,39 @@ final class LibraryAutomationCoordinator: ObservableObject {
             // Process systems one by one to keep logging and progress logical
             for (systemID, romsForSystem) in groupedRoms {
                 let systemName = SystemDatabase.system(forID: systemID)?.name ?? systemID
+                // Switch has no libretro DAT and files are multi-GB: skip the
+                // name+CRC pipeline (including full-file hashing) and classify
+                // base vs update vs DLC via SwitchContentIdentifier instead.
+                // Core-exact IDs (including XCI) resolve in a detached task so
+                // file I/O and AES stay off the main thread.
+                if systemID == "switch" {
+                    await SuyuCoreContentService.shared.warmUp()
+                    let switchResults = await Task.detached(priority: .userInitiated) {
+                        romsForSystem.map { rom -> ROM in
+                            var copy = rom
+                            SwitchContentIdentifier.apply(to: &copy)
+                            return copy
+                        }
+                    }.value
+                    for classified in switchResults {
+                        if let idx = libraryIndexByID[classified.id] {
+                            library.roms[idx].switchTitleID = classified.switchTitleID
+                            library.roms[idx].switchBaseTitleID = classified.switchBaseTitleID
+                            library.roms[idx].switchContentType = classified.switchContentType
+                            library.roms[idx].switchVersion = classified.switchVersion
+                            library.roms[idx].category = classified.category
+                            var refreshed = library.roms[idx]
+                            refreshed.refreshDerivedFields()
+                            batchModifiedROMs.append(refreshed)
+                            modifiedIDs.append(classified.id)
+                        }
+                        completedCount += 1
+                    }
+                    progress = Double(completedCount) / total
+                    statusLine = localizedStatus("library.automation.identifyingSystem", systemName, "\(Int(progress * 100))")
+                    await Task.yield()
+                    continue
+                }
                 guard let system = SystemDatabase.system(forID: systemID) else { continue }
 
                 // Load this system's DAT once for the whole system group instead of

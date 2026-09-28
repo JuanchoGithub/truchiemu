@@ -10,7 +10,7 @@ struct GameInfoWindow: View {
 
 	var body: some View {
 		Group {
-			if let rom = library.roms.first(where: { $0.id == romID }) {
+            if let rom = library.rom(withID: romID ?? UUID()) {
 				VStack(spacing: 0) {
 					GameDetailView(rom: rom, initialSection: initialSection)
 

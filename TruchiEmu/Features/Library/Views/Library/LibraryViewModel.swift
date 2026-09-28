@@ -229,6 +229,12 @@ class LibraryViewModel: ObservableObject {
             base = inputs.roms.filter { $0.raMatchStatus == "matched" && !$0.isHidden }
         }
 
+        // 1b. Switch add-on grouping: updates and DLC group under their
+        // base game and stay out of the grid. One batch pass; per-ROM
+        // matching here is O(N^2) with regex tokenization.
+        let switchGroups = SwitchContentIdentifier.addOnGroups(in: inputs.roms)
+        base = base.filter { $0.isHidden || !($0.isSwitchAddOn && switchGroups[$0.id] != nil) }
+
         // 2. Active Filter Chips
         var filtered = base
         if !inputs.activeFilters.isEmpty {

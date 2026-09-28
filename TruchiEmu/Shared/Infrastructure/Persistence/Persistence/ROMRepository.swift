@@ -407,6 +407,11 @@ final class ROMRepository {
         rom.boxArtRegionTag = entry.boxArtRegionTag
         rom.boxArtFetchedAt = entry.boxArtFetchedAt
         rom.hasTitleScreen = entry.hasTitleScreen ?? false
+        rom.switchTitleID = entry.switchTitleID
+        rom.switchBaseTitleID = entry.switchBaseTitleID
+        rom.switchContentType = entry.switchContentType
+        rom.switchVersion = entry.switchVersion
+        rom.switchEnabled = entry.switchEnabled ?? true
         return rom
     }
 
@@ -463,7 +468,12 @@ final class ROMRepository {
             boxArtRequestedRegion: rom.boxArtRequestedRegion,
             boxArtRegionTag: rom.boxArtRegionTag,
             boxArtFetchedAt: rom.boxArtFetchedAt,
-            hasTitleScreen: rom.hasTitleScreen
+            hasTitleScreen: rom.hasTitleScreen,
+            switchTitleID: rom.switchTitleID,
+            switchBaseTitleID: rom.switchBaseTitleID,
+            switchContentType: rom.switchContentType,
+            switchVersion: rom.switchVersion,
+            switchEnabled: rom.switchEnabled
         )
     }
 
@@ -501,6 +511,11 @@ final class ROMRepository {
         if entry.boxArtRegionTag != rom.boxArtRegionTag { entry.boxArtRegionTag = rom.boxArtRegionTag }
         if entry.boxArtFetchedAt != rom.boxArtFetchedAt { entry.boxArtFetchedAt = rom.boxArtFetchedAt }
         if entry.hasTitleScreen != rom.hasTitleScreen { entry.hasTitleScreen = rom.hasTitleScreen }
+        if entry.switchTitleID != rom.switchTitleID { entry.switchTitleID = rom.switchTitleID }
+        if entry.switchBaseTitleID != rom.switchBaseTitleID { entry.switchBaseTitleID = rom.switchBaseTitleID }
+        if entry.switchContentType != rom.switchContentType { entry.switchContentType = rom.switchContentType }
+        if entry.switchVersion != rom.switchVersion { entry.switchVersion = rom.switchVersion }
+        if (entry.switchEnabled ?? true) != rom.switchEnabled { entry.switchEnabled = rom.switchEnabled }
 
         // Update JSON fields only if they changed
         let newMetadataJSON: String? = rom.metadata.flatMap {

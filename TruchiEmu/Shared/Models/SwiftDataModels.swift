@@ -45,6 +45,13 @@ final class ROMEntry {
     // non-optional Bool (which would fail with "Validation error missing attribute
     // values on mandatory destination attribute"). All callers coalesce with ?? false.
     var hasTitleScreen: Bool?
+    // Switch content classification (suyu grouping). All optional so old
+    // stores migrate cleanly. switchEnabled nil means enabled.
+    var switchTitleID: String?
+    var switchBaseTitleID: String?
+    var switchContentType: String?
+    var switchVersion: Int?
+    var switchEnabled: Bool?
 
     // Relationships
     // Note: inverse relationships with @Relationship can cause circular reference issues
@@ -92,7 +99,12 @@ final class ROMEntry {
         boxArtRequestedRegion: String? = nil,
         boxArtRegionTag: String? = nil,
         boxArtFetchedAt: Date? = nil,
-        hasTitleScreen: Bool? = false
+        hasTitleScreen: Bool? = false,
+        switchTitleID: String? = nil,
+        switchBaseTitleID: String? = nil,
+        switchContentType: String? = nil,
+        switchVersion: Int? = nil,
+        switchEnabled: Bool? = nil
     ) {
         self.id = id
         self.name = name
@@ -129,6 +141,11 @@ final class ROMEntry {
         self.boxArtRegionTag = boxArtRegionTag
         self.boxArtFetchedAt = boxArtFetchedAt
         self.hasTitleScreen = hasTitleScreen
+        self.switchTitleID = switchTitleID
+        self.switchBaseTitleID = switchBaseTitleID
+        self.switchContentType = switchContentType
+        self.switchVersion = switchVersion
+        self.switchEnabled = switchEnabled
     }
 }
 

@@ -4,6 +4,7 @@
 #import <SDL.h>
 #endif
 #import "LibretroBridge.h"
+#import "SuyuContentBridge.h"
 #import "XPCSharedMemory.h"
 
 #import "RcheevosWrapper.h"

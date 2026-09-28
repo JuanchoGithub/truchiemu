@@ -81,7 +81,7 @@ struct GameDetailView: View {
     @State var openCriticErrorMessage: String? = nil
 
     var currentROM: ROM {
-        library.roms.first { $0.id == rom.id } ?? rom
+        library.rom(withID: rom.id) ?? rom
     }
 
     var system: SystemInfo? {
@@ -452,18 +452,35 @@ struct GameDetailView: View {
     }
 
     func loadSlotInfo() {
+        // File-system scan stays off the main thread; the view assigns on Main.
+        // The id guard drops stale results when the user flips games quickly.
+        let id = rom.id
         let candidates = currentROM.stateKeyCandidates
         let systemID = currentROM.systemID ?? ""
-        let set = saveStateManager.mergedSaveSet(primaryKey: candidates.primary, fallbackKeys: candidates.fallbacks, systemID: systemID)
-        slotInfoList = set.slotList
-        progressiveSlots = set.progressiveSlotList
-        mostRecentSaveSlot = set.mostRecentSlot
+        let manager = saveStateManager
+        Task.detached(priority: .userInitiated) {
+            let set = manager.mergedSaveSet(primaryKey: candidates.primary, fallbackKeys: candidates.fallbacks, systemID: systemID)
+            await MainActor.run {
+                guard self.rom.id == id else { return }
+                self.slotInfoList = set.slotList
+                self.progressiveSlots = set.progressiveSlotList
+                self.mostRecentSaveSlot = set.mostRecentSlot
+            }
+        }
     }
 
     func loadMostRecentSaveState() {
+        let id = rom.id
         let candidates = currentROM.stateKeyCandidates
         let systemID = currentROM.systemID ?? ""
-        mostRecentSaveSlot = saveStateManager.mergedMostRecentSaveState(primaryKey: candidates.primary, fallbackKeys: candidates.fallbacks, systemID: systemID)
+        let manager = saveStateManager
+        Task.detached(priority: .userInitiated) {
+            let slot = manager.mergedMostRecentSaveState(primaryKey: candidates.primary, fallbackKeys: candidates.fallbacks, systemID: systemID)
+            await MainActor.run {
+                guard self.rom.id == id else { return }
+                self.mostRecentSaveSlot = slot
+            }
+        }
     }
 
     func loadTitleScreen() {
