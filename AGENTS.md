@@ -490,6 +490,12 @@ When asked to "release", "cut a release", or "bump version", follow the tagged-s
 
 When asked to "build the current state and upload it for testing", "upload to the nightly", "let other Macs download it", or "ship a test build" without bumping versions / merging anything, follow the nightly-preview-build steps in `RELEASE_PROCESS.md`.
 
+## Remote Alerts
+
+See `ALERTS.md` at the project root for the full guide. Summary: the app fetches `alerts.json` from the `main` branch during the update check and at startup. `AppAlertService` (`TruchiEmu/Services/`) filters by version range, expiry, and repeat mode; `info`/`warning` show a pill plus Notification Center entry, `critical` blocks startup via `CriticalAlertView` (plus a macOS banner when the app is in the background).
+
+When asked to "send an alert", "notify users", or "push a message to the app", follow `ALERTS.md`: edit `alerts.json` on `main` (no version bump, no release needed) and push. Only builds that contain `AppAlertService` can display alerts — old broken versions cannot be reached this way and still need the manual path from the changelog notice.
+
 ### TCC Permissions & Version Bumps
 
 TCC (Transparency, Consent, and Control) keys security-scoped bookmark grants on **bundle identity + `CFBundleVersion` + code-signature**. TruchiEmu is currently Development-signed (`CODE_SIGN_IDENTITY = "-"`, ad-hoc), so each `CFBundleVersion` bump invalidates TCC grants for user-selected folders (custom log folder, ROM library folders under `~/Downloads`, etc.).
