@@ -1,0 +1,26 @@
+{
+  "alerts": [
+    {
+      "id": "2026-09-28-broken-updater-issue-40",
+      "severity": "critical",
+      "repeat": "weekly",
+      "title": {
+        "en": "Your updater is broken — one manual install needed",
+        "es": "Tu actualizador está dañado — necesitas una instalación manual",
+        "pt": "Seu atualizador está quebrado — é preciso uma instalação manual",
+        "ja": "アップデータが壊れています — 手動インストールが必要です"
+      },
+      "message": {
+        "en": "This version can silently fail to install updates: it may copy a stray folder instead of the new app and restart on the old version. Download v1.15.2 once from the releases page and move TruchiEmu.app to /Applications with Replace. Later updates will work automatically.",
+        "es": "Esta versión puede fallar al instalar actualizaciones sin avisar: puede copiar una carpeta residual en vez de la app nueva y reiniciar la versión vieja. Descarga v1.15.2 una vez desde la página de versiones y mueve TruchiEmu.app a /Applications con Reemplazar. Las siguientes actualizaciones funcionarán solas.",
+        "pt": "Esta versão pode falhar ao instalar atualizações sem avisar: pode copiar uma pasta residual em vez do app novo e reiniciar a versão antiga. Baixe v1.15.2 uma vez na página de versões e mova TruchiEmu.app para /Applications com Substituir. As próximas atualizações vão funcionar sozinhas.",
+        "ja": "このバージョンはアップデートのインストールに失敗することがあります:新アプリの代わりに残留フォルダをコピーし、古いバージョンで再起動します。リリースページからv1.15.2を一度ダウンロードし、TruchiEmu.appを置換で/Applicationsに移動してください。以降の更新は自動で動作します。"
+      },
+      "minVersion": "0.8.5",
+      "maxVersion": "1.15.1",
+      "url": "https://github.com/JuanchoGithub/truchiemu/releases",
+      "dismissible": true,
+      "expiresAt": "2027-04-01T00:00:00Z"
+    }
+  ]
+}
