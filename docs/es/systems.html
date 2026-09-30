@@ -17,6 +17,8 @@ description: Entendiendo cómo TruchiEmu gestiona la compatibilidad de sistemas 
 <ul>
 <li><a href="#universal-support">Soporte Universal</a></li>
 <li><a href="#core-management">Gestión de Cores</a></li>
+<li><a href="#mame">MAME y Arcade</a></li>
+<li><a href="#core-options">Opciones de Core</a></li>
 <li><a href="#bios-files">BIOS y Archivos de Sistema</a></li>
 <li><a href="#optimization">Consejos de Optimización</a></li>
 </ul>
@@ -59,6 +61,39 @@ description: Entendiendo cómo TruchiEmu gestiona la compatibilidad de sistemas 
 <p>Priorizan velocidad y eficiencia. Mejores para hardware antiguo o títulos extremadamente exigentes.</p>
 </div>
 </div>
+
+<h3>Importar un Core Personalizado</h3>
+<p>También puedes instalar un core desde un archivo local <code>.zip</code> o <code>.dylib</code>. Esta vía soporta cores sin entrada buildbot, como <code>suyu_libretro</code> para Switch. Abre el Descargador de Cores, elige Importar, selecciona el archivo y asigna los sistemas. TruchiEmu conserva tu mapeo al actualizar.</p>
+<div class="info-box">
+<p><strong>Notas de Switch:</strong> Switch necesita su archivo <code>prod.keys</code>. Colócalo en <code>~/Library/Application Support/TruchiEmu/System/suyu/keys/prod.keys</code>. Los juegos base se agrupan con actualizaciones y DLC tras el escaneo.</p>
+</div>
+</div>
+</section>
+
+<section id="mame" class="content-section">
+<div class="container">
+<h2>MAME y Arcade</h2>
+<p>Usa archivos <code>.zip</code> para ROMs arcade. TruchiEmu escanea la carpeta, verifica hashes CRC32 contra datos DAT y oculta archivos BIOS y de dispositivos en la biblioteca.</p>
+<ul class="feature-list">
+<li><strong>Formato:</strong> Mantén los sets arcade como <code>.zip</code>. No los descomprimas.</li>
+<li><strong>Identificación:</strong> CRC32 más seguimiento de rechazo filtra entradas no jugables.</li>
+<li><strong>BIOS:</strong> Algunos juegos arcade necesitan BIOS extra. Aporta tus propios archivos si el juego no arranca.</li>
+</ul>
+</div>
+</section>
+
+<section id="core-options" class="content-section">
+<div class="container">
+<h2>Opciones de Core</h2>
+<p>Cada core expone opciones de video, audio y sistema. Configúralas en Ajustes, por sistema o por juego. Los niveles altos anulan a los bajos:</p>
+<ol>
+<li>Valor del core</li>
+<li>Valor global de la app</li>
+<li>Valor de la app para un sistema</li>
+<li>Anulación de sistema</li>
+<li>Anulación de juego</li>
+</ol>
+<p>Las anulaciones se guardan como <code>.cfg</code> en <code>TruchiEmu/CoreOptions/</code>.</p>
 </div>
 </section>
 

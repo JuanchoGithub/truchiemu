@@ -1,51 +1,141 @@
 ---
 layout: default
-title: Soporte de Controladores - Documentación de TruchiEmu
+title: Soporte de Controles - Documentación de TruchiEmu
 
 ---
 
 <div class="feature-docs">
-<h1>Soporte de Controladores</h1>
+    <h1>Soporte de Controles</h1>
 
-<div class="feature-overview">
-<p class="lead">TruchiEmu proporciona soporte completo de controladores con mapeo automático, configuraciones por juego y calibración avanzada de zona muerta. Experimenta juego auténtico con cualquier controlador desde gamepads clásicos hasta sticks arcade modernos, con remapeo completo de botones y funcionalidad turbo.</p>
-</div>
+    <div class="feature-overview">
+        <p class="lead">TruchiEmu funciona con controles de Xbox, PlayStation, MFi, Switch Pro y la mayoría de pads USB/Bluetooth &mdash; con mapeo de teclado multiplayer, asignación de slots por prioridad, desactivar/reset para pads atascados y overrides por sistema.</p>
+    </div>
 
-<section id="service-explanation">
-<h2>Descripción General</h2>
-<p>Conecta un gamepad y simplemente funciona. TruchiEmu reconoce el controlador, elige una distribución de botones adecuada para el juego que estás jugando y está listo en segundos. A partir de ahí puedes ajustar las zonas muertas, intercambiar cualquier botón o reasignar toda la distribución por sistema.</p>
+    <section id="overview">
+        <h2>Descripción General</h2>
+        <p>Conecta un gamepad y funciona. TruchiEmu reconoce el control, elige un layout sensato para el juego y está listo en segundos. Desde ahí puedes afinar zonas muertas, cambiar cualquier botón o remapear todo por sistema. Desde v1.8.1, soporta varios jugadores en un solo teclado más priorización de slots &mdash; tu amigo que toma un gamepad a mitad de sesión cae en el siguiente slot P libre en vez de robar tu teclado.</p>
 
-<h3>Lo Que Puedes Hacer</h3>
-<ul class="feature-list">
-<li><strong>Plug and Play:</strong> Los controladores USB y Bluetooth se reconocen en el momento en que los conectas</li>
-<li><strong>Valores Predeterminados Inteligentes:</strong> TruchiEmu elige una distribución de botones adecuada según el tipo de controlador y el sistema que estés jugando</li>
-<li><strong>Perfiles por Controlador:</strong> Cada controlador que conectas obtiene su propia asignación, recordada para la próxima vez</li>
-<li><strong>Sobreescrituras por Sistema:</strong> Un pad de PlayStation puede ser estilo SNES en un sistema y estilo Genesis en otro</li>
-<li><strong>Zona Muerta y Sensibilidad:</strong> Ajusta la respuesta del stick para que el drift no haga caminar al personaje solo</li>
-<li><strong>Reasignar Cualquier Cosa:</strong> Intercambia cualquier botón por cualquier otro, incluyendo clics de caras, hombros y sticks</li>
-<li><strong>Modo Ratón Analógico:</strong> Usa un stick para controlar el ratón en juegos DOS y ScummVM: consulta la página de Ratón Analógico para más detalles</li>
-<li><strong>Atajos de Teclado:</strong> Atajos de sistema para save states, capturas de pantalla y otras acciones comunes</li>
-</ul>
-</section>
+        <h3>Lo Que Obtienes</h3>
+        <ul class="feature-list">
+            <li><strong>Plug and Play:</strong> Los controles USB y Bluetooth se reconocen al momento de conectarlos</li>
+            <li><strong>Amplia Compatibilidad:</strong> Pads de Xbox, PlayStation, MFi y Switch Pro, más la mayoría de controles USB/Bluetooth genéricos</li>
+            <li><strong>Defaults Sensatos:</strong> TruchiEmu elige un layout sensato según el tipo de control y el sistema que juegas</li>
+            <li><strong>Perfiles por Control:</strong> Cada control tiene su propio mapeo, recordado entre sesiones</li>
+            <li><strong>Overrides por Sistema:</strong> Un pad de PlayStation puede ser estilo SNES en un sistema y estilo Genesis en otro</li>
+            <li><strong>Mapeo de Teclado Multiplayer:</strong> Varios jugadores en un solo teclado físico &mdash; combina gamepad para P1 y teclado para P2 (o viceversa)</li>
+            <li><strong>Priorización de Slots:</strong> Cuando se conecta un control nuevo, TruchiEmu prioriza el primer slot vacío antes de sustituir a un jugador de teclado &mdash; tu P2 sigue siendo P2</li>
+            <li><strong>Opción Reemplazar Teclado:</strong> Elige si un control recién conectado debe tomar automáticamente un slot asignado al teclado</li>
+            <li><strong>Desactivar y Resetear:</strong> Desactiva un control atascado o resetea la lista sin salir de la app; el teclado también se puede desactivar/resetear</li>
+            <li><strong>Vista en Vivo:</strong> La UI de mapeo refleja tus sticks y botones en vivo al pulsarlos</li>
+            <li><strong>Zona Muerta y Sensibilidad:</strong> Ajusta la respuesta del stick para que el drift no mueva al personaje solo</li>
+            <li><strong>Remapea Todo:</strong> Cambia cualquier botón por otro, incluyendo cara, hombros y clics de stick</li>
+            <li><strong>Iconos por Tipo:</strong> TruchiEmu muestra iconos en la barra y ajustes para Xbox, DualShock 4, DualSense, MFi y Arcade Stick &mdash; icono genérico en otro caso</li>
+            <li><strong>Mouse Analógico:</strong> Usa un stick para controlar el mouse en juegos DOS y ScummVM &mdash; ver la página de <a href="{{ '/es/features/analog-mouse.html' | relative_url }}">Mouse Analógico</a> para más detalles</li>
+            <li><strong>Hotkeys:</strong> Configuración de hotkeys por sistema y por juego para save states, capturas, share, reset de Training Mode y más</li>
+            <li><strong>Claves de Switch:</strong> Switch vía suyu necesita un archivo <code>prod.keys</code> &mdash; ver <a href="{{ '/es/systems.html#core-management' | relative_url }}">Importar Core Personalizado</a> para la ruta</li>
+        </ul>
+    </section>
 
-<section id="step-by-step-guide">
-<h2>Guía de Configuración Paso a Paso</h2>
+    <section id="multiplayer-config">
+        <h2>Configuración Multiplayer</h2>
+        <p>TruchiEmu soporta hasta 4 jugadores simultáneos. El sistema de slots se resume así:</p>
 
-<h3>Configuración Básica del Controlador</h3>
-<ol class="setup-steps">
-<li>
-<strong>Conectar Controlador</strong>
-<p>Conecta tu controlador vía USB o empárejalo vía Bluetooth. TruchiEmu detecta automáticamente el controlador y muestra una notificación con el tipo de controlador detectado.</p>
-</li>
-</ol>
+        <h3>Reglas de Slots (v1.8.1+)</h3>
+        <ol class="setup-steps">
+            <li>
+                <strong>P1 está "anclado"</strong>
+                <p>Player 1 está reservado &mdash; un gamepad recién conectado nunca desplaza a P1 salvo que actives "reemplazar teclado con control" y el slot P1 sea teclado.</p>
+            </li>
+            <li>
+                <strong>Primer Slot Vacío</strong>
+                <p>Cuando se conecta un gamepad nuevo, toma el primer slot P2&ndash;P4 vacío. Si todos están llenos, espera la próxima desconexión.</p>
+            </li>
+            <li>
+                <strong>Priorización de Huecos</strong>
+                <p>Si el teclado ocupa el primer slot vacío, el gamepad nuevo <em>solo</em> reemplaza al teclado si activaste "reemplazar teclado con control" en Ajustes &rarr; Controles. Si no, el gamepad va al siguiente hueco real.</p>
+            </li>
+            <li>
+                <strong>Desactivar Control</strong>
+                <p>Si un control falla o se atasca, desactívalo desde el panel sin salir &mdash; o resetea la lista completa. El teclado tiene las mismas opciones.</p>
+            </li>
+        </ol>
 
-<h3>Configuración Avanzada</h3>
-<ol class="setup-steps">
-<li>
-<strong>Mapeo de Botones Personalizado</strong>
-<p>Ve a <code>Configuración → Controles</code>, selecciona tu controlador y sistema, luego haz clic en cualquier botón para remapearlo. Puedes guardar y cargar configuraciones nombradas (solo gamepads).</p>
-</li>
-</ol>
-</section>
+        <h3>Teclado Multiplayer</h3>
+        <p>Varios jugadores pueden compartir un teclado además de gamepads. Desde <strong>Ajustes &rarr; Controles &rarr; Teclado</strong>, configura teclas separadas para Player 1, Player 2, etc. &mdash; hasta el máximo de tus juegos. Mezclas (gamepad para P1, teclado para P2) funcionan.</p>
 
+        <div class="info-box">
+            <p><strong>Probado con:</strong> 4 gamepads, teclados compartidos y mezclas gamepad-más-teclado &mdash; cada uno conserva su slot aunque los pads vengan y vayan. Desactiva un pad atascado en el panel; los demás slots siguen vivos.</p>
+        </div>
+    </section>
+
+    <section id="step-by-step-guide">
+        <h2>Guía de Configuración Paso a Paso</h2>
+
+        <h3>Setup Básico</h3>
+        <ol class="setup-steps">
+            <li>
+                <strong>Conecta el Control</strong>
+                <p>Conecta por USB o empareja por Bluetooth. TruchiEmu auto-detecta el control y muestra una notificación con el tipo.</p>
+            </li>
+            <li>
+                <strong>Verifica el Slot</strong>
+                <p>Una píldora muestra qué slot tomó (P1&ndash;P4). Si es el equivocado, desactiva/resetea &mdash; o desconecta y reconecta.</p>
+            </li>
+        </ol>
+
+        <h3>Mapeo Personalizado</h3>
+        <ol class="setup-steps">
+            <li>
+                <strong>Abre Ajustes &rarr; Controles</strong>
+                <p>Elige un sistema (o Global Default), selecciona tu control o teclado, y haz clic en cualquier botón de la lista para remapear.</p>
+            </li>
+            <li>
+                <strong>Pulsa un Botón Físico</strong>
+                <p>Pulsa un botón del gamepad o tecla para asignarlo. La UI muestra el binding al momento.</p>
+            </li>
+            <li>
+                <strong>Guarda/Carga Perfiles (Solo Gamepad)</strong>
+                <p>Guarda configuraciones con nombre para reusar &mdash; útil para alternar arcade sticks y gamepads.</p>
+            </li>
+            <li>
+                <strong>Ajusta Zona Muerta</strong>
+                <p>Ajusta zona muerta y sensibilidad en el mismo panel para que el drift no mueva al personaje.</p>
+            </li>
+        </ol>
+
+        <h3>Botones de Reset</h3>
+        <p>Si la lista se atasca o un pad no responde, pulsa <strong>Desactivar</strong> en la fila y luego <strong>Reset</strong>. El teclado tiene las mismas opciones.</p>
+    </section>
+
+    <section id="controller-test">
+        <h2>Hoja de prueba del control</h2>
+        <p>La hoja de prueba muestra un pad en vivo con botones, sticks y gatillos. Úsala para verificar un pad nuevo antes de jugar.</p>
+        <ul class="feature-list">
+            <li><strong>Abrir:</strong> Ajustes &rarr; Controles &rarr; Probar</li>
+            <li><strong>Verificar:</strong> pulsa botones y mueve sticks; el visor refleja la entrada en vivo</li>
+            <li><strong>Calibrar:</strong> ajusta rangos por dirección y zona muerta, luego remapea si hace falta</li>
+        </ul>
+        <div class="screenshot-frame">
+            <img src="{{ '/media/screenshots/controller-mapping-es.png' | relative_url }}" alt="Controles conectados con slots y botón Probar control" class="screenshot lightbox-trigger">
+            <p class="screenshot-caption">Controles conectados con slots P1–P4 y botón Probar control</p>
+        </div>
+    </section>
+
+    <section id="references">
+        <h2>Funciones Relacionadas</h2>
+        <div class="related-services">
+            <div class="service-card">
+                <h3><a href="{{ '/es/features/analog-mouse.html' | relative_url }}">Mouse Analógico</a></h3>
+                <p>Usa tu stick como mouse para juegos DOS y ScummVM.</p>
+            </div>
+            <div class="service-card">
+                <h3><a href="{{ '/es/features/training-mode.html' | relative_url }}">Training Mode</a></h3>
+                <p>Configura hotkeys para reset, grabación y reproducción.</p>
+            </div>
+            <div class="service-card">
+                <h3><a href="{{ '/es/features/tv-mode.html' | relative_url }}">TV Mode</a></h3>
+                <p>Navegación con gamepad por toda la biblioteca.</p>
+            </div>
+        </div>
+    </section>
 </div>

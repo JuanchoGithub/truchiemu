@@ -7,7 +7,7 @@ description: How to use and customize bezels to enhance your retro gaming visual
 <section class="page-header">
     <div class="container">
         <h1>Bezel Guide</h1>
-        <p class="lead">Perfect your screen framing for the ultimate immersive experience</p>
+        <p class="lead">Frame your game screen with arcade art instead of black bars</p>
     </div>
 </section>
 
@@ -16,9 +16,10 @@ description: How to use and customize bezels to enhance your retro gaming visual
         <h3>On This Page</h3>
         <ul>
             <li><a href="#what-are-bezels">What are Bezels?</a></li>
-            <li><a href="#using-browser">Using the Bezel Browser</a></li>
-            <li><a href="#automatic-mapping">Automatic Mapping</a></li>
-            <li><a href="#customization">Fine-Tuning Your Fit</a></li>
+            <li><a href="#using-browser">Open the Bezel Browser</a></li>
+            <li><a href="#automatic-mapping">How Automatic Matching Works</a></li>
+            <li><a href="#custom-bezels">Use Your Own Bezel Images</a></li>
+            <li><a href="#bezel-fit">Bezel Fit</a></li>
         </ul>
     </div>
 </nav>
@@ -26,57 +27,76 @@ description: How to use and customize bezels to enhance your retro gaming visual
 <section id="what-are-bezels" class="content-section">
     <div class="container">
         <h2>What are Bezels?</h2>
-        <p>Retro games were designed for 4:3 or other non-widescreen displays. On modern monitors, this leaves large black bars on the sides. <strong>Bezels</strong> are high-quality image overlays that frame the game screen with authentic arcade art, console borders, or thematic decorations.</p>
-        
-        <div class="info-box">
-            <p>Bezels transform your display from a simple window into a virtual arcade cabinet or a handheld console screen.</p>
-        </div>
+        <p>Retro games were made for narrow 4:3 screens. On a modern wide display this leaves black bars on the sides. <strong>Bezels</strong> fill those bars with arcade art, console borders, or themed decoration. Your game stays the same size. Only the empty space changes.</p>
     </div>
 </section>
 
 <section id="using-browser" class="content-section">
     <div class="container">
-        <h2>Using the Bezel Browser</h2>
-        <p>TruchiEmu includes a powerful Bezel Browser that allows you to discover and download frames without leaving the application.</p>
-        
-        <div class="step-box">
-            <div class="step">
-                <h4>1. Open the Bezel Selector</h4>
-                <p>From the Game Detail view or the Player overlay, open the Bezel settings.</p>
-            </div>
-            <div class="step">
-                <h4>2. Browse Assets</h4>
-                <p>Explore the available bezels organized by system, or search for specific games.</p>
-            </div>
-            <div class="step">
-                <h4>3. Apply & Download</h4>
-                <p>Select a bezel to apply it instantly. If the asset isn't cached locally, TruchiEmu will download it automatically.</p>
-            </div>
+        <h2>Open the Bezel Browser</h2>
+        <p>Find and apply a bezel in three steps:</p>
+        <ol class="setup-steps">
+            <li>
+                <strong>Open bezel settings</strong>
+                <p>From the Game Detail view or the game window toolbar, open Bezel settings.</p>
+            </li>
+            <li>
+                <strong>Browse or search</strong>
+                <p>Browse bezels by system, or search by game name.</p>
+            </li>
+            <li>
+                <strong>Select to apply</strong>
+                <p>Click a bezel to apply it at once. If it is not on your Mac yet, TruchiEmu downloads it from The Bezel Project (github.com/thebezelproject) automatically. You need internet for first-time downloads. Saved bezels work offline.</p>
+            </li>
+        </ol>
+        <div class="screenshot-frame">
+            <img src="{{ '/media/screenshots/bezel-settings.png' | relative_url }}" alt="Bezel settings with The Bezel Project downloads" class="screenshot lightbox-trigger">
+            <p class="screenshot-caption">Bezel downloads from The Bezel Project, per system or all at once</p>
         </div>
     </div>
 </section>
 
 <section id="automatic-mapping" class="content-section">
     <div class="container">
-<h2>Automatic Mapping</h2>
-<p>To save you time, TruchiEmu uses a name-based resolution cascade. When you launch a game, the app automatically finds a matching bezel through this priority order:</p>
-<ul class="feature-list">
-<li><strong>User-Selected Bezel:</strong> If you've manually chosen a bezel for this game (unless auto-match is preferred)</li>
-<li><strong>Exact Game Name Match:</strong> Searches local bezel files for an exact match against the game name</li>
-<li><strong>Cleaned Name Match:</strong> Matches with region and revision suffixes removed (e.g., "Super Mario World (USA)" matches "Super Mario World")</li>
-<li><strong>Fuzzy Match:</strong> Normalized comparison against the cached bezel repository manifest</li>
-<li><strong>No Bezel:</strong> If no match is found, the game runs without a bezel overlay</li>
-</ul>
-
-<div class="info-box">
-<p>You can disable bezels for any game by selecting "None" as the bezel option. You can also import custom bezel images from your own files &mdash; imported bezels take priority in the resolution cascade. Bezels are fetched from a community-maintained GitHub repository; if a bezel isn't cached locally, TruchiEmu downloads it on-demand.</p>
-</div>
+        <h2>How Automatic Matching Works</h2>
+        <p>When you launch a game, TruchiEmu picks a bezel for you. It tries each step in order and stops at the first match:</p>
+        <ol>
+            <li><strong>Your pick:</strong> the bezel you chose for this game (unless you asked for auto-match this time)</li>
+            <li><strong>Exact name:</strong> a bezel file that matches the game name exactly</li>
+            <li><strong>Cleaned name:</strong> a match with region and version tags removed (for example, "Super Mario World (USA)" matches "Super Mario World")</li>
+            <li><strong>Close match:</strong> a best-effort match against the bezel list</li>
+            <li><strong>No bezel:</strong> the game runs full-frame with no overlay</li>
+        </ol>
+        <div class="info-box">
+            <p>To play with no bezel, select <strong>None</strong> for that game. That choice wins over all matches.</p>
+        </div>
     </div>
 </section>
 
-<section id="customization" class="content-section">
-<div class="container">
-<h2>Bezel Fit</h2>
-<p>Bezel fit is handled automatically. Horizontal bezels assume a 4:3 game area and vertical bezels assume 3:4. The aspect ratio is inferred from the bezel image itself &mdash; it is not used as a selection criterion.</p>
-</div>
+<section id="custom-bezels" class="content-section">
+    <div class="container">
+        <h2>Use Your Own Bezel Images</h2>
+        <p>Bring any PNG or JPG image as a bezel:</p>
+        <ol class="setup-steps">
+            <li>
+                <strong>Open bezel settings</strong>
+                <p>From the Game Detail view or the game window toolbar, open Bezel settings.</p>
+            </li>
+            <li>
+                <strong>Import your file</strong>
+                <p>Choose Import and pick a PNG or JPG from your Mac.</p>
+            </li>
+            <li>
+                <strong>Play</strong>
+                <p>Your imported bezel applies to that game at once and wins over auto-matched bezels.</p>
+            </li>
+        </ol>
+    </div>
+</section>
+
+<section id="bezel-fit" class="content-section">
+    <div class="container">
+        <h2>Bezel Fit</h2>
+        <p>Fit is automatic. There is nothing to tune. Horizontal bezels frame a 4:3 game area. Vertical bezels frame a 3:4 game area. TruchiEmu reads the shape from the bezel image itself.</p>
+    </div>
 </section>

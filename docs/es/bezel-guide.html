@@ -7,7 +7,7 @@ description: Cómo usar y personalizar bezels para mejorar los visuales de tu ga
 <section class="page-header">
 <div class="container">
 <h1>Guía de Bezels</h1>
-<p class="lead">Perfecciona el enmarcado de tu pantalla para la experiencia inmersiva definitiva</p>
+<p class="lead">Enmarca tu pantalla de juego con arte arcade en vez de barras negras</p>
 </div>
 </section>
 
@@ -16,9 +16,10 @@ description: Cómo usar y personalizar bezels para mejorar los visuales de tu ga
 <h3>En Esta Página</h3>
 <ul>
 <li><a href="#what-are-bezels">¿Qué son los Bezels?</a></li>
-<li><a href="#using-browser">Usar el Navegador de Bezels</a></li>
-<li><a href="#automatic-mapping">Resolución Automática</a></li>
-<li><a href="#customization">Ajuste Automático</a></li>
+<li><a href="#using-browser">Abrir el Navegador de Bezels</a></li>
+<li><a href="#automatic-mapping">Cómo Funciona la Coincidencia Automática</a></li>
+<li><a href="#custom-bezels">Usar Tus Propias Imágenes</a></li>
+<li><a href="#bezel-fit">Ajuste del Bezel</a></li>
 </ul>
 </div>
 </nav>
@@ -26,60 +27,76 @@ description: Cómo usar y personalizar bezels para mejorar los visuales de tu ga
 <section id="what-are-bezels" class="content-section">
 <div class="container">
 <h2>¿Qué son los Bezels?</h2>
-<p>Los juegos retro fueron diseñados para pantallas 4:3 u otras pantallas no panorámicas. En monitores modernos, esto deja grandes barras negras en los lados. Los <strong>Bezels</strong> son superposiciones de imagen de alta calidad que enmarcan la pantalla del juego con arte arcade auténtico, bordes de consola o decoraciones temáticas.</p>
-
-<div class="info-box">
-<p>Los bezels transforman tu pantalla de una simple ventana en un gabinete arcade virtual o una pantalla de consola portátil.</p>
-</div>
+<p>Los juegos retro se hicieron para pantallas estrechas 4:3. En una pantalla ancha moderna esto deja barras negras a los lados. Los <strong>bezels</strong> llenan esas barras con arte arcade, bordes de consola o decoración temática. Tu juego mantiene el mismo tamaño. Solo cambia el espacio vacío.</p>
 </div>
 </section>
 
 <section id="using-browser" class="content-section">
 <div class="container">
-<h2>Usar el Navegador de Bezels</h2>
-<p>TruchiEmu incluye un potente Navegador de Bezels que te permite descubrir y descargar marcos sin salir de la aplicación.</p>
-
-<div class="step-box">
-<div class="step">
-<h4>1. Abrir el Selector de Bezels</h4>
-<p>Desde la vista de Detalle del Juego o la superposición del Player, abre la configuración de Bezels.</p>
-</div>
-<div class="step">
-<h4>2. Explorar Recursos</h4>
-<p>Explora los bezels disponibles, organizados por sistema, o busca temas específicos.</p>
-</div>
-<div class="step">
-<h4>3. Aplicar y Descargar</h4>
-<p>Selecciona un bezel para aplicarlo instantáneamente. Si el recurso no está en caché local, TruchiEmu lo descargará automáticamente.</p>
-</div>
-</div>
+<h2>Abrir el Navegador de Bezels</h2>
+<p>Encuentra y aplica un bezel en tres pasos:</p>
+<ol class="setup-steps">
+<li>
+<strong>Abre los ajustes de bezel</strong>
+<p>Desde la vista de Detalle del Juego o la barra del juego, abre los ajustes de Bezel.</p>
+</li>
+<li>
+<strong>Explora o busca</strong>
+<p>Explora bezels por sistema, o busca por nombre del juego.</p>
+</li>
+            <li>
+                <strong>Selecciona para aplicar</strong>
+                <p>Haz clic en un bezel para aplicarlo al momento. Si aún no está en tu Mac, TruchiEmu lo descarga de The Bezel Project (github.com/thebezelproject) automáticamente. Necesitas internet para las primeras descargas. Los bezels guardados funcionan sin conexión.</p>
+            </li>
+        </ol>
+        <div class="screenshot-frame">
+            <img src="{{ '/media/screenshots/bezel-settings-es.png' | relative_url }}" alt="Descargas de bezels desde The Bezel Project" class="screenshot lightbox-trigger">
+            <p class="screenshot-caption">Descargas de The Bezel Project, por sistema o todas a la vez</p>
+        </div>
 </div>
 </section>
 
 <section id="automatic-mapping" class="content-section">
 <div class="container">
-<h2>Resolución Automática</h2>
-<p>Cuando inicias un juego, TruchiEmu busca automáticamente un bezel coincidente usando una cascada de resolución por nombre:</p>
+<h2>Cómo Funciona la Coincidencia Automática</h2>
+<p>Al iniciar un juego, TruchiEmu elige un bezel por ti. Prueba cada paso en orden y se detiene en la primera coincidencia:</p>
+<ol>
+<li><strong>Tu elección:</strong> el bezel que elegiste para este juego (salvo que pidas auto-coincidencia esta vez)</li>
+<li><strong>Nombre exacto:</strong> un bezel que coincide exactamente con el nombre del juego</li>
+<li><strong>Nombre limpio:</strong> coincide sin etiquetas de región y versión (por ejemplo, "Super Mario World (USA)" coincide con "Super Mario World")</li>
+<li><strong>Coincidencia cercana:</strong> mejor esfuerzo contra la lista de bezels</li>
+<li><strong>Sin bezel:</strong> el juego corre a pantalla completa sin marco</li>
+</ol>
+<div class="info-box">
+<p>Para jugar sin bezel, selecciona <strong>Ninguno</strong> para ese juego. Esa elección gana sobre todas las coincidencias.</p>
+</div>
+</div>
+</section>
+
+<section id="custom-bezels" class="content-section">
+<div class="container">
+<h2>Usar Tus Propias Imágenes</h2>
+<p>Usa cualquier imagen PNG o JPG como bezel:</p>
 <ol class="setup-steps">
-<li><strong>Bezel seleccionado por el usuario:</strong> Si has elegido manualmente un bezel, ese tiene prioridad máxima</li>
-<li><strong>Coincidencia exacta por nombre:</strong> Busca un bezel cuyo nombre coincida exactamente con el nombre del archivo de la ROM</li>
-<li><strong>Coincidencia por nombre limpio:</strong> Normaliza el nombre (elimina regiones, códigos de revisión, etc.) y busca coincidencia</li>
-<li><strong>Coincidencia difusa:</strong> Usa coincidencia parcial si no se encuentra una coincidencia exacta</li>
-<li><strong>Sin bezel:</strong> Si ninguna regla coincide, no se aplica ningún bezel</li>
+<li>
+<strong>Abre los ajustes de bezel</strong>
+<p>Desde la vista de Detalle del Juego o la barra del juego, abre los ajustes de Bezel.</p>
+</li>
+<li>
+<strong>Importa tu archivo</strong>
+<p>Elige Importar y selecciona un PNG o JPG de tu Mac.</p>
+</li>
+<li>
+<strong>Juega</strong>
+<p>Tu bezel importado se aplica a ese juego al momento y gana sobre los bezels automáticos.</p>
+</li>
 </ol>
 </div>
 </section>
 
-<section id="customization" class="content-section">
+<section id="bezel-fit" class="content-section">
 <div class="container">
-<h2>Ajuste Automático</h2>
-<p>TruchiEmu ajusta automáticamente la ventana del juego para encajar con el bezel seleccionado. Los juegos con relación de aspecto 4:3 (horizontal) y 3:4 (vertical) se posicionan y escalan automáticamente dentro del marco del bezel, sin necesidad de ajustes manuales.</p>
-
-<div class="info-box">
-<p>Selecciona la opción <strong>"Ninguno"</strong> para deshabilitar bezels y mostrar solo la ventana del juego con barras negras.</p>
-</div>
-
-<h3>Bezels Personalizados</h3>
-<p>Puedes importar tus propios bezels para personalizar tu experiencia. Los bezels también se pueden descargar desde el <a href="https://github.com/nickbw/bezels">repositorio GitHub de bezels</a>.</p>
+<h2>Ajuste del Bezel</h2>
+<p>El ajuste es automático. No hay nada que afinar. Los bezels horizontales enmarcan un área 4:3. Los verticales enmarcan un área 3:4. TruchiEmu lee la forma desde la propia imagen del bezel.</p>
 </div>
 </section>

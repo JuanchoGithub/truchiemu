@@ -14,14 +14,14 @@ title: Shader System - TruchiEmu Documentation
         <h2>Overview</h2>
         <p>TruchiEmu comes with two kinds of shaders:</p>
         <ul class="feature-list">
-            <li><strong>Built-in presets</strong> &mdash; 14 ready-to-use effects for CRT, handheld LCD, smoothing, and composite video. No downloads, no setup.</li>
+            <li><strong>Built-in presets</strong> &mdash; 17 ready-to-use effects for CRT, handheld LCD, smoothing, and composite video. No downloads, no setup.</li>
             <li><strong>Slang/RetroArch presets</strong> &mdash; hundreds of community-made presets from the <a href="https://github.com/libretro/slang-shaders">libretro slang-shaders</a> project. Curated picks show up in the "All" tab; everything discovered appears in the "Slang" tab.</li>
         </ul>
         <p>Everything runs fast on any modern Mac. Pick a preset and play.</p>
 
         <h3>What's in the Library</h3>
         <ul class="feature-list">
-            <li><strong>14 Built-in Presets</strong> &mdash; CRT Lottes, CRT Classic, Lite CRT, CRT Multipass, Sharp Bilinear, Smooth Upscale, 8b Game Boy, 8b Game Boy Color, GBA, PSP, NDS, 3DS, Dot Matrix LCD, and No Shader (passthrough). Covers CRT, handheld, smoothing, and composite looks.</li>
+            <li><strong>17 Built-in Presets</strong> &mdash; CRT Lottes, CRT Classic, CRT Pittman, Lite CRT, CRT Multipass, Sharp Bilinear, Smooth Upscale, 8b Game Boy, 8b Game Boy Color, GBA, PSP, NDS, 3DS, Dot Matrix LCD, Famicom RF, RF Decoder, and No Shader (passthrough). Covers CRT, handheld, smoothing, and composite looks.</li>
             <li><strong>Hundreds of Slang/RetroArch Presets</strong> &mdash; CRT, NTSC, cel shading, anti-aliasing, procedural, bezels, and more. A curated selection appears in the <strong>All</strong> category tab; every discovered preset is in the <strong>Slang</strong> tab. Drop new <code>.slangp</code> files into <code>~/Library/Application Support/TruchiEmu/SlangPresets/</code> and they appear automatically.</li>
             <li><strong>Your Own Presets</strong> &mdash; Save any tweaked settings as a <code>.truchishader</code> file you can export, share, and re-import. They show up in the <strong>Saved</strong> tab.</li>
             <li><strong>Per-Game Shaders</strong> &mdash; Give a specific game its own shader from its detail page, or apply one to every game on the same system.</li>
@@ -101,6 +101,20 @@ title: Shader System - TruchiEmu Documentation
         </ol>
     </section>
 
+    <section id="crt-pittman">
+        <h2>CRT Pittman and 3D Cabinet</h2>
+        <p>CRT Pittman simulates a CRT with faux-NTSC composite, phosphor persistence, shadow mask, and bloom. A 3D cabinet frame with fitted camera and TV toggle is available for a cabinet look.</p>
+        <ul class="feature-list">
+            <li><strong>Enable:</strong> Shader picker &rarr; CRT category &rarr; CRT Pittman</li>
+            <li><strong>Tune:</strong> adjust pixel ratio, cabinet reflection, and bloom in the shader editor; changes apply live</li>
+            <li><strong>Cabinet:</strong> enable the 3D cabinet for a framed view, or keep the flat full-frame view</li>
+        </ul>
+        <div class="screenshot-frame">
+            <img src="{{ '/media/features/crt-lottes.png' | relative_url }}" alt="CRT shader example" class="screenshot lightbox-trigger">
+            <p class="screenshot-caption">CRT glow: pick a preset in the CRT category and tune it live</p>
+        </div>
+    </section>
+
     <section id="references">
         <h2>Related Features</h2>
 
@@ -111,7 +125,7 @@ title: Shader System - TruchiEmu Documentation
             </div>
 
             <div class="service-card">
-                <h3><a href="{{ '/features/game-guide.html' | relative_url }}">Game Window</a></h3>
+                <h3><a href="{{ '/features/game-guide.html' | relative_url }}">Game Guide</a></h3>
                 <p>The game window toolbar gives you quick access to shaders, save states, cheats, and input controls.</p>
             </div>
         </div>

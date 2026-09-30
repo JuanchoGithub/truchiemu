@@ -9,7 +9,10 @@ description: "The ultimate retro gaming experience, beautifully reimagined for m
     <div class="hero-content">
       <h1>TruchiEmu</h1>
       <p class="hero-tagline">
-        The ultimate retro gaming experience, beautifully reimagined for macOS
+        NES, SNES, PlayStation, arcade and 100+ more systems &mdash; on your Mac in minutes
+      </p>
+      <p class="hero-sub">
+        Free and open-source native app for macOS 14+. Add a ROM folder, double-click a game, play. No tech skills needed.
       </p>
       <div class="hero-actions">
         <a href="{{ '/getting-started.html' | relative_url }}" class="btn btn-primary btn-lg">
@@ -25,6 +28,58 @@ description: "The ultimate retro gaming experience, beautifully reimagined for m
     </div>
   </div>
 </div>
+
+<!-- Stats -->
+<section class="section stats-strip">
+  <div class="container">
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🎮</div>
+        <h3>100+ systems</h3>
+        <p>Consoles, handhelds, arcade and computers via libretro cores.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔮</div>
+        <h3>17 + 1,800 shaders</h3>
+        <p>Built-in Metal looks plus a huge slang preset collection.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">💾</div>
+        <h3>11 save slots</h3>
+        <p>Visual slots with thumbnails and progressive versions per game.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🎨</div>
+        <h3>17 themes</h3>
+        <p>Named accents plus Custom, with light and dark modes.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 3 steps -->
+<section class="section steps-preview">
+  <div class="container">
+    <h2 class="section-title">Playing in 3 steps</h2>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">⬇️</div>
+        <h3>1. Download</h3>
+        <p>Grab the release, move it to Applications, launch it.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📁</div>
+        <h3>2. Add ROMs</h3>
+        <p>Point TruchiEmu at a folder. Games identify themselves and fetch box art.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">▶️</div>
+        <h3>3. Play</h3>
+        <p>Double-click any game. Missing cores install themselves on first launch.</p>
+      </div>
+    </div>
+  </div>
+</section>
 
 <!-- Intro -->
 <section class="section features-preview">
@@ -42,9 +97,9 @@ description: "The ultimate retro gaming experience, beautifully reimagined for m
       </div>
 
       <div class="feature-card">
-        <div class="feature-icon">🎨</div>
-        <h3>Native SwiftUI Interface</h3>
-        <p>100% native macOS with smooth animations, dark mode, fully gamepad-navigable, and a polish that feels right at home on your Mac. Type-to-search, smart collections, and per-game detail views.</p>
+        <div class="feature-icon">🖼️</div>
+        <h3>Library Automation</h3>
+        <p>Automatic ROM identification, metadata and box art downloads, iCloud support, and notices when ROM files move or vanish.</p>
       </div>
 
       <div class="feature-card">
@@ -56,7 +111,7 @@ description: "The ultimate retro gaming experience, beautifully reimagined for m
       <div class="feature-card">
         <div class="feature-icon">🔮</div>
         <h3>Pro-Grade Shaders</h3>
-        <p>14 built-in Metal shaders (CRT Lottes, LiteCRT, Multipass, Game Boy, GBC, GBA, PSP, NDS, 3DS, Sharp Bilinear, and more) plus native slang-preset support via librashader &mdash; hundreds of community presets included.</p>
+        <p>17 built-in Metal shaders (CRT Lottes, Pittman, LiteCRT, Multipass, Game Boy, GBC, GBA, PSP, NDS, 3DS, Sharp Bilinear, and more) plus native slang-preset support via librashader &mdash; around 1,800 community presets included.</p>
       </div>
 
       <div class="feature-card">
@@ -66,21 +121,33 @@ description: "The ultimate retro gaming experience, beautifully reimagined for m
       </div>
 
       <div class="feature-card">
-        <div class="feature-icon">⏪</div>
-        <h3>Time Machine</h3>
-        <p>Rewind, fast-forward, and slow-motion controls right from the game toolbar. Time your perfect retry, study tough sequences in slow motion, or rewind instantly when you goof.</p>
+        <div class="feature-icon">🎨</div>
+        <h3>Themes & Appearance</h3>
+        <p>16 named accent themes plus Custom, with light, dark, and automatic modes. Tinted surfaces and accent toolbar icons make the app yours.</p>
       </div>
+    </div>
+  </div>
+</section>
 
+<!-- Advanced -->
+<section class="section features-preview">
+  <div class="container">
+    <h2 class="section-title">Advanced arsenal</h2>
+    <p class="section-subtitle">
+      Streaming, completionism, and lab-grade practice tools for players who want more.
+    </p>
+
+    <div class="features-grid">
       <div class="feature-card">
         <div class="feature-icon">🎥</div>
         <h3>Recording & Streaming</h3>
-        <p>Capture gameplay to local files (H.264/HEVC/ProRes) or stream live to Twitch, YouTube, or any custom RTMP server &mdash; in-process, VideoToolbox hardware encoded, with a rolling last-moments buffer.</p>
+        <p>Capture gameplay to local files (H.264/HEVC/ProRes) or stream live to Twitch, YouTube, or any custom RTMP server &mdash; hardware encoded, with a rolling last-moments buffer.</p>
       </div>
 
       <div class="feature-card">
-        <div class="feature-icon">🖱️</div>
-        <h3>Analog Mouse & Game Guide</h3>
-        <p>Use your gamepad's analog stick as a mouse in DOS and ScummVM games &mdash; with D-pad as arrow keys. The in-game Game Guide sidebar brings progressive UHS hints and full GameFAQs walkthroughs.</p>
+        <div class="feature-icon">⏪</div>
+        <h3>Time Machine</h3>
+        <p>Rewind, fast-forward, and slow-motion controls right from the game toolbar. Time your perfect retry, study tough sequences in slow motion, or rewind instantly when you goof.</p>
       </div>
 
       <div class="feature-card">
@@ -90,21 +157,27 @@ description: "The ultimate retro gaming experience, beautifully reimagined for m
       </div>
 
       <div class="feature-card">
-        <div class="feature-icon">🕹️</div>
-        <h3>Multiplayer Controllers</h3>
-        <p>Up to 4 players via Apple GCController and SDL2. Multi-player keyboard mapping, priority-based slot allocation when connecting new pads, disable/reset for stale SDL controllers, and per-system overrides.</p>
-      </div>
-
-      <div class="feature-card">
         <div class="feature-icon">💾</div>
         <h3>Save States & Bezels</h3>
         <p>11 visual save slots with thumbnail previews and progressive versioning. Plus an automatic box-art-matched bezel downloader that frames your screen for any aspect ratio.</p>
       </div>
 
       <div class="feature-card">
-        <div class="feature-icon">🖼️</div>
-        <h3>Library Automation</h3>
-        <p>DAT/CRC32 ROM identification, LaunchBox metadata enrichment, multi-source box art (ScreenScraper + Libretro CDN), iCloud dataless-placeholder materialization, and ROM-removal notifications.</p>
+        <div class="feature-icon">🕹️</div>
+        <h3>Multiplayer Controllers</h3>
+        <p>Up to 4 players with smart defaults per system. Multi-player keyboard mapping, gap-slot prioritization, disable/reset for stuck pads, per-system overrides, and a live test sheet.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🖱️</div>
+        <h3>Analog Mouse & Game Guide</h3>
+        <p>Use your gamepad's analog stick as a mouse in DOS and ScummVM games &mdash; with D-pad as arrow keys. The in-game Game Guide sidebar brings progressive UHS hints and full GameFAQs walkthroughs.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <h3>Cheats</h3>
+        <p>Per-game cheat libraries from the libretro database with live toggle, plus manual Game Genie, Action Replay, and GameShark entry. Auto-disabled in Hardcore Mode.</p>
       </div>
     </div>
   </div>
@@ -115,35 +188,35 @@ description: "The ultimate retro gaming experience, beautifully reimagined for m
   <div class="container">
     <h2 class="section-title">See It In Action</h2>
     <div class="carousel">
-      <div class="carousel-item">
+      <a class="carousel-item" href="{{ '/features/tv-mode.html' | relative_url }}">
         <img src="{{ '/media/screenshots/tv-mode.png' | relative_url }}" alt="TV Mode full-screen browsing">
         <h4>TV Mode</h4>
         <p>Couch-friendly, gamepad-navigable library browsing.</p>
-      </div>
+      </a>
 
-      <div class="carousel-item">
+      <a class="carousel-item" href="{{ '/features/library.html' | relative_url }}">
         <img src="{{ '/media/screenshots/library-grid.png' | relative_url }}" alt="Library Grid View">
         <h4>Browse Your Collection</h4>
         <p>Visually rich library with automatic box art and metadata.</p>
-      </div>
+      </a>
 
-      <div class="carousel-item">
+      <a class="carousel-item" href="{{ '/features/library.html#game-info' | relative_url }}">
         <img src="{{ '/media/screenshots/game-detail.png' | relative_url }}" alt="Game Detail View">
         <h4>Game Details</h4>
         <p>Comprehensive information for each game with play options.</p>
-      </div>
+      </a>
 
-      <div class="carousel-item">
+      <a class="carousel-item" href="{{ '/features/shaders.html' | relative_url }}">
         <img src="{{ '/media/screenshots/shader-picker.png' | relative_url }}" alt="Shader Picker">
         <h4>Shader Picker</h4>
         <p>Real-time shader preview and customization.</p>
-      </div>
+      </a>
 
-      <div class="carousel-item">
+      <a class="carousel-item" href="{{ '/features/save-states.html' | relative_url }}">
         <img src="{{ '/media/screenshots/save-state-browser.png' | relative_url }}" alt="Save State Browser">
         <h4>Save States</h4>
         <p>Visual grid with thumbnails and progressive versioning.</p>
-      </div>
+      </a>
     </div>
   </div>
 </section>
@@ -161,6 +234,7 @@ description: "The ultimate retro gaming experience, beautifully reimagined for m
         Full Feature Tour
       </a>
     </div>
+    <p class="tiny-text">Free and open-source (MIT). No account needed &mdash; except your own RetroAchievements login if you chase trophies. Bring your own legally-obtained ROMs.</p>
   </div>
 </section>
 <!-- Force rebuild: GitHub Pages regeneration signal -->

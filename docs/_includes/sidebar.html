@@ -35,6 +35,7 @@
 <div class="sidebar-section">
 <h3>{{ site.data[lang_code].sidebar_development | default: "Development" }}</h3>
 <ul class="sidebar-nav">
+<li><a href="{{ lang_path | append: '/systems.html' | relative_url }}">{{ site.data[lang_code].sidebar_systems | default: "Systems & Cores" }}</a></li>
 <li><a href="{{ lang_path | append: '/development.html' | relative_url }}">{{ site.data[lang_code].sidebar_architecture | default: "Architecture" }}</a></li>
 <li><a href="{{ lang_path | append: '/dev/building.html' | relative_url }}">{{ site.data[lang_code].sidebar_building | default: "Building" }}</a></li>
 <li><a href="{{ lang_path | append: '/dev/contributing.html' | relative_url }}">{{ site.data[lang_code].sidebar_contributing | default: "Contributing" }}</a></li>

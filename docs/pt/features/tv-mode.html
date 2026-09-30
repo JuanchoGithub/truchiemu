@@ -16,14 +16,20 @@ title: Modo TV - Documentação do TruchiEmu
         <p>O Modo TV foi projetado para o momento em que você conecta seu laptop na TV ou recosta com um controle. A interface de navegação é reorganizada para um layout amplo de tiles grandes com fundos animados de capas e foco nítido. O TruchiEmu lembra dos seus filtros e seleções de ROM ao sair do Modo TV e os restaura quando volta.</p>
 
         <div class="screenshot-frame">
+            <div class="screenshot-frame">
+            <video autoplay muted loop playsinline preload="metadata" poster="{{ '/media/video/tv-mode-poster.jpg' | relative_url }}">
+                <source src="{{ '/media/video/tv-mode.mp4' | relative_url }}" type="video/mp4">
+            </video>
+            <p class="screenshot-caption">Carrossel do TV Mode em movimento &mdash; navegue sistemas com um gamepad (vídeo sem som)</p>
+        </div>
             <img src="{{ '/media/screenshots/tv-mode.png' | relative_url }}" alt="Modo TV" class="screenshot lightbox-trigger">
             <p class="screenshot-caption">Navegação do Modo TV com fundos animados e foco em capas</p>
         </div>
 
         <h3>Recursos</h3>
         <ul class="feature-list">
-            <li><strong>Navegação por Gamepad:</strong> Percorra toda a sua biblioteca com D-pad/stick analógico, A para selecionar, B para voltar, R3/L3 para alternar a barra lateral</li>
-            <li><strong>Navegação Auto-Repeat:</strong> Segurar uma direção faz scroll automático com atraso dinâmico &mdash; rápido no primeiro repeat, depois acelera</li>
+            <li><strong>Navegação por Gamepad:</strong> Percorra toda a sua biblioteca com D-pad/stick analógico, A para selecionar, B para voltar, clique de stick (R3/L3) para alternar a barra lateral</li>
+            <li><strong>Navegação Auto-Repeat:</strong> Segurar uma direção mantém o scroll e acelera quanto mais você segura</li>
             <li><strong>Fundos Animados:</strong> O backdrop deriva da capa do jogo em foco e da arte do sistema, com preenchimento fixado no tamanho da imagem</li>
             <li><strong>Foco em Capa:</strong> Entradas focadas escalam com visuais mais limpos</li>
             <li><strong>Modo Short-List:</strong> Stack compacto só com títulos para bibliotecas muito grandes</li>

@@ -28,14 +28,14 @@ title: Library Management - TruchiEmu Documentation
             <li><strong>Organized Your Way:</strong> Browse by system, favorites, recently played, last added, custom categories, or RetroAchievements-support</li>
             <li><strong>Grid or List:</strong> Switch between the cover-art grid (with zoom slider) and the compact list view</li>
             <li><strong>Search & Filters:</strong> Type-to-search in the main window (multi-term search); quick filter chips for "no box art", "never played", "unidentified", "multiplayer", "genre"</li>
-            <li><strong>Search-Aware Sidebar:</strong> Smart collection rows in SystemSidebarView respect the active search query &mdash; hidden systems stay hidden when you filter</li>
+            <li><strong>Search-Aware Sidebar:</strong> Smart collections respect the active search query &mdash; hidden systems stay hidden when you filter</li>
             <li><strong>RetroAchievements Aware:</strong> Games with achievements are flagged and can be filtered to just those</li>
         </ul>
     </section>
 
     <section id="automation-pipeline">
         <h2>Post-Scan Automation</h2>
-        <p>TruchiEmu doesn't just scan &mdash; after the scan, <strong>LibraryAutomationCoordinator</strong> runs a post-scan pipeline: identify &rarr; enrich metadata &rarr; download art. Pipeline respects <code>RunningGamesTracker</code> so heavy post-scan work pauses during gameplay.</p>
+        <p>TruchiEmu doesn't just scan &mdash; after the scan, an automatic pipeline runs: identify &rarr; enrich metadata &rarr; download art. Heavy post-scan work pauses while you play.</p>
 
         <div class="info-box">
             <p><strong>Background performance:</strong> The pipeline runs serially with a 2-second warm-up delay so it never competes with active gameplay CPU. A separate <strong>MetadataSyncCoordinator</strong> handles background LaunchBox sync with 1-at-a-time concurrency; it also pauses during gameplay.</p>
@@ -45,11 +45,11 @@ title: Library Management - TruchiEmu Documentation
         <ol class="setup-steps">
             <li>
                 <strong>Scan</strong>
-                <p>ROMScanner (a Swift <code>actor</code>) scans directories recursively, filters by extension, and bulk-identifies MAME files in one pass.</p>
+                <p>ROMScanner scans directories recursively, filters by extension, and bulk-identifies MAME files in one pass.</p>
             </li>
             <li>
                 <strong>Hash & Match</strong>
-                <p>ROMIdentifierService computes CRC32 in parallel (4-way semaphore for I/O throttling) and matches against DAT databases. ROMIdentifier uses weighted scoring: magic headers > unique extensions > filename patterns > path context.</p>
+                <p>Each ROM is hashed and matched against game databases using file headers, extensions, names, and folder hints &mdash; so games are found even with odd filenames.</p>
             </li>
             <li>
                 <strong>Metadata Enrichment</strong>
@@ -71,7 +71,7 @@ title: Library Management - TruchiEmu Documentation
         <h3>Adding Folders</h3>
         <ul class="feature-list">
             <li><strong>Setup Wizard:</strong> Add one or more folders during first-launch setup</li>
-            <li><strong>Library Toolbar:</strong> Click the <code>folder.badge.plus</code> button at the top of your library</li>
+            <li><strong>Library Toolbar:</strong> Click the Add Folder button at the top of your library</li>
             <li><strong>Menu Bar:</strong> Games &rarr; Add ROM Folder (<code>Shift+Cmd+O</code>)</li>
             <li><strong>Settings:</strong> Settings &rarr; Library &rarr; Library Folders, click "Add Folder"</li>
         </ul>
@@ -95,6 +95,47 @@ title: Library Management - TruchiEmu Documentation
             <li><strong>Hidden Games:</strong> Right-click &rarr; "Hide Game" to keep main grid uncluttered</li>
             <li><strong>Genre Management:</strong> Settings &rarr; Genres provides per-genre controls</li>
         </ul>
+    </section>
+
+    <section id="holo-effects">
+        <h2>Holo Card Effects (Beta)</h2>
+        <p>Holo adds a foil sheen and light-spot glare to library cards. It follows the cursor and pauses during scroll to keep the grid smooth.</p>
+        <ul class="feature-list">
+            <li><strong>Enable:</strong> turn on Holo in the library view options, or turn on auto-generate Holo masks in the Setup Wizard Look &amp; Feel step for new art</li>
+            <li><strong>Tune:</strong> adjust foil strength and hue-cycles (rainbow rotation) in Holo settings; reverse-holo has its own transparency and texture scale</li>
+            <li><strong>Note:</strong> Holo is still in beta. Effects stay glued to the fitted box-art rect, not the full card.</li>
+        </ul>
+        <div class="screenshot-frame">
+            <img src="{{ '/media/screenshots/library-grid.png' | relative_url }}" alt="Library grid with Holo card effects" class="screenshot lightbox-trigger">
+            <p class="screenshot-caption">Holo foil on library cards (beta)</p>
+        </div>
+        <div class="screenshot-frame">
+            <img src="{{ '/media/screenshots/holo-settings.png' | relative_url }}" alt="Holo settings with foil variant weights" class="screenshot lightbox-trigger">
+            <p class="screenshot-caption">Holo settings: variant weights and glass-orb play button toggle</p>
+        </div>
+    </section>
+
+    <section id="box-art-styles">
+        <h2>Box Art Styles: Adaptive</h2>
+        <p>Adaptive style fits mixed portrait and landscape covers without crop. Vertical, Box, and Landscape force one frame. Adaptive picks per game.</p>
+        <ul class="feature-list">
+            <li><strong>Enable:</strong> Settings &rarr; Library &rarr; Box Art Style, or per system in Per-System settings</li>
+            <li><strong>Values:</strong> Vertical, Box, Landscape, Adaptive</li>
+        </ul>
+    </section>
+
+    <section id="game-info">
+        <h2>Game Info: Scores, Times, Sorts</h2>
+        <p>The Game Detail view shows review scores and completion times when data exists, plus new library sorts.</p>
+        <ul class="feature-list">
+            <li><strong>OpenCritic:</strong> review scores on the detail view; add your OpenCritic API key (via RapidAPI) in Settings to enable lookups</li>
+            <li><strong>HowLongToBeat:</strong> main plus extras and completionist times on the detail view; automatic when matched</li>
+            <li><strong>Sorts:</strong> try Time Played and Longer to Beat in the library sort picker alongside name, last played, and last added</li>
+        </ul>
+        <div class="screenshot-frame">
+            <img src="{{ '/media/screenshots/game-detail.png' | relative_url }}" alt="Game detail view with scores and times" class="screenshot lightbox-trigger">
+            <p class="screenshot-caption">Scores and completion times on the Game Detail view</p>
+        </div>
     </section>
 
     <section id="references">

@@ -760,6 +760,57 @@ pre code {
   transition: all 0.25s ease;
 }
 
+a.carousel-item {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+a.carousel-item h4 {
+  color: inherit;
+}
+
+/* Demo video frames */
+.screenshot-frame video {
+  width: 100%;
+  display: block;
+  border-radius: var(--radius-lg);
+}
+
+/* Holo sheen sweep on cards */
+.feature-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.feature-card::after {
+  content: "";
+  position: absolute;
+  top: -60%;
+  bottom: -60%;
+  left: -30%;
+  width: 36%;
+  transform: rotate(18deg) translateX(-220%);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.14), transparent);
+  pointer-events: none;
+}
+
+.feature-card:hover::after {
+  animation: holo-sheen 0.9s ease forwards;
+}
+
+@keyframes holo-sheen {
+  to {
+    transform: rotate(18deg) translateX(620%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .feature-card:hover::after {
+    animation: none;
+  }
+}
+
 .carousel-item:hover {
   box-shadow: var(--shadow-md);
   transform: translateY(-2px);

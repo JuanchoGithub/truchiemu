@@ -16,14 +16,20 @@ title: Modo TV - Documentación de TruchiEmu
         <p>Modo TV está diseñado para el momento en que conectas tu laptop a la TV o te recuestas con un control. La interfaz de navegación se reorganiza a un layout amplio de tiles grandes con fondos animados de carátulas y enfoque nítido. TruchiEmu recuerda tus filtros y selecciones de ROM al salir del Modo TV y los restaura al regresar.</p>
 
         <div class="screenshot-frame">
-            <img src="{{ '/media/screenshots/tv-mode.png' | relative_url }}" alt="Modo TV" class="screenshot lightbox-trigger">
+            <div class="screenshot-frame">
+            <video autoplay muted loop playsinline preload="metadata" poster="{{ '/media/video/tv-mode-poster.jpg' | relative_url }}">
+                <source src="{{ '/media/video/tv-mode.mp4' | relative_url }}" type="video/mp4">
+            </video>
+            <p class="screenshot-caption">Carrusel de TV Mode en movimiento &mdash; navega sistemas con un gamepad (video sin sonido)</p>
+        </div>
+            <img src="{{ '/media/screenshots/tv-mode-es.png' | relative_url }}" alt="Modo TV" class="screenshot lightbox-trigger">
             <p class="screenshot-caption">Navegación por Modo TV con fondos animados y enfoque de carátula</p>
         </div>
 
         <h3>Lo Que Obtienes</h3>
         <ul class="feature-list">
-            <li><strong>Navegación con Gamepad:</strong> Atraviesa toda tu biblioteca con D-pad/stick analógico, A para seleccionar, B para retroceder, R3/L3 para alternar la barra lateral</li>
-            <li><strong>Navegación Auto-Repeat:</strong> Mantener una dirección hace scroll automático con retraso dinámico &mdash; rápido al primer repeat, luego acelera</li>
+            <li><strong>Navegación con Gamepad:</strong> Atraviesa toda tu biblioteca con D-pad/stick analógico, A para seleccionar, B para retroceder, clic de stick (R3/L3) para alternar la barra lateral</li>
+            <li><strong>Navegación Auto-Repeat:</strong> Mantener una dirección sigue el scroll y acelera cuanto más mantienes</li>
             <li><strong>Fondos Animados:</strong> El backdrop deriva de la carátula del juego enfocado y el arte del sistema, con el relleno fijado al tamaño de la imagen</li>
             <li><strong>Enfoque de Carátula:</strong> Las entradas enfocadas escalan con visuales más limpios</li>
             <li><strong>Modo Short-List:</strong> Stack compacto solo de títulos para bibliotecas muy grandes</li>

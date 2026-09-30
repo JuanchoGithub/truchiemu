@@ -17,6 +17,8 @@ description: Understanding how TruchiEmu handles system compatibility and libret
         <ul>
             <li><a href="#universal-support">Universal Support</a></li>
             <li><a href="#core-management">Core Management</a></li>
+            <li><a href="#mame">MAME & Arcade</a></li>
+            <li><a href="#core-options">Core Options</a></li>
             <li><a href="#bios-files">BIOS & System Files</a></li>
             <li><a href="#optimization">Optimization Tips</a></li>
         </ul>
@@ -59,6 +61,39 @@ description: Understanding how TruchiEmu handles system compatibility and libret
                 <p>Prioritize speed and efficiency. Best for older hardware or extremely demanding titles.</p>
             </div>
         </div>
+
+        <h3>Custom Core Import</h3>
+        <p>You can also install a core from a local <code>.zip</code> or <code>.dylib</code> file. This path supports cores with no buildbot entry, such as <code>suyu_libretro</code> for Switch. Open the Core Downloader, choose Import, select the file, and assign system IDs. TruchiEmu keeps your custom mapping on update.</p>
+        <div class="info-box">
+            <p><strong>Switch notes:</strong> Switch needs its <code>prod.keys</code> file. Place it under <code>~/Library/Application Support/TruchiEmu/System/suyu/keys/prod.keys</code>. Base games group with updates and DLC after scan.</p>
+        </div>
+    </div>
+</section>
+
+<section id="mame" class="content-section">
+    <div class="container">
+        <h2>MAME & Arcade</h2>
+        <p>Use <code>.zip</code> files for arcade ROMs. TruchiEmu scans the folder, checks CRC32 hashes against DAT data, and hides non-game BIOS and device files from the library.</p>
+        <ul class="feature-list">
+            <li><strong>Format:</strong> Keep arcade sets as <code>.zip</code>. Do not unzip them.</li>
+            <li><strong>Identification:</strong> CRC32 plus rejection tracking filters out non-game entries.</li>
+            <li><strong>BIOS:</strong> Some arcade games need extra BIOS files. Provide your own if the game does not boot.</li>
+        </ul>
+    </div>
+</section>
+
+<section id="core-options" class="content-section">
+    <div class="container">
+        <h2>Core Options</h2>
+        <p>Each core exposes video, audio, and system options. Set them in Settings, per system, or per game. Higher levels override lower levels:</p>
+        <ol>
+            <li>Core default (from the core itself)</li>
+            <li>App default</li>
+            <li>App system default</li>
+            <li>System override (your choice for one system)</li>
+            <li>Game override (your choice for one game)</li>
+        </ol>
+        <p>Overrides are stored as <code>.cfg</code> files in <code>TruchiEmu/CoreOptions/</code>. Use labels shown in Settings. The core compares internal values, so keep names exact.</p>
     </div>
 </section>
 
@@ -77,7 +112,7 @@ description: Understanding how TruchiEmu handles system compatibility and libret
             <li><strong>PSP</strong> — PPSSPP system assets</li>
             <li><strong>GameCube/Wii</strong> — Dolphin system files (downloaded automatically on first use)</li>
         </ul>
-        <p>PlayStation does not require a BIOS file — the Beetle PSX core is configured to skip the BIOS boot sequence. For systems like 3DO and certain MAME arcade games that require BIOS files not included with TruchiEmu, you will need to provide your own.</p>
+        <p>PlayStation does not require a BIOS file — the Mednafen PSX (Beetle PSX) core is configured to skip the BIOS boot sequence. For systems like 3DO and certain MAME arcade games that require BIOS files not included with TruchiEmu, you will need to provide your own.</p>
 </div>
 
 <h3>Custom BIOS</h3>

@@ -13,19 +13,19 @@ title: Stream Recording - TruchiEmu Documentation
 
     <section id="overview">
         <h2>Overview</h2>
-        <p>The Stream Recording pipeline runs entirely in-process via HaishinKit &mdash; real RTMP handshake, AMF0 messaging, FLV mux, VideoToolbox H.264/HEVC encode, and AAC encode. There are no external processes, no pipes, no FIFOs, so backpressure flows synchronously without silent frame drops.</p>
+        <p>Record gameplay to a file on your Mac, or stream live to Twitch, YouTube, or any custom RTMP server &mdash; all without leaving the game. Encoding uses your Mac hardware, so the speed impact stays small.</p>
 
         <h3>What You Get</h3>
         <ul class="feature-list">
             <li><strong>Local Recording:</strong> Capture to local files in H.264, HEVC, or lossless ProRes 422 / ProRes 4444</li>
-            <li><strong>Live Streaming:</strong> Stream to Twitch or YouTube (with stream-key verification), or any custom RTMP endpoint</li>
-            <li><strong>In-Game Controls:</strong> Start / stop recording from the game toolbar without breaking flow; the record button's visibility adapts to your recording state and settings</li>
-            <li><strong>VideoToolbox Hardware Encoding:</strong> H.264 / HEVC hardware encode plus AAC audio encode for minimal GPU/CPU impact</li>
-            <li><strong>Stream Resolutions:</strong> Native / 720p / 1080p / 1440p / 4K via the <code>StreamResolution</code> picker. ProRes encoders demote to H.264 for streaming (FLV/RTMP doesn't carry ProRes)</li>
+            <li><strong>Live Streaming:</strong> Stream to Twitch or YouTube (with stream-key check), or any custom RTMP server</li>
+            <li><strong>In-Game Controls:</strong> Start and stop recording from the game toolbar without breaking flow</li>
+            <li><strong>Hardware Encoding:</strong> Your Mac encodes video and audio in hardware for minimal slowdown</li>
+            <li><strong>Stream Resolutions:</strong> Native / 720p / 1080p / 1440p / 4K in the resolution picker. Streaming always uses H.264; pick ProRes for local files only</li>
             <li><strong>Rolling Video Buffer:</strong> Tap a "save last moments" hotkey to write the past few seconds to disk &mdash; perfect for clip-worthy plays you didn't see coming</li>
             <li><strong>Share Button:</strong> Single-press and long-press share actions, configurable per game</li>
-            <li><strong>Record With or Without Shaders:</strong> Choose whether the recording captures the post-shader drawable (CRT, LCD, etc.) or the raw core frame</li>
-            <li><strong>Live Status:</strong> Connection status flows through <code>.connecting &rarr; .streaming</code> or <code>.failed("...")</code> with a localized reason, surfaced in the overlay</li>
+            <li><strong>Record With or Without Shaders:</strong> Choose whether the recording shows your shader look (CRT, LCD, etc.) or the raw game pixels</li>
+            <li><strong>Live Status:</strong> The toolbar shows connecting, live, or failed with a plain reason</li>
         </ul>
     </section>
 
@@ -44,35 +44,39 @@ title: Stream Recording - TruchiEmu Documentation
             </li>
             <li>
                 <strong>Save Last Moments</strong>
-                <p>Press the "Save Last Moments" hotkey during gameplay to flush the rolling video buffer to disk. The flushed clip is saved alongside your recording.</p>
+                <p>Press the "Save Last Moments" hotkey during gameplay to write the past few seconds to disk. The clip lands in the same folder as your recordings.</p>
             </li>
             <li>
                 <strong>Stop & Locate</strong>
-                <p>Press the record button again to stop. Completed recordings live in your configured save directory &mdash; reveal them via the share button's "Reveal in Finder" option.</p>
+                <p>Press the record button again to stop. Use the share button's "Reveal in Finder" option to find your files.</p>
             </li>
         </ol>
+        <div class="screenshot-frame">
+            <img src="{{ '/media/screenshots/streaming-settings.png' | relative_url }}" alt="Streaming and Media recording settings" class="screenshot lightbox-trigger">
+            <p class="screenshot-caption">Recording settings: shortcut, record-with-shaders toggle, and quality presets</p>
+        </div>
 
         <h3>Live Streaming to Twitch or YouTube</h3>
         <ol class="setup-steps">
             <li>
-                <strong>Open Streaming > Twitch or YouTube</strong>
+                <strong>Open the Twitch or YouTube Tab</strong>
                 <p>Go to <strong>Settings &rarr; Streaming & Media</strong> and pick the Twitch or YouTube tab.</p>
             </li>
             <li>
                 <strong>Enter Your Stream Key</strong>
-                <p>Paste your stream key. Hit <strong>Verify</strong> &mdash; the VerifyButton shows immediate success or failure feedback inline.</p>
+                <p>Copy your key from your Twitch dashboard or YouTube Studio, paste it, and hit <strong>Verify</strong>. You get a pass or fail message at once.</p>
             </li>
             <li>
                 <strong>Configure Resolution & Encoder</strong>
-                <p>Select Native / 720p / 1080p / 1440p / 4K from the resolution picker. Higher values upstage CPU; choose ProRes only for local recording.</p>
+                <p>Select Native / 720p / 1080p / 1440p / 4K from the resolution picker. Higher resolutions use more CPU. (ProRes is a local-recording choice, set under the Local tab.)</p>
             </li>
             <li>
                 <strong>Start Streaming from the Game</strong>
-                <p>Open any game. The game toolbar reveals the streaming button; click it to begin. Status transitions from <code>connecting</code> to <code>streaming</code>; errors surface inline.</p>
+                <p>Open any game. The game toolbar shows the streaming button; click it to begin. The status reads connecting, then live. Errors show in plain words.</p>
             </li>
             <li>
                 <strong>Stop Streaming</strong>
-                <p>Click the streaming button again or close the game. The stream is cleanly torn down by HaishinKit.</p>
+                <p>Click the streaming button again or close the game. The stream stops cleanly.</p>
             </li>
         </ol>
 
@@ -80,11 +84,11 @@ title: Stream Recording - TruchiEmu Documentation
         <ol class="setup-steps">
             <li>
                 <strong>Open the Custom Tab</strong>
-                <p>Under <strong>Streaming & Media &rarr; Custom</strong>, enter your RTMP URL (with stream key appended as needed).</p>
+                <p>Under <strong>Settings &rarr; Streaming & Media</strong>, open the Custom tab and enter your RTMP URL (with stream key appended as needed).</p>
             </li>
             <li>
                 <strong>Click Verify</strong>
-                <p>TruchiEmu attempts an in-process handshake to confirm the endpoint.</p>
+                <p>TruchiEmu checks the server and reports pass or fail before you go live.</p>
             </li>
         </ol>
     </section>

@@ -13,11 +13,11 @@ title: Save State System - TruchiEmu Documentation
 
     <section id="service-explanation">
         <h2>Overview</h2>
-        <p>Save States let you snapshot the game at any moment and reload it later  perfect for retrying a tough section, parking a game for later, or experimenting without consequences. Each game gets its own bank of 10 numbered slots plus an auto-save slot. Most cores support this; a few don't.</p>
+        <p>Save States let you snapshot the game at any moment and reload it later  perfect for retrying a tough section, parking a game for later, or experimenting without consequences. Each game gets 11 slots: one auto-save slot plus 10 numbered slots (0–9). Most systems support save states; a few (such as Dolphin) do not.</p>
 
         <h3>What You Get</h3>
 <ul class="feature-list">
-<li><strong>10 Save Slots:</strong> Numbered 0–9, plus an auto-save slot you can load from but not write to directly</li>
+<li><strong>11 Save Slots:</strong> Numbered 0–9, plus an auto-save slot. The auto-save slot fills when you close a game (if enabled). You can load from it but not save to it by hand</li>
 <li><strong>Instant Capture:</strong> Save and load at any point, mid-level, mid-fight, wherever you are</li>
 <li><strong>Thumbnail Previews:</strong> Each save captures a small screenshot, so you can see which one you want before loading</li>
 <li><strong>Auto-Organized:</strong> Save states are grouped per game and labeled with a timestamp</li>
@@ -31,15 +31,19 @@ title: Save State System - TruchiEmu Documentation
     <section id="step-by-step-guide">
         <h2>Step-by-Step Configuration Guide</h2>
         
+        <div class="warning-box">
+            <p><strong>Blocked in Hardcore Mode:</strong> When RetroAchievements Hardcore Mode is active, save states are disabled. Turn it off in Settings &rarr; Achievements to use them.</p>
+        </div>
+
         <h3>Basic Save State Usage</h3>
         <ol class="setup-steps">
             <li>
                 <strong>Save During Gameplay</strong>
-                <p>While playing a game, access the save state menu from the game window toolbar or use the configured keyboard shortcut to save to the current slot. Progressive save states automatically cycle through available slots for quick consecutive saves.</p>
+                <p>Press <code>F5</code> to save to the current slot, or use the Save button in the game window toolbar. To change slots, press <code>F6</code> (next) or <code>F4</code> (previous). With progressive saves on, each slot keeps up to 5 past versions, newest first.</p>
             </li>
             <li>
                 <strong>Load a Save State</strong>
-                <p>Open the save state browser to see all saved states for the current game. Click any entry to restore gameplay from that point.</p>
+                <p>Press <code>F7</code> to load from the current slot, or open the save state browser to pick any slot by its thumbnail. If you load the wrong slot, press <code>Cmd+Z</code> to undo the load.</p>
                 <img src="{{ '/media/screenshots/save-state-browser.png' | relative_url }}" alt="Save State Browser">
             </li>
             <li>
@@ -65,7 +69,7 @@ title: Save State System - TruchiEmu Documentation
             </div>
             
             <div class="service-card">
-                <h3><a href="{{ '/features/library.html' | relative_url }}">Game Library</a></h3>
+                <h3><a href="{{ '/features/library.html' | relative_url }}">Library Management</a></h3>
                 <p>Save states can be viewed and managed from the game detail view, accessible by selecting a game in the library.</p>
             </div>
         </div>

@@ -2,7 +2,7 @@
 layout: default
 title: Guia do Desenvolvedor
 description: Guia técnico para contribuir com o TruchiEmu, compilando a partir do código-fonte e arquitetura do projeto.
-last_updated: Maio 2026
+last_updated: Setembro 2026
 ---
 
 <section class="page-header">
@@ -138,10 +138,13 @@ xcodebuild -project TruchiEmu.xcodeproj -scheme TruchiEmu -configuration Debug b
 <tr><td>Game Boy Advance</td><td>mGBA</td><td>⭐⭐⭐⭐</td><td>⭐⭐⭐⭐</td></tr>
 <tr><td>Genesis/Mega Drive</td><td>Genesis Plus GX</td><td>⭐⭐⭐⭐⭐</td><td>⭐⭐⭐⭐⭐</td></tr>
 <tr><td>Nintendo 64</td><td>ParaLLEl</td><td>⭐⭐⭐⭐</td><td>⭐⭐⭐</td></tr>
-<tr><td>PlayStation 1</td><td>DuckStation</td><td>⭐⭐⭐⭐</td><td>⭐⭐⭐⭐</td></tr>
+<tr><td>PlayStation 1</td><td>Mednafen PSX (Beetle PSX)</td><td>⭐⭐⭐⭐</td><td>⭐⭐⭐⭐</td></tr>
 <tr><td>Fliperama</td><td>MAME 2003+</td><td>⭐⭐⭐</td><td>⭐⭐⭐⭐</td></tr>
 </tbody>
 </table>
+
+<h3>Opções de Core</h3>
+<p>Cada core expõe opções de vídeo, áudio e sistema. Níveis altos anulam os baixos: valor do core → global do app → global do app para um sistema → sobreposição de sistema → sobreposição de jogo. Os valores ficam como <code>.cfg</code> em <code>TruchiEmu/CoreOptions/</code>. Veja o <a href="{{ '/pt/systems.html#core-management' | relative_url }}">Gerenciamento de Cores</a> para a hierarquia completa.</p>
 
 <h3>Gerenciamento de Cores</h3>
 <p>O Core Downloader integrado oferece instalação, atualização e reversão com um clique para todos os cores. As opções por core incluem configurações de vídeo e áudio, e perfis de configuração salváveis. A bridge Swift ↔ ObjC para comunicação de cores reside em <code>LibretroBridge.mm</code> / <code>LibretroBridgeSwift.swift</code>.</p>
@@ -161,19 +164,23 @@ xcodebuild -project TruchiEmu.xcodeproj -scheme TruchiEmu -configuration Debug b
 <section id="shaders" class="content-section">
 <div class="container">
 <h2>Pipeline de Shaders</h2>
-<p>O sistema de shaders usa shaders Metal personalizados compilados em tempo de execução, rodando diretamente na GPU através do framework Metal da Apple.</p>
+<p>O sistema de shaders roda dois pipelines na GPU via Metal da Apple: shaders <code>.metal</code> integrados de passo único, e presets <code>.slangp</code> do RetroArch via librashader.</p>
 
 <h3>Componentes Principais</h3>
 <ul class="feature-list">
 <li><strong>Compilador de Shaders:</strong> Compilação em tempo de execução de arquivos shader <code>.metal</code> com tratamento de erros</li>
 <li><strong>Sistema de Parâmetros:</strong> Ajuste em tempo real de uniforms de shaders via controles SwiftUI</li>
+<li><strong>Bridge Slang:</strong> <code>slang_shader_bridge.mm</code> expõe o librashader ao Metal; <code>SlangCompilerService</code> possui o carregamento de presets e o render por frame</li>
 </ul>
 
 <h3>Arquivos de Shaders</h3>
-<p>Os shaders Metal ficam em <code>TruchiEmu/Core/Shaders/</code>. Os diretórios <code>slang/</code>, <code>internal/</code> e <code>all_shaders.metal</code> são excluídos da compilação do Xcode  estes são recursos carregados em tempo de execução de <code>TruchiEmu_Resources/core_shaders/</code>.</p>
+<p>Os shaders Metal ficam em <code>TruchiEmu/Core/Shaders/</code>. Os diretórios <code>slang/</code>, <code>internal/</code> e <code>all_shaders.metal</code> são excluídos da compilação do Xcode  estes são recursos carregados em tempo de execução de <code>TruchiEmu_Resources/core_shaders/</code>. Os presets slang incluídos vêm do submódulo <code>slang-shaders</code>; arquivos do usuário em <code>~/Library/Application Support/TruchiEmu/SlangPresets/</code> são descobertos sozinhos.</p>
+
+<h3>CRT Pittman</h3>
+<p>O CRT Pittman (<code>CRTPittman.metal</code>, segundo o CRTSim de J. Kyle Pittman) é um shader composto faux-NTSC com persistência de fósforo, máscara de sombra e bloom, mais um gabinete 3D opcional.</p>
 
 <h3>Características de Desempenho</h3>
-<p>Passthrough, Scale Smooth e Vignette têm impacto mínimo na GPU. Shaders CRT (Multipass, Lottes) e simulações LCD usam mais recursos de GPU. O sistema seleciona automaticamente fallbacks em hardware menos potente.</p>
+<p>Passthrough, Scale Smooth e Vignette têm impacto mínimo na GPU. Shaders CRT (Multipass, Lottes, Pittman) e simulações LCD usam mais recursos de GPU.</p>
 </div>
 </section>
 
@@ -221,9 +228,18 @@ xcodebuild -project TruchiEmu.xcodeproj -scheme TruchiEmu -configuration Debug b
 
 <div class="code-box">
 <h4>Iniciar uma ROM</h4>
-<pre><code>./TruchiEmu "/path/to/game.nes"</code></pre>
+<pre><code>./TruchiEmu "/path/to/game.nes"
+./TruchiEmu --launch "/path/to/game.sfc" --core snes9x_libretro --slot 2</code></pre>
 </div>
 <p>A CLI suporta integração com launchers de terceiros e fluxos de trabalho de automação.</p>
+
+<h3>Flags</h3>
+<ul class="feature-list">
+<li><strong>Lançar:</strong> <code>--launch &lt;rom&gt;</code> (ou caminho direto), <code>--core &lt;id&gt;</code>, <code>--slot &lt;n&gt;</code>, <code>--headless</code>, <code>--timeout &lt;seg&gt;</code></li>
+<li><strong>Visual:</strong> <code>--shader &lt;preset-id&gt;</code>, <code>--shader-uniform &lt;chave=valor&gt;</code>, <code>--bezel &lt;arquivo&gt;</code>, <code>--core-option &lt;chave=valor&gt;</code></li>
+<li><strong>Regras:</strong> <code>--achievements</code>, <code>--hardcore</code>, <code>--cheats</code>, <code>--auto-load</code>, <code>--auto-save</code></li>
+<li><strong>Info:</strong> <code>--list-cores</code>, <code>--list-systems</code>, <code>--help</code>, <code>--version</code></li>
+</ul>
 </div>
 </section>
 

@@ -13,15 +13,14 @@ title: Time Machine - Documentación de TruchiEmu
 
     <section id="overview">
         <h2>Descripción General</h2>
-        <p>Time Machine captura deltas de save-state en un buffer circular y los reproduce a demanda, dándote el mismo "scrub" que esperarías de un editor de video &mdash; todo sin salir de la ventana del juego.</p>
+        <p>Time Machine graba tu juego reciente en un buffer corto y lo reproduce a demanda. Mantén rebobinado para retroceder por lo que acaba de pasar &mdash; como un DVR para tu juego &mdash; sin salir de la ventana.</p>
 
         <h3>Características</h3>
         <ul class="feature-list">
-            <li><strong>Rebobinado:</strong> Retrocede por frames recientes para reintentar un salto fallido, combo errado, o golpe fatal sin recurrir a un save state</li>
-            <li><strong>Avance Rápido:</strong> Salta diálogos lentos, grind, o cutscenes largas manteniendo el pitch de audio</li>
+            <li><strong>Rebobinado:</strong> Retrocede por el juego reciente para reintentar un salto fallido, combo errado, o golpe fatal sin recurrir a un save state</li>
+            <li><strong>Avance Rápido:</strong> Salta diálogos lentos, grind, o cutscenes largas</li>
             <li><strong>Cámara Lenta:</strong> Estudia secuencias frame-perfect a velocidad reducida &mdash; ideal para combos de fighting games o setups difíciles de platformer</li>
-            <li><strong>Hardcore-Aware:</strong> Cuando el Modo Hardcore de RetroAchievements está activo, Time Machine se deshabilita junto con save states y cheats</li>
-            <li><strong>Compatibilidad por Core:</strong> Algunos cores (p. ej. Dolphin) se excluyen con elegancia; Play! (PS2) muestra advertencias claras</li>
+            <li><strong>Compatibilidad:</strong> Algunos sistemas no lo soportan (por ejemplo Dolphin). Play! (PS2) te avisa antes de capturar, así puedes retroceder</li>
         </ul>
     </section>
 
@@ -34,6 +33,10 @@ title: Time Machine - Documentación de TruchiEmu
             <li><strong>Asignar Hotkeys:</strong> Bind de rebobinado / avance rápido / slow motion en Hotkeys. Soporta teclado y gamepad.</li>
             <li><strong>Usar en juego:</strong> Dispara los controles desde la barra o los hotkeys. El overlay muestra el estado actual.</li>
         </ol>
+        <div class="screenshot-frame">
+            <img src="{{ '/media/screenshots/time-machine-settings-es.png' | relative_url }}" alt="Ajustes de Máquina del Tiempo" class="screenshot lightbox-trigger">
+            <p class="screenshot-caption">Time Machine: interruptores, buffer de rebobinado y hotkeys</p>
+        </div>
     </section>
 
     <section id="restrictions">

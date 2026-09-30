@@ -2,7 +2,7 @@
 layout: default
 title: Developer Guide
 description: Technical guide for contributing to TruchiEmu, building from source, and project architecture.
-last_updated: May 2026
+last_updated: September 2026
 ---
 
 <section class="page-header">
@@ -136,13 +136,13 @@ xcodebuild -project TruchiEmu.xcodeproj -scheme TruchiEmu -configuration Debug b
                 <tr><td>Game Boy Advance</td><td>mGBA</td><td>⭐⭐⭐⭐</td><td>⭐⭐⭐⭐</td></tr>
                 <tr><td>Genesis/Mega Drive</td><td>Genesis Plus GX</td><td>⭐⭐⭐⭐⭐</td><td>⭐⭐⭐⭐⭐</td></tr>
                 <tr><td>Nintendo 64</td><td>ParaLLEl</td><td>⭐⭐⭐⭐</td><td>⭐⭐⭐</td></tr>
-                <tr><td>PlayStation 1</td><td>DuckStation</td><td>⭐⭐⭐⭐</td><td>⭐⭐⭐⭐</td></tr>
+                <tr><td>PlayStation 1</td><td>Mednafen PSX (Beetle PSX)</td><td>⭐⭐⭐⭐</td><td>⭐⭐⭐⭐</td></tr>
                 <tr><td>Arcade</td><td>MAME 2003+</td><td>⭐⭐⭐</td><td>⭐⭐⭐⭐</td></tr>
             </tbody>
         </table>
 
 <h3>Core Options</h3>
-  <p>Each core exposes configurable options (video, audio, system-specific settings) parsed by <code>CoreOptionsManager</code>. Users can set overrides at multiple levels with increasing priority: core default → app default → app system default → system override → game override. Override values are persisted as <code>.cfg</code> files in <code>TruchiEmu/CoreOptions/</code>. See the <a href="{{ '/features/cheats.html' | relative_url }}">Core Options</a> documentation for the full override hierarchy.</p>
+  <p>Each core exposes configurable options (video, audio, system-specific settings) parsed by <code>CoreOptionsManager</code>. Users can set overrides at multiple levels with increasing priority: core default → app default → app system default → system override → game override. Override values are persisted as <code>.cfg</code> files in <code>TruchiEmu/CoreOptions/</code>. See the <a href="{{ '/systems.html#core-management' | relative_url }}">Core Management</a> documentation for the full override hierarchy.</p>
 
   <h3>Core Management</h3>
   <p>The integrated Core Downloader provides one-click install and update for all cores. Core options can be configured per-core, per-system, and per-game. The Swift ↔ ObjC bridge for core communication lives in <code>LibretroBridge.mm</code> / <code>LibretroBridgeSwift.swift</code>.</p>
@@ -162,19 +162,23 @@ xcodebuild -project TruchiEmu.xcodeproj -scheme TruchiEmu -configuration Debug b
 <section id="shaders" class="content-section">
     <div class="container">
         <h2>Shader Pipeline</h2>
-        <p>The shader system uses custom Metal shaders compiled at runtime, running directly on the GPU through Apple's Metal framework.</p>
+        <p>The shader system runs two pipelines on the GPU through Apple's Metal framework: built-in single-pass <code>.metal</code> shaders, and RetroArch <code>.slangp</code> presets via librashader.</p>
 
         <h3>Key Components</h3>
         <ul class="feature-list">
 <li><strong>Shader Compiler:</strong> Runtime compilation of <code>.metal</code> shader files with error handling</li>
 <li><strong>Parameter System:</strong> Real-time adjustment of shader uniforms via SwiftUI controls</li>
+<li><strong>Slang Bridge:</strong> <code>slang_shader_bridge.mm</code> exposes librashader to Metal; <code>SlangCompilerService</code> owns preset load and per-frame render with a lock-guarded chain pointer</li>
         </ul>
 
         <h3>Shader Files</h3>
-        <p>Metal shaders live in <code>TruchiEmu/Core/Shaders/</code>. The <code>slang/</code>, <code>internal/</code>, and <code>all_shaders.metal</code> directories are excluded from the Xcode build  these are runtime-loaded resources from <code>TruchiEmu_Resources/core_shaders/</code>.</p>
+        <p>Metal shaders live in <code>TruchiEmu/Core/Shaders/</code>. The <code>slang/</code>, <code>internal/</code>, and <code>all_shaders.metal</code> directories are excluded from the Xcode build  these are runtime-loaded resources from <code>TruchiEmu_Resources/core_shaders/</code>. Bundled slang presets come from the <code>slang-shaders</code> submodule; user files in <code>~/Library/Application Support/TruchiEmu/SlangPresets/</code> are discovered automatically. When <code>MetalCoordinator</code> sees a slang preset active, it calls the slang render path instead of the single-pass pipeline.</p>
+
+        <h3>CRT Pittman</h3>
+        <p>CRT Pittman (<code>CRTPittman.metal</code>, after J. Kyle Pittman's CRTSim) is a built-in faux-NTSC composite shader with phosphor persistence, shadow mask, and bloom, plus an optional 3D cabinet frame. Uniform layout must match <code>CRTPittmanUniforms</code> in <code>ShaderUniforms.swift</code> exactly.</p>
 
         <h3>Performance Characteristics</h3>
-        <p>Passthrough, Scale Smooth, and Vignette have minimal GPU impact. CRT shaders (Multipass, Lottes) and LCD simulations use more GPU resources.</p>
+        <p>Passthrough, Scale Smooth, and Vignette have minimal GPU impact. CRT shaders (Multipass, Lottes, Pittman) and LCD simulations use more GPU resources.</p>
     </div>
 </section>
 
@@ -218,12 +222,21 @@ xcodebuild -project TruchiEmu.xcodeproj -scheme TruchiEmu -configuration Debug b
 <section id="cli" class="content-section">
     <div class="container">
   <h2>CLI Reference</h2>
-  <p>TruchiEmu provides a command-line interface for launching games directly from the terminal. Handled by <code>CLIManager</code> and <code>CLILauncher</code> in the Services layer.</p>
+  <p>TruchiEmu provides a command-line interface for launching games directly from the terminal. Handled by <code>CLIManager</code> and <code>CLILauncher</code> (<code>CLIArg</code> enum) in the Services layer.</p>
 
   <div class="code-box">
   <h4>Launch a ROM</h4>
-  <pre><code>./TruchiEmu "/path/to/game.nes"</code></pre>
+  <pre><code>./TruchiEmu "/path/to/game.nes"
+./TruchiEmu --launch "/path/to/game.sfc" --core snes9x_libretro --slot 2</code></pre>
   </div>
+
+  <h3>Flags</h3>
+  <ul class="feature-list">
+  <li><strong>Launch:</strong> <code>--launch &lt;rom&gt;</code> (or bare ROM path), <code>--core &lt;id&gt;</code>, <code>--slot &lt;n&gt;</code>, <code>--headless</code>, <code>--timeout &lt;sec&gt;</code></li>
+  <li><strong>Look:</strong> <code>--shader &lt;preset-id&gt;</code>, <code>--shader-uniform &lt;key=value&gt;</code>, <code>--bezel &lt;file&gt;</code>, <code>--core-option &lt;key=value&gt;</code></li>
+  <li><strong>Rules:</strong> <code>--achievements</code>, <code>--hardcore</code>, <code>--cheats</code>, <code>--auto-load</code>, <code>--auto-save</code></li>
+  <li><strong>Info:</strong> <code>--list-cores</code>, <code>--list-systems</code>, <code>--help</code>, <code>--version</code></li>
+  </ul>
     </div>
 </section>
 

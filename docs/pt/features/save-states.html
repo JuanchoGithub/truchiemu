@@ -13,11 +13,11 @@ title: Sistema de Save States - Documentação do TruchiEmu
 
 <section id="service-explanation">
 <h2>Visão Geral</h2>
-<p>Save States permitem capturar o jogo a qualquer momento e recarregá-lo depois  perfeito para tentar de novo uma seção difícil, deixar um jogo parado para mais tarde, ou experimentar sem consequências. Cada jogo tem seu próprio banco de 10 slots numerados mais um slot de auto-save. A maioria dos cores suporta isso; alguns não.</p>
+<p>Save States permitem capturar o jogo a qualquer momento e recarregá-lo depois  perfeito para tentar de novo uma seção difícil, deixar um jogo parado para mais tarde, ou experimentar sem consequências. Cada jogo tem 11 slots: um slot de auto-save mais 10 slots numerados (0–9).</p>
 
 <h3>Funcionalidades</h3>
 <ul class="feature-list">
-<li><strong>10 Slots de Salvamento:</strong> Numerados de 0 a 9, mais um slot de auto-save que você pode carregar mas não escrever diretamente</li>
+<li><strong>11 Slots de Salvamento:</strong> Numerados de 0 a 9, mais um slot de auto-save. O slot de auto-save preenche ao fechar o jogo (se ativado). Você pode carregá-lo mas não salvar nele à mão</li>
 <li><strong>Captura Instantânea:</strong> Salve e carregue a qualquer momento, no meio de uma fase, no meio de uma luta, onde quer que você esteja</li>
 <li><strong>Pré-visualizações em Miniatura:</strong> Cada save captura uma pequena screenshot, para você ver qual quer antes de carregar</li>
 <li><strong>Organização Automática:</strong> Save states são agrupados por jogo e rotulados com data/hora</li>
@@ -35,11 +35,11 @@ title: Sistema de Save States - Documentação do TruchiEmu
 <ol class="setup-steps">
 <li>
 <strong>Salvar Durante o Gameplay</strong>
-<p>Enquanto joga, acesse o menu de save states pela barra de ferramentas da janela do jogo ou use o atalho de teclado configurado para salvar no slot atual.</p>
+<p>Aperte <code>F5</code> para salvar no slot atual, ou use o botão Salvar na barra do jogo. Para trocar de slot, aperte <code>F6</code> (próximo) ou <code>F4</code> (anterior).</p>
 </li>
 <li>
 <strong>Carregar um Save State</strong>
-<p>Abra o navegador de save states para ver todos os estados salvos do jogo atual. Clique em qualquer entrada para restaurar o gameplay daquele ponto.</p>
+<p>Aperte <code>F7</code> para carregar do slot atual, ou abra o navegador para escolher pela miniatura. Se carregar o slot errado, aperte <code>Cmd+Z</code> para desfazer a carga.</p>
 <img src="{{ '/media/screenshots/save-state-browser.png' | relative_url }}" alt="Navegador de Save States">
 </li>
 <li>

@@ -9,7 +9,10 @@ description: "A experiência definitiva de retro gaming, lindamente reimaginada 
     <div class="hero-content">
       <h1>TruchiEmu</h1>
       <p class="hero-tagline">
-        A experiência definitiva de retro gaming, lindamente reimaginada para macOS
+        NES, SNES, PlayStation, arcade e mais de 100 sistemas &mdash; no seu Mac em minutos
+      </p>
+      <p class="hero-sub">
+        App nativo grátis e open-source para macOS 14+. Adicione uma pasta de ROMs, clique duas vezes, jogue. Sem precisar de técnica.
       </p>
       <div class="hero-actions">
         <a href="{{ '/pt/getting-started.html' | relative_url }}" class="btn btn-primary btn-lg">
@@ -25,6 +28,58 @@ description: "A experiência definitiva de retro gaming, lindamente reimaginada 
     </div>
   </div>
 </div>
+
+<!-- Stats -->
+<section class="section stats-strip">
+  <div class="container">
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🎮</div>
+        <h3>+100 sistemas</h3>
+        <p>Consoles, portáteis, arcade e computadores via cores libretro.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔮</div>
+        <h3>17 + 1.800 shaders</h3>
+        <p>Looks Metal integrados mais uma enorme coleção de presets slang.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">💾</div>
+        <h3>11 slots</h3>
+        <p>Slots visuais com miniaturas e versões progressivas por jogo.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🎨</div>
+        <h3>17 temas</h3>
+        <p>Destaques com nome mais Personalizado, com modos claro e escuro.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 3 passos -->
+<section class="section steps-preview">
+  <div class="container">
+    <h2 class="section-title">Jogando em 3 passos</h2>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">⬇️</div>
+        <h3>1. Baixe</h3>
+        <p>Baixe a versão, mova para Aplicativos, abra.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📁</div>
+        <h3>2. Adicione ROMs</h3>
+        <p>Aponte para uma pasta. Os jogos se identificam sozinhos e trazem capas.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">▶️</div>
+        <h3>3. Jogue</h3>
+        <p>Clique duas vezes em qualquer jogo. Cores faltantes se instalam sozinhos.</p>
+      </div>
+    </div>
+  </div>
+</section>
 
 <!-- Intro -->
 <section class="section features-preview">
@@ -42,9 +97,9 @@ description: "A experiência definitiva de retro gaming, lindamente reimaginada 
       </div>
 
       <div class="feature-card">
-        <div class="feature-icon">🎨</div>
-        <h3>Interface Nativa SwiftUI</h3>
-        <p>100% nativo macOS com animações suaves, modo escuro, totalmente navegável por gamepad e um acabamento que parece feito para o seu Mac. Busca por digitação, coleções inteligentes e vistas de detalhes por jogo.</p>
+        <div class="feature-icon">🖼️</div>
+        <h3>Automação da Biblioteca</h3>
+        <p>Identificação de ROM por DAT/CRC32, enriquecimento de metadados LaunchBox, capas de múltiplas fontes (ScreenScraper + Libretro CDN), materialização de espaços iCloud sem dados e notificações de remoção de ROM.</p>
       </div>
 
       <div class="feature-card">
@@ -56,7 +111,7 @@ description: "A experiência definitiva de retro gaming, lindamente reimaginada 
       <div class="feature-card">
         <div class="feature-icon">🔮</div>
         <h3>Shaders Profissionais</h3>
-        <p>14 shaders Metal integrados (CRT Lottes, LiteCRT, Multipass, Game Boy, GBC, GBA, PSP, NDS, 3DS, Sharp Bilinear e mais) além de suporte nativo a presets slang via librashader &mdash; centenas de presets da comunidade incluídos.</p>
+        <p>17 shaders Metal integrados (CRT Lottes, Pittman, LiteCRT, Multipass, Game Boy, GBC, GBA, PSP, NDS, 3DS, Sharp Bilinear e mais) além de suporte nativo a presets slang via librashader &mdash; cerca de 1.800 presets da comunidade incluídos.</p>
       </div>
 
       <div class="feature-card">
@@ -66,45 +121,63 @@ description: "A experiência definitiva de retro gaming, lindamente reimaginada 
       </div>
 
       <div class="feature-card">
-        <div class="feature-icon">⏪</div>
-        <h3>Time Machine</h3>
-        <p>Controles de rebobinamento, avanço rápido e câmera lenta direto na barra do jogo. Cronometre a nova tentativa perfeita, estude sequências difíceis em câmera lenta ou rebobine instantaneamente quando errar.</p>
+        <div class="feature-icon">🎨</div>
+        <h3>Temas e Aparência</h3>
+        <p>16 temas de destaque com nome mais Personalizado, com modos claro, escuro e automático. Superfícies coloridas e ícones de destaque fazem o app seu.</p>
       </div>
+    </div>
+  </div>
+</section>
 
+<!-- Avançado -->
+<section class="section features-preview">
+  <div class="container">
+    <h2 class="section-title">Arsenal avançado</h2>
+    <p class="section-subtitle">
+      Streaming, completismo e ferramentas de treino para quem quer mais.
+    </p>
+
+    <div class="features-grid">
       <div class="feature-card">
         <div class="feature-icon">🎥</div>
         <h3>Gravação e Streaming</h3>
-        <p>Capture o gameplay para arquivos locais (H.264/HEVC/ProRes) ou faça transmissão ao vivo para Twitch, YouTube ou qualquer servidor RTMP personalizado &mdash; em processo, com codificação por hardware VideoToolbox e buffer dos últimos momentos.</p>
+        <p>Capture o gameplay para arquivos locais (H.264/HEVC/ProRes) ou transmita ao vivo para Twitch, YouTube ou qualquer servidor RTMP &mdash; com codificação por hardware e buffer dos últimos momentos.</p>
       </div>
 
       <div class="feature-card">
-        <div class="feature-icon">🖱️</div>
-        <h3>Mouse Analógico e Game Guide</h3>
-        <p>Use o stick analógico do gamepad como mouse em jogos DOS e ScummVM &mdash; com o D-pad como setas. A barra lateral Game Guide traz dicas progressivas UHS e tutoriais completos do GameFAQs.</p>
+        <div class="feature-icon">⏪</div>
+        <h3>Time Machine</h3>
+        <p>Controles de rebobinamento, avanço rápido e câmera lenta direto na barra do jogo. Cronometre a nova tentativa perfeita ou rebobine instantaneamente quando errar.</p>
       </div>
 
       <div class="feature-card">
         <div class="feature-icon">🥊</div>
         <h3>Training Mode e Move Lists</h3>
-        <p>Ferramentas de fighting games: programe o dummy de P2 (postura, guard, wake-up tech, reversais), grave/reproduza sequências de inputs e visualize notações de golpes na tela para mais de 200 fighting games curados.</p>
-      </div>
-
-      <div class="feature-card">
-        <div class="feature-icon">🕹️</div>
-        <h3>Controles Multiplayer</h3>
-        <p>Até 4 jogadores via GCController da Apple e SDL2. Mapeamento de teclado para múltiplos jogadores, alocação de slots por prioridade ao conectar new pads, desativar/reset para controladores SDL obsoletos e overrides por sistema.</p>
+        <p>Ferramentas de fighting games: programe o dummy de P2, grave/reproduza sequências e visualize notações na tela para mais de 200 jogos curados.</p>
       </div>
 
       <div class="feature-card">
         <div class="feature-icon">💾</div>
         <h3>Save States e Bezels</h3>
-        <p>11 slots de save visual com miniaturas e versionamento progressivo. Mais um baixador automático de bezels combinado por capa que emoldura sua tela para qualquer proporção de aspecto.</p>
+        <p>11 slots visuais com miniaturas e versionamento progressivo. Mais um baixador automático de bezels que emoldura sua tela.</p>
       </div>
 
       <div class="feature-card">
-        <div class="feature-icon">🖼️</div>
-        <h3>Automação da Biblioteca</h3>
-        <p>Identificação de ROM por DAT/CRC32, enriquecimento de metadados LaunchBox, capas de múltiplas fontes (ScreenScraper + Libretro CDN), materialização de espaços iCloud sem dados e notificações de remoção de ROM.</p>
+        <div class="feature-icon">🕹️</div>
+        <h3>Controles Multiplayer</h3>
+        <p>Até 4 jogadores com padrões sensatos por sistema. Teclado multiplayer, prioridade de slots, desativar/reset e folha de teste ao vivo.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🖱️</div>
+        <h3>Mouse Analógico e Game Guide</h3>
+        <p>Use o stick como mouse em jogos DOS e ScummVM. O Game Guide traz dicas progressivas UHS e tutoriais do GameFAQs.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <h3>Cheats</h3>
+        <p>Bibliotecas por jogo do libretro com ativação ao vivo, mais entrada manual de Game Genie, Action Replay e GameShark. Desativados no Modo Hardcore.</p>
       </div>
     </div>
   </div>
@@ -115,35 +188,35 @@ description: "A experiência definitiva de retro gaming, lindamente reimaginada 
   <div class="container">
     <h2 class="section-title">Veja em Ação</h2>
     <div class="carousel">
-      <div class="carousel-item">
+      <a class="carousel-item" href="{{ '/pt/features/tv-mode.html' | relative_url }}">
         <img src="{{ '/media/screenshots/tv-mode.png' | relative_url }}" alt="TV Mode navegação em tela cheia">
         <h4>TV Mode</h4>
         <p>Navegação de biblioteca amigável ao sofá e controlável por gamepad.</p>
-      </div>
+      </a>
 
-      <div class="carousel-item">
+      <a class="carousel-item" href="{{ '/pt/features/library.html' | relative_url }}">
         <img src="{{ '/media/screenshots/library-grid.png' | relative_url }}" alt="Visualização em Grade da Biblioteca">
         <h4>Navegue pela Sua Coleção</h4>
         <p>Biblioteca visualmente rica com capas e metadados automáticos.</p>
-      </div>
+      </a>
 
-      <div class="carousel-item">
+      <a class="carousel-item" href="{{ '/pt/features/library.html#game-info' | relative_url }}">
         <img src="{{ '/media/screenshots/game-detail.png' | relative_url }}" alt="Visualização de Detalhes do Jogo">
         <h4>Detalhes do Jogo</h4>
         <p>Informações completas para cada jogo com opções de jogo.</p>
-      </div>
+      </a>
 
-      <div class="carousel-item">
+      <a class="carousel-item" href="{{ '/pt/features/shaders.html' | relative_url }}">
         <img src="{{ '/media/screenshots/shader-picker.png' | relative_url }}" alt="Seletor de Shaders">
         <h4>Seletor de Shaders</h4>
         <p>Visualização e personalização de shaders em tempo real.</p>
-      </div>
+      </a>
 
-      <div class="carousel-item">
+      <a class="carousel-item" href="{{ '/pt/features/save-states.html' | relative_url }}">
         <img src="{{ '/media/screenshots/save-state-browser.png' | relative_url }}" alt="Navegador de Save States">
         <h4>Save States</h4>
         <p>Grid visual com miniaturas e versionamento progressivo.</p>
-      </div>
+      </a>
     </div>
   </div>
 </section>
@@ -161,6 +234,7 @@ description: "A experiência definitiva de retro gaming, lindamente reimaginada 
         Tour Completo de Recursos
       </a>
     </div>
+    <p class="tiny-text">Grátis e open-source (MIT). Sem contas &mdash; salvo seu login do RetroAchievements se busca troféus. Traga suas ROMs legais.</p>
   </div>
 </section>
 <!-- Force rebuild: GitHub Pages regeneration signal -->

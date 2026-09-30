@@ -87,23 +87,31 @@ description: Guia completo para configurar e usar o TruchiEmu no macOS
 <section id="setup-wizard" class="content-section">
 <div class="container">
 <h2>Assistente de Configuração</h2>
-<p>No primeiro lançamento, o TruchiEmu guia você por um assistente de configuração de 4 passos:</p>
+<p>No primeiro lançamento, o TruchiEmu guia você por 6 fases. Duas fases aparecem só se você as selecionar:</p>
 
 <div class="step-box">
 <div class="step">
-<h4>Passo 1 &mdash; Idioma e Pastas de ROMs</h4>
+<h4>Passo 1 &mdash; Primeiros passos</h4>
 <p>Escolha o idioma da interface (inglês, espanhol ou português) e adicione uma ou mais pastas de ROMs. As pastas são escaneadas recursivamente. Você pode pular isso e adicionar pastas depois.</p>
 </div>
 <div class="step">
 <h4>Passo 2 &mdash; Aparência e Estilo</h4>
-<p>Opcionalmente baixe bezels (molduras decorativas de tela) e escolha um preset de shader padrão. Shaders adicionam linhas de varredura CRT, efeitos LCD, desfoque composto ou escalonamento limpo &mdash; você pode alterar a qualquer momento.</p>
+<p>Escolha um tema e um preset de shader padrão. Opcionalmente ative as máscaras Holo com prévia ao vivo. Você também pode ativar o download de bezels aqui.</p>
 </div>
 <div class="step">
 <h4>Passo 3 &mdash; Recursos Opcionais</h4>
-<p>Ative o download de arquivos de cheats (do banco de dados libretro) e opcionalmente habilite RetroAchievements com suas credenciais de conta. <em>Nota: O login do RetroAchievements está atualmente em desenvolvimento e pode não estar funcional.</em></p>
+<p>Selecione recursos: download de cheats, RetroAchievements, streaming, metadados LaunchBox, opções de acessibilidade e Time Machine (rebobinar, avanço rápido, câmera lenta).</p>
 </div>
 <div class="step">
-<h4>Passo 4 &mdash; Tudo Pronto!</h4>
+<h4>Passo 4 &mdash; Conquistas (condicional)</h4>
+<p>Aparece só se você escolheu RetroAchievements. Digite sua conta e escolha o Modo Hardcore se desejar.</p>
+</div>
+<div class="step">
+<h4>Passo 5 &mdash; Streaming (condicional)</h4>
+<p>Aparece só se você escolheu streaming. Escolha um destino (Twitch, YouTube, RTMP personalizado) e cole sua chave de transmissão.</p>
+</div>
+<div class="step">
+<h4>Passo 6 &mdash; Tudo Pronto!</h4>
 <p>Se você adicionou pastas de ROMs, verá um indicador de progresso do escaneamento. Quando concluído, clique em &ldquo;Entrar na Biblioteca&rdquo; para começar a jogar. Os downloads em segundo plano de bezels e cheats continuarão automaticamente.</p>
 </div>
 </div>
@@ -422,12 +430,12 @@ description: Guia completo para configurar e usar o TruchiEmu no macOS
 </div>
 
 <h3>Shaders</h3>
-<p>O TruchiEmu inclui <strong>14 shaders Metal integrados</strong> em 5 categorias, mais suporte para presets personalizados:</p>
+<p>O TruchiEmu inclui <strong>17 shaders Metal integrados</strong> em 5 categorias, mais suporte para presets personalizados:</p>
 <ul class="feature-list">
-<li><strong>Simulação CRT:</strong> CRT Lottes, CRT Classic, Lite CRT, CRT Multipass &mdash; linhas de varredura autênticas, brilho de fósforo e curvatura</li>
+<li><strong>Simulação CRT:</strong> CRT Lottes, CRT Classic, CRT Pittman, Lite CRT, CRT Multipass &mdash; linhas de varredura autênticas, brilho de fósforo e curvatura</li>
 <li><strong>LCD de Portátil:</strong> 8b Game Boy, 8b Game Boy Color, GBA Advanced LCD, PSP Advanced LCD, NDS Advanced LCD, 3DS Advanced LCD, Dot Matrix LCD</li>
 <li><strong>Suavização:</strong> Sharp Bilinear, Smooth Upscale (ScaleFX) &mdash; escalonamento dirigido por bordas</li>
-<li><strong>Composto:</strong> Desfoque composto/VHS para efeitos autênticos de sinal analógico</li>
+<li><strong>Composto:</strong> Famicom RF, RF Decoder e desfoque composto/VHS para efeitos autênticos de sinal analógico</li>
 <li><strong>Presets Personalizados:</strong> Crie e salve seus próprios presets <code>.truchishader</code>; também inclui uma opção de passthrough &ldquo;Sem Shader&rdquo;</li>
 </ul>
 <p>Shaders podem ser alterados em tempo real durante o jogo &mdash; sem necessidade de reiniciar. Consulte o <a href="{{ '/pt/features/shaders.html' | relative_url }}">Guia de Shaders</a> para detalhes completos.</p>

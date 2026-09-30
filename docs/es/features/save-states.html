@@ -13,11 +13,11 @@ title: Sistema de Estados de Guardado - Documentación de TruchiEmu
 
 <section id="service-explanation">
 <h2>Descripción General</h2>
-<p>Los Estados de Guardado te permiten capturar el juego en cualquier momento y recargarlo más tarde: perfecto para reintentar una sección difícil, aparcar un juego para después o experimentar sin consecuencias. Cada juego tiene su propio banco de 10 slots numerados más un slot de auto-guardado. La mayoría de los cores lo soportan; unos pocos no.</p>
+<p>Los Estados de Guardado te permiten capturar el juego en cualquier momento y recargarlo más tarde: perfecto para reintentar una sección difícil, aparcar un juego para después o experimentar sin consecuencias. Cada juego tiene 11 slots: un slot de auto-guardado más 10 slots numerados (0–9).</p>
 
 <h3>Qué Hay Disponible</h3>
 <ul class="feature-list">
-<li><strong>10 Slots de Guardado:</strong> Numerados del 0 al 9, más un slot de auto-guardado que puedes cargar pero no escribir directamente</li>
+<li><strong>11 Slots de Guardado:</strong> Numerados del 0 al 9, más un slot de auto-guardado. El slot de auto-guardado se llena al cerrar el juego (si está activado). Puedes cargarlo pero no guardar en él a mano</li>
 <li><strong>Captura Instantánea:</strong> Guarda y carga en cualquier punto, en medio del nivel, en medio de un combate, donde sea que estés</li>
 <li><strong>Vistas Previas en Miniatura:</strong> Cada guardado captura una pequeña captura de pantalla, para que puedas ver cuál quieres antes de cargar</li>
 <li><strong>Auto-Organizado:</strong> Los estados de guardado se agrupan por juego y se etiquetan con una marca de tiempo</li>
@@ -35,11 +35,11 @@ title: Sistema de Estados de Guardado - Documentación de TruchiEmu
 <ol class="setup-steps">
 <li>
 <strong>Guardar Durante el Juego</strong>
-<p>Mientras juegas, accede al menú de estados de guardado desde la barra de herramientas de la ventana del juego o usa el atajo de teclado configurado para guardar en el slot actual.</p>
+<p>Pulsa <code>F5</code> para guardar en el slot actual, o usa el botón Guardar en la barra del juego. Para cambiar de slot, pulsa <code>F6</code> (siguiente) o <code>F4</code> (anterior).</p>
 </li>
 <li>
 <strong>Cargar un Estado de Guardado</strong>
-<p>Abre el navegador de estados de guardado para ver todos los estados guardados del juego actual. Haz clic en cualquier entrada para restaurar el juego desde ese punto.</p>
+<p>Pulsa <code>F7</code> para cargar desde el slot actual, o abre el navegador para elegir por miniatura. Si cargas el slot equivocado, pulsa <code>Cmd+Z</code> para deshacer la carga.</p>
 <img src="{{ '/media/screenshots/save-state-browser.png' | relative_url }}" alt="Navegador de Estados de Guardado">
 </li>
 <li>

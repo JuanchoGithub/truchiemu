@@ -14,14 +14,14 @@ title: Sistema de Shaders - Documentação do TruchiEmu
         <h2>Visão Geral</h2>
         <p>TruchiEmu vem com dois tipos de shaders:</p>
         <ul class="feature-list">
-            <li><strong>Presets integrados</strong> &mdash; 14 efeitos prontos para usar: CRT, LCD portátil, suavização e vídeo composto. Sem downloads, sem configuração.</li>
+            <li><strong>Presets integrados</strong> &mdash; 17 efeitos prontos para usar: CRT, LCD portátil, suavização e vídeo composto. Sem downloads, sem configuração.</li>
             <li><strong>Presets Slang/RetroArch</strong> &mdash; centenas de presets da comunidade do projeto <a href="https://github.com/libretro/slang-shaders">libretro slang-shaders</a>. Uma seleção curada aparece na aba "Todos"; tudo que for descoberto aparece na aba "Slang".</li>
         </ul>
         <p>Tudo roda rápido em qualquer Mac moderno. Escolha um preset e jogue.</p>
 
         <h3>O que a Biblioteca Oferece</h3>
         <ul class="feature-list">
-            <li><strong>14 Presets Integrados</strong> &mdash; CRT Lottes, CRT Classic, Lite CRT, CRT Multipass, Sharp Bilinear, Smooth Upscale, 8b Game Boy, 8b Game Boy Color, GBA, PSP, NDS, 3DS, Dot Matrix LCD e Sem Shader. Cobrem visuais CRT, portáteis, suavizados e compostos.</li>
+            <li><strong>17 Presets Integrados</strong> &mdash; CRT Lottes, CRT Classic, CRT Pittman, Lite CRT, CRT Multipass, Sharp Bilinear, Smooth Upscale, 8b Game Boy, 8b Game Boy Color, GBA, PSP, NDS, 3DS, Dot Matrix LCD, Famicom RF, RF Decoder e Sem Shader. Cobrem visuais CRT, portáteis, suavizados e compostos.</li>
             <li><strong>Centenas de Presets Slang/RetroArch</strong> &mdash; CRT, NTSC, cel shading, anti-aliasing, procedural, bezels e mais. Uma seleção curada aparece na aba <strong>Todos</strong>; todos os presets descobertos estão na aba <strong>Slang</strong>. Coloque novos arquivos <code>.slangp</code> em <code>~/Library/Application Support/TruchiEmu/SlangPresets/</code> e eles aparecem automaticamente.</li>
             <li><strong>Seus Próprios Presets</strong> &mdash; Salve qualquer configuração ajustada como um arquivo <code>.truchishader</code> que você pode exportar, compartilhar e reimportar. Eles aparecem na aba <strong>Salvos</strong>.</li>
             <li><strong>Shaders por Jogo</strong> &mdash; Atribua um shader a um jogo específico pela página de detalhes, ou aplique a todos os jogos do mesmo sistema.</li>
@@ -99,6 +99,20 @@ title: Sistema de Shaders - Documentação do TruchiEmu
                 <p>Clique em <strong>Usar Padrão</strong> para limpar o shader personalizado de um jogo. Ele volta ao padrão do sistema.</p>
             </li>
         </ol>
+    </section>
+
+    <section id="crt-pittman">
+        <h2>CRT Pittman e gabinete 3D</h2>
+        <p>O CRT Pittman simula um CRT com composto faux-NTSC, persistência de fósforo, máscara de sombra e bloom. Há um gabinete 3D com câmera ajustada e modo TV.</p>
+        <ul class="feature-list">
+            <li><strong>Ativar:</strong> Seletor de shaders &rarr; categoria CRT &rarr; CRT Pittman</li>
+            <li><strong>Ajustar:</strong> ajuste pixel ratio, reflexo do gabinete e bloom no editor; mudanças aplicam ao vivo</li>
+            <li><strong>Gabinete:</strong> ative o gabinete 3D para vista emoldurada, ou mantenha a vista plana cheia</li>
+        </ul>
+        <div class="screenshot-frame">
+            <img src="{{ '/media/features/crt-lottes.png' | relative_url }}" alt="Exemplo de shader CRT" class="screenshot lightbox-trigger">
+            <p class="screenshot-caption">Visual CRT: teste o Pittman na categoria CRT</p>
+        </div>
     </section>
 
     <section id="references">

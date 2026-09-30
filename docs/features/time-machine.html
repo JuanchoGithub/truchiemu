@@ -13,15 +13,14 @@ title: Time Machine - TruchiEmu Documentation
 
     <section id="overview">
         <h2>Overview</h2>
-        <p>Time Machine captures short save-state deltas in a circular buffer and replays them on demand, giving you the same kind of "scrub" you'd expect from a video editor or a modern arcade-rerelease &mdash; all without ever leaving the game window.</p>
+        <p>Time Machine records your recent gameplay in a short rolling buffer and plays it back on demand. Hold rewind to step back through what just happened &mdash; like a DVR for your game &mdash; all without leaving the game window.</p>
 
         <h3>What You Get</h3>
         <ul class="feature-list">
-            <li><strong>Rewind:</strong> Step backward through recent frames to retry a missed jump, a botched combo, or a fatal hit without reaching for a save state</li>
-            <li><strong>Fast Forward:</strong> Skip slow dialogue, grinding, or long cutscenes while keeping audio pitched to playback speed</li>
+            <li><strong>Rewind:</strong> Step backward through recent gameplay to retry a missed jump, a botched combo, or a fatal hit without reaching for a save state</li>
+            <li><strong>Fast Forward:</strong> Skip slow dialogue, grinding, or long cutscenes</li>
             <li><strong>Slow Motion:</strong> Study frame-perfect sequences at reduced speed &mdash; ideal for fighting game combo practice or tricky platformer setups</li>
-            <li><strong>Hardcore-Aware:</strong> When RetroAchievements Hardcore Mode is active, Time Machine is disabled alongside save states and cheats</li>
-            <li><strong>Per-Core Compatibility:</strong> Some cores (e.g. Dolphin) with known crash issues on the rewind pipeline are gracefully excluded; Play! (PS2) save-state warnings surface clearly so you know before you trigger one</li>
+            <li><strong>Per-System Compatibility:</strong> A few systems do not support rewind (for example Dolphin). The Play! (PS2) core warns you before capturing, so you can back out</li>
         </ul>
     </section>
 
@@ -49,15 +48,19 @@ title: Time Machine - TruchiEmu Documentation
                 <p>Trigger rewind / fast-forward / slow-motion during gameplay via the toolbar buttons or the bound hotkeys. The overlay shows the current Time Machine state and scrub position.</p>
             </li>
         </ol>
+        <div class="screenshot-frame">
+            <img src="{{ '/media/screenshots/time-machine-settings.png' | relative_url }}" alt="Time Machine settings with rewind toggles and buffer budget" class="screenshot lightbox-trigger">
+            <p class="screenshot-caption">Time Machine settings: feature toggles, rewind buffer budget, and hotkeys</p>
+        </div>
     </section>
 
     <section id="restrictions">
         <h2>Restrictions</h2>
         <div class="warning-box">
-            <p><strong>Hardcore Mode:</strong> Time Machine is blocked while RetroAchievements Hardcore Mode is active, just like save states, cheats, and rewind-specific slow motion.</p>
+            <p><strong>Hardcore Mode:</strong> Time Machine is blocked while RetroAchievements Hardcore Mode is active, just like save states and cheats.</p>
         </div>
         <div class="info-box">
-            <p><strong>Cores that aren't supported:</strong> The Time Machine pipeline requires savestate deltas; cores that the libretro ecosystem has warned against using with save states are gracefully excluded from the rewind pipeline, and the Play! (PS2) core surfaces an explicit warning before triggering save-state capture so you can back out.</p>
+            <p><strong>Systems that lack support:</strong> Rewind needs save-state support from the system. Dolphin is excluded. Play! (PS2) warns you before it captures, so you can back out.</p>
         </div>
     </section>
 
@@ -66,7 +69,7 @@ title: Time Machine - TruchiEmu Documentation
         <div class="related-services">
             <div class="service-card">
                 <h3><a href="{{ '/features/save-states.html' | relative_url }}">Save States</a></h3>
-                <p>Time Machine reuses the same savestate pipeline that powers the visual Save State grid.</p>
+                <p>Time Machine reuses the same save-state pipeline that powers the visual Save State grid.</p>
             </div>
             <div class="service-card">
                 <h3><a href="{{ '/features/achievements.html' | relative_url }}">RetroAchievements</a></h3>

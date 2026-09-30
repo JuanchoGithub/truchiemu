@@ -19,6 +19,7 @@ description: Comprehensive overview of TruchiEmu's features including shaders, a
             <li><a href="#shaders">Shader Collection</a></li>
             <li><a href="#library">Library Management</a></li>
             <li><a href="#achievements">Achievements</a></li>
+            <li><a href="#cores">Emulation Cores</a></li>
             <li><a href="#savestates">Save State Features</a></li>
             <li><a href="#themes">Themes & Appearance</a></li>
             <li><a href="#bezels">Bezels & Screen Framing</a></li>
@@ -29,7 +30,6 @@ description: Comprehensive overview of TruchiEmu's features including shaders, a
             <li><a href="#move-lists">Move List & Fight Data</a></li>
             <li><a href="#time-machine">Time Machine</a></li>
             <li><a href="#streaming">Stream Recording</a></li>
-            <li><a href="#netplay">Netplay (Roadmap)</a></li>
         </ul>
     </div>
 </nav>
@@ -40,20 +40,26 @@ description: Comprehensive overview of TruchiEmu's features including shaders, a
         <p>TV Mode is TruchiEmu's couch-friendly, full-screen library experience. Flip to TV Mode from the <strong>View &rarr; TV Mode</strong> menu (or a button on the game-toolbar) to browse your entire collection without a mouse.</p>
 
         <div class="screenshot-frame">
+            <div class="screenshot-frame">
+            <video autoplay muted loop playsinline preload="metadata" poster="{{ '/media/video/tv-mode-poster.jpg' | relative_url }}">
+                <source src="{{ '/media/video/tv-mode.mp4' | relative_url }}" type="video/mp4">
+            </video>
+            <p class="screenshot-caption">TV Mode carousel in motion &mdash; glide through systems with a gamepad (video, no sound)</p>
+        </div>
             <img src="{{ '/media/screenshots/tv-mode.png' | relative_url }}" alt="TV Mode" class="screenshot lightbox-trigger">
             <p class="screenshot-caption">TV Mode browsing with animated backgrounds, box-art focus effects, and gamepad navigation</p>
         </div>
 
         <h3>What You Get</h3>
         <ul class="feature-list">
-            <li><strong>Gamepad Navigation:</strong> D-pad / analog stick scrolls through games, A selects, B backs out, R3/L3 toggles the sidebar &mdash; full traversal without ever touching the keyboard or mouse</li>
-            <li><strong>Animated Backgrounds:</strong> Backdrops derived from each game's box art and system artwork, with auto-repeat navigation and dynamic delay scheduling</li>
-            <li><strong>Box-Art Focus:</strong> Focused entries scale up with cleaner visuals and pin the background fill to the image size to prevent halo clipping</li>
-            <li><strong>Short-List Mode:</strong> Compact title-only stack for very large libraries, with smooth item duplication</li>
+            <li><strong>Gamepad Navigation:</strong> D-pad / analog stick scrolls through games, A selects, B backs out, stick-click toggles the sidebar &mdash; full traversal without ever touching the keyboard or mouse</li>
+            <li><strong>Animated Backgrounds:</strong> Backdrops follow the focused game's box art and system artwork, with auto-repeat navigation that speeds up the longer you hold</li>
+            <li><strong>Box-Art Focus:</strong> Focused entries scale up with cleaner visuals and pin the background fill to the image size</li>
+            <li><strong>Short-List Mode:</strong> Compact title-only list for very large libraries</li>
             <li><strong>Filter & Sort:</strong> TV Mode maintains your filter and ROM selections on state restoration; reset filters at any time</li>
             <li><strong>Resolution-Adaptive Scaling:</strong> Auto-scales the UI relative to your screen resolution for a consistent feel on 1080p, 1440p, and 4K displays</li>
             <li><strong>Core Download Overlay:</strong> Trigger core downloads directly from TV Mode &mdash; no need to drop back to the desktop</li>
-            <li><strong>Auto-Fullscreen:</strong> Optionally restore the previous fullscreen state when you exit TV Mode</li>
+            <li><strong>Auto-Fullscreen:</strong> Optionally returns to your previous fullscreen state when you exit TV Mode; toggle it in settings</li>
         </ul>
 
         <p><a href="{{ '/features/tv-mode.html' | relative_url }}">Learn more about TV Mode &rarr;</a></p>
@@ -71,7 +77,7 @@ description: Comprehensive overview of TruchiEmu's features including shaders, a
         </div>
 
         <h3>Built-in Metal Shaders</h3>
-        <p>TruchiEmu ships with 14 built-in Metal shaders that work out of the box &mdash; no downloads, no setup:</p>
+        <p>TruchiEmu ships with 17 built-in Metal shaders that work out of the box &mdash; no downloads, no setup. Five favorites below; the picker holds all 17 including CRT Pittman and the slang collection:</p>
 
         <div class="shader-grid">
             <div class="shader-card">
@@ -116,7 +122,7 @@ description: Comprehensive overview of TruchiEmu's features including shaders, a
         </div>
 
         <h3>Slang Shader Presets</h3>
-        <p>Beyond the built-in Metal shaders, TruchiEmu also runs RetroArch <code>.slangp</code> presets via <strong>librashader</strong>. Hundreds of community-made presets from the <a href="https://github.com/libretro/slang-shaders">libretro slang-shaders</a> project are bundled and discovered automatically. Browse them in the <strong>All</strong> and <strong>Slang</strong> tabs of the shader picker. Drop new <code>.slangp</code> files into <code>~/Library/Application Support/TruchiEmu/SlangPresets/</code> and they appear automatically.</p>
+        <p>Beyond the built-in Metal shaders, TruchiEmu also runs RetroArch <code>.slangp</code> presets via <strong>librashader</strong>. Around 1,800 community-made presets from the <a href="https://github.com/libretro/slang-shaders">libretro slang-shaders</a> project are bundled and discovered automatically. Browse them in the <strong>All</strong> and <strong>Slang</strong> tabs of the shader picker. Drop new <code>.slangp</code> files into <code>~/Library/Application Support/TruchiEmu/SlangPresets/</code> and they appear automatically.</p>
 
         <h3>Shader Customization</h3>
         <p>Each shader includes adjustable parameters to fine-tune the effect:</p>
@@ -129,6 +135,10 @@ description: Comprehensive overview of TruchiEmu's features including shaders, a
         </ul>
 
         <p><a href="{{ '/features/shaders.html' | relative_url }}">Learn more about the Shader System &rarr;</a></p>
+
+        <div class="info-box">
+            <p><strong>New:</strong> CRT Pittman with faux-NTSC composite and bloom, plus an optional 3D cabinet frame. See <a href="{{ '/features/shaders.html#crt-pittman' | relative_url }}">CRT Pittman and 3D Cabinet</a>.</p>
+        </div>
 
         <div class="info-box">
             <p><strong>Performance Impact:</strong> Passthrough and Scale Smooth have minimal performance impact. CRT shaders (Multipass, Lottes, Classic) and LCD simulations use more GPU resources. Most modern Macs can run any shader at full speed.</p>
@@ -148,13 +158,16 @@ description: Comprehensive overview of TruchiEmu's features including shaders, a
 
         <h3>Automatic Organization</h3>
         <ul class="feature-list">
-            <li><strong>Smart Detection:</strong> Automatically identifies games from ROM file hashes (CRC32 hardware-accelerated via zlib, with DAT databases and a rejection-tracking scorer for MAME)</li>
-            <li><strong>Metadata Fetching:</strong> LaunchBox Metadata Service downloads game descriptions, release dates, publisher, genre with platform overrides and match scoring</li>
+            <li><strong>Smart Detection:</strong> Automatically identifies games from file hashes against game databases, including arcade sets</li>
+            <li><strong>Metadata Fetching:</strong> Downloads game descriptions, release dates, publisher, and genre automatically</li>
             <li><strong>Cover Art Sources:</strong> ScreenScraper and Libretro CDN with configurable priority; interactive Box Art Picker lets you swap alt artwork per game; PPSSPP asset downloads are auto-applied</li>
             <li><strong>System Categorization:</strong> Groups games by original console/system</li>
             <li><strong>Achievement Detection:</strong> Identifies games with RetroAchievements support and shows the RA hash in the Game Detail view</li>
-            <li><strong>iCloud Materialization:</strong> iCloud dataless-placeholders are materialized on access so ROMs stored in iCloud appear correctly when they would otherwise be displayed as zero-byte stubs</li>
+            <li><strong>iCloud Support:</strong> ROMs stored in iCloud download on demand instead of showing as empty files</li>
             <li><strong>Removal Notifications:</strong> When ROMs are removed from a watched folder, TruchiEmu posts a notification and updates the library automatically</li>
+            <li><strong>Holo Card Effects (Beta):</strong> Library cards show a foil sheen with light-spot glare that follows the cursor and pauses during scroll</li>
+            <li><strong>Adaptive Box Art:</strong> Mixed portrait and landscape covers fit without crop; fixed Vertical, Box, and Landscape styles also available</li>
+            <li><strong>Game Info:</strong> The Game Detail view shows OpenCritic scores and HowLongToBeat times when matched, with Time Played and Longer to Beat sorts in the library</li>
         </ul>
 
         <div class="view-mode">
@@ -162,7 +175,7 @@ description: Comprehensive overview of TruchiEmu's features including shaders, a
             <p>Visual grid with cover art thumbnails. Perfect for browsing large collections.</p>
             <ul>
                 <li>Adjustable grid size via zoom slider</li>
-                <li>Sort by name, last played, or last added</li>
+                <li>Sort by name, last played, last added, time played, or longer to beat</li>
                 <li>Quick search and filter</li>
             </ul>
         </div>
@@ -206,7 +219,7 @@ description: Comprehensive overview of TruchiEmu's features including shaders, a
                 <li>Join the RetroAchievements community to track your progress against other players.</li>
                 <li><strong>Hardcore Mode:</strong> Enable Hardcore Mode via settings to block save states, rewind, slow motion, and cheats, which is required for earning Hardcore-tier achievements.</li>
                 <li><strong>First-Run Enable Prompt:</strong> TruchiEmu offers to enable RetroAchievements (and Hardcore Mode) during the Setup Wizard, with cache-import progress for offline achievement data.</li>
-                <li><strong>Game Detail View:</strong> The Game Detail page shows the game's RA hash and progress on already-unlocked achievements, sourced via accurate <code>RomHasher</code> console-ID mapping (CDI supported on PS1).</li>
+                <li><strong>Game Detail View:</strong> The Game Detail page shows the game's RA hash and progress on already-unlocked achievements, with the correct hash shown automatically.</li>
             </ul>
         </div>
 
@@ -221,8 +234,14 @@ description: Comprehensive overview of TruchiEmu's features including shaders, a
 <section id="cores" class="content-section">
     <div class="container">
         <h2>Emulation Cores</h2>
-        <p>TruchiEmu is powered by <strong>libretro</strong>, a universal emulation API. Each system runs on a dedicated core &mdash; think of them as plug-in engines. Cores are automatically downloaded, updated, and configured through the integrated Core Downloader.</p>
-        <p>For a complete reference on which cores power each system, performance tuning, and the technical architecture, see the <a href="{{ '/development.html' | relative_url }}">Developer Guide</a>.</p>
+        <p>TruchiEmu is powered by <strong>libretro</strong>, a universal emulation API. Each system runs on a dedicated core &mdash; think of them as plug-in engines.</p>
+        <ul class="feature-list">
+            <li><strong>Core Downloader:</strong> Browse, install, and update cores with one click, without leaving the app</li>
+            <li><strong>Custom Import:</strong> Install a core from a local file, including Switch support via suyu (needs your own prod.keys)</li>
+            <li><strong>MAME & Arcade:</strong> Keep arcade sets as .zip; the library hides non-game BIOS and device files</li>
+            <li><strong>Core Options:</strong> Tune video, audio, and system settings per game, per system, or app-wide</li>
+        </ul>
+        <p><a href="{{ '/systems.html' | relative_url }}">Learn more about Systems & Cores &rarr;</a></p>
     </div>
 </section>
 
@@ -237,7 +256,7 @@ description: Comprehensive overview of TruchiEmu's features including shaders, a
                 <ul>
                     <li>Automatic thumbnail capture for every save slot</li>
                     <li>Visual grid browser for quick state selection</li>
-                    <li>Up to 10 save slots per game</li>
+                    <li>11 slots per game: one Auto slot plus slots 0 through 9</li>
                     <li>Timestamps for each captured state</li>
                 </ul>
             </div>
@@ -260,7 +279,7 @@ description: Comprehensive overview of TruchiEmu's features including shaders, a
 <section id="themes" class="content-section">
     <div class="container">
         <h2>Themes &amp; Appearance</h2>
-        <p>Make TruchiEmu yours with 16 curated accent color themes plus custom colors &mdash; inspired by gaming legends from Samus to Doom &mdash; plus light/dark appearance modes and tinted surfaces.</p>
+        <p>Make TruchiEmu yours with 16 named accent color themes plus a Custom theme &mdash; inspired by gaming legends from Samus to Doom &mdash; plus light/dark appearance modes and tinted surfaces.</p>
 
         <div class="screenshot-frame">
             <img src="{{ '/media/features/themes-showcase.png' | relative_url }}" alt="All 17 TruchiEmu Themes" class="screenshot lightbox-trigger">
@@ -291,7 +310,7 @@ description: Comprehensive overview of TruchiEmu's features including shaders, a
         </div>
         <ul class="feature-list">
             <li><strong>Automatic Mapping:</strong> Bezels are automatically matched based on the game name, following a resolution cascade (user override &rarr; exact match &rarr; cleaned name &rarr; fuzzy match &rarr; no bezel).</li>
-            <li><strong>Bezel Browser:</strong> Integrated downloader to find and apply community-created borders.</li>
+            <li><strong>Bezel Browser:</strong> Integrated downloader for The Bezel Project collection.</li>
             <li><strong>Custom Import:</strong> Import your own bezel images for any game.</li>
         </ul>
         <p><a href="{{ '/bezel-guide.html' | relative_url }}">Learn more about bezels &rarr;</a></p>
@@ -301,22 +320,23 @@ description: Comprehensive overview of TruchiEmu's features including shaders, a
 <section id="controllers" class="content-section">
     <div class="container">
         <h2>Controller Support</h2>
-        <p>Plug in a gamepad and it just works. TruchiEmu supports both Apple's <strong>GCController</strong> framework and <strong>SDL2</strong> for broad controller compatibility.</p>
+        <p>Plug in a gamepad and it just works. TruchiEmu supports Xbox, PlayStation, MFi, Switch Pro, and most USB/Bluetooth pads &mdash; up to 4 players.</p>
 
         <h3>What You Get</h3>
         <ul class="feature-list">
             <li><strong>Plug and Play:</strong> USB and Bluetooth controllers are recognized the moment you connect them</li>
-            <li><strong>Dual Driver Support:</strong> Works with GCController-compatible gamepads (Xbox, PlayStation, MFi, Switch Pro) and SDL2-compatible controllers for broader hardware support</li>
+            <li><strong>Broad Compatibility:</strong> Works with Xbox, PlayStation, MFi, and Switch Pro pads, plus most generic controllers</li>
             <li><strong>Smart Defaults:</strong> TruchiEmu picks a sensible button layout based on the controller type and the system you're playing</li>
             <li><strong>Per-Controller Profiles:</strong> Each controller you connect gets its own mapping, remembered for next time</li>
             <li><strong>Per-System Overrides:</strong> A PlayStation pad can be SNES-style on one system and Genesis-style on another</li>
-            <li><strong>Multi-Player Keyboard Mapping:</strong> Refactored keyboard input supports multiple players from a single physical keyboard &mdash; combine a gamepad for P1 and keyboard for P2 (or vice-versa)</li>
+            <li><strong>Multi-Player Keyboard Mapping:</strong> Multiple players can share one keyboard &mdash; combine a gamepad for P1 and keyboard for P2 (or vice-versa)</li>
             <li><strong>Gap-Slot Prioritization:</strong> When a new controller connects, TruchiEmu prioritizes the first empty slot before substituting a keyboard player &mdash; your P2 stays P2</li>
-            <li><strong>SDL Disable & Reset:</strong> Disable a stuck SDL controller or reset the SDL controller list without quitting the app; keyboard controllers can also be disabled/reset independently</li>
+            <li><strong>Disable & Reset:</strong> Disable a stuck controller or reset the controller list without quitting the app</li>
             <li><strong>Replace Keyboard with Controller:</strong> Toggle whether a freshly-connected controller should automatically take over a keyboard-assigned slot</li>
-            <li><strong>Deadzone & Sensitivity:</strong> Tune stick response so drift doesn't wander the character</li>
+            <li><strong>Dead Zone & Sensitivity:</strong> Tune stick response so drift doesn't wander the character</li>
             <li><strong>Remap Anything:</strong> Swap any button to any other button, including face, shoulder, and stick clicks</li>
-            <li><strong>Analog Mouse Mode:</strong> Use a stick to control the mouse in DOS and ScummVM games &mdash; see the Analog Mouse section for full details</li>
+            <li><strong>Controller Test Sheet:</strong> A live pad visualizer with stick calibration &mdash; verify a new pad before you play</li>
+            <li><strong>Analog Mouse:</strong> Use a stick to control the mouse in DOS and ScummVM games &mdash; see the Analog Mouse section for full details</li>
             <li><strong>Keyboard Shortcuts:</strong> System hotkeys for save states, screenshots, and other common actions</li>
         </ul>
 
@@ -330,8 +350,8 @@ description: Comprehensive overview of TruchiEmu's features including shaders, a
         <p>TruchiEmu lets you use your gamepad's analog sticks to control the mouse cursor in DOS and ScummVM games, with configurable buttons for mouse clicks and D-pad for keyboard inputs.</p>
 
         <div class="screenshot-frame">
-            <img src="{{ '/media/screenshots/analog-mouse-settings.png' | relative_url }}" alt="Analog Mouse Settings" class="screenshot lightbox-trigger">
-            <p class="screenshot-caption">Analog mouse settings with sensitivity, dead zone, and button mapping</p>
+            <img src="{{ '/media/screenshots/controller-mapping.png' | relative_url }}" alt="Controller mapping settings" class="screenshot lightbox-trigger">
+            <p class="screenshot-caption">Controller mapping with sensitivity, dead zone, and button mapping</p>
         </div>
 
         <h3>Key Features</h3>
@@ -409,7 +429,7 @@ description: Comprehensive overview of TruchiEmu's features including shaders, a
             <li><strong>Search &amp; Filter:</strong> Quickly find specific moves by name, input type, or character</li>
         </ul>
 
-        <p><a href="{{ '/features/move-lists.html' | relative_url }}">Learn more about Move List Overlay &rarr;</a></p>
+        <p><a href="{{ '/features/move-lists.html' | relative_url }}">Learn more about Move Lists &rarr;</a></p>
     </div>
 </section>
 
@@ -438,14 +458,14 @@ description: Comprehensive overview of TruchiEmu's features including shaders, a
 <section id="streaming" class="content-section">
     <div class="container">
         <h2>Stream Recording</h2>
-        <p>Record your gameplay sessions or stream live to Twitch, YouTube, or a custom RTMP server &mdash; all without leaving the game. The entire encode/RTMP pipeline runs in-process via HaishinKit, so there are no external processes, FIFOs, or silent frame drops under backpressure.</p>
+        <p>Record your gameplay sessions or stream live to Twitch, YouTube, or a custom RTMP server &mdash; all without leaving the game. Encoding runs on your Mac hardware, so the speed impact stays small.</p>
 
         <h3>Key Features</h3>
         <ul class="feature-list">
             <li><strong>Local Recording:</strong> Capture gameplay to local files in H.264, HEVC, or lossless ProRes 422/4444</li>
             <li><strong>Live Streaming:</strong> Stream directly to Twitch or YouTube, or point to any custom RTMP endpoint with stream-key verification (Twitch/YouTube give immediate success/failure feedback)</li>
-            <li><strong>Resolutions:</strong> Native / 720p / 1080p / 1440p / 4K via the <code>StreamResolution</code> picker; ProRes encoders are demoted to H.264 for streaming</li>
-            <li><strong>VideoToolbox Encoding:</strong> Hardware-accelerated H.264/HEVC encode and AAC audio encode via macOS VideoToolbox for minimal performance impact</li>
+            <li><strong>Resolutions:</strong> Native / 720p / 1080p / 1440p / 4K in the resolution picker; streaming always uses H.264</li>
+            <li><strong>Hardware Encoding:</strong> Your Mac encodes video and audio in hardware for minimal slowdown</li>
             <li><strong>Rolling Video Buffer:</strong> Tap a "save last moments" hotkey to write the past few seconds to disk &mdash; perfect for clip-worthy plays you didn't see coming</li>
             <li><strong>Share Button:</strong> Single-press and long-press share actions, configurable per game</li>
             <li><strong>Record With or Without Shaders:</strong> Choose whether the recording captures the post-shader drawable or the raw core frame</li>
@@ -457,26 +477,6 @@ description: Comprehensive overview of TruchiEmu's features including shaders, a
         </div>
 
         <p><a href="{{ '/features/streaming.html' | relative_url }}">Learn more about Stream Recording &rarr;</a></p>
-    </div>
-</section>
-
-<section id="netplay" class="content-section">
-    <div class="container">
-        <h2>Netplay &mdash; Roadmap</h2>
-        <p>Netplay (multiplayer over the network) is documented as an implementation plan and is not yet shipped. The complete design &mdash; infrastructure, matchmaking, and rollback netcode integration &mdash; lives in <code>Netplay_Implementation_Plan.md</code> in the repository root.</p>
-
-        <h3>Roadmap High-Level</h3>
-        <ul class="feature-list">
-            <li><strong>Core integration:</strong> Wrap libretro's netplay API in a Swift-friendly SwiftPM module reusing existing <code>LibretroBridge</code></li>
-            <li><strong>Transport:</strong> Initial peer-to-peer via STUN, with optional relay for restrictive NATs</li>
-            <li><strong>Matchmaking:</strong> Optional centralized matchmaking with room codes &mdash; no requirements on local discovery</li>
-            <li><strong>Lobby UI:</strong> SwiftUI lobby shown as a tab/window; Brawl-style host/join/codes</li>
-            <li><strong>Savestate sync:</strong> Pull the existing save-state & Time Machine pipeline to seed initial state for retro games that support it</li>
-        </ul>
-
-        <div class="warning-box">
-            <p><strong>Status:</strong> Netplay is a documented roadmap, not a shipped feature. Track progress in <code>Netplay_Implementation_Plan.md</code>.</p>
-        </div>
     </div>
 </section>
 

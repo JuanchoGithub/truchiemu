@@ -66,7 +66,7 @@ description: Complete guide to setting up and using TruchiEmu for macOS
 </li>
 <li>
 <strong>Add Your ROM Folders</strong>
-<p>When the wizard appears, click the folder button to select the directory containing your ROMs. You can add multiple folders &mdash; TruchiEmu scans them recursively. You can also add folders later from the library toolbar (<code>folder.badge.plus</code> button) or with <code>Shift+Cmd+O</code>.</p>
+<p>When the wizard appears, click the folder button to select the directory containing your ROMs. You can add multiple folders &mdash; TruchiEmu scans them recursively. You can also add folders later from the library toolbar (Add Folder button) or with <code>Shift+Cmd+O</code>.</p>
 </li>
 <li>
 <strong>Wait for the Scan</strong>
@@ -87,23 +87,31 @@ description: Complete guide to setting up and using TruchiEmu for macOS
 <section id="setup-wizard" class="content-section">
 <div class="container">
 <h2>Setup Wizard</h2>
-<p>On first launch, TruchiEmu walks you through a 4-step setup wizard:</p>
+<p>On first launch, TruchiEmu walks you through 6 phases. Two phases appear only if you select them:</p>
 
 <div class="step-box">
 <div class="step">
-<h4>Step 1 &mdash; Language &amp; ROM Folders</h4>
+<h4>Step 1 &mdash; Get Started</h4>
 <p>Choose your UI language (English, Spanish, or Portuguese) and add one or more ROM folders. Folders are scanned recursively. You can skip this and add folders later.</p>
 </div>
 <div class="step">
 <h4>Step 2 &mdash; Look &amp; Feel</h4>
-<p>Optionally download bezels (decorative screen overlays) and pick a default shader preset. Shaders add CRT scanlines, LCD effects, composite blur, or clean scaling &mdash; you can change this anytime.</p>
+<p>Pick a theme and a default shader preset. Optionally enable Holo card masks with a live preview. Shaders add CRT scanlines, LCD effects, composite blur, or clean scaling &mdash; you can change this anytime. You can also enable bezel downloads here.</p>
 </div>
 <div class="step">
 <h4>Step 3 &mdash; Optional Features</h4>
-<p>Toggle cheat file downloads (from the libretro database) and optionally enable RetroAchievements. Note: RetroAchievements login is configured in Settings after the wizard &mdash; the wizard only toggles the feature on.</p>
+<p>Select features to enable: cheat downloads (from the libretro database), RetroAchievements, streaming, LaunchBox metadata, accessibility options, and Time Machine (rewind, fast-forward, slow motion). Note: RetroAchievements login and stream keys are configured in the next conditional steps or in Settings after the wizard.</p>
 </div>
 <div class="step">
-<h4>Step 4 &mdash; You&rsquo;re All Set</h4>
+<h4>Step 4 &mdash; Achievements (conditional)</h4>
+<p>Appears only if you selected RetroAchievements. Enter your account details and choose Hardcore Mode if desired.</p>
+</div>
+<div class="step">
+<h4>Step 5 &mdash; Streaming (conditional)</h4>
+<p>Appears only if you selected streaming. Choose a destination (Twitch, YouTube, custom RTMP) and paste your stream key.</p>
+</div>
+<div class="step">
+<h4>Step 6 &mdash; You&rsquo;re All Set</h4>
 <p>If you added ROM folders, you&rsquo;ll see a scanning progress indicator. Once complete, click &ldquo;Enter Library&rdquo; to start playing. Background downloads for bezels and cheats will continue automatically.</p>
 </div>
 </div>
@@ -118,7 +126,7 @@ description: Complete guide to setting up and using TruchiEmu for macOS
 <p>TruchiEmu uses <strong>folder-based scanning</strong> &mdash; add a directory and the app finds all compatible ROMs inside it. There are several ways to add folders:</p>
 <ul class="feature-list">
 <li><strong>Setup Wizard:</strong> Add folders during first-launch setup</li>
-<li><strong>Library Toolbar:</strong> Click the <code>folder.badge.plus</code> button at the top of your library</li>
+<li><strong>Library Toolbar:</strong> Click the Add Folder button at the top of your library</li>
 <li><strong>Menu Bar:</strong> Games &rarr; Add ROM Folder (<code>Shift+Cmd+O</code>)</li>
 <li><strong>Settings:</strong> Navigate to Settings &rarr; Library &rarr; Library Folders and click &ldquo;Add Folder&rdquo;</li>
 <li><strong>Empty Library:</strong> A prominent &ldquo;Add ROM Folder&rdquo; button appears when your library is empty</li>
@@ -323,7 +331,7 @@ description: Complete guide to setting up and using TruchiEmu for macOS
 <section id="save-states" class="content-section">
 <div class="container">
 <h2>Save States</h2>
-<p>TruchiEmu provides flexible save state management with 11 slots, progressive versioning, and auto-save/load options.</p>
+<p>TruchiEmu provides flexible save state management with 11 save slots, progressive versioning, and auto-save/load options.</p>
 
 <h3>Slots</h3>
 <p>There are <strong>11 save slots</strong>: one Auto slot (slot -1) plus slots 0 through 9. Each slot can store up to <strong>5 progressive versions</strong> (default: 3), giving you multiple snapshots per slot.</p>
@@ -420,12 +428,12 @@ description: Complete guide to setting up and using TruchiEmu for macOS
 </div>
 
 <h3>Shaders</h3>
-<p>TruchiEmu includes <strong>14 built-in Metal shaders</strong> across 5 categories, plus custom preset support:</p>
+<p>TruchiEmu includes <strong>17 built-in Metal shaders</strong> across 5 categories, plus custom preset support:</p>
 <ul class="feature-list">
-<li><strong>CRT Simulation:</strong> CRT Lottes, CRT Classic, Lite CRT, CRT Multipass &mdash; authentic scanlines, phosphor glow, and curvature</li>
+<li><strong>CRT Simulation:</strong> CRT Lottes, CRT Classic, CRT Pittman, Lite CRT, CRT Multipass &mdash; authentic scanlines, phosphor glow, and curvature</li>
 <li><strong>Handheld LCD:</strong> 8b Game Boy, 8b Game Boy Color, GBA Advanced LCD, PSP Advanced LCD, NDS Advanced LCD, 3DS Advanced LCD, Dot Matrix LCD</li>
 <li><strong>Smoothing:</strong> Sharp Bilinear, Smooth Upscale (ScaleFX) &mdash; edge-directed upscaling</li>
-<li><strong>Composite:</strong> Composite/VHS blur for authentic analog signal effects</li>
+<li><strong>Composite:</strong> Famicom RF, RF Decoder, and Composite/VHS blur for authentic analog signal effects</li>
 <li><strong>Custom Presets:</strong> Create and save your own <code>.truchishader</code> presets; also includes a &ldquo;No Shader&rdquo; passthrough option</li>
 </ul>
 <p>Shaders can be changed in real-time during gameplay &mdash; no restart needed. See the <a href="{{ '/features/shaders.html' | relative_url }}">Shader Guide</a> for full details.</p>

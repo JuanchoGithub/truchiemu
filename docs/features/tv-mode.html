@@ -16,22 +16,28 @@ title: TV Mode - TruchiEmu Documentation
         <p>TV Mode is designed for the moment you put your laptop on the TV or sit back with a controller. The whole browsing UI re-arranges to a wide, big-tile layout with animated box-art backgrounds and crisp focus scaling. TruchiEmu remembers your filter and ROM selections when you leave TV Mode and restores them when you come back.</p>
 
         <div class="screenshot-frame">
+            <div class="screenshot-frame">
+            <video autoplay muted loop playsinline preload="metadata" poster="{{ '/media/video/tv-mode-poster.jpg' | relative_url }}">
+                <source src="{{ '/media/video/tv-mode.mp4' | relative_url }}" type="video/mp4">
+            </video>
+            <p class="screenshot-caption">TV Mode carousel in motion &mdash; glide through systems with a gamepad (video, no sound)</p>
+        </div>
             <img src="{{ '/media/screenshots/tv-mode.png' | relative_url }}" alt="TV Mode" class="screenshot lightbox-trigger">
             <p class="screenshot-caption">TV Mode browsing with animated backgrounds and box-art focus</p>
         </div>
 
         <h3>What You Get</h3>
         <ul class="feature-list">
-            <li><strong>Gamepad Navigation:</strong> Traverse your whole library with D-pad / analog stick, A to select, B to back out, R3/L3 to toggle the sidebar</li>
-            <li><strong>Auto-Repeat Navigation:</strong> Holding a direction auto-repeat-scrolls with dynamic delay scheduling &mdash; fast on the first repeat, then accelerates</li>
-            <li><strong>Animated Backgrounds:</strong> The TV Mode backdrop derives from the focused game's box art and the current system artwork, with the fill pinned to the image size to prevent halo clipping</li>
+            <li><strong>Gamepad Navigation:</strong> Traverse your whole library with D-pad / analog stick, A to select, B to back out, stick-click (R3/L3) to toggle the sidebar</li>
+            <li><strong>Auto-Repeat Navigation:</strong> Holding a direction keeps scrolling and speeds up the longer you hold</li>
+            <li><strong>Animated Backgrounds:</strong> The backdrop follows the focused game's box art and system artwork</li>
             <li><strong>Box-Art Focus:</strong> Focused entries scale up with cleaner visuals; the overlay is removed for a sharper look</li>
-            <li><strong>Short-List Mode:</strong> Compact title-only stack with smooth item duplication for very large libraries that would otherwise be overwhelming</li>
+            <li><strong>Short-List Mode:</strong> Compact title-only list for very large libraries that would otherwise be overwhelming</li>
             <li><strong>System Icon Style:</strong> Configurable icon style for system entry tiles &mdash; pick the look that matches your library artwork</li>
             <li><strong>Filter & Sort:</strong> TV Mode maintains your filter and ROM selections on state restoration; reset filters at any time, and switch sort modes inline</li>
             <li><strong>Resolution-Adaptive Scaling:</strong> Auto-scales the UI relative to your screen resolution for a consistent feel on 1080p, 1440p, and 4K displays</li>
             <li><strong>Core Download Overlay:</strong> Trigger core downloads directly from TV Mode via an integrated overlay &mdash; no need to drop back to the desktop</li>
-            <li><strong>Auto-Fullscreen:</strong> TVModeSettingsManager optionally restores the previous fullscreen state when you exit TV Mode</li>
+            <li><strong>Auto-Fullscreen:</strong> Optionally returns to your previous fullscreen state when you exit TV Mode; toggle it in settings</li>
         </ul>
     </section>
 
@@ -75,7 +81,7 @@ title: TV Mode - TruchiEmu Documentation
             </div>
             <div class="service-card">
                 <h3><a href="{{ '/features/controllers.html' | relative_url }}">Controller Support</a></h3>
-                <p>Gamepad navigation works with any supported controller via GCController or SDL2.</p>
+                <p>Gamepad navigation works with any supported controller.</p>
             </div>
         </div>
     </section>

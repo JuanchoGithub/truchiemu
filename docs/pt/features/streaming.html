@@ -13,18 +13,18 @@ title: Gravação e Streaming - Documentação do TruchiEmu
 
     <section id="overview">
         <h2>Visão Geral</h2>
-        <p>O pipeline roda em processo via HaishinKit &mdash; handshake RTMP real, mensageria AMF0, mux FLV, codificação H.264/HEVC e AAC por VideoToolbox. Sem processos externos, pipes ou FIFOs &mdash; o backpressure flui de forma síncrona sem queda silenciosa de frames.</p>
+        <p>Grave sessões em um arquivo do seu Mac, ou transmita ao vivo para Twitch, YouTube ou qualquer servidor RTMP &mdash; sem sair do jogo. Seu Mac codifica o vídeo por hardware, assim o jogo quase não desacelera.</p>
 
         <h3>Recursos</h3>
         <ul class="feature-list">
-            <li><strong>Gravação Local:</strong> H.264, HEVC ou ProRes 422/4444 lossless</li>
-            <li><strong>Transmissão ao vivo:</strong> Twitch/YouTube (verificação de stream-key) ou RTMP customizado</li>
-            <li><strong>Controles no jogo:</strong> Start/stop pela barra do jogo</li>
-            <li><strong>Codificação por Hardware:</strong> H.264/HEVC VideoToolbox + AAC</li>
-            <li><strong>Resoluções de Stream:</strong> Nativa / 720p / 1080p / 1440p / 4K. ProRes é degradado para H.264 em streaming</li>
-            <li><strong>Rolling Video Buffer:</strong> Hotkey "salvar últimos momentos" descarrega os segundos passados para o disco</li>
-            <li><strong>Botão Share:</strong> Single-press e long-press configuráveis por jogo</li>
-            <li><strong>Com ou Sem Shaders:</strong> Captura o drawable pós-shader ou o frame raw do core</li>
+            <li><strong>Gravação Local:</strong> H.264, HEVC ou ProRes 422/4444 sem perda</li>
+            <li><strong>Transmissão ao vivo:</strong> Twitch/YouTube (com checagem de chave) ou RTMP personalizado</li>
+            <li><strong>Controles no jogo:</strong> Inicie e pare pela barra do jogo</li>
+            <li><strong>Codificação por Hardware:</strong> Seu Mac codifica vídeo e áudio por hardware</li>
+            <li><strong>Resoluções:</strong> Nativa / 720p / 1080p / 1440p / 4K. Streaming sempre usa H.264; use ProRes só para arquivos locais</li>
+            <li><strong>Últimos momentos:</strong> Uma hotkey salva os últimos segundos no disco</li>
+            <li><strong>Botão Share:</strong> Toque curto e longo, configuráveis por jogo</li>
+            <li><strong>Com ou Sem Shaders:</strong> Grave seu visual com shaders ou os pixels crus do jogo</li>
         </ul>
     </section>
 
@@ -40,19 +40,19 @@ title: Gravação e Streaming - Documentação do TruchiEmu
 
         <h3>Twitch ou YouTube</h3>
         <ol class="setup-steps">
-            <li><strong>Settings &rarr; Streaming & Media &rarr; Twitch/YouTube</strong></li>
-            <li><strong>Cole sua stream key</strong> e faça Verify (feedback imediato)</li>
-            <li><strong>Escolha Resolução & Encoder</strong></li>
+            <li><strong>Ajustes &rarr; Streaming & Media &rarr; Twitch/YouTube</strong></li>
+            <li><strong>Cole sua chave</strong> do painel da Twitch ou do YouTube Studio e clique Verificar</li>
+            <li><strong>Escolha a resolução</strong>: Nativa / 720p / 1080p / 1440p / 4K. Mais resolução usa mais CPU</li>
             <li><strong>Inicie de um jogo</strong>: o botão de stream aparece na barra</li>
-            <li><strong>Stop:</strong> Clique de novo ou feche o jogo</li>
+            <li><strong>Pare:</strong> clique de novo ou feche o jogo</li>
         </ol>
 
-        <h3>RTMP Customizado</h3>
-        <p>Tab Custom, cole sua URL RTMP (com stream key se aplicável), verifique e comece a transmitir.</p>
+        <h3>RTMP Personalizado</h3>
+        <p>Aba Custom, cole sua URL RTMP (com chave se aplicável), verifique e comece a transmitir.</p>
     </section>
 
     <section id="share">
         <h2>Botão Share e Hotkeys</h2>
-        <p>Single-press share &mdash; revelação rápida do clip mais recente. Long-press &mdash; flush do rolling video buffer. Bind em Settings &rarr; Hotkeys.</p>
+        <p>Toque curto &mdash; mostra seu clipe mais recente no Finder. Toque longo &mdash; salva os últimos segundos. Configure hotkeys em Ajustes &rarr; Hotkeys.</p>
     </section>
 </div>
