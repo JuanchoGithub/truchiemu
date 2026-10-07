@@ -5,6 +5,12 @@ extension StandaloneGameWindowController {
 
     @MainActor
     func showGamepadToolbar() {
+        // Guard against a second open while already open. Each open pushes
+        // a nav context. A duplicate push leaks the first context. The stale
+        // context then keeps routing A (Select) to the toolbar after close.
+        // Pressing A on the Restart button calls reloadGame and looks like
+        // "A+B resets the game".
+        if isGamepadToolbarMode && gameToolbarNavContext != nil { return }
         hideToolbarTimer?.invalidate()
         isGamepadToolbarMode = true
         GamepadNavigationManager.shared.isGamepadToolbarActive = true
@@ -43,6 +49,9 @@ extension StandaloneGameWindowController {
             wasPausedBeforeGamepadToolbar = r.isPaused
             r.setPaused(true)
         }
+        // Releases during toolbar nav are dropped, so Start+Select stick in
+        // the core. Clear them now or A+B after close looks like a reset.
+        XPCBridgeAdapter.shared.clearAllJoypadInputs()
     }
 
     @MainActor
@@ -59,6 +68,9 @@ extension StandaloneGameWindowController {
 
         let nav = GamepadNavigationManager.shared
         nav.suppressLeftStickInToolbar = false
+        // Clear again. Presses made inside the toolbar must not leak into
+        // the game when it resumes.
+        XPCBridgeAdapter.shared.clearAllJoypadInputs()
         if let r = runner {
             r.setPaused(wasPausedBeforeGamepadToolbar)
         }
@@ -79,6 +91,9 @@ extension StandaloneGameWindowController {
 
     @MainActor
     func gamepadToolbarActivateFocusedButton() {
+        // Never fire toolbar buttons when toolbar mode is off. This stops
+        // a late A press from hitting Restart (reloadGame) after close.
+        guard isGamepadToolbarMode else { return }
         guard let idx = gamepadToolbarFocusedIndex, let r = runner else { return }
         var buttonIndex = 0
         // 0: Stop (gamepad-only confirm; mouse clicks bypass this and close immediately)

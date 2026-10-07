@@ -317,6 +317,46 @@ final class XPCBridgeAdapter {
         XPCConnectionManager.shared.remoteProxy?.setAnalogButtonState(Int32(retroID), player: Int32(player), value: value) {}
     }
 
+    /// Releases every joypad button and zeroes sticks for all players.
+    /// The gamepad value handlers drop releases while the gamepad toolbar is
+    /// open. Start+Select stay pressed in the core. Pressing A+B next then
+    /// looks like a soft reset in many games. Call on toolbar open and close.
+    func clearAllJoypadInputs() {
+        if useSharedMemory, let shm = shmManager.sharedMemory {
+            for player in 0..<4 {
+                for id in 0..<32 {
+                    xpc_shm_set_input_state(shm, Int32(player), Int32(id), 0)
+                    xpc_shm_set_analog_button(shm, Int32(player), Int32(id), 0)
+                }
+                for stick in 0..<2 {
+                    for axis in 0..<2 {
+                        xpc_shm_set_analog_state(shm, Int32(player), Int32(stick), Int32(axis), 0)
+                    }
+                }
+            }
+            return
+        }
+        guard useXPC else {
+            for player in 0..<4 {
+                for id in 0..<32 {
+                    LibretroBridgeSwift.setKeyState(retroID: id, player: player, pressed: false)
+                    LibretroBridgeSwift.setAnalogButtonState(retroID: id, player: player, value: 0)
+                }
+                for stick in 0..<2 {
+                    for axis in 0..<2 {
+                        LibretroBridgeSwift.setAnalogState(player: player, stick: stick, axis: axis, value: 0)
+                    }
+                }
+            }
+            return
+        }
+        for player in 0..<4 {
+            for id in 0..<32 {
+                XPCConnectionManager.shared.remoteProxy?.setKeyState(Int32(id), player: Int32(player), pressed: false) {}
+            }
+        }
+    }
+
     func setTurboState(turboIdx: Int, active: Bool, targetButton: Int, player: Int = 0) {
         if useSharedMemory, let shm = shmManager.sharedMemory {
             xpc_shm_set_turbo_active(shm, Int32(player), Int32(turboIdx), active)
