@@ -2110,8 +2110,11 @@ weak var metalCoordinator: MetalCoordinator?
             extendedGamepad.valueChangedHandler = { [weak self] _, element in
                 guard let self = self else { return }
                 // Ignore controller input while the gamepad toolbar overlay is
-                // open so presses aren't double-handled by the game.
+                // open so presses aren't double-handled by the game. Also
+                // drop inputs for a short time after close so the close press
+                // itself does not leak into the game.
                 if GamepadNavigationManager.shared.isGamepadToolbarActive { return }
+                if CACurrentMediaTime() < GamepadNavigationManager.shared.suppressGameInputsUntil { return }
 
                 // Share button: a single physical button that, depending on
                 // press duration, dispatches the user's configured Single-press

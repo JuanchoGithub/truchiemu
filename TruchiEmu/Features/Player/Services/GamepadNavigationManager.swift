@@ -31,6 +31,11 @@ final class GamepadNavigationManager: ObservableObject {
     /// to ignore controller input so presses aren't double-handled by the game
     /// while the user is navigating the toolbar from the couch.
     @MainActor var isGamepadToolbarActive: Bool = false
+    /// Suppresses game inputs for a short time after the toolbar closes.
+    /// The close press (B) is event-driven while close itself is poll-driven,
+    /// so the press can reach the runner after the flag clears and leak into
+    /// the game. Compared as `CACurrentMediaTime() < value`.
+    @MainActor var suppressGameInputsUntil: Double = 0
     @Published var scrollAnchorIndex: Int = 0
 
     var suppressLeftStickInToolbar: Bool = false

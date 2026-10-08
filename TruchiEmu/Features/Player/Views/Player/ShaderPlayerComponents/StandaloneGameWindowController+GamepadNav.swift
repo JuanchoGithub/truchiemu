@@ -59,6 +59,9 @@ extension StandaloneGameWindowController {
         isGamepadToolbarMode = false
         gamepadToolbarFocusedIndex = nil
         GamepadNavigationManager.shared.isGamepadToolbarActive = false
+        // Swallow the close press. It can arrive at the runner after this
+        // flag clears and leak into the game as an extra B (or A) press.
+        GamepadNavigationManager.shared.suppressGameInputsUntil = CACurrentMediaTime() + 0.25
         isStopConfirmArmed = false
 
         if let ctx = gameToolbarNavContext {

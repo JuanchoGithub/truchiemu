@@ -784,6 +784,7 @@ class SDLInputManager: ObservableObject {
         guard let runner else { return }
         Task { @MainActor in
             if GamepadNavigationManager.shared.isGamepadToolbarActive { return }
+            if CACurrentMediaTime() < GamepadNavigationManager.shared.suppressGameInputsUntil { return }
             let player = resolvePlayerPort(for: instanceID)
             runner.setKeyState(retroID: retroID, player: player, pressed: pressed)
         }
@@ -794,6 +795,7 @@ class SDLInputManager: ObservableObject {
         let sysID = cachedActiveSystemID ?? "default"
         Task { @MainActor in
             if GamepadNavigationManager.shared.isGamepadToolbarActive { return }
+            if CACurrentMediaTime() < GamepadNavigationManager.shared.suppressGameInputsUntil { return }
 
             let player = resolvePlayerPort(for: instanceID)
 
@@ -828,6 +830,7 @@ class SDLInputManager: ObservableObject {
         let value = Int32(value)
         Task { @MainActor in
             if GamepadNavigationManager.shared.isGamepadToolbarActive { return }
+            if CACurrentMediaTime() < GamepadNavigationManager.shared.suppressGameInputsUntil { return }
             let player = resolvePlayerPort(for: instanceID)
             XPCBridgeAdapter.shared.setAnalogButtonState(retroID: retroID, value: value, player: player)
         }
