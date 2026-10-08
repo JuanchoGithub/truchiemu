@@ -926,7 +926,10 @@ class LibretroInfoManager: ObservableObject {
             refreshStatus = "Parsing system info..."
             
             let extractedFolder = tempDir.appendingPathComponent("libretro-core-info-master")
-            var newExtensionsDict: [String: Set<String>] = [:] 
+            // Extensions offered by single-system cores only, keyed by exact
+            // system ID. Multi-system cores (compound names like Mesen2's)
+            // must not union their broad lists into individual systems.
+            var singleSystemExtAdds: [String: Set<String>] = [:]
             
             // 🔥 NEW: Track names and manufacturers for newly discovered systems
             var systemNamesFromInfo:[String: String] = [:]
@@ -938,6 +941,9 @@ class LibretroInfoManager: ObservableObject {
             if let contents = try? FileManager.default.contentsOfDirectory(at: extractedFolder, includingPropertiesForKeys: nil) {
                 for fileURL in contents where fileURL.pathExtension == "info" {
                     let infoDict = parseInfoFile(at: fileURL)
+                    // Resolved target systems for this core. Set in section 1
+                    // below; read in section 2 to gate extension integration.
+                    var coreSystemIDs: [String] = []
         
                     // 1. Handle System/Core Mapping & Discovery
                     if let sysIDString = infoDict["systemid"] { 
@@ -971,6 +977,7 @@ class LibretroInfoManager: ObservableObject {
                         }
                         
                         LibretroInfoManager.coreToSystemMap[coreID] = Set(ids)
+                        coreSystemIDs = ids
                         
                         // Extract human-readable names and manufacturer
                         _ = infoDict["systemname"]?.components(separatedBy: "|") ?? []
@@ -991,11 +998,17 @@ class LibretroInfoManager: ObservableObject {
                         }
                     }
         
-                    // 2. Handle File Extensions
-                    if let sysName = infoDict["systemname"], let exts = infoDict["supported_extensions"] {
-                        let parsedExts = exts.components(separatedBy: "|").map { $0.lowercased() }
-                        if newExtensionsDict[sysName] == nil { newExtensionsDict[sysName] = [] }
-                        newExtensionsDict[sysName]?.formUnion(parsedExts)
+                    // 2. Handle File Extensions — single-system cores only.
+                    // A core that targets several systems (Mesen2, Mesen-S,
+                    // VBA-M) must not lend its broad extension list to any one
+                    // of them: that once taught NES that it plays .gb files.
+                    // Matching is by exact system ID, never by substring.
+                    if let exts = infoDict["supported_extensions"] {
+                        let targets = Set(coreSystemIDs).filter { $0 != "unknown" }
+                        if targets.count == 1, let onlyID = targets.first {
+                            let parsed = Set(exts.components(separatedBy: "|").map { $0.lowercased() }.filter { !$0.isEmpty })
+                            singleSystemExtAdds[onlyID, default: []].formUnion(parsed)
+                        }
                     }
                 }
             }
@@ -1034,13 +1047,26 @@ class LibretroInfoManager: ObservableObject {
                 }
             }
             
-            // Update extensions for ALL systems (including the newly injected ones)
-            for i in 0..<currentSystems.count {
-                let matchedKey = newExtensionsDict.keys.first { $0.contains(currentSystems[i].name) || currentSystems[i].name.contains($0) }
-                if let key = matchedKey, let freshExts = newExtensionsDict[key] {
-                    let combined = Set(currentSystems[i].extensions).union(freshExts)
-                    currentSystems[i].extensions = Array(combined).sorted()
+            // Extension integration for existing and new systems.
+            // Second guard: an extension already owned by another system is
+            // never taken over, so no refresh can create new ambiguity.
+            // (Without this, even a single-system core with a broad list —
+            // e.g. VBA-M claiming .gb for GBA — would make .gb ambiguous again.)
+            var extensionOwner: [String: String] = [:]
+            for system in currentSystems {
+                for ext in system.extensions {
+                    if extensionOwner[ext.lowercased()] == nil {
+                        extensionOwner[ext.lowercased()] = system.id
+                    }
                 }
+            }
+            for i in 0..<currentSystems.count {
+                guard let freshExts = singleSystemExtAdds[currentSystems[i].id] else { continue }
+                let safeExts = freshExts.filter { extensionOwner[$0] == nil || extensionOwner[$0] == currentSystems[i].id }
+                guard !safeExts.isEmpty else { continue }
+                let combined = Set(currentSystems[i].extensions.map { $0.lowercased() }).union(safeExts)
+                currentSystems[i].extensions = Array(combined).sorted()
+                for ext in safeExts { extensionOwner[ext] = currentSystems[i].id }
             }
             
             SystemDatabase.saveSystems(currentSystems)
