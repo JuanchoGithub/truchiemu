@@ -247,11 +247,35 @@ class DOSRunner: EmulatorRunner, @unchecked Sendable {
                     }
                     return
                 }
-                for port in ports {
-                    self.handleDOSButtons(element, in: mapping, player: port, dpad: dpad, extendedGamepad: extendedGamepad)
+                // Toolbar-shortcut buttons are held briefly so the
+                // Start+Select combo never leaks to the core.
+                if let member = GamepadNavigationManager.toolbarMember(for: element, pad: extendedGamepad),
+                   GamepadNavigationManager.shared.toolbarComboMembers.contains(member) {
+                    self.handleDOSComboMember(element, member: member, pad: extendedGamepad, mapping: mapping, ports: ports, dpad: dpad)
+                    return
                 }
+                self.forwardDOSElement(element, mapping: mapping, ports: ports, dpad: dpad, pad: extendedGamepad)
             }
         }
+    }
+
+    func forwardDOSElement(_ element: GCControllerElement, mapping: ControllerGamepadMapping, ports: [Int], dpad: GCControllerDirectionPad, pad: GCExtendedGamepad) {
+        for port in ports {
+            self.handleDOSButtons(element, in: mapping, player: port, dpad: dpad, extendedGamepad: pad)
+        }
+    }
+
+    /// Toolbar combo kill (see BaseRunner): the second half landing while
+    /// the partner is down means the combo is forming. Clear the core, open
+    /// the toolbar at once and swallow the press.
+    func handleDOSComboMember(_ element: GCControllerElement, member: GamepadNavButton, pad: GCExtendedGamepad, mapping: ControllerGamepadMapping, ports: [Int], dpad: GCControllerDirectionPad) {
+        if let btn = element as? GCControllerButtonInput, btn.isPressed,
+           GamepadNavigationManager.isComboPartnerDown(member, pad: pad) {
+            XPCBridgeAdapter.shared.clearAllJoypadInputs()
+            NotificationCenter.default.post(name: .gamepadShowGameToolbar, object: nil)
+            return
+        }
+        self.forwardDOSElement(element, mapping: mapping, ports: ports, dpad: dpad, pad: pad)
     }
 
     private func handleDOSButtons(_ element: GCControllerElement, in mapping: ControllerGamepadMapping, player: Int, dpad: GCControllerDirectionPad, extendedGamepad: GCExtendedGamepad) {

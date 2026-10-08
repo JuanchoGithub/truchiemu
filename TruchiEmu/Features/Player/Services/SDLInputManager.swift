@@ -529,25 +529,72 @@ class SDLInputManager: ObservableObject {
                 return
             }
 
+            if let member = Self.sdlControllerNavMap[Int32(event.button)],
+               GamepadNavigationManager.shared.toolbarComboMembers.contains(member) {
+                // Toolbar-shortcut buttons are held briefly so the
+                // Start+Select (or L3+R3) combo never leaks to the core.
+                handleComboMember(button: Int(event.button), which: event.which, member: member, pressed: pressed, isRawJoystick: false)
+                return
+            }
+
             // Check share button after capture check. A single physical
             // button is dispatched here; short vs long press is resolved
             // by the long-press detector on the runner side.
-            let btn = Int(event.button)
-            if btn == cachedShareButtonIndex {
-                if pressed {
-                    DispatchQueue.main.async { ControllerLongPressDetector.shared.handleSDLPressDown(buttonIndex: btn) }
-                } else {
-                    DispatchQueue.main.async { ControllerLongPressDetector.shared.handleSDLPressUp(buttonIndex: btn) }
-                }
-                return
-            }
+            forwardButtonPress(button: Int(event.button), which: event.which)
+            return
+        }
+
+        forwardButtonRelease(button: Int(event.button), which: event.which)
+    }
+
+    /// Press tail shared by the at-once path and the delayed combo path.
+    private nonisolated func forwardButtonPress(button: Int, which: Int32) {
+        let btn = button
+        if btn == cachedShareButtonIndex {
+            DispatchQueue.main.async { ControllerLongPressDetector.shared.handleSDLPressDown(buttonIndex: btn) }
+            return
         }
 
         sdlDataLock.lock()
-        let port = portForInstance[event.which]
+        let port = portForInstance[which]
         sdlDataLock.unlock()
-        guard let retroID = Self.buttonMap[Int32(event.button)], port != nil else { return }
-        dispatchButton(retroID: retroID, instanceID: event.which, pressed: pressed)
+        guard let retroID = Self.buttonMap[Int32(button)], port != nil else { return }
+        dispatchButton(retroID: retroID, instanceID: which, pressed: true)
+    }
+
+    private nonisolated func forwardButtonRelease(button: Int, which: Int32) {
+        sdlDataLock.lock()
+        let port = portForInstance[which]
+        sdlDataLock.unlock()
+        guard let retroID = Self.buttonMap[Int32(button)], port != nil else { return }
+        dispatchButton(retroID: retroID, instanceID: which, pressed: false)
+    }
+
+    /// Toolbar combo kill (see BaseRunner): the second half landing while
+    /// the partner is down means the combo is forming. Clear the core, open
+    /// the toolbar at once and swallow the press. Solo presses forward
+    /// instantly with zero added latency.
+    private nonisolated func handleComboMember(button: Int, which: Int32, member: GamepadNavButton, pressed: Bool, isRawJoystick: Bool) {
+        if pressed,
+           let partner = GamepadNavigationManager.comboPartner(of: member),
+           pollNavButtons().contains(partner) {
+            XPCBridgeAdapter.shared.clearAllJoypadInputs()
+            NotificationCenter.default.post(name: .gamepadShowGameToolbar, object: nil)
+            return
+        }
+        if isRawJoystick {
+            if pressed {
+                forwardJoyButtonPress(button: button, which: which)
+            } else {
+                forwardJoyButtonRelease(button: button, which: which)
+            }
+        } else {
+            if pressed {
+                forwardButtonPress(button: button, which: which)
+            } else {
+                forwardButtonRelease(button: button, which: which)
+            }
+        }
     }
 
     private nonisolated func handleAxisEvent(_ event: SDL_ControllerAxisEvent) {
@@ -632,30 +679,56 @@ class SDLInputManager: ObservableObject {
                 return
             }
 
+            if let member = Self.joystickNavMap[Int(event.button)],
+               GamepadNavigationManager.shared.toolbarComboMembers.contains(member) {
+                // Toolbar-shortcut buttons are held briefly so the
+                // Start+Select (or L3+R3) combo never leaks to the core.
+                handleComboMember(button: Int(event.button), which: event.which, member: member, pressed: pressed, isRawJoystick: true)
+                return
+            }
+
             // Check share button after capture check. A single physical
             // button is dispatched here; short vs long press is resolved
             // by the long-press detector on the runner side.
-            let btn = Int(event.button)
-            if btn == cachedShareButtonIndex {
-                if pressed {
-                    DispatchQueue.main.async { ControllerLongPressDetector.shared.handleSDLPressDown(buttonIndex: btn) }
-                } else {
-                    DispatchQueue.main.async { ControllerLongPressDetector.shared.handleSDLPressUp(buttonIndex: btn) }
-                }
-                return
-            }
+            forwardJoyButtonPress(button: Int(event.button), which: event.which)
+            return
+        }
+
+        forwardJoyButtonRelease(button: Int(event.button), which: event.which)
+    }
+
+    /// Press tail shared by the at-once path and the delayed combo path.
+    private nonisolated func forwardJoyButtonPress(button: Int, which: Int32) {
+        let btn = button
+        if btn == cachedShareButtonIndex {
+            DispatchQueue.main.async { ControllerLongPressDetector.shared.handleSDLPressDown(buttonIndex: btn) }
+            return
         }
 
         sdlDataLock.lock()
-        let isGC = joystickIsGameController.contains(event.which)
-        let port = portForInstance[event.which]
+        let isGC = joystickIsGameController.contains(which)
+        let port = portForInstance[which]
         sdlDataLock.unlock()
 
         guard !isGC, port != nil else { return }
-        guard let retroID = Self.joystickButtonMap[Int(event.button)] else { return }
-        dispatchButton(retroID: retroID, instanceID: event.which, pressed: pressed)
+        guard let retroID = Self.joystickButtonMap[button] else { return }
+        dispatchButton(retroID: retroID, instanceID: which, pressed: true)
         if retroID == 12 || retroID == 13 {
-            dispatchAnalogButton(retroID: retroID, value: pressed ? Int16.max : 0, instanceID: event.which)
+            dispatchAnalogButton(retroID: retroID, value: Int16.max, instanceID: which)
+        }
+    }
+
+    private nonisolated func forwardJoyButtonRelease(button: Int, which: Int32) {
+        sdlDataLock.lock()
+        let isGC = joystickIsGameController.contains(which)
+        let port = portForInstance[which]
+        sdlDataLock.unlock()
+
+        guard !isGC, port != nil else { return }
+        guard let retroID = Self.joystickButtonMap[button] else { return }
+        dispatchButton(retroID: retroID, instanceID: which, pressed: false)
+        if retroID == 12 || retroID == 13 {
+            dispatchAnalogButton(retroID: retroID, value: 0, instanceID: which)
         }
     }
 

@@ -2116,6 +2116,27 @@ weak var metalCoordinator: MetalCoordinator?
                 if GamepadNavigationManager.shared.isGamepadToolbarActive { return }
                 if CACurrentMediaTime() < GamepadNavigationManager.shared.suppressGameInputsUntil { return }
 
+                // Toolbar combo kill: when the second half of Start+Select
+                // (or L3+R3) lands while the partner is down, the combo is
+                // forming. Clear the core, open the toolbar at once and
+                // swallow the press. Solo presses forward instantly with zero
+                // added latency, so quick START taps keep working.
+                if let member = GamepadNavigationManager.toolbarMember(for: element, pad: extendedGamepad),
+                   GamepadNavigationManager.shared.toolbarComboMembers.contains(member),
+                   let btn = element as? GCControllerButtonInput, btn.isPressed,
+                   GamepadNavigationManager.isComboPartnerDown(member, pad: extendedGamepad) {
+                    XPCBridgeAdapter.shared.clearAllJoypadInputs()
+                    NotificationCenter.default.post(name: .gamepadShowGameToolbar, object: nil)
+                    return
+                }
+                self.processGamepadElement(element, mapping: mapping, extendedGamepad: extendedGamepad, ports: ports, calibration: calibration)
+            }
+        }
+    }
+
+    /// Event body for one gamepad element.
+    @MainActor
+    func processGamepadElement(_ element: GCControllerElement, mapping: ControllerGamepadMapping, extendedGamepad: GCExtendedGamepad, ports: [Int], calibration: ControllerCalibration) {
                 // Share button: a single physical button that, depending on
                 // press duration, dispatches the user's configured Single-press
                 // or Long-press ShareBehavior (screenshot / record / etc).
@@ -2241,8 +2262,6 @@ weak var metalCoordinator: MetalCoordinator?
                         self.updateGamepadButton(element, in: mapping, extendedGamepad: extendedGamepad, player: port, calibration: calibration)
                     }
                 }
-            }
-        }
     }
 
     func elementMatches(_ element: GCControllerElement, name: String) -> Bool {

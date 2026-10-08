@@ -30,12 +30,52 @@ final class GamepadNavigationManager: ObservableObject {
     /// True while the gamepad toolbar overlay is open. The runner checks this
     /// to ignore controller input so presses aren't double-handled by the game
     /// while the user is navigating the toolbar from the couch.
-    @MainActor var isGamepadToolbarActive: Bool = false
+    /// Read by gamepad value handlers that fire off the main thread; written
+    /// only from the main thread. Matches `isRewindingStorage` in BaseRunner.
+    nonisolated(unsafe) var isGamepadToolbarActive: Bool = false
     /// Suppresses game inputs for a short time after the toolbar closes.
     /// The close press (B) is event-driven while close itself is poll-driven,
     /// so the press can reach the runner after the flag clears and leak into
     /// the game. Compared as `CACurrentMediaTime() < value`.
-    @MainActor var suppressGameInputsUntil: Double = 0
+    /// Same threading contract as `isGamepadToolbarActive` above.
+    nonisolated(unsafe) var suppressGameInputsUntil: Double = 0
+    /// Physical buttons of the current Show-Toolbar combo binding. Game input
+    /// paths swallow the second half when it lands while the partner is down
+    /// so the combo never leaks to the core. Refreshed every poll tick so
+    /// settings changes apply. Plain (non-combo) bindings are not watched.
+    nonisolated(unsafe) var toolbarComboMembers = Set<GamepadNavButton>()
+
+    /// Physical GC element to nav-button identity for combo members only.
+    /// Returns nil for sticks, dpad, triggers and all other elements.
+    nonisolated static func toolbarMember(for element: GCControllerElement, pad: GCExtendedGamepad) -> GamepadNavButton? {
+        if element === (pad.buttonMenu as GCControllerElement) { return .start }
+        if let options = pad.buttonOptions, element === (options as GCControllerElement) { return .select }
+        if let l3 = pad.leftThumbstickButton, element === (l3 as GCControllerElement) { return .l3 }
+        if let r3 = pad.rightThumbstickButton, element === (r3 as GCControllerElement) { return .r3 }
+        return nil
+    }
+
+    /// The other half of a toolbar combo, if any.
+    nonisolated static func comboPartner(of member: GamepadNavButton) -> GamepadNavButton? {
+        switch member {
+        case .start: return .select
+        case .select: return .start
+        case .l3: return .r3
+        case .r3: return .l3
+        default: return nil
+        }
+    }
+
+    /// True when the combo partner of `member` is physically down on `pad`.
+    nonisolated static func isComboPartnerDown(_ member: GamepadNavButton, pad: GCExtendedGamepad) -> Bool {
+        switch member {
+        case .start: return pad.buttonOptions?.isPressed == true
+        case .select: return pad.buttonMenu.isPressed
+        case .l3: return pad.rightThumbstickButton?.isPressed == true
+        case .r3: return pad.leftThumbstickButton?.isPressed == true
+        default: return false
+        }
+    }
     @Published var scrollAnchorIndex: Int = 0
 
     var suppressLeftStickInToolbar: Bool = false
@@ -305,6 +345,16 @@ final class GamepadNavigationManager: ObservableObject {
 
         let now = CACurrentMediaTime()
         let config = GamepadNavConfigManager.shared.config
+        // Refresh the combo-member set so input paths always match settings.
+        if let bound = config[.showGameToolbar]?.binding.button {
+            switch bound {
+            case .startPlusSelect: toolbarComboMembers = [.start, .select]
+            case .l3PlusR3: toolbarComboMembers = [.l3, .r3]
+            default: toolbarComboMembers = []
+            }
+        } else {
+            toolbarComboMembers = []
+        }
 
         var newlyPressed = Set<GamepadNavButton>()
 
