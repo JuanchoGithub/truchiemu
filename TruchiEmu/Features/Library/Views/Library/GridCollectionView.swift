@@ -396,7 +396,7 @@ struct GridCollectionViewRepresentable: NSViewRepresentable {
         c.library = library
         c.categoryManager = categoryManager
         c.previousRomsCount = roms.count
-        c.previousRomsFingerprint = roms.map { "\($0.id)|\($0.raMatchStatus ?? "")|\($0.raGameId ?? 0)" }
+        c.previousRomsFingerprint = roms.map { "\($0.id)|\($0.hasBoxArt)|\($0.raMatchStatus ?? "")|\($0.raGameId ?? 0)" }
         c.previousZoomLevel = zoomLevel
         c.previousBoxArtVersion = boxArtVersion
         c.previousSelection = selection
@@ -410,7 +410,7 @@ struct GridCollectionViewRepresentable: NSViewRepresentable {
         guard let cv = nsView.documentView as? NSCollectionView else { return }
         let c = context.coordinator
 
-        let newFingerprint = roms.map { "\($0.id)|\($0.raMatchStatus ?? "")|\($0.raGameId ?? 0)" }
+        let newFingerprint = roms.map { "\($0.id)|\($0.hasBoxArt)|\($0.raMatchStatus ?? "")|\($0.raGameId ?? 0)" }
         let dataChanged = roms.count != c.previousRomsCount || newFingerprint != c.previousRomsFingerprint
         let zoomChanged = zoomLevel != c.previousZoomLevel
         let boxArtChanged = boxArtVersion != c.previousBoxArtVersion

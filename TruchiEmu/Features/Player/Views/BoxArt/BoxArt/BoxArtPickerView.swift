@@ -130,22 +130,23 @@ struct BoxArtPickerView: View {
 
     private func applyURL(_ url: URL) {
         Task {
-            if await BoxArtService.shared.downloadAndCache(artURL: url, for: rom, forceReplace: true) != nil {
+            if let savedURL = await BoxArtService.shared.downloadAndCache(artURL: url, for: rom, forceReplace: true) {
+                // Clear the resolve cache before refreshDerivedFields() runs,
+                // so non-standard file names re-scan and not read stale nil.
+                BoxArtService.shared.invalidateResolvedBoxArtCache(for: rom.id)
                 // refreshDerivedFields() inside updateROM recomputes hasBoxArt
                 // from disk truth, so just persist the ROM with its existing
                 // fields — the new file is already on disk by the time we
                 // reach this line.
                 library.updateROM(rom)
 
-                // Signal the grid view to refresh (this also regenerates thumbnails)
-                let resolvedURL = rom.boxArtLocalPath
-                BoxArtService.shared.signalBoxArtUpdated(for: rom.id, boxArtURL: resolvedURL)
+                // Evict caches before signaling, so the grid reload reads
+                // fresh bytes and not stale NSCache entries.
+                await ImageCache.shared.removeImage(for: savedURL)
+                await ImageCache.shared.removeThumbnail(for: savedURL)
 
-                // Evict any in-memory thumbnails before dismissing so the detail
-                // view reloads the new image immediately (signalBoxArtUpdated
-                // schedules the eviction in a fire-and-forget Task).
-                await ImageCache.shared.removeImage(for: resolvedURL)
-                await ImageCache.shared.removeThumbnail(for: resolvedURL)
+                // Signal the grid view to refresh (this also regenerates thumbnails)
+                BoxArtService.shared.signalBoxArtUpdated(for: rom.id, boxArtURL: savedURL)
 
                 dismiss()
             }
@@ -155,13 +156,13 @@ struct BoxArtPickerView: View {
     private func importLocalFile(_ url: URL) {
         Task {
             if let savedURL = await BoxArtService.shared.importLocalImage(from: url, for: rom) {
+                BoxArtService.shared.invalidateResolvedBoxArtCache(for: rom.id)
                 library.updateROM(rom)
 
-                let resolvedURL = rom.boxArtLocalPath
-                BoxArtService.shared.signalBoxArtUpdated(for: rom.id, boxArtURL: resolvedURL)
+                await ImageCache.shared.removeImage(for: savedURL)
+                await ImageCache.shared.removeThumbnail(for: savedURL)
 
-                await ImageCache.shared.removeImage(for: resolvedURL)
-                await ImageCache.shared.removeThumbnail(for: resolvedURL)
+                BoxArtService.shared.signalBoxArtUpdated(for: rom.id, boxArtURL: savedURL)
 
                 dismiss()
             }
