@@ -43,6 +43,15 @@ class GameLauncher: ObservableObject {
     
     // Track active game window controllers
     private var activeControllers: [UUID: StandaloneGameWindowController] = [:]
+
+    // Per-ROM launch timestamps. A double-click on the orb fires the SwiftUI
+    // Button action once per click plus the AppKit double-click recognizer,
+    // so one gesture produces several launch Tasks. Those Tasks usually do
+    // NOT overlap: the fast path has no await, so Task B enters after Task A
+    // already finished and cleared isLaunching. A flag alone cannot catch
+    // that; a short time window does.
+    private var lastLaunchDateByKey: [String: Date] = [:]
+    private let launchDebounceInterval: TimeInterval = 2.0
     
     private init() {}
     
@@ -145,15 +154,56 @@ func launchGame(
             completion?(nil)
             return
         }
- // Check if already launching
+  // Check if already launching
         #if LOG_EXTREME
         LoggerService.extreme(category: "GameLauncher", "Checking if already launching")
         #endif
+        // Time-based debounce per ROM. The isLaunching flag below only
+        // catches overlapping Tasks, but the fast path has no await, so a
+        // double-click's Tasks run back-to-back after the flag is cleared.
+        // This window catches both overlapping and back-to-back duplicates.
+        let now = Date()
+        // Prune stale entries so the table cannot grow without bound.
+        lastLaunchDateByKey = lastLaunchDateByKey.filter {
+            now.timeIntervalSince($0.value) < launchDebounceInterval
+        }
+        if let last = lastLaunchDateByKey[rom.runningKey],
+           now.timeIntervalSince(last) < launchDebounceInterval {
+            // Silent ignore: this is our own double-fire (orb Button plus
+            // AppKit recognizer), not a user error. No warning message.
+            completion?(nil)
+            return
+        }
+        lastLaunchDateByKey[rom.runningKey] = now
         guard !isLaunching else {
             #if LOG_EXTREME
             LoggerService.extreme(category: "GameLauncher", "Already launching, ignoring duplicate request")
             #endif
             completion?(nil)
+            return
+        }
+        // Claim the launch slot synchronously, before the first await below.
+        // Two fast Tasks (double-click on the orb fires the SwiftUI Button
+        // plus the AppKit double-click recognizer) both pass the guard above
+        // when the flag is set late. Early claim makes the second Task stop.
+        isLaunching = true
+        currentLaunchROM = rom
+
+        // Check if this ROM is already running. This comes first so a
+        // double-click on the same game gets the quiet "already running"
+        // notice instead of the switch-game modal (which can itself end in
+        // a second window when the user picks "switch").
+        #if LOG_EXTREME
+        LoggerService.extreme(category: "GameLauncher", "Checking if ROM is already running")
+        #endif
+        if RunningGamesTracker.shared.isRunning(romPath: rom.runningKey) {
+            RunningGamesTracker.shared.notifyDuplicateLaunch(romName: rom.displayName)
+            isLaunching = false
+            currentLaunchROM = nil
+            completion?(nil)
+            #if LOG_EXTREME
+            LoggerService.extreme(category: "GameLauncher", "ROM is already running, ignoring duplicate request")
+            #endif
             return
         }
 
@@ -171,22 +221,11 @@ func launchGame(
                 }
                 closeAllGameWindows()
             case .cancel:
+                isLaunching = false
+                currentLaunchROM = nil
                 completion?(nil)
                 return
             }
-        }
-
-        // Check if this ROM is already running
-        #if LOG_EXTREME
-        LoggerService.extreme(category: "GameLauncher", "Checking if ROM is already running")
-        #endif
-        if RunningGamesTracker.shared.isRunning(romPath: rom.runningKey) {
-            RunningGamesTracker.shared.notifyDuplicateLaunch(romName: rom.displayName)
-            completion?(nil)
-            #if LOG_EXTREME
-            LoggerService.extreme(category: "GameLauncher", "ROM is already running, ignoring duplicate request")
-            #endif
-            return
         }
 
         // MAME dependency check
@@ -268,8 +307,6 @@ func launchGame(
             }
         }
 
-        isLaunching = true
-        currentLaunchROM = rom
         launchPhase = .preparingConfig
 
         // Create launch configuration with all settings

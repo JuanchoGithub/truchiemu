@@ -723,7 +723,11 @@ struct HoloGameCardView: View {
                 GlassOrbPlayButton(
                     content: { holoArtworkView(allowBump: false) },
                     accent: brandAccent,
-                    action: { onDoubleClick?() },
+                    action: {
+                        guard !isLaunching else { return }
+                        isLaunching = true
+                        onDoubleClick?()
+                    },
                     diameter: playButtonDiameter,
                     externalPointer: CGSize(
                         width: (normalizedMouseX - 0.5) * 2,
