@@ -86,7 +86,13 @@ struct ROM: Identifiable, Codable, Hashable, Sendable {
     var enrichmentFailed: Bool = false
 
     // Updates all stored derived properties based on current state.
-    mutating func refreshDerivedFields() {
+    // - broadResolve: when false, skips the BoxArtService directory-scan
+    //   fallback (which must run on the main thread). Direct filename checks
+    //   still run. Used by the post-launch background refresh.
+    // - resolveFiles: when false, skips all file I/O. Art/title/screenshots
+    //   read as absent until a later full pass resolves them. Used by the
+    //   launch fast path so the list appears without per-ROM stat calls.
+    mutating func refreshDerivedFields(broadResolve: Bool = true, resolveFiles: Bool = true) {
         // 1. filenameWithoutExtension
         let rawName: String
         if let inner = innerROMPath {
@@ -142,7 +148,13 @@ struct ROM: Identifiable, Codable, Hashable, Sendable {
         let jpgPath = boxartDir.appendingPathComponent("\(baseName).jpg")
         let jpegPath = boxartDir.appendingPathComponent("\(baseName).jpeg")
 
-        if FileManager.default.fileExists(atPath: pngPath.path) {
+        if !resolveFiles {
+            // Launch fast path: no stat calls. The background refresh fills
+            // these in after the first frame is on screen.
+            self.boxArtLocalPath = pngPath
+            hasBoxArt = false
+            needsAutomaticBoxArt = true
+        } else if FileManager.default.fileExists(atPath: pngPath.path) {
             self.boxArtLocalPath = pngPath
         } else if FileManager.default.fileExists(atPath: jpgPath.path) {
             self.boxArtLocalPath = jpgPath
@@ -153,7 +165,7 @@ struct ROM: Identifiable, Codable, Hashable, Sendable {
             // local resolver, which also matches art named after the display
             // name / inner-ROM name / sanitized variants. Only scans the /boxart
             // directory as a fallback, so the typical case stays a cheap stat.
-            if let resolved = BoxArtService.shared.resolveLocalBoxArt(for: self) {
+            if broadResolve, let resolved = BoxArtService.shared.resolveLocalBoxArt(for: self) {
                 self.boxArtLocalPath = resolved
             } else {
                 self.boxArtLocalPath = pngPath
@@ -165,10 +177,10 @@ struct ROM: Identifiable, Codable, Hashable, Sendable {
         // hasBoxArt) and the detail view (which re-resolves) never disagree —
         // a ROM whose art is named after its display name instead of its file
         // stem keeps hasBoxArt=true once the broad resolver finds it.
-        if FileManager.default.fileExists(atPath: self.boxArtLocalPath.path) {
+        if resolveFiles, FileManager.default.fileExists(atPath: self.boxArtLocalPath.path) {
             hasBoxArt = true
             needsAutomaticBoxArt = false
-        } else {
+        } else if resolveFiles {
             hasBoxArt = false
             needsAutomaticBoxArt = true
         }
@@ -178,7 +190,10 @@ struct ROM: Identifiable, Codable, Hashable, Sendable {
         let titlePng = boxartDir.appendingPathComponent("\(titleBaseName).png")
         let titleJpg = boxartDir.appendingPathComponent("\(titleBaseName).jpg")
         let titleJpeg = boxartDir.appendingPathComponent("\(titleBaseName).jpeg")
-        if FileManager.default.fileExists(atPath: titlePng.path) {
+        if !resolveFiles {
+            self.titleScreenLocalPath = URL(fileURLWithPath: "")
+            self.hasTitleScreen = false
+        } else if FileManager.default.fileExists(atPath: titlePng.path) {
             self.titleScreenLocalPath = titlePng
             self.hasTitleScreen = true
         } else if FileManager.default.fileExists(atPath: titleJpg.path) {
@@ -195,7 +210,7 @@ struct ROM: Identifiable, Codable, Hashable, Sendable {
         // 7c. screenshot paths (libretro Named_Snaps) — scan the boxart dir for {stem}_snap_*.{ext}
         // These are NOT persisted as derived fields (the array is stored on the model directly
         // after a download), so we only resolve them here when the array is empty as a fallback.
-        if self.screenshotPaths.isEmpty {
+        if resolveFiles, self.screenshotPaths.isEmpty {
             self.screenshotPaths = Self.scanScreenshotPaths(boxartDir: boxartDir, stem: romNameWithoutExt)
         }
 

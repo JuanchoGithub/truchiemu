@@ -4,9 +4,21 @@ import Foundation
 // Strips common ROM tags like region indicators, revision info, and other metadata
 // that appear in parentheses or square brackets in ROM filenames and database entries.
 enum GameNameFormatter {
-    
+
+    // Precompiled: stripTags runs once per ROM at launch (thousands of
+    // calls). Compiling the pattern per call dominated that cost.
+    // NSRegularExpression instances are safe for concurrent matching.
+    private static let tagPattern: NSRegularExpression = {
+        // swiftlint:disable:next force_try
+        try! NSRegularExpression(pattern: "\\s*(\\[[^\\]]*\\]|\\([^\\)]*\\))")
+    }()
+    private static let whitespacePattern: NSRegularExpression = {
+        // swiftlint:disable:next force_try
+        try! NSRegularExpression(pattern: "\\s+")
+    }()
+
     // MARK: - Public API
-    
+
     // Strip all tags from a game name.
     // Examples:
     //   "Ecco the Dolphin (World)" → "Ecco the Dolphin"
@@ -16,8 +28,8 @@ enum GameNameFormatter {
     static func stripTags(_ name: String) -> String {
         // Optimized: Single pass regex to remove both square brackets and parentheses content
         // This is much faster than multiple loops with subrange mutations.
-        let pattern = "\\s*(\\[[^\\]]*\\]|\\([^\\)]*\\))"
-        let stripped = name.replacingOccurrences(of: pattern, with: "", options: .regularExpression)
+        let range = NSRange(name.startIndex..., in: name)
+        let stripped = tagPattern.stringByReplacingMatches(in: name, range: range, withTemplate: "")
         return cleanWhitespace(stripped)
     }
     
@@ -34,7 +46,8 @@ enum GameNameFormatter {
     // Clean up extra whitespace left after tag removal.
     static func cleanWhitespace(_ name: String) -> String {
         // Replace multiple spaces with single space and trim
-        return name.replacingOccurrences(of: "\\s+", with: " ", options: .regularExpression)
+        let range = NSRange(name.startIndex..., in: name)
+        return whitespacePattern.stringByReplacingMatches(in: name, range: range, withTemplate: "")
                    .trimmingCharacters(in: .whitespacesAndNewlines)
     }
     

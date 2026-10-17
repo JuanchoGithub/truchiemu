@@ -68,9 +68,13 @@ class ControllerService: ObservableObject {
         self.handedness = AppSettings.get("controller_handedness", type: String.self) ?? "right"
         self.activePlayerIndex = AppSettings.getInt("active_player_index", defaultValue: 0)
         migrateIfNeeded()
-        loadMappings()
         setupControllerNotifications()
-        refreshConnectedControllers()
+        // Deferred past first paint: mapping JSON decodes plus controller
+        // enumeration. Published state fills in a beat after launch.
+        Task { @MainActor [weak self] in
+            self?.loadMappings()
+            self?.refreshConnectedControllers()
+        }
     }
 
     private func migrateIfNeeded() {

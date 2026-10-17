@@ -919,6 +919,7 @@
 		A56157FD0F4EC79DBCF7EDD8 /* HowLongToBeatCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5109A11C4631112553810222 /* HowLongToBeatCard.swift */; };
 		A5917D46BE3772B7057EBAF0 /* mupen64plus_libretro_default.json in Resources */ = {isa = PBXBuildFile; fileRef = 286915B3854F9B12D1840B8E /* mupen64plus_libretro_default.json */; };
 		A5A5700F7C1AA1D70851F6DE /* pcsx_rearmed_libretro_default.json in Resources */ = {isa = PBXBuildFile; fileRef = 5AE2907879D793D5504FE9FC /* pcsx_rearmed_libretro_default.json */; };
+		A5C590109668FDF5230CEA0D /* DisplayCacheCodec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 065628712592EA28D2B70F4B /* DisplayCacheCodec.swift */; };
 		A5E261D1DE62A6A64ACA240E /* dolphin_libretro_default.json in Resources */ = {isa = PBXBuildFile; fileRef = A227DD8C889C0589D944D5B2 /* dolphin_libretro_default.json */; };
 		A636A60074D52DB1ED1F37DB /* MoveDataUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96619349B830F47B3655D652 /* MoveDataUtilities.swift */; };
 		A65710823C4D0A6B42F7EA87 /* ThemeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8935D40F11BF986BE60A840 /* ThemeManager.swift */; };
@@ -1434,6 +1435,7 @@
 		047139B91B642624AEC2480F /* LibretroBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LibretroBridge.h; sourceTree = "<group>"; };
 		04750B20FADB6525DAFEEF63 /* input_coreOverrides_stella.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_stella.json; sourceTree = "<group>"; };
 		059B489FC9D5EFEFA26D850F /* TimeMachineSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeMachineSettingsView.swift; sourceTree = "<group>"; };
+		065628712592EA28D2B70F4B /* DisplayCacheCodec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayCacheCodec.swift; sourceTree = "<group>"; };
 		068B7C5B921F37A7073E9DBF /* 7vYdW.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = 7vYdW.jpg; sourceTree = "<group>"; };
 		06B197F5E41F47228E654B60 /* nes.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = nes.ico; sourceTree = "<group>"; };
 		06CB43CF61ABD00AC829DE64 /* Sega - Game Gear.dat */ = {isa = PBXFileReference; path = "Sega - Game Gear.dat"; sourceTree = "<group>"; };
@@ -3023,6 +3025,7 @@
 			isa = PBXGroup;
 			children = (
 				A14A3003974DDDF09684961B /* CategoryManager.swift */,
+				065628712592EA28D2B70F4B /* DisplayCacheCodec.swift */,
 				DF68254BB5CE5328745136C2 /* GamepadNavCoordinator.swift */,
 				34377D9B77D3186AEB2B669A /* GenreManager.swift */,
 				025E75768BE1E06F25F7AA7D /* HoloColorSampler.swift */,
@@ -6277,6 +6280,7 @@
 				487D415E3A60D766E5C55314 /* DetailBoxArtComponents.swift in Sources */,
 				92931B26614CCBD73F498965 /* DetailSection.swift in Sources */,
 				95003D500A633FFBC2877CCB /* DiscHeaderReader.swift in Sources */,
+				A5C590109668FDF5230CEA0D /* DisplayCacheCodec.swift in Sources */,
 				9F941DCE595F9C3AA5B0A863 /* DisplaySleepManager.swift in Sources */,
 				FC372B713FBF4FAF94510511 /* DotMatrixLCD.metal in Sources */,
 				5283D5F00AED8BC54D66A48F /* DragPreviewStack.swift in Sources */,

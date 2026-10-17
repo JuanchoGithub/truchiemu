@@ -270,7 +270,7 @@ final class AppUpdateService: ObservableObject {
         for case let url as URL in enumerator {
             guard url.lastPathComponent == "TruchiEmu.app" else { continue }
             enumerator.skipDescendants()
-            if validatedAppBundle(at: url) {
+            if Self.validatedAppBundle(at: url) {
                 return url
             }
             updateLog.warning("Skipping invalid bundle at \(url.path)")
@@ -278,7 +278,7 @@ final class AppUpdateService: ObservableObject {
         return nil
     }
 
-    nonisolated private func validatedAppBundle(at url: URL) -> Bool {
+    nonisolated private static func validatedAppBundle(at url: URL) -> Bool {
         let fileManager = FileManager.default
         var isDirectory: ObjCBool = false
         guard fileManager.fileExists(atPath: url.path, isDirectory: &isDirectory), isDirectory.boolValue else {
@@ -414,6 +414,13 @@ final class AppUpdateService: ObservableObject {
     }
 
     nonisolated func detectUpdateHealth() -> UpdateHealthReport {
+        Self.detectUpdateHealthSnapshot()
+    }
+
+    /// Static entry for the same scan. Lets background launch checks run the
+    /// /Applications scan off the main thread without touching the
+    /// MainActor-isolated singleton.
+    nonisolated static func detectUpdateHealthSnapshot() -> UpdateHealthReport {
         var report = UpdateHealthReport()
         let fileManager = FileManager.default
         let applicationsDir = URL(fileURLWithPath: "/Applications")
@@ -449,7 +456,7 @@ final class AppUpdateService: ObservableObject {
         return report
     }
 
-    nonisolated private func bundleVersion(at appURL: URL) -> String? {
+    nonisolated private static func bundleVersion(at appURL: URL) -> String? {
         guard let data = try? Data(contentsOf: appURL.appendingPathComponent("Contents/Info.plist")),
               let plist = try? PropertyListSerialization.propertyList(from: data, options: [], format: nil) as? [String: Any] else {
             return nil
@@ -470,7 +477,7 @@ final class AppUpdateService: ObservableObject {
     /// Used by the recovery prompt for the broken-copy and split-install cases.
     func reinstallFromRunningCopy() async throws -> URL {
         let source = Bundle.main.bundleURL
-        guard validatedAppBundle(at: source) else {
+        guard Self.validatedAppBundle(at: source) else {
             throw updateError("Running copy is not a valid bundle")
         }
         let dest = URL(fileURLWithPath: "/Applications/TruchiEmu.app")
@@ -482,7 +489,7 @@ final class AppUpdateService: ObservableObject {
         guard dittoStatus == 0 else {
             throw updateError("Reinstall copy failed with exit code \(dittoStatus)")
         }
-        guard validatedAppBundle(at: dest) else {
+        guard Self.validatedAppBundle(at: dest) else {
             throw updateError("Reinstalled copy failed validation")
         }
         let xattrStatus = try runProcess(executable: "/usr/bin/xattr", arguments: ["-cr", dest.path])

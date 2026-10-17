@@ -9,7 +9,7 @@ struct ROMLibraryMetadataFile: Codable {
 }
 
 // Persisted fields for one ROM; extends beyond `ROMMetadata` with hashes and asset paths.
-struct ROMMetadataRecord: Codable, Hashable {
+struct ROMMetadataRecord: Codable, Hashable, Sendable {
     var crc32: String?
     var title: String?
     var year: String?
@@ -77,7 +77,9 @@ struct ROMMetadataRecord: Codable, Hashable {
         hltbLastNotFoundAt = rom.metadata?.hltbLastNotFoundAt
     }
 
-    func applying(to rom: ROM) -> ROM {
+    // verifyFiles: when false, skips per-path existence checks (launch fast
+    // path). The background refresh re-verifies after the first frame.
+    func applying(to rom: ROM, verifyFiles: Bool = true) -> ROM {
         var r = rom
         r.crc32 = crc32 ?? r.crc32
         var meta = r.metadata ?? ROMMetadata()
@@ -103,9 +105,13 @@ struct ROMMetadataRecord: Codable, Hashable {
         if let t = thumbnailLookupSystemID { r.thumbnailLookupSystemID = t }
         r.hasBoxArt = hasBoxArt
         if !screenshotPaths.isEmpty {
-            r.screenshotPaths = screenshotPaths.compactMap {
-                let url = URL(fileURLWithPath: $0)
-                return FileManager.default.fileExists(atPath: url.path) ? url : nil
+            if verifyFiles {
+                r.screenshotPaths = screenshotPaths.compactMap {
+                    let url = URL(fileURLWithPath: $0)
+                    return FileManager.default.fileExists(atPath: url.path) ? url : nil
+                }
+            } else {
+                r.screenshotPaths = screenshotPaths.map { URL(fileURLWithPath: $0) }
             }
         }
         return r
@@ -264,7 +270,7 @@ final class LibraryMetadataStore: ObservableObject {
         }
     }
 
-    static func pathKey(for rom: ROM) -> String {
+    static nonisolated func pathKey(for rom: ROM) -> String {
         if let inner = rom.innerROMPath {
             return "\(rom.path.standardizedFileURL.path)!\(inner)"
         }
@@ -336,6 +342,27 @@ final class LibraryMetadataStore: ObservableObject {
         }
         
         merged.refreshDerivedFields()
+        return merged
+    }
+
+    /// Snapshot of metadata records for off-main launch merge.
+    func recordsSnapshot() -> [String: ROMMetadataRecord] {
+        entries
+    }
+
+    /// Pure per-ROM merge with no file I/O and no actor state. Safe to run
+    /// on a background thread over a records snapshot.
+    static nonisolated func lightweightMerge(rom: ROM, record: ROMMetadataRecord?) -> ROM {
+        var merged: ROM
+        if let rec = record {
+            merged = rec.applying(to: rom, verifyFiles: false)
+            if let customName = rom.customName {
+                merged.customName = customName
+            }
+        } else {
+            merged = rom
+        }
+        merged.refreshDerivedFields(broadResolve: false, resolveFiles: false)
         return merged
     }
 

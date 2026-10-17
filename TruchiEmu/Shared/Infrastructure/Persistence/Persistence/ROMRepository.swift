@@ -357,6 +357,12 @@ final class ROMRepository {
 
     // Create a ROM struct from a ROMEntry @Model.
     private func rom(from entry: ROMEntry) -> ROM? {
+        Self.map(entry: entry)
+    }
+
+    /// Non-isolated mapper so launch can fetch and decode rows on a
+    /// background context without blocking the main thread.
+    nonisolated static func map(entry: ROMEntry) -> ROM? {
         let metadata: ROMMetadata? = entry.metadataJSON.flatMap {
             let decoder = JSONDecoder()
             return try? decoder.decode(ROMMetadata.self, from: Data($0.utf8))

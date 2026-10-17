@@ -107,6 +107,7 @@ class ROMLibrary: ObservableObject {
     @Published var roms: [ROM] = [] {
         didSet {
             romIndexByID = Dictionary(uniqueKeysWithValues: roms.enumerated().map { ($0.element.id, $0.offset) })
+            scheduleDisplayCacheWrite()
         }
     }
 
@@ -207,9 +208,21 @@ class ROMLibrary: ObservableObject {
         self.hasCompletedOnboarding = AppSettings.getBool("has_completed_onboarding", defaultValue: false)
     }
 
+    private var isInitializing = false
+    private var cacheWriteTask: Task<Void, Never>?
+
     func initializeIfNeeded() {
-        guard roms.isEmpty else { return }
-        initializeLibrary()
+        guard roms.isEmpty, !isInitializing else { return }
+        isInitializing = true
+        // Spawn the cache decode synchronously so it runs on a background
+        // thread from the earliest possible moment (App.init), overlapping
+        // SwiftUI scene assembly and the first render pass. The container is
+        // captured here (MainActor) so validation never hops back to main.
+        let container = SwiftDataContainer.shared.container
+        let cacheTask = Task.detached(priority: .userInitiated) {
+            await Self.readDisplayCacheOffMain()
+        }
+        Task { await self.initializeLibraryAsync(cacheTask: cacheTask, container: container) }
     }
 
     func restoreLibraryAccess() {
@@ -246,8 +259,6 @@ class ROMLibrary: ObservableObject {
             }
         }
     }
-
-    private func loadROMsFromRepository() { roms = repository.allROMs() }
 
     func saveROMsToDatabase(only ids: [UUID]? = nil, updateXML: Bool = true) {
         let romsToSave: [ROM]
@@ -307,22 +318,9 @@ class ROMLibrary: ObservableObject {
         }
         guard !orphans.isEmpty else { return }
 
-let idsToPurge = orphans.map { $0.id }
-    roms.removeAll { idsToPurge.contains($0.id) }
-    repository.deleteROMs(ids: idsToPurge)
-    }
-
-    private func purgeOrphanedROMs() {
-        let orphans = roms.filter {
-            $0.path.lastPathComponent.lowercased().hasPrefix("._") || !FileManager.default.fileExists(atPath: $0.path.path)
-        }
-        guard !orphans.isEmpty else { return }
-
-        let orphanIDs = orphans.map { $0.id }
-        roms.removeAll { orphanIDs.contains($0.id) }
-        repository.deleteROMs(ids: orphanIDs)
-        LibraryMetadataStore.shared.deleteMetadataEntries(Set(orphans.map { LibraryMetadataStore.pathKey(for: $0) }))
-        for path in Set(orphans.map { $0.path.path }) { fileIndex.removeValue(forKey: path) }
+        let purgeSet = Set(orphans.map { $0.id })
+        roms.removeAll { purgeSet.contains($0.id) }
+        repository.deleteROMs(ids: Array(purgeSet))
     }
 
     // MARK: - Legacy Migration & Purges
@@ -1281,15 +1279,72 @@ let idsToPurge = orphans.map { $0.id }
         }
     }
 
-    private func initializeLibrary() {
+    /// Async launch load. The SQLite fetch, JSON decode, and string-only
+    /// merge all run off the main thread; the main thread only publishes.
+    /// The list appears as soon as the background pass finishes instead of
+    /// blocking the first frame.
+    private func initializeLibraryAsync(cacheTask: Task<[ROM]?, Never>? = nil, container: ModelContainer?) async {
+        let cachedTask = cacheTask ?? Task.detached(priority: .userInitiated) {
+            await Self.readDisplayCacheOffMain()
+        }
+
+        // Fast path validation runs entirely off-main: decode + row count.
+        // The main thread pays exactly one hop — the publish — whenever it
+        // first frees up, so data lands before or with the first render.
+        let decision = await Task.detached(priority: .userInitiated) { () -> (roms: [ROM], count: Int)? in
+            guard let cached = await cachedTask.value else { return nil }
+            guard let container else { return nil }
+            let context = ModelContext(container)
+            let count = (try? context.fetchCount(FetchDescriptor<ROMEntry>())) ?? -1
+            return (cached, count)
+        }.value
+
+        // Fast path: last session's fully-resolved rows, verified by row
+        // count, corrected by the background verify pass. Folder restore and
+        // purges run AFTER the publish: bookmark resolution must not delay
+        // data, and purge needs the restored folder list to be safe.
+        if let cached = decision?.roms, let dbCount = decision?.count, dbCount == cached.count {
+            LoggerService.info(category: "ROMLibrary", "Display cache hit: \(cached.count) rows")
+            roms = cached
+            isInitializing = false
+            migrateLegacyUserDefaultsToSwiftData()
+            restoreLibraryAccess()
+            purgeROMsOutsideLibraryFolders()
+            loadFileIndexFromStorage()
+            updateCounts()
+            Task { await self.verifyLibraryAsync() }
+            Task { @MainActor in
+                StableIdentityMigration.runIfNeeded(library: self)
+            }
+            Task { await self.healSwitchClassificationIfNeeded() }
+            Task {
+                await self.fillMetadataForExistingROMs()
+            }
+            return
+        }
+
+        // Full path (cache miss or drift): restore folders BEFORE any purge
+        // can run — purge treats an empty folder list as "everything invalid".
         migrateLegacyUserDefaultsToSwiftData()
         restoreLibraryAccess()
-        loadROMsFromRepository()
-        roms = roms.map { LibraryMetadataStore.shared.mergedROM($0) }
+        let fetched = await fetchROMsOffMain()
+        let records = LibraryMetadataStore.shared.recordsSnapshot()
+        let merged = await Task.detached(priority: .userInitiated) { () -> [ROM] in
+            fetched.map {
+                LibraryMetadataStore.lightweightMerge(
+                    rom: $0,
+                    record: records[LibraryMetadataStore.pathKey(for: $0)])
+            }
+        }.value
+        roms = merged
         purgeROMsOutsideLibraryFolders()
-        purgeOrphanedROMs()
         loadFileIndexFromStorage()
         updateCounts()
+        isInitializing = false
+
+        // Heavy file work (orphan stats, full art resolution, thumbnail
+        // warm-up) runs after the first frame to keep launch instant.
+        Task { await self.deferredLaunchWork() }
 
         // One-shot stable-identity migration. Runs once ever, on the first
         // launch after the update. Deferred so launch stays fast.
@@ -1302,17 +1357,229 @@ let idsToPurge = orphans.map { $0.id }
         // columns). Classifies off-main, applies on Main. No-op when clean.
         Task { await self.healSwitchClassificationIfNeeded() }
 
-        Task { @MainActor in
-            // Eagerly pre-generate on-disk thumbnails for the existing library
-            // (Photos.app-style import-time thumbnail generation) so scrolling
-            // never falls back to decoding the full original boxart. Already-
-            // warmed ROMs are skipped cheaply inside warmThumbnails.
-            BoxArtThumbnailService.shared.warmThumbnails(for: self.roms)
-        }
-
         Task {
             // Background fill of metadata for existing ROMs that have CRC but no enrichment attempt
             await self.fillMetadataForExistingROMs()
+        }
+    }
+
+    /// Fetch and decode all rows on a background context. The main context
+    /// is never touched here, so the first frame stays responsive while a
+    /// large library loads.
+    private func fetchROMsOffMain() async -> [ROM] {
+        guard let container = SwiftDataContainer.shared.container else { return [] }
+        return await Task.detached(priority: .userInitiated) { () -> [ROM] in
+            let context = ModelContext(container)
+            let descriptor = FetchDescriptor<ROMEntry>()
+            guard let entries = try? context.fetch(descriptor) else { return [] }
+            return entries.compactMap { ROMRepository.map(entry: $0) }
+        }.value
+    }
+
+    /// Background correction for the display-cache fast path. Re-runs the
+    /// full fetch and merge, publishes only on drift, then runs the normal
+    /// deferred file work.
+    private func verifyLibraryAsync() async {
+        let fetched = await fetchROMsOffMain()
+        let records = LibraryMetadataStore.shared.recordsSnapshot()
+        let merged = await Task.detached(priority: .userInitiated) { () -> [ROM] in
+            fetched.map {
+                LibraryMetadataStore.lightweightMerge(
+                    rom: $0,
+                    record: records[LibraryMetadataStore.pathKey(for: $0)])
+            }
+        }.value
+        // Metadata IS a real difference: cache rows carry none, so publish
+        // merged rows (which re-attach it from LibraryMetadataStore) when it
+        // is missing. Art is copied back from the cached rows first: merged
+        // rows never carry art, and publishing them as-is flashes every
+        // cover to a placeholder until the art pass re-resolves it.
+        let metadataMissing = roms.contains { $0.metadata == nil }
+            && merged.contains { $0.metadata != nil }
+        if metadataMissing || Self.withoutArt(merged) != Self.withoutArt(roms) {
+            var withArt = merged
+            let artByID = Dictionary(roms.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
+            for i in withArt.indices {
+                if let cached = artByID[withArt[i].id] {
+                    withArt[i].boxArtLocalPath = cached.boxArtLocalPath
+                    withArt[i].hasBoxArt = cached.hasBoxArt
+                    withArt[i].needsAutomaticBoxArt = cached.needsAutomaticBoxArt
+                    withArt[i].titleScreenLocalPath = cached.titleScreenLocalPath
+                    withArt[i].hasTitleScreen = cached.hasTitleScreen
+                    withArt[i].screenshotPaths = cached.screenshotPaths
+                }
+            }
+            roms = withArt
+            purgeROMsOutsideLibraryFolders()
+            loadFileIndexFromStorage()
+            updateCounts()
+        }
+        await deferredLaunchWork()
+    }
+
+    /// Rows with file-resolved art fields and metadata cleared. Lets the
+    /// verify pass tell real content drift apart from art/metadata the
+    /// background passes re-resolve (cache rows carry no metadata).
+    private static nonisolated func withoutArt(_ roms: [ROM]) -> [ROM] {
+        roms.map {
+            var r = $0
+            r.metadata = nil
+            r.boxArtLocalPath = URL(fileURLWithPath: "")
+            r.hasBoxArt = false
+            r.needsAutomaticBoxArt = true
+            r.titleScreenLocalPath = URL(fileURLWithPath: "")
+            r.hasTitleScreen = false
+            r.screenshotPaths = []
+            return r
+        }
+    }
+
+    // MARK: - Display Cache (fast launch path)
+
+    /// Last session's fully-resolved rows, verified by row count at launch.
+    /// Falls back to the full fetch on any miss so the list is never wrong.
+    /// Format: byte-packed via DisplayCacheCodec (no reflection, no boxed
+    /// object graph — decodes 2 100 rows in milliseconds off-main).
+
+    private static nonisolated var displayCacheURL: URL {
+        FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
+            .appendingPathComponent("TruchiEmu/LibraryDisplayCache.bin")
+    }
+
+    private static nonisolated func readDisplayCacheOffMain() async -> [ROM]? {
+        await Task.detached(priority: .userInitiated) { () -> [ROM]? in
+            guard let data = try? Data(contentsOf: displayCacheURL, options: .alwaysMapped) else { return nil }
+            return DisplayCacheCodec.decode(data)
+        }.value
+    }
+
+    /// Write-through for the display cache, debounced. Covers every library
+    /// mutation because all of them publish through `roms` didSet.
+    private func scheduleDisplayCacheWrite() {
+        cacheWriteTask?.cancel()
+        cacheWriteTask = Task { @MainActor [weak self] in
+            try? await Task.sleep(nanoseconds: 2_000_000_000)
+            guard !Task.isCancelled, let self else { return }
+            let snapshot = self.roms
+            await Task.detached(priority: .utility) {
+                Self.writeDisplayCache(snapshot)
+            }.value
+        }
+    }
+
+    private static nonisolated func writeDisplayCache(_ roms: [ROM]) {
+        // Metadata is stripped: descriptions/genres are the bulk of the
+        // payload. The grid reads only top-level ROM fields. Metadata
+        // re-attaches from LibraryMetadataStore in verifyLibraryAsync.
+        // Round-trip self-check: a bad write is deleted rather than left
+        // where the next launch would decode it.
+        let stripped = roms.map {
+            var r = $0
+            r.metadata = nil
+            return r
+        }
+        guard var data = DisplayCacheCodec.encode(stripped) else { return }
+        #if DEBUG
+        if let decoded = DisplayCacheCodec.decode(data), decoded.count == stripped.count,
+           decoded.first?.id == stripped.first?.id,
+           decoded.last?.id == stripped.last?.id {
+            // Round-trip OK.
+        } else {
+            LoggerService.error(category: "ROMLibrary", "Display cache round-trip check FAILED; deleting cache")
+            data = Data()
+        }
+        #endif
+        guard !data.isEmpty else { return }
+        try? data.write(to: displayCacheURL, options: .atomic)
+    }
+
+    /// Post-first-frame file work for launch. Orphan purges stat every ROM
+    /// file and art resolution lists boxart directories, so both run off
+    /// the main thread with results applied back in single batches.
+    private func deferredLaunchWork() async {
+        await purgeOrphanedROMsAsync()
+        await resolveArtworkAsync()
+        BoxArtThumbnailService.shared.warmThumbnails(for: self.roms)
+        LoggerService.info(category: "ROMLibrary", "Launch art resolved: \(roms.filter(\.hasBoxArt).count)/\(roms.count) have art")
+    }
+
+    /// Async orphan purge. The stat-per-ROM loop runs off-main; removals and
+    /// store updates apply on the main thread in one batch.
+    private func purgeOrphanedROMsAsync() async {
+        let snapshots = roms.map {
+            (id: $0.id, path: $0.path.path, leaf: $0.path.lastPathComponent.lowercased())
+        }
+        let orphanIDs = await Task.detached(priority: .utility) { () -> [UUID] in
+            var ids: [UUID] = []
+            let manager = FileManager.default
+            for snap in snapshots {
+                if snap.leaf.hasPrefix("._") || !manager.fileExists(atPath: snap.path) {
+                    ids.append(snap.id)
+                }
+            }
+            return ids
+        }.value
+        guard !orphanIDs.isEmpty else { return }
+
+        let idSet = Set(orphanIDs)
+        let orphans = roms.filter { idSet.contains($0.id) }
+        roms.removeAll { idSet.contains($0.id) }
+        repository.deleteROMs(ids: orphanIDs)
+        LibraryMetadataStore.shared.deleteMetadataEntries(Set(orphans.map { LibraryMetadataStore.pathKey(for: $0) }))
+        for path in Set(orphans.map { $0.path.path }) { fileIndex.removeValue(forKey: path) }
+        updateCounts()
+    }
+
+    /// Full per-ROM art resolution in ONE off-main pass. Direct filename
+    /// checks first; ROMs without standard-named art fall through to the
+    /// broad directory-scan resolver in the same pass, so every row lands
+    /// at its final art state and publishes once. Two separate passes
+    /// instead flashed non-standard-named covers to placeholders between
+    /// them. BoxArtService is captured on the main actor; its resolver is
+    /// nonisolated and lock-guarded, so calling it here is safe.
+    private func resolveArtworkAsync() async {
+        let boxArt = BoxArtService.shared
+        let snapshots = roms
+        let resolved = await Task.detached(priority: .utility) { () -> [ROM] in
+            let manager = FileManager.default
+            return snapshots.map { rom in
+                var m = rom
+                m.refreshDerivedFields(broadResolve: false)
+                if !m.hasBoxArt, let found = boxArt.resolveLocalBoxArt(for: m) {
+                    m.boxArtLocalPath = found
+                    m.hasBoxArt = true
+                    m.needsAutomaticBoxArt = false
+                }
+                if !m.screenshotPaths.isEmpty {
+                    m.screenshotPaths = m.screenshotPaths.filter { manager.fileExists(atPath: $0.path) }
+                }
+                return m
+            }
+        }.value
+        guard !resolved.isEmpty else { return }
+        let byID = Dictionary(uniqueKeysWithValues: resolved.map { ($0.id, $0) })
+        // Copy back only file-resolved fields so user edits made while the
+        // background pass ran (favorites, playtime) are never clobbered.
+        // Single assignment: roms.didSet rebuilds the ID index on every
+        // mutation, so per-element writes here spin the main thread.
+        var updated = roms
+        for i in updated.indices {
+            guard let r = byID[updated[i].id] else { continue }
+            updated[i].boxArtLocalPath = r.boxArtLocalPath
+            updated[i].hasBoxArt = r.hasBoxArt
+            updated[i].needsAutomaticBoxArt = r.needsAutomaticBoxArt
+            updated[i].titleScreenLocalPath = r.titleScreenLocalPath
+            updated[i].hasTitleScreen = r.hasTitleScreen
+            updated[i].screenshotPaths = r.screenshotPaths
+        }
+        // Publish only on change: an identical assignment still fires didSet
+        // (index rebuild), the view-model refresh, and a cache rewrite.
+        if updated != roms {
+            roms = updated
+            // Signal content change. The grid view model dedups library updates
+            // on count + date; without this it keeps the pre-resolution rows and
+            // art never appears.
+            lastChangeDate = Date()
         }
     }
 

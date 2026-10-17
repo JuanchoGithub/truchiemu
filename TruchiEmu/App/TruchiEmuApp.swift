@@ -43,15 +43,24 @@ struct TruchiEmuApp: App {
 
     // SwiftData container manages all persistence.
     // The container handles one-time migration on first launch.
+    private let libraryInstance: ROMLibrary
     init() {
+        let lib = ROMLibrary()
+        lib.initializeIfNeeded()
+        _library = StateObject(wrappedValue: lib)
+        libraryInstance = lib
         _ = SwiftDataContainer.shared
         _ = LoggerService.shared
         _ = ThemeManager.shared
         _ = SaveDirectoryManager.shared
         _ = NewGamepadPresenter.shared
         NewGamepadPresenter.shared.start()
-        CoreOverrideService.shared.syncBundledOverridesToAppSupport()
-        BoxArtThumbnailService.shared.migrateOldThumbnailCache()
+        // File work must not block the first frame. Runs on the next runloop
+        // turn, after the window is already on screen.
+        DispatchQueue.main.async {
+            CoreOverrideService.shared.syncBundledOverridesToAppSupport()
+            BoxArtThumbnailService.shared.migrateOldThumbnailCache()
+        }
         
         // Optional slang preset audit, env-gated: run with
         //   TRUCHI_SLANG_AUDIT=1 /Applications/TruchiEmu.app/Contents/MacOS/TruchiEmu
@@ -81,7 +90,11 @@ LoggerService.debug(category: category, message)
 }
     }
     
-    @StateObject private var library = ROMLibrary()
+    // Library loads before first render: kicking the async fetch+merge off
+    // in init lets the display-cache rows publish while SwiftUI assembles
+    // the scene, so the first render pass already carries data instead of
+    // rendering an empty library and re-rendering when ROMs arrive.
+    @StateObject private var library: ROMLibrary
     @StateObject private var categoryManager = CategoryManager()
     @StateObject private var coreManager = CoreManager.shared
     @StateObject private var controllerService = ControllerService.shared
@@ -580,7 +593,6 @@ struct ContentWithPrepopulationView: View {
   @State private var isPrepopulated: Bool
   @State private var isRunningPrepopulation = false
   @State private var showInstallDrag = false
-  @State private var startupUpdateCheckComplete: Bool
   @State private var showAppUpdateMode: Bool = false
   @State private var recoveryReport: AppUpdateService.UpdateHealthReport?
   @ObservedObject private var loc = LocalizationManager.shared
@@ -604,12 +616,15 @@ struct ContentWithPrepopulationView: View {
         // Check synchronously so we skip the loading view on subsequent launches
         _isPrepopulated = State(initialValue: AppSettings.getBool("dat_prepopulation_done_v1", defaultValue: false))
         _showInstallDrag = State(initialValue: InstallDragView.shouldShow())
-        _startupUpdateCheckComplete = State(initialValue: !AppUpdateService.shared.shouldAutoCheck())
     }
     
-    // Whether we need to show the loading view
+    // Whether we need to show the loading view (true first-run DAT import only)
     private var needsLoading: Bool {
         !isPrepopulated
+    }
+
+    private var showsRecoverySheet: Binding<Bool> {
+        Binding(get: { recoveryReport != nil }, set: { if !$0 { recoveryReport = nil } })
     }
     
     var body: some View {
@@ -628,35 +643,34 @@ struct ContentWithPrepopulationView: View {
                     .onReceive(NotificationCenter.default.publisher(for: .installDragCompleted)) { _ in
                         showInstallDrag = false
                     }
-            } else if let recovery = recoveryReport {
-                RecoveryPromptView(report: recovery) {
-                    recoveryReport = nil
-                }
-            } else if !startupUpdateCheckComplete || needsLoading {
+            } else if needsLoading {
                 ProgressView(loc.localized("app.initializingDatabase"))
                     .frame(width: 200)
                     .task {
                         await performInitialization()
                     }
-            } else if let update = updateService.pendingStartupUpdate {
-                UpdateWizardView(release: update) {
-                    updateService.pendingStartupUpdate = nil
-                }
             } else {
+                // The library shows at once. Update, recovery, and core-info
+                // checks run deferred in the background task below and present
+                // as sheets, so they never block the first frame.
                 ContentView()
                     .environmentObject(library)
+                    .sheet(isPresented: showsRecoverySheet) {
+                        if let recovery = recoveryReport {
+                            RecoveryPromptView(report: recovery) {
+                                recoveryReport = nil
+                            }
+                        }
+                    }
+                    .sheet(item: $updateService.pendingStartupUpdate) { update in
+                        UpdateWizardView(release: update) {
+                            updateService.pendingStartupUpdate = nil
+                        }
+                    }
             }
         }
         .task {
-            let health = AppUpdateService.shared.detectUpdateHealth()
-            if await AppUpdateService.shared.shouldShowRecovery(for: health) {
-                recoveryReport = health
-            }
-            guard !startupUpdateCheckComplete else { return }
-            if let release = await AppUpdateService.shared.checkForUpdates() {
-                updateService.pendingStartupUpdate = release
-            }
-            startupUpdateCheckComplete = true
+            await runDeferredStartupChecks()
         }
 	.onReceive(NotificationCenter.default.publisher(for: .openHelpWindow)) { _ in
 			openWindow(id: "help")
@@ -673,18 +687,41 @@ struct ContentWithPrepopulationView: View {
   }
 
   private func performInitialization() async {
-        // Perform DAT pre-population if needed
+        // DAT pre-population only (true first-run gate). Everything else that
+        // used to block here now runs in runDeferredStartupChecks() after the
+        // first frame is on screen.
         if !isPrepopulated {
             isRunningPrepopulation = true
             _ = await DATPrepopulationService.ensureDATsArePopulated()
             isRunningPrepopulation = false
             isPrepopulated = true
         }
+    }
 
-        // Ensure core mappings are present and up-to-date
+    /// Post-first-frame checks: update health (/Applications scan),
+    /// core-info refresh, and the update check. Deferred so slow disk or
+    /// network never delays the working library.
+    private func runDeferredStartupChecks() async {
+        // Let the first frame paint before any of this runs.
+        try? await Task.sleep(nanoseconds: 2_000_000_000)
+        guard !Task.isCancelled else { return }
+
+        // /Applications scan off the main thread; presentation back on it.
+        let health = await Task.detached(priority: .utility) {
+            AppUpdateService.detectUpdateHealthSnapshot()
+        }.value
+        if AppUpdateService.shared.shouldShowRecovery(for: health) {
+            recoveryReport = health
+        }
+
         if await LibretroInfoManager.shouldRefreshInfo() {
-            LoggerService.info(category: "App", "Core info is missing or stale. Refreshing during initialization...")
+            LoggerService.info(category: "App", "Core info is missing or stale. Refreshing in background...")
             await LibretroInfoManager.shared.refreshCoreInfo()
+        }
+
+        guard AppUpdateService.shared.shouldAutoCheck() else { return }
+        if let release = await AppUpdateService.shared.checkForUpdates() {
+            updateService.pendingStartupUpdate = release
         }
     }
 }
@@ -715,19 +752,25 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         // .shared here guarantees the init fires on the main actor.
         _ = BoxArtService.shared
 
-        // Start SDL2 input subsystem for game controller support
-        SDLInputManager.shared.start()
+        // Everything below is deferred past the first frame. None of it is
+        // needed to paint the working library.
+        DispatchQueue.main.async {
+            // Start SDL2 input subsystem for game controller support
+            SDLInputManager.shared.start()
 
-        // Set up RetroAchievementsService with SwiftData context
-        RetroAchievementsService.shared.setModelContext(SwiftDataContainer.shared.container.mainContext)
+            // Set up RetroAchievementsService with SwiftData context
+            RetroAchievementsService.shared.setModelContext(SwiftDataContainer.shared.container.mainContext)
 
-        // Auto-request notification authorization on first launch so that
-        // background events (RA match/mismatch, hash errors, etc.) actually surface.
-        // The system only shows the prompt when authorization is .notDetermined,
-        // so this is a no-op for users who already accepted or declined.
-        UNUserNotificationCenter.current().getNotificationSettings { settings in
-            guard settings.authorizationStatus == .notDetermined else { return }
-            UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { _, _ in }
+            // Auto-request notification authorization on first launch so that
+            // background events (RA match/mismatch, hash errors, etc.) actually surface.
+            // The system only shows the prompt when authorization is .notDetermined,
+            // so this is a no-op for users who already accepted or declined.
+            UNUserNotificationCenter.current().getNotificationSettings { settings in
+                guard settings.authorizationStatus == .notDetermined else { return }
+                UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { _, _ in }
+            }
+
+            ArchiveExtractor.shared.cleanExpiredCache()
         }
 
         let args = ProcessInfo.processInfo.arguments
@@ -754,8 +797,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             LogManager.shared.cleanupOldRotatedLogs()
             LogManager.shared.quickTrimLog()
         }
-
-        ArchiveExtractor.shared.cleanExpiredCache()
   }
 
 	// MARK: - UNUserNotificationCenterDelegate
