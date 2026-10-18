@@ -78,6 +78,17 @@ struct TruchiEmuApp: App {
         // Dead code path when the env var is unset.
         ListPerfAuditRunner.runIfNeeded(library: lib)
 
+        // Optional library scroll perf audit, env-gated: run with
+        //   TRUCHI_SCROLL_PERF_AUDIT=1 TRUCHI_SCROLL_PERF_MODE=grid|holo \
+        //     TRUCHI_SCROLL_PERF_DISPLAY=fillBlurred|cropSquare \
+        //     /path/to/TruchiEmu.app/Contents/MacOS/TruchiEmu
+        // Drives scripted scroll bursts over the real library, prints per-burst
+        // main-thread busy time / effective FPS / cell-recycling counters, and
+        // writes report.md under
+        // ~/Library/Application Support/TruchiEmu/ScrollPerfAudit/.
+        // Dead code path when the env var is unset.
+        ScrollPerfAuditRunner.runIfNeeded(library: lib)
+
         // MAME dictionary loading is deferred to background tasks in ContentWithPrepopulationView
         // 1. Connect the Bridge to your existing LoggerService
 LibretroBridgeSwift.registerCoreLogger { message, level in

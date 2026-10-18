@@ -1,38 +1,6 @@
 import SwiftUI
 import AppKit
 
-// Applies the hover/pointer-tracking modifiers only when `active` is true.
-// While the grid is scrolling we drop them entirely so SwiftUI does no hover
-// hit-testing on the card under the cursor — otherwise every card that scrolls
-// under a stationary pointer flips its hover preference and recomputes the
-// (heavy) holo body on each crossing, which janks the scroll.
-fileprivate extension View {
-    @ViewBuilder
-    func holoHoverWhenNotScrolling(
-        active: Bool,
-        isScrolling: Bool,
-        onHover: @escaping (Bool) -> Void,
-        onContinuous: @escaping (HoverPhase) -> Void
-    ) -> some View {
-        if active {
-            self
-                .onHover { hovering in
-                    // Defense-in-depth: even if the modifier is attached, ignore
-                    // hover events while scrolling so rapid card crossings don't
-                    // flood the main thread with state updates.
-                    guard !isScrolling else { return }
-                    onHover(hovering)
-                }
-                .onContinuousHover { phase in
-                    guard !isScrolling else { return }
-                    onContinuous(phase)
-                }
-        } else {
-            self
-        }
-    }
-}
-
 // Optimized holo game card view for the library grid.
 // Replicates the Pokemon TCG holographic card effect using SwiftUI blend modes and 3D transforms.
 struct HoloGameCardView: View {
@@ -69,7 +37,6 @@ struct HoloGameCardView: View {
     @ObservedObject private var holoSettings = HoloSettingsStore.shared
     @EnvironmentObject private var library: ROMLibrary
     @EnvironmentObject private var categoryManager: CategoryManager
-    @ObservedObject private var scrollState = LibraryScrollState.shared
     @State private var lastDecomposedROMID: UUID?
     // Trigger for lazy holo mask decomposition — only runs when user actually
     // hovers the card (effectsActive becomes true), not on card appearance.
@@ -324,10 +291,14 @@ struct HoloGameCardView: View {
 
     // True only while the cursor is over the card AND the grid is not
     // scrolling. All holo effects (foil, glare, tilt, bump, scale, play
-    // button) are gated on this so they don't fire mid-scroll — they only
-    // engage once the scroll settles (see `LibraryScrollState`).
+    // button) are gated on this so they don't fire mid-scroll. The scroll
+    // flag is read LIVE (not observed — observing re-rendered every visible
+    // card at each gesture boundary, a measured ~70-90ms hitch): hover can
+    // only engage through the handlers, which check the flag, and the
+    // `.libraryScrollActivityChanged` notification resets hover state on
+    // cards that were hovered when a scroll started.
     private var effectsActive: Bool {
-        isHovered && !scrollState.isScrolling
+        isHovered && !ScrollActivity.isScrolling
     }
 
     private var translateY: CGFloat {
@@ -342,19 +313,24 @@ struct HoloGameCardView: View {
         scale * 150
     }
 
+    // The card always renders the full tree — there is deliberately NO
+    // lightweight stand-in swapped in while the grid scrolls anymore. The old
+    // `if scrollState.isScrolling { lightweight } else { full }` swap changed
+    // the branch type, so SwiftUI tore down and rebuilt the ENTIRE view tree
+    // of every visible card twice per gesture (on scroll start and again
+    // ~0.3s after the last event) — measured as a ~90ms main-thread stall at
+    // each flip, the "not fluid" hitch at the start/end of every flick.
+    // Scrolling is now safe with the full card mounted: the hover handlers
+    // refuse to engage while `ScrollActivity.isScrolling` is true, the holo
+    // foil/glare/tilt stay gated on `effectsActive`, and the frame-tracking
+    // GeometryReader refuses to write while scrolling.
     var body: some View {
-        Group {
-            if scrollState.isScrolling {
-                lightweightScrollCard
-            } else {
-                fullCard
-            }
-        }
+        fullCard
         // These loads live on `body` (always mounted), NOT on `fullCard`, so
-        // they run while the lightweight scroll card is showing too. Otherwise
-        // cold/evicted thumbs never load during a scroll and the grid flashes
-        // grey until the gesture ends. The loads are async (background actor),
-        // so they never block the main thread the way the old synchronous
+        // they run while the grid is showing too. Otherwise cold/evicted
+        // thumbs never load during a scroll and the grid flashes grey until
+        // the gesture ends. The loads are async (background actor), so they
+        // never block the main thread the way the old synchronous
         // `thumbnailSync` pre-pop did.
         .task(id: "\(rom.id)-\(rom.hasBoxArt)-\(zoomReloadToken)-\(boxArtService.boxArtUpdated)") {
             guard rom.hasBoxArt else {
@@ -380,7 +356,7 @@ struct HoloGameCardView: View {
                 return
             }
             guard holoMaskTrigger else { return }
-            while scrollState.isScrolling {
+            while ScrollActivity.isScrolling {
                 if Task.isCancelled { return }
                 try? await Task.sleep(nanoseconds: 150_000_000)
             }
@@ -407,19 +383,8 @@ struct HoloGameCardView: View {
         }
     }
 
-    // Minimal stand-in used while the grid is scrolling. Building the full
-    // `HoloGameCardView` tree (gestures, tilt, holo tasks, frame tracker) for
-    // every cell that scrolls into view saturates the main thread. During
-    // scroll only the static box art + title are needed. We reuse the SAME
-    // `holoArtworkView` the full card renders (its foil/glare/tilt are gated
-    // on `effectsActive`, which is false while scrolling) so the artwork fills
-    // the exact same region — there is no size jump when this swaps in/out.
-    private var lightweightScrollCard: some View {
-        cardContent(lightweight: true)
-    }
-
     private var fullCard: some View {
-        cardContent(lightweight: false)
+        cardContent()
             .coordinateSpace(name: "holoCard")
             // Hover + pointer tracking attached BEFORE the scale transform
             // below. If tracked inside the transformed subtree, the scale
@@ -430,38 +395,45 @@ struct HoloGameCardView: View {
             // decided by `isOverArtwork`. The 3D tilt below is applied to this
             // untransformed card, so rotating it doesn't move the hit region
             // either; the cursor drives the tilt AND the glare spotlight.
-            .holoHoverWhenNotScrolling(
-                active: !scrollState.isScrolling,
-                isScrolling: scrollState.isScrolling,
-                onHover: { hovering in
+            //
+            // The handlers gate on `ScrollActivity.isScrolling` (read live):
+            // a stationary cursor must not flip hover for every card that
+            // scrolls beneath it. The modifiers stay attached — detaching them
+            // per gesture boundary restructured the tree of every visible card.
+            .onHover { hovering in
+                if ScrollActivity.isScrolling {
+                    if !hovering { isHovered = false }
+                } else {
                     isHovered = hovering
                     if !hovering { mousePosition = nil }
+                    if hovering { holoMaskTrigger = true }
                     // Ease the card back to flat on exit.
                     withAnimation(AppMotion.tilt) {
                         tiltRotationX = 0
                         tiltRotationY = 0
                     }
-                },
-                onContinuous: { phase in
-                    switch phase {
-                    case .active(let location):
-                        mousePosition = location
-                        // Spring the 3D tilt toward the cursor. Scoped to the
-                        // tilt state only — the glare reads `mousePosition`
-                        // directly so it keeps crisp 1:1 tracking.
-                        withAnimation(AppMotion.tilt) {
-                            tiltRotationX = tiltTargetRotationX
-                            tiltRotationY = tiltTargetRotationY
-                        }
-                    case .ended:
-                        mousePosition = nil
-                        withAnimation(AppMotion.tilt) {
-                            tiltRotationX = 0
-                            tiltRotationY = 0
-                        }
+                }
+            }
+            .onContinuousHover { phase in
+                guard !ScrollActivity.isScrolling else { return }
+                switch phase {
+                case .active(let location):
+                    mousePosition = location
+                    // Spring the 3D tilt toward the cursor. Scoped to the
+                    // tilt state only — the glare reads `mousePosition`
+                    // directly so it keeps crisp 1:1 tracking.
+                    withAnimation(AppMotion.tilt) {
+                        tiltRotationX = tiltTargetRotationX
+                        tiltRotationY = tiltTargetRotationY
+                    }
+                case .ended:
+                    mousePosition = nil
+                    withAnimation(AppMotion.tilt) {
+                        tiltRotationX = 0
+                        tiltRotationY = 0
                     }
                 }
-            )
+            }
             .onChange(of: isOverArtwork) { _, over in
                 // Foil + glare both fade on hover-binary, but only while the
                 // cursor is over the box art itself (not the title text below).
@@ -474,25 +446,18 @@ struct HoloGameCardView: View {
                     glareIntensity = over ? 1 : 0
                 }
             }
-            .onChange(of: scrollState.isScrolling) { _, scrolling in
+            .onReceive(NotificationCenter.default.publisher(for: .libraryScrollActivityChanged)) { _ in
                 // While the grid scrolls, drop all hover-driven state so the
                 // heavy holo view doesn't recompute on every scroll event.
                 // Effects re-engage when the cursor moves after scrolling settles.
-                if scrolling {
+                // Only cards that HAD active state re-render; the rest write nothing.
+                if ScrollActivity.isScrolling {
                     isHovered = false
                     mousePosition = nil
                     tiltRotationX = 0
                     tiltRotationY = 0
                     holoOpacity = 0
                     glareIntensity = 0
-                }
-            }
-            .onChange(of: effectsActive) { _, active in
-                // Only start holo mask decomposition when user actually hovers
-                // (effectsActive becomes true). This avoids pre-computing masks
-                // for all grid cards when they're just visible but not interacted with.
-                if active {
-                    holoMaskTrigger = true
                 }
             }
             // 3D tilt toward the cursor is applied to the ARTWORK ONLY (see
@@ -518,7 +483,15 @@ struct HoloGameCardView: View {
                     }
             )
             .contextMenu {
-                contextMenu?()
+                // Deferred: SwiftUI evaluates `.contextMenu`'s builder
+                // eagerly on every card re-eval; with the full card now
+                // mounted during scroll, an eager builder would rebuild the
+                // menu tree per visible cell mid-scroll. The wrapper stores
+                // only a cheap closure (same fix the list rows and the boxart
+                // grid use).
+                LibraryGridView.LazyContextMenuContent(build: {
+                    contextMenu?() ?? AnyView(EmptyView())
+                })
             }
             .accessibilityLabel(rom.displayName)
             .accessibilityHint(Text("Double-click or press Enter to launch"))
@@ -542,7 +515,7 @@ struct HoloGameCardView: View {
     }
 
     @ViewBuilder
-    private func cardContent(lightweight: Bool) -> some View {
+    private func cardContent() -> some View {
         VStack(spacing: 0) {
             ZStack(alignment: .bottomTrailing) {
                 ZStack(alignment: .topTrailing) {
@@ -571,7 +544,7 @@ struct HoloGameCardView: View {
                         .padding(.horizontal, 4)
                         .padding(.top, 4)
                     
-                    if !lightweight, raEnabled && rom.raMatchStatus == "matched" {
+                    if raEnabled && rom.raMatchStatus == "matched" {
                         Image(systemName: "trophy.fill")
                             .font(.system(size: 10, weight: .bold))
                             .foregroundColor(AppColors.textOnAccent(for: brandAccent.opacity(0.85), colorScheme: colorScheme))
@@ -583,7 +556,7 @@ struct HoloGameCardView: View {
                             .transition(.scale.combined(with: .opacity))
                     }
                     
-                    if !lightweight, isMultiSelected {
+                    if isMultiSelected {
                         Image(systemName: "checkmark.circle.fill")
                             .font(.title2)
                             .foregroundColor(brandAccent)
@@ -592,7 +565,7 @@ struct HoloGameCardView: View {
                             .transition(.scale.combined(with: .opacity))
                     }
                     
-                    if !lightweight, isHovered, let menuContent = contextMenu {
+                    if isHovered, let menuContent = contextMenu {
                         ZStack {
                             Circle()
                                 .fill(
@@ -640,25 +613,23 @@ struct HoloGameCardView: View {
                 .aspectRatio(effectiveFrameAspectRatio, contentMode: .fit)
                 .frame(maxWidth: .infinity)
                 .background(
-                    Group {
-                        // The frame tracks the card's position so the glare can
-                        // follow the cursor over the box art. It only matters while
-                        // hovered — and its `.onChange` fires every frame as the
-                        // card moves during a scroll, rebuilding the whole card for
-                        // every visible cell and pegging the main thread. Skip it
-                        // while scrolling; it re-mounts (and re-measures via
-                        // `onAppear`) the moment the scroll settles.
-                        if !lightweight, !scrollState.isScrolling {
-                            GeometryReader { geo in
-                                Color.clear
-                                    .onAppear {
-                                        artworkFrameInCard = geo.frame(in: .named("holoCard"))
-                                    }
-                                    .onChange(of: geo.frame(in: .named("holoCard"))) { _, new in
-                                        artworkFrameInCard = new
-                                    }
+                    // The frame tracks the card's position so the glare can
+                    // follow the cursor over the box art. Its `.onChange` fires
+                    // every frame as the card moves during a scroll — writing
+                    // state there rebuilt the whole card for every visible cell
+                    // (pegging the main thread). The tracker stays MOUNTED
+                    // (unmounting it per gesture boundary restructured the tree
+                    // of every visible card); the onChange just refuses to write
+                    // while the grid is scrolling.
+                    GeometryReader { geo in
+                        Color.clear
+                            .onAppear {
+                                artworkFrameInCard = geo.frame(in: .named("holoCard"))
                             }
-                        }
+                            .onChange(of: geo.frame(in: .named("holoCard"))) { _, new in
+                                guard !ScrollActivity.isScrolling else { return }
+                                artworkFrameInCard = new
+                            }
                     }
                 )
             }
@@ -784,7 +755,7 @@ private func holoArtworkDefault(allowBump: Bool = true) -> some View {
             ZStack {
                 // Base box art — always visible, with gentle 3D tilt matching the
                 // holo effect.
-                BoxArtBaseView(image: image, normalizedMouseX: normalizedMouseX, normalizedMouseY: normalizedMouseY, isPressed: isPressed, w: w, h: h, tiltEnabled: !scrollState.isScrolling)
+                BoxArtBaseView(image: image, normalizedMouseX: normalizedMouseX, normalizedMouseY: normalizedMouseY, isPressed: isPressed, w: w, h: h, tiltEnabled: !ScrollActivity.isScrolling)
 
                 // Native SwiftUI/Metal holo foil + glare. Built ONLY while the card
                 // is hovered (gated on `effectsActive`): constructing them for
@@ -920,7 +891,7 @@ private func holoArtworkDefault(allowBump: Bool = true) -> some View {
                  // is not zoomed/cropped to fill the vertical card and matches the
                  // fitted holo mask above.
                  ZStack {
-                     BoxArtBaseView(image: image, normalizedMouseX: normalizedMouseX, normalizedMouseY: normalizedMouseY, isPressed: isPressed, w: artSize.width, h: artSize.height, tiltEnabled: !scrollState.isScrolling)
+                     BoxArtBaseView(image: image, normalizedMouseX: normalizedMouseX, normalizedMouseY: normalizedMouseY, isPressed: isPressed, w: artSize.width, h: artSize.height, tiltEnabled: !ScrollActivity.isScrolling)
                          .frame(width: artSize.width, height: artSize.height)
                  }
                  .frame(width: w, height: h)
@@ -956,7 +927,7 @@ private func holoArtworkDefault(allowBump: Bool = true) -> some View {
 
             ZStack {
                 // Base box art for holo blend modes.
-                BoxArtBaseView(image: image, normalizedMouseX: normalizedMouseX, normalizedMouseY: normalizedMouseY, isPressed: isPressed, w: w, h: h, tiltEnabled: !scrollState.isScrolling)
+                BoxArtBaseView(image: image, normalizedMouseX: normalizedMouseX, normalizedMouseY: normalizedMouseY, isPressed: isPressed, w: w, h: h, tiltEnabled: !ScrollActivity.isScrolling)
 
                 // Native holo layers & glare. Built ONLY while hovered (gated on
                 // `effectsActive`): constructing them for every visible cell

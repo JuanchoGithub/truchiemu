@@ -507,6 +507,7 @@
 		5E214FFE9AF0A387BCEE4609 /* TVModeEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6134273171A1D67C5727EC2A /* TVModeEntry.swift */; };
 		5E31A920B42805637F721AB9 /* CPC.png in Resources */ = {isa = PBXBuildFile; fileRef = 6D1011120B2354F025D56623 /* CPC.png */; };
 		5E4EC1F1C489D9E1DD6220BF /* fightdata_sfex2p.json in Resources */ = {isa = PBXBuildFile; fileRef = 9E49A310AFD57CB0C8821AB9 /* fightdata_sfex2p.json */; };
+		5E916BABF6F9FDFF7E938B6D /* ScrollPerfAuditRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0B100CCB0D7D954E68F18C1 /* ScrollPerfAuditRunner.swift */; };
 		5ED344AF71DE435F5197C53C /* RAGameCacheCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = E40790494389EAF6A9D8528D /* RAGameCacheCoordinator.swift */; };
 		5F149EFCC5EF0E3C892FD337 /* fightdata_brival.json in Resources */ = {isa = PBXBuildFile; fileRef = 1CE0CC361E169063762EADE1 /* fightdata_brival.json */; };
 		5F7BD6F668547A430DC96BCE /* gba.ico in Resources */ = {isa = PBXBuildFile; fileRef = 68F707CDD47CCEEBDA203171 /* gba.ico */; };
@@ -2392,6 +2393,7 @@
 		B05BA07B177F750792D78E4A /* fightdata_aof2.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_aof2.json; sourceTree = "<group>"; };
 		B06FCF64CFEBBF5B7EDD245F /* fightdata_slammast.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_slammast.json; sourceTree = "<group>"; };
 		B09D20EAAADCE4BB4E132CF1 /* atari2600@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "atari2600@132w.png"; sourceTree = "<group>"; };
+		B0B100CCB0D7D954E68F18C1 /* ScrollPerfAuditRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollPerfAuditRunner.swift; sourceTree = "<group>"; };
 		B10ACE737699B0B6D68E5066 /* input_coreLabels_citra_canary.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_citra_canary.json; sourceTree = "<group>"; };
 		B12A98BB2EE2B24AACBFFF1F /* frame.m3d */ = {isa = PBXFileReference; path = frame.m3d; sourceTree = "<group>"; };
 		B1635E744F6AAC5F638DF434 /* CoreOverrideBridge-Swift.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "CoreOverrideBridge-Swift.h"; sourceTree = "<group>"; };
@@ -3039,6 +3041,7 @@
 				74CFAC41E5B9AA4EA8FB06A2 /* ListPerfAuditRunner.swift */,
 				930A7FE7A4D56153499E8A64 /* ROMLibrary.swift */,
 				181CF812FAA2BD9DF45042BF /* ROMScanner.swift */,
+				B0B100CCB0D7D954E68F18C1 /* ScrollPerfAuditRunner.swift */,
 				C3CDB21811A3FC4E2F21F791 /* SFSymbolCatalog.swift */,
 				203A748B3ECD6676DEF1D804 /* StableIdentityMigration.swift */,
 				37A42CBC6B0B672D3C2230C9 /* SwitchContentIdentifier.swift */,
@@ -6522,6 +6525,7 @@
 				917EB16799865634EA575E50 /* ScreenshotOverlayViews.swift in Sources */,
 				C5EB2C5F6D1AFCDE534689FB /* ScreenshotService.swift in Sources */,
 				EE03D57F8CE30415A20BABB5 /* ScreenshotsTabView.swift in Sources */,
+				5E916BABF6F9FDFF7E938B6D /* ScrollPerfAuditRunner.swift in Sources */,
 				8E2B2255CA91F5BA42CC015D /* ScummVMRunner.swift in Sources */,
 				1764FB5120C4E768BDBB8A50 /* SearchMatch.swift in Sources */,
 				87912707E4459B2DC05487E5 /* SequenceRunner.swift in Sources */,

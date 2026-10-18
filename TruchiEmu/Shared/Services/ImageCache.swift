@@ -123,6 +123,15 @@ actor ImageCache {
     /// JPEG). This is what lets warmed libraries paint boxart with zero flash
     /// and zero async round-trip, independent of NSCache residency.
     nonisolated func thumbnailSync(for url: URL, preferredSize: BoxArtThumbnailSize) -> NSImage? {
+        // Scroll perf audit counters (main-thread-only; see ScrollPerfCounters).
+        let auditOnMain = Thread.isMainThread
+        let auditStart = auditOnMain ? DispatchTime.now().uptimeNanoseconds : 0
+        defer {
+            if auditOnMain {
+                ScrollPerfCounters.thumbnailSyncCalls += 1
+                ScrollPerfCounters.thumbnailSyncMainThreadNs &+= Int64(DispatchTime.now().uptimeNanoseconds &- auditStart)
+            }
+        }
         let sizeKey = "thumb:\(preferredSize.rawValue):\(url.path)" as NSString
         if let cached = thumbnailCache.object(forKey: sizeKey) {
             return cached
@@ -136,6 +145,7 @@ actor ImageCache {
         }
         // Cache miss: read the pre-generated thumb from disk. Guarded by
         // fileExists so we only touch disk for ROMs that actually have a thumb.
+        if auditOnMain { ScrollPerfCounters.thumbnailSyncColdDiskReads += 1 }
         let thumbURL = BoxArtThumbnailService.thumbnailURL(for: url, size: preferredSize)
         if FileManager.default.fileExists(atPath: thumbURL.path),
            let source = CGImageSourceCreateWithURL(thumbURL as CFURL, nil),

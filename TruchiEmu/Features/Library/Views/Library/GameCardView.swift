@@ -37,7 +37,6 @@ struct GameCardView: View {
     @ObservedObject private var prefs = SystemPreferences.shared
     @ObservedObject private var dragState = GameDragState.shared
     @ObservedObject private var boxArtService = BoxArtService.shared
-    @ObservedObject private var scrollState = LibraryScrollState.shared
     @EnvironmentObject private var library: ROMLibrary
     @EnvironmentObject private var categoryManager: CategoryManager
 
@@ -64,15 +63,17 @@ struct GameCardView: View {
         self.contextMenu = contextMenu
         self.selectedIDsProvider = selectedIDsProvider
 
-        // Pre-populate the cached thumbnail synchronously in init so recycled
+        // Pre-populate from the in-memory cache only so recycled
         // NSCollectionViewItems paint immediately on configure() instead of
-        // flickering the placeholder while awaiting a cache hit round-trip
-        // through the ImageCache actor. rom.boxArtLocalPath is authoritative
-        // and rom.hasBoxArt is correct, so this is zero main-thread I/O; on a
-        // miss we fall back to nil and the .task body does the async load.
+        // flickering the placeholder while awaiting the async load. On a cache
+        // miss this returns nil WITHOUT disk I/O — the old `thumbnailSync`
+        // call fell back to a synchronous disk read + decode on the main
+        // thread, which measured as the boxart grid's biggest cold-scroll
+        // stall (~110-133ms of main-thread blocking per scroll burst). The
+        // async `.task` below fills the miss.
         let preferredSize = BoxArtThumbnailSize.forGridZoom(zoomLevel)
         let initialImage: NSImage? = rom.hasBoxArt
-            ? ImageCache.shared.thumbnailSync(for: rom.boxArtLocalPath, preferredSize: preferredSize)
+            ? ImageCache.shared.thumbnailCachedOrPregen(for: rom.boxArtLocalPath, preferredSize: preferredSize)
             : nil
         _image = State(initialValue: initialImage)
 
@@ -215,8 +216,13 @@ struct GameCardView: View {
 
     // MARK: - 3D Pivoting Effect (mirrors HoloGameCardView but without holo/foil/glare)
 
+    // `ScrollActivity.isScrolling` is read LIVE (not observed) — the same
+    // pattern the list rows use. Observing an ObservableObject publish at each
+    // gesture boundary re-rendered every visible card (~70ms hitch per flip);
+    // the plain flag costs nothing and the `.libraryScrollActivityChanged`
+    // notification resets transient hover/tilt state once per transition.
     private var pivotingEnabled: Bool {
-        prefs.boxArtPivotingEnabled() && !scrollState.isScrolling
+        prefs.boxArtPivotingEnabled() && !ScrollActivity.isScrolling
     }
 
     // Normalized cursor position (0...1) within the artwork frame.
@@ -285,13 +291,19 @@ struct GameCardView: View {
         // so the hit region stays stable. The 3D tilt is applied to the
         // artwork view inside cardContent, so it doesn't move the hit region.
         .onHover { hovering in
-            isHovered = hovering
-            if !hovering { mousePosition = nil }
-            // Ease the card back to flat on exit.
-            if pivotingEnabled {
-                withAnimation(AppMotion.tilt) {
-                    tiltRotationX = 0
-                    tiltRotationY = 0
+            // Never engage hover while the grid scrolls — a stationary cursor
+            // would otherwise flip hover for every card passing beneath it.
+            if ScrollActivity.isScrolling {
+                if !hovering { isHovered = false }
+            } else {
+                isHovered = hovering
+                if !hovering { mousePosition = nil }
+                // Ease the card back to flat on exit.
+                if pivotingEnabled {
+                    withAnimation(AppMotion.tilt) {
+                        tiltRotationX = 0
+                        tiltRotationY = 0
+                    }
                 }
             }
         }
@@ -313,10 +325,11 @@ struct GameCardView: View {
                 }
             }
         }
-        .onChange(of: scrollState.isScrolling) { _, scrolling in
+        .onReceive(NotificationCenter.default.publisher(for: .libraryScrollActivityChanged)) { _ in
             // While the grid scrolls, drop all hover-driven state so the
-            // pivoting effect doesn't fire mid-scroll.
-            if scrolling {
+            // pivoting effect doesn't fire mid-scroll. Only cards that HAD
+            // active state re-render (the rest write nothing).
+            if ScrollActivity.isScrolling {
                 isHovered = false
                 mousePosition = nil
                 tiltRotationX = 0
@@ -349,7 +362,13 @@ struct GameCardView: View {
                 }
         )
         .contextMenu {
-            contextMenu?()
+            // Deferred: SwiftUI evaluates `.contextMenu`'s builder eagerly on
+            // every card re-eval, which rebuilt the full menu tree per visible
+            // cell mid-scroll. The wrapper stores only a cheap closure (same
+            // fix the list rows use).
+            LibraryGridView.LazyContextMenuContent(build: {
+                contextMenu?() ?? AnyView(EmptyView())
+            })
         }
         .accessibilityLabel(rom.displayName)
         .accessibilityHint(Text("Double-click or press Enter to launch"))
@@ -370,7 +389,9 @@ struct GameCardView: View {
             // Fast path: if the thumbnail is already in the in-memory cache,
             // paint it synchronously and return without any await — keeps
             // recycling cells flicker-free and avoids yielding to the actor.
-            if let cached = ImageCache.shared.thumbnailSync(for: artPath, preferredSize: thumbSize) {
+            // NSCache-only, never disk: the old `thumbnailSync` here decoded
+            // cold art on the main thread mid-scroll.
+            if let cached = ImageCache.shared.thumbnailCachedOrPregen(for: artPath, preferredSize: thumbSize) {
                 self.image = cached
                 if useFillBlurredRendering {
                     if let blurCached = ImageCache.shared.blurredFillImageSync(for: artPath, size: thumbSize) {
@@ -438,13 +459,25 @@ struct GameCardView: View {
             ZStack(alignment: .bottomTrailing) {
                 ZStack(alignment: .topTrailing) {
                     artworkView
-                    .background(
-                        GeometryReader { geo in
-                            Color.clear
-                                .onAppear { artworkFrameInCard = geo.frame(in: .named("gameCard")) }
-                                .onChange(of: geo.frame(in: .named("gameCard"))) { _, new in artworkFrameInCard = new }
-                        }
-                    )
+                        .background(
+                            // The frame tracker feeds the cursor spotlight and
+                            // play-button pointer offset. Its `.onChange` fires
+                            // every frame as the card moves during a scroll —
+                            // writing state there re-rendered the whole card
+                            // per visible cell per frame (pegging the main
+                            // thread). The tracker stays MOUNTED (unmounting it
+                            // per gesture boundary caused structural churn for
+                            // every visible card); the onChange just refuses to
+                            // write while the grid is scrolling.
+                            GeometryReader { geo in
+                                Color.clear
+                                    .onAppear { artworkFrameInCard = geo.frame(in: .named("gameCard")) }
+                                    .onChange(of: geo.frame(in: .named("gameCard"))) { _, new in
+                                        guard !ScrollActivity.isScrolling else { return }
+                                        artworkFrameInCard = new
+                                    }
+                            }
+                        )
                     .clipped()
                     .overlay(
                         RoundedRectangle(cornerRadius: 8)

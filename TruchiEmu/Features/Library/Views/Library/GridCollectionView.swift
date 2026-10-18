@@ -23,9 +23,25 @@ final class GridCollectionViewItem: NSCollectionViewItem {
         view.wantsLayer = true
     }
 
+    override init(nibName nibName: NSNib.Name?, bundle nibBundle: Bundle?) {
+        super.init(nibName: nibName, bundle: nibBundle)
+        ScrollPerfCounters.gridItemsCreated += 1
+    }
+
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        ScrollPerfCounters.gridItemsCreated += 1
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         hostingView.translatesAutoresizingMaskIntoConstraints = false
+        if #available(macOS 13.0, *) {
+            // Prevent the hosting view from feeding intrinsic size back into the
+            // collection-view layout (measure → relayout → re-measure feedback
+            // loop; holo-grid parity).
+            hostingView.sizingOptions = []
+        }
         view.addSubview(hostingView)
         NSLayoutConstraint.activate([
             hostingView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -49,6 +65,9 @@ final class GridCollectionViewItem: NSCollectionViewItem {
         library: ROMLibrary,
         categoryManager: CategoryManager
     ) {
+        // A configure on an item that already shows a ROM means AppKit reused
+        // a prepared item; nil means this is a freshly created cell.
+        if rom != nil { ScrollPerfCounters.gridItemsReused += 1 }
         self.rom = rom
         self.isMultiSelectedCached = isMultiSelected
         self.zoomLevelCached = zoomLevel
@@ -120,10 +139,48 @@ final class GridCollectionViewCoordinator: NSObject {
     var contextMenuProvider: ((ROM) -> AnyView)?
 
     private weak var collectionView: NSCollectionView?
-    private let itemID = NSUserInterfaceItemIdentifier("GridCollectionViewItem")
+    fileprivate let itemID = NSUserInterfaceItemIdentifier("GridCollectionViewItem")
+    // Scroll detection (holo-grid parity): observes the enclosing scroll view
+    // so the shared `ScrollActivity.isScrolling` flag flips true while the
+    // boxart grid scrolls. GameCardView suppresses hover/pivot/play-button
+    // effects and its per-frame frame-tracking GeometryReader while this is
+    // set — otherwise every card that passes under a stationary cursor mounts
+    // the pivot + GlassOrbPlayButton and re-renders mid-scroll.
+    var boundsObserver: NSObjectProtocol?
+    var liveScrollStartObserver: NSObjectProtocol?
+    var liveScrollEndObserver: NSObjectProtocol?
+    fileprivate var scrollResetTimer: Timer?
 
-    func setup(collectionView: NSCollectionView) {
+    // Re-armed on every scroll event so `isScrolling` stays true for the
+    // whole gesture and only flips false 0.3s after the last one. Writes the
+    // plain `ScrollActivity` flag (same as the list view's wheel monitor):
+    // cards read it LIVE in their hover/tilt handlers instead of observing
+    // it, so a gesture start/end does not re-render every visible card —
+    // an ObservableObject publish here measured as a ~70ms hitch at each
+    // gesture boundary (36 cards × full body re-eval). The flag's didSet
+    // posts `.libraryScrollActivityChanged` once per transition so cards
+    // reset their transient hover/tilt state.
+    fileprivate func markScrolling() {
+        // Observers pass queue: .main, so the main-actor assumption holds.
+        MainActor.assumeIsolated {
+            ScrollActivity.isScrolling = true
+            self.scrollResetTimer?.invalidate()
+            self.scrollResetTimer = Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) { [weak self] _ in
+                MainActor.assumeIsolated {
+                    ScrollActivity.isScrolling = false
+                    self?.scrollResetTimer = nil
+                }
+            }
+        }
+    }
+
+    func setup(collectionView: NSCollectionView, scrollView: NSScrollView) {
         self.collectionView = collectionView
+        // Register the item class so the collection view RECYCLES a bounded
+        // pool of items instead of the data source instantiating a fresh
+        // NSHostingView (with its own SwiftUI view tree) for every index path
+        // scrolled into view (holo-grid parity).
+        collectionView.register(GridCollectionViewItem.self, forItemWithIdentifier: itemID)
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.prefetchDataSource = self
@@ -133,6 +190,37 @@ final class GridCollectionViewCoordinator: NSObject {
         collectionView.backgroundColors = [.clear]
         if collectionView.responds(to: Selector(("allowsRubberBandSelection"))) {
             collectionView.setValue(true, forKey: "allowsRubberBandSelection")
+        }
+
+        // Scroll detection from ALL sources (scrollbar drag, keyboard,
+        // programmatic, trackpad/wheel), holo-grid parity.
+        let clipView = scrollView.contentView
+        clipView.postsBoundsChangedNotifications = true
+        boundsObserver = NotificationCenter.default.addObserver(
+            forName: NSView.boundsDidChangeNotification,
+            object: clipView,
+            queue: .main
+        ) { [weak self] _ in
+            self?.markScrolling()
+        }
+        liveScrollStartObserver = NotificationCenter.default.addObserver(
+            forName: NSScrollView.willStartLiveScrollNotification,
+            object: scrollView,
+            queue: .main
+        ) { [weak self] _ in
+            self?.markScrolling()
+        }
+        liveScrollEndObserver = NotificationCenter.default.addObserver(
+            forName: NSScrollView.didEndLiveScrollNotification,
+            object: scrollView,
+            queue: .main
+        ) { [weak self] _ in
+            MainActor.assumeIsolated {
+                guard let self else { return }
+                self.scrollResetTimer?.invalidate()
+                self.scrollResetTimer = nil
+                ScrollActivity.isScrolling = false
+            }
         }
 
         let doubleClick = NSClickGestureRecognizer(target: self, action: #selector(handleDoubleClick(_:)))
@@ -250,8 +338,16 @@ extension GridCollectionViewCoordinator: NSCollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: NSCollectionView, itemForRepresentedObjectAt indexPath: IndexPath) -> NSCollectionViewItem {
-        let item = GridCollectionViewItem()
-        item.identifier = itemID
+        // Register defensively every dequeue: a prior registration can be
+        // invalidated if AppKit recreates the underlying view-layer, and an
+        // unregistered identifier makes `makeItem` fail. Dequeue through
+        // `makeItem` so a bounded pool of items is RECYCLED as cells scroll
+        // in and out — creating a fresh item here built a new NSHostingView
+        // (+ full SwiftUI tree) for every cell that scrolled into view, which
+        // was the boxart grid's main mid-scroll stall (measured: 72 fresh
+        // items + ~300-590ms main-thread busy per scroll burst at 2108 ROMs).
+        collectionView.register(GridCollectionViewItem.self, forItemWithIdentifier: itemID)
+        let item = collectionView.makeItem(withIdentifier: itemID, for: indexPath) as! GridCollectionViewItem
         let rom = roms[indexPath.item]
         let selected = collectionView.selectionIndexPaths.contains(indexPath)
         let selectedIDsProvider: () -> Set<UUID> = { [weak self] in
@@ -302,6 +398,7 @@ extension GridCollectionViewCoordinator: NSCollectionViewDelegate {
 
 extension GridCollectionViewCoordinator: NSCollectionViewPrefetching {
     func collectionView(_ collectionView: NSCollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
+        ScrollPerfCounters.prefetchIndexPaths += indexPaths.count
         let thumbSize = BoxArtThumbnailSize.forGridZoom(zoomLevel)
         for ip in indexPaths where ip.item < roms.count {
             let rom = roms[ip.item]
@@ -336,7 +433,10 @@ private func makeCollectionScrollView(coordinator: GridCollectionViewCoordinator
     let cv = NSCollectionView()
     scrollView.documentView = cv
 
-    coordinator.setup(collectionView: cv)
+    // Register the item class so `makeItem` recycles a bounded item pool.
+    cv.register(GridCollectionViewItem.self, forItemWithIdentifier: coordinator.itemID)
+
+    coordinator.setup(collectionView: cv, scrollView: scrollView)
     coordinator.updateItemSizes()
 
     return scrollView
@@ -404,6 +504,22 @@ struct GridCollectionViewRepresentable: NSViewRepresentable {
         let scrollView = makeCollectionScrollView(coordinator: c)
         c.reloadData()
         return scrollView
+    }
+
+    static func dismantleNSView(_ nsView: NSScrollView, coordinator: GridCollectionViewCoordinator) {
+        if let observer = coordinator.boundsObserver {
+            NotificationCenter.default.removeObserver(observer)
+            coordinator.boundsObserver = nil
+        }
+        if let observer = coordinator.liveScrollStartObserver {
+            NotificationCenter.default.removeObserver(observer)
+            coordinator.liveScrollStartObserver = nil
+        }
+        if let observer = coordinator.liveScrollEndObserver {
+            NotificationCenter.default.removeObserver(observer)
+            coordinator.liveScrollEndObserver = nil
+        }
+        coordinator.scrollResetTimer?.invalidate()
     }
 
     func updateNSView(_ nsView: NSScrollView, context: Context) {

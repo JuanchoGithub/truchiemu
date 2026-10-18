@@ -1,25 +1,6 @@
 import SwiftUI
 import AppKit
 
-// MARK: - Scroll state
-
-/// Shared flag indicating whether the holo library grid is currently
-/// scrolling. Holo card effects (foil, glare, tilt, bump) are suppressed
-/// while this is true so cards don't light up mid-scroll — they only engage
-/// once the scroll settles. A single shared instance is updated by the grid's
-/// scroll-wheel monitor and observed by each `HoloGameCardView`. All updates
-/// happen on the main runloop, so no actor isolation is needed.
-final class LibraryScrollState: ObservableObject {
-    static let shared = LibraryScrollState()
-    
-    var isScrolling: Bool = false {
-        willSet {
-            guard newValue != isScrolling else { return }
-            objectWillChange.send()
-        }
-    }
-}
-
 // MARK: - NSCollectionViewItem wrapping HoloGameCardView
 
 final class HoloGridCollectionViewItem: NSCollectionViewItem {
@@ -57,6 +38,16 @@ final class HoloGridCollectionViewItem: NSCollectionViewItem {
         ])
     }
 
+    override init(nibName nibName: NSNib.Name?, bundle nibBundle: Bundle?) {
+        super.init(nibName: nibName, bundle: nibBundle)
+        ScrollPerfCounters.holoItemsCreated += 1
+    }
+
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        ScrollPerfCounters.holoItemsCreated += 1
+    }
+
     func configure(with rom: ROM,
                    isSelected: Bool,
                    isMultiSelected: Bool,
@@ -69,6 +60,7 @@ final class HoloGridCollectionViewItem: NSCollectionViewItem {
                    selectedIDsProvider: @escaping () -> Set<UUID>,
                    library: ROMLibrary?,
                    categoryManager: CategoryManager?) {
+        if rom != nil { ScrollPerfCounters.holoItemsReused += 1 }
         self.rom = rom
         self.isMultiSelectedCached = isMultiSelected
         self.zoomLevelCached = zoomLevel
@@ -154,28 +146,30 @@ final class HoloGridCollectionViewCoordinator: NSObject {
     // MARK: Scroll detection
     //
     // The enclosing NSScrollView's delegate is set to this coordinator so we
-    // can observe scrolling and flag it on `LibraryScrollState`. A short
-    // debounce (matching `LibraryGridView`'s scroll-wheel monitor) keeps the
-    // flag true for 0.3s after the last scroll event, so the holo effects
-    // only resume once the scroll has genuinely stopped.
+    // can observe scrolling and flag it on the shared `ScrollActivity` plain
+    // flag (same one the list view uses; its didSet posts
+    // `.libraryScrollActivityChanged` once per transition). A short debounce
+    // keeps the flag true for 0.3s after the last scroll event, so the holo
+    // effects only resume once the scroll has genuinely stopped. Cards read
+    // the flag live in their hover/tilt handlers instead of observing an
+    // ObservableObject — the publish re-rendered every visible card at each
+    // gesture boundary (measured ~70-90ms hitch per flip).
     fileprivate func markScrolling() {
-        if !LibraryScrollState.shared.isScrolling {
-            LibraryScrollState.shared.isScrolling = true
-        }
         // Re-arm the idle timer on EVERY scroll event so `isScrolling` stays
-        // true for the whole gesture. The previous code only armed the timer
-        // on the first event, so during a continuous (momentum) scroll the
-        // timer fired ~0.3s in and flipped `isScrolling` false mid-gesture,
-        // then true again on the next frame — a flicker. That flicker
-        // defeated `cardContent`'s `!scrollState.isScrolling` guard on the
-        // per-frame frame-tracking GeometryReader, mounting it mid-scroll and
-        // rebuilding every visible cell each frame (pegging the main thread
-        // into the permanent lock-up). Re-arming per event keeps `isScrolling`
-        // high until 0.3s after the LAST scroll event.
-        scrollResetTimer?.invalidate()
-        scrollResetTimer = Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) { [weak self] _ in
-            LibraryScrollState.shared.isScrolling = false
-            self?.scrollResetTimer = nil
+        // true for the whole gesture. Arming only on the first event let the
+        // timer fire ~0.3s in and flip `isScrolling` false mid-gesture, then
+        // true again on the next frame — a flicker that re-mounted scroll-
+        // gated machinery mid-scroll.
+        // Observers pass queue: .main, so the main-actor assumption holds.
+        MainActor.assumeIsolated {
+            ScrollActivity.isScrolling = true
+            self.scrollResetTimer?.invalidate()
+            self.scrollResetTimer = Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) { [weak self] _ in
+                MainActor.assumeIsolated {
+                    ScrollActivity.isScrolling = false
+                    self?.scrollResetTimer = nil
+                }
+            }
         }
     }
     
@@ -195,7 +189,7 @@ final class HoloGridCollectionViewCoordinator: NSObject {
         collectionView.collectionViewLayout = createLayout()
 
         // Detect scroll from ALL sources (scrollbar drag, keyboard, programmatic,
-        // trackpad/wheel) so `LibraryScrollState.isScrolling` is reliably true
+        // trackpad/wheel) so `ScrollActivity.isScrolling` is reliably true
         // while scrolling. Without this the holo foil layers would build their
         // main-thread-rendered tiles during scrollbar drags and peg the main
         // thread. The scrollView is passed explicitly (rather than relying on
@@ -226,10 +220,12 @@ final class HoloGridCollectionViewCoordinator: NSObject {
             object: scrollView,
             queue: .main
         ) { [weak self] _ in
-            guard let self else { return }
-            scrollResetTimer?.invalidate()
-            scrollResetTimer = nil
-            LibraryScrollState.shared.isScrolling = false
+            MainActor.assumeIsolated {
+                guard let self else { return }
+                self.scrollResetTimer?.invalidate()
+                self.scrollResetTimer = nil
+                ScrollActivity.isScrolling = false
+            }
         }
         collectionView.isSelectable = true
         collectionView.allowsMultipleSelection = true
@@ -407,6 +403,7 @@ extension HoloGridCollectionViewCoordinator: NSCollectionViewDelegate {
 
 extension HoloGridCollectionViewCoordinator: NSCollectionViewPrefetching {
     func collectionView(_ collectionView: NSCollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
+        ScrollPerfCounters.prefetchIndexPaths += indexPaths.count
         let thumbSize = BoxArtThumbnailSize.forGridZoom(zoomLevel)
         for ip in indexPaths where ip.item < roms.count {
             let rom = roms[ip.item]
