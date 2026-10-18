@@ -30,7 +30,8 @@ static let showChangelogFromMenu = Notification.Name("showChangelogFromMenu")
 	static let navigateToAchievements = Notification.Name("navigateToAchievements")
     static let resetMoveListOverlayPosition = Notification.Name("resetMoveListOverlayPosition")
 	static let hiddenGamesCategoryChanged = Notification.Name("hiddenGamesCategoryChanged")
-	static let libraryROMsRemoved = Notification.Name("libraryROMsRemoved")
+    static let libraryROMsRemoved = Notification.Name("libraryROMsRemoved")
+    static let libraryDisplayedROMsDidChange = Notification.Name("libraryDisplayedROMsDidChange")
     static let clipSaved = Notification.Name("clipSaved")
     static let firstSaveCelebrated = Notification.Name("firstSaveCelebrated")
     static let exitAppUpdateMode = Notification.Name("exitAppUpdateMode")
@@ -68,6 +69,14 @@ struct TruchiEmuApp: App {
         // ~/Library/Application Support/TruchiEmu/SlangAudit/.
         // Dead code path when the env var is unset.
         SlangAuditRunner.runIfNeeded()
+
+        // Optional library filter-switch perf audit, env-gated: run with
+        //   TRUCHI_LIST_PERF_AUDIT=1 TRUCHI_LIST_PERF_MODE=list \
+        //     /path/to/TruchiEmu.app/Contents/MacOS/TruchiEmu
+        // Prints per-switch latency and writes report.md under
+        // ~/Library/Application Support/TruchiEmu/ListPerfAudit/.
+        // Dead code path when the env var is unset.
+        ListPerfAuditRunner.runIfNeeded(library: lib)
 
         // MAME dictionary loading is deferred to background tasks in ContentWithPrepopulationView
         // 1. Connect the Bridge to your existing LoggerService

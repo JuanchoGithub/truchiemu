@@ -181,6 +181,9 @@ class LibraryViewModel: ObservableObject {
 
             if Task.isCancelled { return }
             self.displayedROMs = filtered
+            // Diagnostic signal for the env-gated ListPerfAuditRunner (switch
+            // latency bisect: pipeline vs render). No observers in normal use.
+            NotificationCenter.default.post(name: .libraryDisplayedROMsDidChange, object: filtered.count)
         }
     }
 
