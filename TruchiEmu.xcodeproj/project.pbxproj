@@ -969,6 +969,7 @@
 		ADC5AA77F50EECA68E54E8C7 /* sameboy_libretro_default.json in Resources */ = {isa = PBXBuildFile; fileRef = EA1AE08A9B777549FF2AE9CC /* sameboy_libretro_default.json */; };
 		AE0718BCC3CC72F4FC8413BF /* VIDEOTON.png in Resources */ = {isa = PBXBuildFile; fileRef = C25C27746F28191394C4D999 /* VIDEOTON.png */; };
 		AE3C8C27D0E5677524695ADF /* GB.png in Resources */ = {isa = PBXBuildFile; fileRef = 2E4A84332074065FDE10275B /* GB.png */; };
+		AE62A2F0EA50F522CFC55194 /* SidebarScrollPerfAuditRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26C9A89A8C297915199F999A /* SidebarScrollPerfAuditRunner.swift */; };
 		AE78AB43037156AB2708A415 /* zelda_oot_japan_title.png in Resources */ = {isa = PBXBuildFile; fileRef = 559FD1E2D07F03B2D649CB91 /* zelda_oot_japan_title.png */; };
 		AEADA54E68FCC9420CF29AFF /* gb@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 0E8ED11C4AC892345874C43D /* gb@132w.png */; };
 		AECF8DDF72216FF183BECCE6 /* fightdata_groovef.json in Resources */ = {isa = PBXBuildFile; fileRef = F4AA64C094DEC99FDACE8E85 /* fightdata_groovef.json */; };
@@ -1607,6 +1608,7 @@
 		2617937EC8AD6A8E1B5E6DEE /* fightdata_dbz2.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_dbz2.json; sourceTree = "<group>"; };
 		2618E56A6DB94B2ED6E6C68F /* en.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = en.json; sourceTree = "<group>"; };
 		264FB90DD6CD26D513E6C58C /* N64Runner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = N64Runner.swift; sourceTree = "<group>"; };
+		26C9A89A8C297915199F999A /* SidebarScrollPerfAuditRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarScrollPerfAuditRunner.swift; sourceTree = "<group>"; };
 		26D95B905CF18035469C4C59 /* CRTFilter.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = CRTFilter.metal; sourceTree = "<group>"; };
 		26E4F7172EFA2D0F141FFA63 /* InputCaptureManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputCaptureManager.swift; sourceTree = "<group>"; };
 		26FDC27EC587284954CC9370 /* supervision@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "supervision@132w.png"; sourceTree = "<group>"; };
@@ -3043,6 +3045,7 @@
 				181CF812FAA2BD9DF45042BF /* ROMScanner.swift */,
 				B0B100CCB0D7D954E68F18C1 /* ScrollPerfAuditRunner.swift */,
 				C3CDB21811A3FC4E2F21F791 /* SFSymbolCatalog.swift */,
+				26C9A89A8C297915199F999A /* SidebarScrollPerfAuditRunner.swift */,
 				203A748B3ECD6676DEF1D804 /* StableIdentityMigration.swift */,
 				37A42CBC6B0B672D3C2230C9 /* SwitchContentIdentifier.swift */,
 			);
@@ -6552,6 +6555,7 @@
 				B63B46E7193AA335087ADFF7 /* SharingTabView.swift in Sources */,
 				6FAFF68BB9E015BF89DE4977 /* SharpBilinear.metal in Sources */,
 				FDB561BB4DD761EA753FFA63 /* SidebarRowButton.swift in Sources */,
+				AE62A2F0EA50F522CFC55194 /* SidebarScrollPerfAuditRunner.swift in Sources */,
 				5A3BBA9B5C6E51B4DB1CC154 /* SlangAuditRunner.swift in Sources */,
 				1CEA121BE6907FBB9315DFE8 /* SlangCompilerService.swift in Sources */,
 				620EBDB01769693E7CADB30C /* SlangPreset.swift in Sources */,

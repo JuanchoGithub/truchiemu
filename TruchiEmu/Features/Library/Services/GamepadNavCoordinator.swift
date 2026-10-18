@@ -108,7 +108,8 @@ final class GamepadNavCoordinator: ObservableObject {
     }
 
     var visibleSidebarFilters: [LibraryFilter] {
-        sidebarSelectableFilters.filter { filter in
+        SidebarPerfCounters.noteVisibleList()
+        return sidebarSelectableFilters.filter { filter in
             switch filter {
             case .category: return categoriesExpanded
             case .system: return systemsExpanded

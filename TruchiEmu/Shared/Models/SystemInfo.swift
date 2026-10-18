@@ -220,6 +220,15 @@ struct SystemInfo: Identifiable, Codable, Hashable {
     }
     
     func emuImage(size: Int, includeCustom: Bool = true) -> NSImage? {
+        // Sidebar scroll perf audit counter (see SidebarScrollPerfAuditRunner).
+        // The sidebar icon path always uses size 132.
+        let trackSidebarIcon = size == 132
+        let iconStart = trackSidebarIcon ? DispatchTime.now().uptimeNanoseconds : 0
+        defer {
+            if trackSidebarIcon {
+                SidebarPerfCounters.noteIconCall(nanoseconds: DispatchTime.now().uptimeNanoseconds - iconStart)
+            }
+        }
         #if LOG_EXTREME
         LoggerService.extreme(category: "SystemInfo", "Loading emu image for system: \(id)")
         #endif
@@ -228,6 +237,7 @@ struct SystemInfo: Identifiable, Codable, Hashable {
             if let cached = Self.iconCache.object(forKey: cacheKey) {
                 return cached
             }
+            if trackSidebarIcon { SidebarPerfCounters.noteIconColdProbe() }
             let url = URL(fileURLWithPath: customPath)
             if let img = NSImage(contentsOf: url) {
                 let cost = Int(img.size.width * img.size.height * 4)
@@ -240,8 +250,10 @@ struct SystemInfo: Identifiable, Codable, Hashable {
 
         let cacheKey = "\(iconName)-\(size)" as NSString
         if let cached = Self.iconCache.object(forKey: cacheKey) {
-            return cached
+            // Sentinel entry = proven-missing icon (see missingIconSentinel).
+            return cached === Self.missingIconSentinel ? nil : cached
         }
+        if trackSidebarIcon { SidebarPerfCounters.noteIconColdProbe() }
 
         let bundle = Bundle.main
         let is132 = size == 132
@@ -301,8 +313,18 @@ struct SystemInfo: Identifiable, Codable, Hashable {
                 }
             }
         }
+        // Cache the miss too: systems without a bundled icon would otherwise
+        // re-walk every bundle path on every row render (measured ~12 systems
+        // × 20+ probes per sidebar body re-evaluation). Stored as a sentinel
+        // in the same NSCache — thread-safe like the cache itself, and bundle
+        // contents are immutable at runtime so a recorded miss stays valid.
+        Self.iconCache.setObject(Self.missingIconSentinel, forKey: cacheKey, cost: 1)
         return nil
     }
+
+    /// Marks iconCache entries for icon names proven to have no bundled
+    /// image, so repeated lookups skip the bundle walk.
+    private static let missingIconSentinel: NSImage = NSImage()
 
     private static let iconCache: NSCache<NSString, NSImage> = {
         let cache = NSCache<NSString, NSImage>()

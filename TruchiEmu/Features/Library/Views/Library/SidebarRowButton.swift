@@ -93,7 +93,20 @@ struct SidebarRowButton: View {
                     .padding(.leading, 2)
             }
         }
-        .onHover { isHovered = $0 }
+        .onHover { hovering in
+            // Rows sweep under a stationary cursor while the list scrolls;
+            // engaging hover per row re-renders each row mid-scroll (choppy).
+            // Skip while a scroll gesture is active; state resets via the
+            // scroll-activity transition notification (same pattern as the
+            // library rows/cards).
+            guard !ScrollActivity.isScrolling else { return }
+            isHovered = hovering
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .libraryScrollActivityChanged)) { _ in
+            if ScrollActivity.isScrolling, isHovered {
+                isHovered = false
+            }
+        }
         .animation(AppMotion.micro, value: isHovered)
     }
     

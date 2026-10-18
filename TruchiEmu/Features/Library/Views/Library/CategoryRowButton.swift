@@ -92,7 +92,17 @@ struct CategoryRowButton: View {
                 .transition(.opacity)
             }
         }
-    .onHover { isHovered = $0 }
+    .onHover { hovering in
+      // Same scroll-gating as SidebarRowButton: rows sweeping under a
+      // stationary cursor must not light up per-row mid-scroll.
+      guard !ScrollActivity.isScrolling else { return }
+      isHovered = hovering
+    }
+    .onReceive(NotificationCenter.default.publisher(for: .libraryScrollActivityChanged)) { _ in
+      if ScrollActivity.isScrolling, isHovered {
+        isHovered = false
+      }
+    }
     .animation(AppMotion.micro, value: isHovered)
     .animation(AppMotion.micro, value: isSelected)
     .onDrop(of: [.plainText], isTargeted: $isDropTarget) { items in

@@ -134,11 +134,21 @@ struct SystemSidebarView: View {
     }
 
     var body: some View {
-        VStack(spacing: 0) {
+        let _ = SidebarPerfCounters.noteSidebarBody()
+        return VStack(spacing: 0) {
+        AppSearchField(
+            text: $searchText,
+            placeholder: loc.localized("app.search"),
+            focusBinding: searchFocused
+        )
+        .padding(.horizontal, 8)
+        .padding(.top, 12)
+        .padding(.bottom, 8)
+        .background(AppColors.sidebarBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+
         ScrollView {
-            LazyVStack(alignment: .leading, spacing: 0, pinnedViews: [.sectionHeaders]) {
-                Section {
-                    smartCollectionRows
+            VStack(alignment: .leading, spacing: 0) {
+                smartCollectionRows
 
         sectionHeader(
                     title: loc.localized("app.categories"),
@@ -220,19 +230,10 @@ struct SystemSidebarView: View {
                 }
 
                 Spacer()
-                } header: {
-                    AppSearchField(
-                        text: $searchText,
-                        placeholder: loc.localized("app.search"),
-                        focusBinding: searchFocused
-                    )
-                    .padding(.bottom, 8)
-                    .background(AppColors.sidebarBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
-                }
             }
             .id(hiddenCategoryRefreshToggle)
             .padding(.horizontal, 8)
-            .padding(.vertical, 12)
+            .padding(.bottom, 12)
         }
         .scrollContentBackground(.hidden)
 
@@ -285,6 +286,7 @@ struct SystemSidebarView: View {
             // Seed the cache on first appearance; subsequent invalidations
             // arrive through the .onChange listeners above.
             cachedCombinedSystems = computeCombinedSystems()
+            SidebarScrollMonitor.install()
         }
     }
 
@@ -366,7 +368,19 @@ struct SystemSidebarView: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .contentShape(Rectangle())
-        .onHover { isHeaderHovered.wrappedValue = $0 }
+        .onHover { hovering in
+            // Gated like the rows: a header sweeping under a stationary
+            // cursor mid-scroll would flip @State on the sidebar and
+            // re-evaluate the whole list body (measured: 4 rebuilds per
+            // up-scroll, ~120 row rebuilds).
+            guard !ScrollActivity.isScrolling else { return }
+            isHeaderHovered.wrappedValue = hovering
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .libraryScrollActivityChanged)) { _ in
+            if ScrollActivity.isScrolling, isHeaderHovered.wrappedValue {
+                isHeaderHovered.wrappedValue = false
+            }
+        }
         .animation(.easeInOut(duration: 0.15), value: showAction)
         .padding(.top, 8)
         .padding(.bottom, 4)
@@ -374,6 +388,7 @@ struct SystemSidebarView: View {
 
     @ViewBuilder
     private func sidebarRow(icon: String, label: String, system: SystemInfo? = nil, count: Int, tint: Color = AppColors.brandAccent, filter: LibraryFilter, onRename: ((SystemInfo) -> Void)? = nil) -> some View {
+        let _ = SidebarPerfCounters.noteRow()
         let isGamepadFocusedRow = gamepadNav.isGamepadActive && gamepadNav.activeZone == .sidebar && gamepadFocusedFilter?.id == filter.id
         SidebarRowButton(
             icon: icon,
@@ -866,6 +881,32 @@ struct SFSymbolBrowserView: View {
 }
 
 // MARK: - Library Filter
+
+// MARK: - Sidebar Scroll Monitor
+
+/// Flips the shared `ScrollActivity` flag (see GameListRowView) while wheel or
+/// trackpad events flow, so sidebar rows can suppress hover effects as rows
+/// pass under a stationary cursor mid-scroll — the same fix the library
+/// list/grid/holo modes already use. Rows read the flag live in their hover
+/// handlers and reset via `.libraryScrollActivityChanged`, so no SwiftUI
+/// observation is involved and the flag flip costs nothing.
+@MainActor
+enum SidebarScrollMonitor {
+    private static var monitor: Any? = nil
+    private static var debounceTimer: Timer? = nil
+
+    static func install() {
+        guard monitor == nil else { return }
+        monitor = NSEvent.addLocalMonitorForEvents(matching: [.scrollWheel]) { event in
+            ScrollActivity.isScrolling = true
+            debounceTimer?.invalidate()
+            debounceTimer = Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) { _ in
+                ScrollActivity.isScrolling = false
+            }
+            return event
+        }
+    }
+}
 
 enum LibraryFilter: Hashable, Identifiable {
     case all
