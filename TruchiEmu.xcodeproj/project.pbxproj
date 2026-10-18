@@ -693,6 +693,7 @@
 		7E0AE511450BD2A5FE2820A5 /* CoreOptionsSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = E07C31C568B8140ACE5C6ABD /* CoreOptionsSection.swift */; };
 		7E1281194B7150DB55497A7A /* CheatManagerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7442198CF891F84CE81220FA /* CheatManagerService.swift */; };
 		7E1C3785C6F25E705635A60B /* gearboy_libretro_default.json in Resources */ = {isa = PBXBuildFile; fileRef = D503F9A21A5B9E67E09C0961 /* gearboy_libretro_default.json */; };
+		7E2A3A4C583F07CC1D702149 /* ListPerfAuditRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74CFAC41E5B9AA4EA8FB06A2 /* ListPerfAuditRunner.swift */; };
 		7E45C123959B64DF17F0371E /* GamepadNavSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84CF94E42B2B1161FDE2DB55 /* GamepadNavSettingsView.swift */; };
 		7F2F80091C48339E573A016D /* fightdata_kbash.json in Resources */ = {isa = PBXBuildFile; fileRef = BA1C6E7ABF7218A2B1BF591B /* fightdata_kbash.json */; };
 		7F3A0AF55C70223F0AD9607C /* SCUMMVM.png in Resources */ = {isa = PBXBuildFile; fileRef = A208B8C6B2BCD2197F46362D /* SCUMMVM.png */; };
@@ -2059,6 +2060,7 @@
 		74A082F4D292DFBCCD09B3E6 /* fightdata_karatblz.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_karatblz.json; sourceTree = "<group>"; };
 		74B7ED2EF648BA1DF8964A8A /* fightdata_kof96.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_kof96.json; sourceTree = "<group>"; };
 		74C4ECFC23ADA7A8A05EE298 /* SystemSidebarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemSidebarView.swift; sourceTree = "<group>"; };
+		74CFAC41E5B9AA4EA8FB06A2 /* ListPerfAuditRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListPerfAuditRunner.swift; sourceTree = "<group>"; };
 		74E043E517DF76EB9060B86D /* n64.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = n64.ico; sourceTree = "<group>"; };
 		74ECC7553330C0817573A3CD /* MediaConfigHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaConfigHelpers.swift; sourceTree = "<group>"; };
 		753487F425C97CF8AA6E40AC /* holo_wave_alpha.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = holo_wave_alpha.png; sourceTree = "<group>"; };
@@ -3032,6 +3034,7 @@
 				F94B1536361C39252F23DE3C /* HoloPatternStore.swift */,
 				3106E014AE1B506B650D96BA /* HoloSaliencyService.swift */,
 				655A4E06046E79930EEE2443 /* LibraryAutomationCoordinator.swift */,
+				74CFAC41E5B9AA4EA8FB06A2 /* ListPerfAuditRunner.swift */,
 				930A7FE7A4D56153499E8A64 /* ROMLibrary.swift */,
 				181CF812FAA2BD9DF45042BF /* ROMScanner.swift */,
 				C3CDB21811A3FC4E2F21F791 /* SFSymbolCatalog.swift */,
@@ -6394,6 +6397,7 @@
 				76CC37645550ACEC08D6927C /* LibretroThumbnailManifestService.swift in Sources */,
 				803EACFA754C4D83757A278A /* LibretroThumbnailResolver.swift in Sources */,
 				08EC743DFCF5B42618FB4B87 /* LiquidGlassSheen.swift in Sources */,
+				7E2A3A4C583F07CC1D702149 /* ListPerfAuditRunner.swift in Sources */,
 				81294D07B34834F13769FF30 /* LiteCRT.metal in Sources */,
 				3B1D8F388512C8144989EF8B /* LiveShaderEditManager.swift in Sources */,
 				FCEF9884E35FD07E00639CC1 /* LocalizationManager.swift in Sources */,

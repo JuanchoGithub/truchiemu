@@ -24,19 +24,72 @@ extension Notification.Name {
 
 // MARK: - List Row
 
-struct GameListRowView: View {
+// macOS List eagerly rebuilds EVERY row value on each parent re-evaluation
+// (unlike iOS): the ForEach content closure runs for all ~2100 rows, and
+// each result is copied, compared and destroyed. Profiled cost of a system
+// switch was dominated by `initializeWithCopy/destroy for GameListRowView`,
+// `outlined init with copy of LibraryGridView` (per-row closures captured
+// the whole parent struct), and ROM copy churn — ~600ms per switch.
+// Contract that keeps this O(visible rows):
+//   1. The row VALUE must stay tiny: plain data fields plus `actions`, a
+//      struct of closures created ONCE per parent body evaluation — copying
+//      it into a row only bumps reference counts.
+//   2. No per-row closures in the parent's ForEach. All gestures, context
+//      menus, drag handlers etc. live INSIDE `body`, which List evaluates
+//      lazily for visible rows only.
+//   3. The custom == must cover every field the body reads; the action
+//      closures are excluded (never equal), so any parent VALUE-type state
+//      they capture (selection, lastSelectedIndex) must have a matching
+//      compared field or it would go stale when == short-circuits an update.
+struct GameListRowView: View, Equatable {
     let rom: ROM
+    let index: Int
     let isSelected: Bool
     let isEvenRow: Bool
     let zoomLevel: Double
-    let filter: LibraryFilter?
+    // Derived once per parent evaluation from `filter`: rows must not store
+    // the whole LibraryFilter or every system switch invalidates every row
+    // value (the filter always changes) and forces a full eager re-walk.
+    let showSystemLabel: Bool
     let raEnabled: Bool
-    var contextMenu: (() -> AnyView)?
-    var onPlay: (() -> Void)?
     // Passed down instead of observing BoxArtService here: the parent already
     // re-renders on boxArtUpdated bumps, and a @ObservedObject in every row
     // made each bump invalidate all realized rows.
     let boxArtVersion: UUID
+    // Passed down instead of reading SystemPreferences in the row: == would
+    // otherwise short-circuit a box-type change before the row re-read it.
+    let boxType: BoxType
+    // Equality-only inputs. The action closures capture the parent's
+    // value-type selection state, so any change to it must refresh this row
+    // value through == (otherwise the hover-orb menu and shift-select would
+    // act on stale selection).
+    let selectedIDs: Set<UUID>
+    let lastSelectedIndex: Int?
+    // Created once per parent body evaluation. See contract in the header
+    // comment: per-row closures here would reintroduce the copy storm.
+    let actions: Actions
+
+    struct Actions {
+        let onLaunch: (ROM) -> Void
+        let onTap: (ROM, Int) -> Void
+        let onContextMenu: (ROM) -> AnyView
+        let dragItemsFor: (ROM, Bool) -> [ROM]
+        let onDragStarted: ([ROM]) -> Void
+    }
+
+    static func == (lhs: GameListRowView, rhs: GameListRowView) -> Bool {
+        lhs.rom == rhs.rom
+            && lhs.index == rhs.index
+            && lhs.isSelected == rhs.isSelected
+            && lhs.isEvenRow == rhs.isEvenRow
+            && lhs.zoomLevel == rhs.zoomLevel
+            && lhs.showSystemLabel == rhs.showSystemLabel
+            && lhs.raEnabled == rhs.raEnabled
+            && lhs.boxArtVersion == rhs.boxArtVersion
+            && lhs.boxType == rhs.boxType
+            && lhs.selectedIDs == rhs.selectedIDs
+            && lhs.lastSelectedIndex == rhs.lastSelectedIndex
+    }
     @Environment(\.colorScheme) private var colorScheme
     @State private var thumb: NSImage?
     @State private var isHovered = false
@@ -46,12 +99,17 @@ struct GameListRowView: View {
     @State private var tiltRotationY: Double = 0
     @State private var artFrame: CGRect = .zero
     @ObservedObject private var loc = LocalizationManager.shared
+    @ObservedObject private var gamepadNav = GamepadNavigationManager.shared
     @EnvironmentObject var categoryManager: CategoryManager
 
     // Identifies the per-row thumbnail task without string interpolation.
+    // hasBoxArt: handleFilterChange resolves local box art in the background
+    // after a system switch; without it in the task id, rows that survive
+    // the switch never restart the task and keep the placeholder art.
     private struct ArtTaskID: Equatable {
         let romID: UUID
         let artVersion: UUID
+        let hasBoxArt: Bool
     }
     
     private var titleFontSize: CGFloat {
@@ -62,10 +120,6 @@ struct GameListRowView: View {
         9 + zoomLevel * 5
     }
     
-    private var boxType: BoxType {
-        SystemPreferences.shared.boxType(for: rom.systemID ?? "")
-    }
-
     private var artExtent: CGFloat {
         64 + zoomLevel * 72
     }
@@ -206,6 +260,35 @@ struct GameListRowView: View {
     }
 
     var body: some View {
+        rowRoot
+            .contentShape(Rectangle())
+            .onTapGesture { actions.onTap(rom, index) }
+            .simultaneousGesture(
+                TapGesture(count: 2).onEnded { _ in actions.onLaunch(rom) }
+            )
+            .contextMenu { LibraryGridView.LazyContextMenuContent(build: { actions.onContextMenu(rom) }) }
+            .overlay {
+                if gamepadNav.activeZone == .content && gamepadNav.contentIndex == index {
+                    RoundedRectangle(cornerRadius: 4)
+                        .stroke(AppColors.brandAccent, lineWidth: 2)
+                        .allowsHitTesting(false)
+                }
+            }
+            .onDrag {
+                let items = actions.dragItemsFor(rom, isSelected)
+                actions.onDragStarted(items)
+                return NSItemProvider(object: NSString(string: items.map { $0.id.uuidString }.joined(separator: ",")))
+            } preview: {
+                DragPreviewStack(
+                    mainROM: rom,
+                    mainImage: nil,
+                    draggedROMs: actions.dragItemsFor(rom, isSelected).filter { $0.id != rom.id },
+                    zoomLevel: zoomLevel
+                )
+            }
+    }
+
+    private var rowRoot: some View {
         return HStack(spacing: 12) {
             artThumb
             
@@ -215,7 +298,7 @@ struct GameListRowView: View {
                     Text(rom.displayName)
                         .font(.system(size: titleFontSize, weight: .semibold, design: .rounded))
                     
-                    if let systemID = rom.systemID, systemID != "unknown", !(filter?.isSystemView ?? false) {
+                    if let systemID = rom.systemID, systemID != "unknown", showSystemLabel {
                         Text(systemID.uppercased())
                             .font(.system(size: subtitleFontSize * 0.8, weight: .regular, design: .rounded))
                             .foregroundColor(AppColors.textMuted(colorScheme))
@@ -359,7 +442,7 @@ Text(sys.name)
                     }
                 }
 
-            if isHovered, let menuContent = contextMenu {
+            if isHovered {
                 ZStack {
                     Circle()
                         .fill(AppColors.brandAccent)
@@ -375,7 +458,7 @@ Text(sys.name)
                 .shadow(color: AppColors.brandAccent.opacity(0.4), radius: 4, y: 2)
                 .opacity(0.7)
                 .overlay(
-                    Menu { LibraryGridView.LazyContextMenuContent(build: menuContent) } label: {
+                    Menu { LibraryGridView.LazyContextMenuContent(build: { actions.onContextMenu(rom) }) } label: {
                         Color.clear
                             .contentShape(Circle())
                     }
@@ -440,7 +523,7 @@ Text(sys.name)
                 tiltRotationY = 0
             }
         }
-        .task(id: ArtTaskID(romID: rom.id, artVersion: boxArtVersion)) {
+        .task(id: ArtTaskID(romID: rom.id, artVersion: boxArtVersion, hasBoxArt: rom.hasBoxArt)) {
             // rom.boxArtLocalPath is authoritative and rom.hasBoxArt is correct
             // (resolved during the off-scroll pipeline), so this is zero
             // main-thread I/O. Art-less ROMs show the system placeholder.
@@ -502,7 +585,7 @@ Text(sys.name)
             }
         )
         .overlay(alignment: .center) {
-            if isHovered, onPlay != nil {
+            if isHovered {
                 GlassOrbPlayButton(
                     content: {
                         if let nsImage = thumb {
@@ -514,7 +597,7 @@ Text(sys.name)
                         }
                     },
                     accent: AppColors.brandAccent,
-                    action: { onPlay?() },
+                    action: { actions.onLaunch(rom) },
                     diameter: min(thumbWidth, thumbHeight) * 0.5
                 )
                 .transition(.opacity)

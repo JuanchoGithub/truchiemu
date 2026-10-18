@@ -1102,64 +1102,52 @@ viewModel.updateFilters(
     }
 
     private var listView: some View {
-        ScrollViewReader { proxy in
-        List(selection: $selectedROM) {
-            ForEach(EnumeratedROMs(base: viewModel.displayedROMs), id: \.element.id) { index, rom in
-                let isSelected = selectedROMs.contains(rom.id) || selectedROM?.id == rom.id
-                let isGamepadFocused = gamepadNav.activeZone == .content && gamepadNav.contentIndex == index
-                GameListRowView(rom: rom, isSelected: isSelected, isEvenRow: index.isMultiple(of: 2), zoomLevel: zoomLevel, filter: filter, raEnabled: raService.isEnabled, contextMenu: { contextMenu(for: rom) }, onPlay: { Task { await launchGame(rom) } }, boxArtVersion: boxArtService.boxArtUpdated)
-                .tag(rom)
-                .listRowBackground(Color.clear)
-                .contentShape(Rectangle())
-.onTapGesture {
-                handleListTap(on: rom, at: index)
-            }
-            .simultaneousGesture(
-            TapGesture(count: 2).onEnded {
-                Task {
-                    await launchGame(rom)
+        // Row equality inputs: the row's action closures capture the parent's
+        // value-type selection state, so both selection stores and the
+        // shift-select anchor feed the row value through ==.
+        var selectionIDs = selectedROMs
+        if let primary = selectedROM { selectionIDs.insert(primary.id) }
+        // Created once per body evaluation — macOS List eagerly rebuilds ALL
+        // row values on every parent re-evaluation, so per-row closures here
+        // would copy this whole view struct once per row (profiled as the
+        // ~600ms switch stall at 2108 ROMs). See the GameListRowView header.
+        let rowActions = GameListRowView.Actions(
+            onLaunch: { rom in Task { await launchGame(rom) } },
+            onTap: { rom, index in handleListTap(on: rom, at: index) },
+            onContextMenu: { rom in contextMenu(for: rom) },
+            dragItemsFor: { rom, isSelected in
+                guard isSelected else { return [rom] }
+                var dragIDs = selectedROMs
+                if let singleSelection = selectedROM {
+                    dragIDs.insert(singleSelection.id)
                 }
+                return viewModel.displayedROMs.filter { dragIDs.contains($0.id) }
+            },
+            onDragStarted: { items in
+                draggedROMs = items
+                dragState.startDrag(gameIDs: items.map { $0.id })
             }
         )
-        .contextMenu { LazyContextMenuContent { contextMenu(for: rom) } }
-        .overlay {
-            if isGamepadFocused {
-                RoundedRectangle(cornerRadius: 4)
-                    .stroke(AppColors.brandAccent, lineWidth: 2)
-                    .allowsHitTesting(false)
-            }
-        }
-        .id(rom.id)
-        .onDrag {
-          let items: [ROM]
-          if isSelected {
-            var dragIDs = selectedROMs
-            if let singleSelection = selectedROM {
-              dragIDs.insert(singleSelection.id)
-            }
-            items = viewModel.displayedROMs.filter { dragIDs.contains($0.id) }
-          } else {
-            items = [rom]
-          }
-
-          draggedROMs = items
-          dragState.startDrag(gameIDs: items.map { $0.id })
-          let provider = NSItemProvider(object: NSString(string: items.map { $0.id.uuidString }.joined(separator: ",")))
-          return provider
-        } preview: {
-          DragPreviewStack(
-            mainROM: rom,
-            mainImage: nil,
-            draggedROMs: (isSelected ? viewModel.displayedROMs.filter { 
-              var dragIDs = selectedROMs
-              if let singleSelection = selectedROM {
-                dragIDs.insert(singleSelection.id)
-              }
-              return dragIDs.contains($0.id) && $0.id != rom.id
-            } : []),
-            zoomLevel: zoomLevel
-          )
-        }
+        return ScrollViewReader { proxy in
+        List(selection: $selectedROM) {
+            ForEach(EnumeratedROMs(base: viewModel.displayedROMs), id: \.element.id) { index, rom in
+                GameListRowView(
+                    rom: rom,
+                    index: index,
+                    isSelected: selectionIDs.contains(rom.id),
+                    isEvenRow: index.isMultiple(of: 2),
+                    zoomLevel: zoomLevel,
+                    showSystemLabel: !filter.isSystemView,
+                    raEnabled: raService.isEnabled,
+                    boxArtVersion: boxArtService.boxArtUpdated,
+                    boxType: SystemPreferences.shared.boxType(for: rom.systemID ?? ""),
+                    selectedIDs: selectionIDs,
+                    lastSelectedIndex: lastSelectedIndex,
+                    actions: rowActions
+                )
+                .equatable()
+                .tag(rom)
+                .listRowBackground(Color.clear)
             }
         }
         .listStyle(.inset(alternatesRowBackgrounds: false))
