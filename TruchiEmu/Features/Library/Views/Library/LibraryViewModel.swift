@@ -10,6 +10,12 @@ class LibraryViewModel: ObservableObject {
     
     // State
     @Published var displayedROMs: [ROM] = []
+    /// Bumped on every displayedROMs publish so AppKit-backed views can
+    /// detect content changes with an O(1) token compare instead of
+    /// fingerprinting the whole array (see ListTableViewRepresentable).
+    /// Not @Published: it only ever changes together with `displayedROMs`,
+    /// whose publish already drives the parent re-evaluation.
+    var displayedROMsVersion: Int = 0
     @Published var isProcessing: Bool = false
     
     // Filter/Sort State
@@ -181,6 +187,7 @@ class LibraryViewModel: ObservableObject {
 
             if Task.isCancelled { return }
             self.displayedROMs = filtered
+            self.displayedROMsVersion += 1
             // Diagnostic signal for the env-gated ListPerfAuditRunner (switch
             // latency bisect: pipeline vs render). No observers in normal use.
             NotificationCenter.default.post(name: .libraryDisplayedROMsDidChange, object: filtered.count)

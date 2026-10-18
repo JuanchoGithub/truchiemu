@@ -231,6 +231,7 @@ struct LibraryGridView: View {
     @State private var draggedROMs: [ROM] = []
     // Scroll target for gamepad navigation
     @State private var gridScrollTarget: Int?
+    @State private var listScrollTargetRow: Int?
     
     // Filter chips
     @State private var activeFilters: Set<String> = []
@@ -1102,15 +1103,9 @@ viewModel.updateFilters(
     }
 
     private var listView: some View {
-        // Row equality inputs: the row's action closures capture the parent's
-        // value-type selection state, so both selection stores and the
-        // shift-select anchor feed the row value through ==.
-        var selectionIDs = selectedROMs
-        if let primary = selectedROM { selectionIDs.insert(primary.id) }
-        // Created once per body evaluation — macOS List eagerly rebuilds ALL
-        // row values on every parent re-evaluation, so per-row closures here
-        // would copy this whole view struct once per row (profiled as the
-        // ~600ms switch stall at 2108 ROMs). See the GameListRowView header.
+        // Created once per body evaluation. Rows are hosted in an
+        // NSTableView (see ListTableView.swift), so nothing here runs per
+        // row — O(visible) row configuration, like the grid/holo views.
         let rowActions = GameListRowView.Actions(
             onLaunch: { rom in Task { await launchGame(rom) } },
             onTap: { rom, index in handleListTap(on: rom, at: index) },
@@ -1128,30 +1123,24 @@ viewModel.updateFilters(
                 dragState.startDrag(gameIDs: items.map { $0.id })
             }
         )
-        return ScrollViewReader { proxy in
-        List(selection: $selectedROM) {
-            ForEach(EnumeratedROMs(base: viewModel.displayedROMs), id: \.element.id) { index, rom in
-                GameListRowView(
-                    rom: rom,
-                    index: index,
-                    isSelected: selectionIDs.contains(rom.id),
-                    isEvenRow: index.isMultiple(of: 2),
-                    zoomLevel: zoomLevel,
-                    showSystemLabel: !filter.isSystemView,
-                    raEnabled: raService.isEnabled,
-                    boxArtVersion: boxArtService.boxArtUpdated,
-                    boxType: SystemPreferences.shared.boxType(for: rom.systemID ?? ""),
-                    selectedIDs: selectionIDs,
-                    lastSelectedIndex: lastSelectedIndex,
-                    actions: rowActions
-                )
-                .equatable()
-                .tag(rom)
-                .listRowBackground(Color.clear)
-            }
-        }
-        .listStyle(.inset(alternatesRowBackgrounds: false))
-        .scrollContentBackground(.hidden)
+        return ListTableViewRepresentable(
+            roms: $viewModel.displayedROMs,
+            romsVersion: viewModel.displayedROMsVersion,
+            selection: $selectedROMs,
+            primarySelection: Binding(
+                get: { selectedROM },
+                set: { selectedROM = $0 }
+            ),
+            zoomLevel: zoomLevel,
+            showSystemLabel: !filter.isSystemView,
+            raEnabled: raService.isEnabled,
+            boxArtVersion: boxArtService.boxArtUpdated,
+            lastSelectedIndex: lastSelectedIndex,
+            actions: rowActions,
+            library: library,
+            categoryManager: categoryManager,
+            scrollTargetRow: $listScrollTargetRow
+        )
         .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
         .onAppear {
             gamepadNav.columnCount = 1
@@ -1185,29 +1174,12 @@ viewModel.updateFilters(
         .onChange(of: gamepadNav.contentIndex) { _, newIndex in
             guard gamepadNav.activeZone == .content, viewMode == .list else { return }
             guard newIndex >= 0, newIndex < viewModel.displayedROMs.count else { return }
-            let rom = viewModel.displayedROMs[newIndex]
-            selectedROM = rom
-            withAnimation {
-                proxy.scrollTo(rom.id, anchor: .center)
-            }
+            selectedROM = viewModel.displayedROMs[newIndex]
+            listScrollTargetRow = newIndex
         }
         .onChange(of: viewModel.displayedROMs.count) { _, newCount in
             gamepadNav.contentItemCount = newCount
             gamepadNav.clampCurrentIndex()
-        }
-        }
-    }
-    
-    // Lazy (offset, ROM) view of displayedROMs for the list-mode ForEach.
-    // Array(enumerated()) forced a copy of every heavy ROM struct on every
-    // parent body evaluation; this wrapper defers the per-element copy to
-    // subscript time, so only realized rows pay it.
-    private struct EnumeratedROMs: RandomAccessCollection {
-        let base: [ROM]
-        var startIndex: Int { 0 }
-        var endIndex: Int { base.count }
-        subscript(position: Int) -> (offset: Int, element: ROM) {
-            (position, base[position])
         }
     }
 

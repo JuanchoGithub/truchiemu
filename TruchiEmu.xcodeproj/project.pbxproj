@@ -103,6 +103,7 @@
 		109E11579A7B074311E37848 /* fightdata_yyyhsf.json in Resources */ = {isa = PBXBuildFile; fileRef = F2021481AF043881CDF505EA /* fightdata_yyyhsf.json */; };
 		10A813FD9AC06B780E931816 /* FilterChipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E65528ABEAB97C567F9B73A1 /* FilterChipView.swift */; };
 		10CAEA190350353BB1B6796B /* 8bGameBoy.metal in Sources */ = {isa = PBXBuildFile; fileRef = 7CC6E52ACF63E0F4B9AD638C /* 8bGameBoy.metal */; };
+		10D5ADCFF886C908DCEF73F5 /* ListTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8403CFFF0198BA2B7A8BDBD /* ListTableView.swift */; };
 		110ED7723352AB94F3CB9D5D /* input_coreLabels_melonds_ds.json in Resources */ = {isa = PBXBuildFile; fileRef = D24A305CC4845A6A0E7A8F7E /* input_coreLabels_melonds_ds.json */; };
 		114F352AC9144A444E87A3FF /* ModernSaveStateSlotView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE88DE36C63C7988B726B538 /* ModernSaveStateSlotView.swift */; };
 		119F0350B77576B5199C7A1E /* input_coreOverrides_3d_engine.json in Resources */ = {isa = PBXBuildFile; fileRef = DBAE3959233EE2C73659326A /* input_coreOverrides_3d_engine.json */; };
@@ -2759,6 +2760,7 @@
 		F7913A46643B16EB13FFCB6E /* input_coreLabels_mgba.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_mgba.json; sourceTree = "<group>"; };
 		F7FF9A7DBD158DEC791E5D2E /* ControllerTestSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControllerTestSheet.swift; sourceTree = "<group>"; };
 		F80E267122CAC805554DF6CE /* ControllerLongPressDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControllerLongPressDetector.swift; sourceTree = "<group>"; };
+		F8403CFFF0198BA2B7A8BDBD /* ListTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListTableView.swift; sourceTree = "<group>"; };
 		F840A09480B7BD45951DD050 /* cps2@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cps2@132w.png"; sourceTree = "<group>"; };
 		F84249DEACE74441114A7544 /* input_coreLabels_fmsx.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_fmsx.json; sourceTree = "<group>"; };
 		F8433AB2853AB9C980368AE4 /* EscapeToastOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EscapeToastOverlay.swift; sourceTree = "<group>"; };
@@ -3862,6 +3864,7 @@
 				5C15A861E2696512846B9609 /* LibraryGridView.swift */,
 				62264697086E084CF5A6E26B /* LibrarySortPicker.swift */,
 				3BB12F3155291F4EC9C6EF84 /* LibraryViewModel.swift */,
+				F8403CFFF0198BA2B7A8BDBD /* ListTableView.swift */,
 				50C7DB253E3316EA31A3A1EC /* OtherFiltersPopover.swift */,
 				CBFE3A9E877C2D62FEDDB15E /* SetupWizardView.swift */,
 				AECA6A821D5AD2F2FBD719B3 /* SidebarRowButton.swift */,
@@ -6398,6 +6401,7 @@
 				803EACFA754C4D83757A278A /* LibretroThumbnailResolver.swift in Sources */,
 				08EC743DFCF5B42618FB4B87 /* LiquidGlassSheen.swift in Sources */,
 				7E2A3A4C583F07CC1D702149 /* ListPerfAuditRunner.swift in Sources */,
+				10D5ADCFF886C908DCEF73F5 /* ListTableView.swift in Sources */,
 				81294D07B34834F13769FF30 /* LiteCRT.metal in Sources */,
 				3B1D8F388512C8144989EF8B /* LiveShaderEditManager.swift in Sources */,
 				FCEF9884E35FD07E00639CC1 /* LocalizationManager.swift in Sources */,
