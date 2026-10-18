@@ -1,6 +1,27 @@
 import SwiftUI
 import AppKit
 
+// MARK: - Scroll Activity Flag
+
+// Scroll-gesture state WITHOUT SwiftUI observation. Flipping a parent @State
+// on the first wheel event made macOS List re-diff all row identities
+// (OutlineListCoordinator.diffRows — seconds at 2108 rows) on every gesture
+// start. Rows read this flag live in hover/tilt handlers instead, and reset
+// their transient hover/tilt state via the scroll-activity notification.
+@MainActor
+enum ScrollActivity {
+    static var isScrolling = false {
+        didSet {
+            guard oldValue != isScrolling else { return }
+            NotificationCenter.default.post(name: .libraryScrollActivityChanged, object: nil)
+        }
+    }
+}
+
+extension Notification.Name {
+    static let libraryScrollActivityChanged = Notification.Name("libraryScrollActivityChanged")
+}
+
 // MARK: - List Row
 
 struct GameListRowView: View {
@@ -11,8 +32,11 @@ struct GameListRowView: View {
     let filter: LibraryFilter?
     let raEnabled: Bool
     var contextMenu: (() -> AnyView)?
-    let isScrolling: Bool
     var onPlay: (() -> Void)?
+    // Passed down instead of observing BoxArtService here: the parent already
+    // re-renders on boxArtUpdated bumps, and a @ObservedObject in every row
+    // made each bump invalidate all realized rows.
+    let boxArtVersion: UUID
     @Environment(\.colorScheme) private var colorScheme
     @State private var thumb: NSImage?
     @State private var isHovered = false
@@ -21,10 +45,14 @@ struct GameListRowView: View {
     @State private var tiltRotationX: Double = 0
     @State private var tiltRotationY: Double = 0
     @State private var artFrame: CGRect = .zero
-    @ObservedObject private var boxArtService = BoxArtService.shared
     @ObservedObject private var loc = LocalizationManager.shared
-    @EnvironmentObject var library: ROMLibrary
     @EnvironmentObject var categoryManager: CategoryManager
+
+    // Identifies the per-row thumbnail task without string interpolation.
+    private struct ArtTaskID: Equatable {
+        let romID: UUID
+        let artVersion: UUID
+    }
     
     private var titleFontSize: CGFloat {
         12 + zoomLevel * 8
@@ -53,13 +81,13 @@ struct GameListRowView: View {
     }
     
     private var categoryBadges: [GameCategory] {
-        categoryManager.categories.filter { $0.gameIDs.contains(rom.id) }
+        categoryManager.categories(containing: rom)
     }
 
     // MARK: - 3D Pivoting Effect (mirrors GameCardView)
 
     private var pivotingEnabled: Bool {
-        SystemPreferences.shared.boxArtPivotingEnabled() && !isScrolling
+        SystemPreferences.shared.boxArtPivotingEnabled() && !ScrollActivity.isScrolling
     }
 
     private var normalizedMouseX: CGFloat {
@@ -178,7 +206,7 @@ struct GameListRowView: View {
     }
 
     var body: some View {
-        HStack(spacing: 12) {
+        return HStack(spacing: 12) {
             artThumb
             
             // Left side: game info
@@ -347,7 +375,7 @@ Text(sys.name)
                 .shadow(color: AppColors.brandAccent.opacity(0.4), radius: 4, y: 2)
                 .opacity(0.7)
                 .overlay(
-                    Menu { menuContent() } label: {
+                    Menu { LibraryGridView.LazyContextMenuContent(build: menuContent) } label: {
                         Color.clear
                             .contentShape(Circle())
                     }
@@ -379,7 +407,7 @@ Text(sys.name)
                 .padding(.leading, 4)
         }
         .onHover { hovering in
-            if isScrolling {
+            if ScrollActivity.isScrolling {
                 if !hovering { isHovered = false }
             } else {
                 withAnimation(.easeOut(duration: 0.12)) {
@@ -404,21 +432,25 @@ Text(sys.name)
                 }
             }
         }
-        .onChange(of: isScrolling) { _, scrolling in
-            if scrolling {
+        .onReceive(NotificationCenter.default.publisher(for: .libraryScrollActivityChanged)) { _ in
+            if ScrollActivity.isScrolling {
                 isHovered = false
                 mousePosition = nil
                 tiltRotationX = 0
                 tiltRotationY = 0
             }
         }
-        .task(id: "\(rom.id)-\(boxArtService.boxArtUpdated)") {
+        .task(id: ArtTaskID(romID: rom.id, artVersion: boxArtVersion)) {
             // rom.boxArtLocalPath is authoritative and rom.hasBoxArt is correct
             // (resolved during the off-scroll pipeline), so this is zero
             // main-thread I/O. Art-less ROMs show the system placeholder.
             if rom.hasBoxArt {
                 let artPath = rom.boxArtLocalPath
-                if let cached = ImageCache.shared.thumbnailSync(for: artPath, preferredSize: .small) {
+                // NSCache-only fast path (zero disk I/O / decode on main); the
+                // async loader fills cold entries. thumbnailSync's synchronous
+                // disk fallback stalled scrolling here the same way it did in
+                // the holo grid before it switched to this API.
+                if let cached = ImageCache.shared.thumbnailCachedOrPregen(for: artPath, preferredSize: .small) {
                     self.thumb = cached
                 } else if let thumb = await ImageCache.shared.thumbnail(for: artPath, preferredSize: .small) {
                     self.thumb = thumb

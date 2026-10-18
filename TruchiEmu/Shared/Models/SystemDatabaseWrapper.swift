@@ -7,9 +7,13 @@ final class SystemDatabaseWrapper {
 
     var systems: [SystemInfo] {
         didSet {
+            indexByID = Dictionary(systems.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
             saveToDisk()
         }
     }
+
+    // O(1) lookup; mirrors `systems.first { $0.id == id }` (first wins).
+    private var indexByID: [String: SystemInfo] = [:]
 
     var mergeGBGBC: Bool = true {
         didSet {
@@ -36,10 +40,11 @@ final class SystemDatabaseWrapper {
         self.systems = SystemDatabase._loadSystems()
         self.mergeGBGBC = AppSettings.getBool("mergeGBGBC", defaultValue: true)
         self.mergeMameFBA = AppSettings.getBool("mergeMameFBA", defaultValue: true)
+        self.indexByID = Dictionary(systems.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
     }
 
     func system(forID id: String) -> SystemInfo? {
-        systems.first { $0.id == id }
+        indexByID[id] ?? systems.first { $0.id == id }
     }
 
     func system(forExtension ext: String) -> SystemInfo? {

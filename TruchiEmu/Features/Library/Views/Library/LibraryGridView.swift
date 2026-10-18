@@ -260,7 +260,6 @@ struct LibraryGridView: View {
     @State private var _previousViewMode: ViewMode = .grid
 
     @State private var lastSelectedFilterID: String? = nil
-    @State private var isScrolling = false
     @State private var scrollMonitor: Any?
     @State private var scrollDebounceTimer: Timer?
     @State private var keyMonitor: Any?
@@ -1003,7 +1002,7 @@ viewModel.updateFilters(
             .separator
         ]
         for category in categoryManager.categories {
-            let isInCategory = category.contains(rom)
+            let isInCategory = categoryManager.contains(rom, categoryID: category.id)
             if isInCategory {
                 items.append(.init(title: "✓ \(category.name)") { [self] in
                     categoryManager.removeRomsFromCategory([rom], categoryID: category.id)
@@ -1014,10 +1013,8 @@ viewModel.updateFilters(
                 })
             }
         }
-        let targetROMs = library.roms.filter { targetIDsSet.contains($0.id) }
-        let categoriesForTargetGames = categoryManager.categories.filter { category in
-            targetROMs.contains { category.contains($0) }
-        }
+        let targetROMs = targetIDsSet.compactMap { library.rom(withID: $0) }
+        let categoriesForTargetGames = categoryManager.categories(containingAnyOf: targetROMs)
         if !categoriesForTargetGames.isEmpty {
             items.append(.init(title: loc.localized("contextMenu.removeFromAllCategories")) { [self] in
                 for category in categoriesForTargetGames {
@@ -1027,7 +1024,6 @@ viewModel.updateFilters(
         }
         items.append(.separator)
         items.append(.init(title: loc.localized("contextMenu.moveToSystem")) { [self] in
-            let targetROMs = library.roms.filter { targetIDsSet.contains($0.id) }
             systemPickerItem = SystemPickerItem(roms: targetROMs)
         })
         items.append(.separator)
@@ -1108,10 +1104,10 @@ viewModel.updateFilters(
     private var listView: some View {
         ScrollViewReader { proxy in
         List(selection: $selectedROM) {
-            ForEach(Array(viewModel.displayedROMs.enumerated()), id: \.element.id) { index, rom in
+            ForEach(EnumeratedROMs(base: viewModel.displayedROMs), id: \.element.id) { index, rom in
                 let isSelected = selectedROMs.contains(rom.id) || selectedROM?.id == rom.id
                 let isGamepadFocused = gamepadNav.activeZone == .content && gamepadNav.contentIndex == index
-                GameListRowView(rom: rom, isSelected: isSelected, isEvenRow: index.isMultiple(of: 2), zoomLevel: zoomLevel, filter: filter, raEnabled: raService.isEnabled, contextMenu: { contextMenu(for: rom) }, isScrolling: isScrolling, onPlay: { Task { await launchGame(rom) } })
+                GameListRowView(rom: rom, isSelected: isSelected, isEvenRow: index.isMultiple(of: 2), zoomLevel: zoomLevel, filter: filter, raEnabled: raService.isEnabled, contextMenu: { contextMenu(for: rom) }, onPlay: { Task { await launchGame(rom) } }, boxArtVersion: boxArtService.boxArtUpdated)
                 .tag(rom)
                 .listRowBackground(Color.clear)
                 .contentShape(Rectangle())
@@ -1125,7 +1121,7 @@ viewModel.updateFilters(
                 }
             }
         )
-        .contextMenu { contextMenu(for: rom) }
+        .contextMenu { LazyContextMenuContent { contextMenu(for: rom) } }
         .overlay {
             if isGamepadFocused {
                 RoundedRectangle(cornerRadius: 4)
@@ -1173,10 +1169,10 @@ viewModel.updateFilters(
             gamepadNav.columnCount = 1
             gamepadNav.contentItemCount = viewModel.displayedROMs.count
             scrollMonitor = NSEvent.addLocalMonitorForEvents(matching: [.scrollWheel]) { event in
-                if !isScrolling { isScrolling = true }
+                ScrollActivity.isScrolling = true
                 scrollDebounceTimer?.invalidate()
                 scrollDebounceTimer = Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) { _ in
-                    isScrolling = false
+                    ScrollActivity.isScrolling = false
                 }
                 return event
             }
@@ -1214,6 +1210,32 @@ viewModel.updateFilters(
         }
     }
     
+    // Lazy (offset, ROM) view of displayedROMs for the list-mode ForEach.
+    // Array(enumerated()) forced a copy of every heavy ROM struct on every
+    // parent body evaluation; this wrapper defers the per-element copy to
+    // subscript time, so only realized rows pay it.
+    private struct EnumeratedROMs: RandomAccessCollection {
+        let base: [ROM]
+        var startIndex: Int { 0 }
+        var endIndex: Int { base.count }
+        subscript(position: Int) -> (offset: Int, element: ROM) {
+            (position, base[position])
+        }
+    }
+
+    // Defers menu-tree construction out of row-content evaluation. SwiftUI
+    // invokes `.contextMenu`'s builder (and `Menu.init` flattens its content)
+    // eagerly on every row re-eval — during wheel scrolling that rebuilt the
+    // full ~20-item menu per visible row per frame. Wrapping the builder in
+    // this struct stores only a cheap closure; the tree is materialized in
+    // `body`, when the menu content is actually resolved.
+    struct LazyContextMenuContent: View {
+        let build: () -> AnyView
+        var body: some View {
+            build()
+        }
+    }
+
     private func handleListTap(on rom: ROM, at index: Int) {
         let modifiers = NSEvent.modifierFlags
         
@@ -1610,6 +1632,9 @@ viewModel.updateFilters(
     private func contextMenu(for rom: ROM) -> AnyView {
         let targetIDs = Array(selectedROMs.union([rom.id]))
         let targetIDsSet = Set(targetIDs)
+        // O(selection) lookups via the library index — was a full-ROMs filter.
+        let menuTargetROMs = targetIDsSet.compactMap { library.rom(withID: $0) }
+        let romStableKey = rom.stableIdentityKey
         return AnyView(
             Group {
                 Button {
@@ -1647,9 +1672,8 @@ viewModel.updateFilters(
                     }
 
                     ForEach(categoryManager.categories) { category in
-                        let isInCategory = category.contains(rom)
+                        let isInCategory = categoryManager.contains(romID: rom.id, stableKey: romStableKey, categoryID: category.id)
                         Button {
-                            let menuTargetROMs = library.roms.filter { targetIDsSet.contains($0.id) }
                             if isInCategory {
                                 categoryManager.removeRomsFromCategory(menuTargetROMs, categoryID: category.id)
                             } else {
@@ -1672,13 +1696,10 @@ viewModel.updateFilters(
                         }
                     }
 
-                    let categoriesForTargetGames = categoryManager.categories.filter { category in
-                        library.roms.contains { targetIDsSet.contains($0.id) && category.contains($0) }
-                    }
+                    let categoriesForTargetGames = categoryManager.categories(containingAnyOf: menuTargetROMs)
                     if !categoriesForTargetGames.isEmpty {
                         Divider()
                         Button(role: .destructive) {
-                            let menuTargetROMs = library.roms.filter { targetIDsSet.contains($0.id) }
                             for category in categoriesForTargetGames {
                                 categoryManager.removeRomsFromCategory(menuTargetROMs, categoryID: category.id)
                             }
@@ -1692,8 +1713,7 @@ viewModel.updateFilters(
 
                     Divider()
                     Button {
-                        let targetROMs = library.roms.filter { targetIDsSet.contains($0.id) }
-                        systemPickerItem = SystemPickerItem(roms: targetROMs)
+                        systemPickerItem = SystemPickerItem(roms: menuTargetROMs)
                     } label: {
                         Label(loc.localized("contextMenu.moveToSystem"), systemImage: "arrow.triangle.swap")
                     }

@@ -4,10 +4,65 @@ import Combine
 // Manages user-defined game categories and their relationships with ROMs
 @MainActor
 class CategoryManager: ObservableObject {
-    @Published var categories: [GameCategory] = []
+    @Published var categories: [GameCategory] = [] {
+        didSet { rebuildMemberIndex() }
+    }
     private let categoriesKey = "game_categories_v1"
     private let encoder = JSONEncoder()
     private let decoder = JSONDecoder()
+
+    // O(1) membership lookups for hot paths (list-row badges, context menus).
+    // Maps ROM UUID / stable key -> set of category IDs. Rebuilt whenever
+    // `categories` changes. `contains(rom)` matches by UUID OR stable key, so
+    // both key spaces are indexed.
+    private var memberIndexByROMID: [UUID: Set<String>] = [:]
+    private var memberIndexByStableKey: [String: Set<String>] = [:]
+
+    private func rebuildMemberIndex() {
+        var byROMID: [UUID: Set<String>] = [:]
+        var byKey: [String: Set<String>] = [:]
+        for category in categories {
+            for gameID in category.gameIDs {
+                byROMID[gameID, default: []].insert(category.id)
+            }
+            for key in category.gameKeys {
+                byKey[key, default: []].insert(category.id)
+            }
+        }
+        memberIndexByROMID = byROMID
+        memberIndexByStableKey = byKey
+    }
+
+    // O(1) membership test (UUID or stable key) against one category.
+    func contains(_ rom: ROM, categoryID: String) -> Bool {
+        memberIndexByROMID[rom.id]?.contains(categoryID) == true
+            || memberIndexByStableKey[rom.stableIdentityKey]?.contains(categoryID) == true
+    }
+
+    // O(1) membership test with a precomputed stable key (avoids recomputing
+    // the key per category inside menu builders).
+    func contains(romID: UUID, stableKey: String, categoryID: String) -> Bool {
+        memberIndexByROMID[romID]?.contains(categoryID) == true
+            || memberIndexByStableKey[stableKey]?.contains(categoryID) == true
+    }
+
+    // Categories containing this ROM, in display order.
+    func categories(containing rom: ROM) -> [GameCategory] {
+        let memberOf = (memberIndexByROMID[rom.id] ?? []).union(memberIndexByStableKey[rom.stableIdentityKey] ?? [])
+        guard !memberOf.isEmpty else { return [] }
+        return categories.filter { memberOf.contains($0.id) }
+    }
+
+    // Categories containing ANY of the given ROMs, in display order.
+    func categories(containingAnyOf roms: [ROM]) -> [GameCategory] {
+        var memberOf = Set<String>()
+        for rom in roms {
+            memberOf.formUnion(memberIndexByROMID[rom.id] ?? [])
+            memberOf.formUnion(memberIndexByStableKey[rom.stableIdentityKey] ?? [])
+        }
+        guard !memberOf.isEmpty else { return [] }
+        return categories.filter { memberOf.contains($0.id) }
+    }
     
     init() {
         loadCategories()

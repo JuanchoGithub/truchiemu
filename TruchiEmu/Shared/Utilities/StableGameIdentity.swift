@@ -82,6 +82,8 @@ enum StableGameIdentity {
     }
 
     // Keep tokens short and filesystem-safe.
+    private static let allowedCharacters = CharacterSet.alphanumerics.union(CharacterSet(charactersIn: "_-."))
+
     static func sanitize(_ raw: String) -> String {
         var out = raw
             .replacingOccurrences(of: "/", with: "_")
@@ -90,7 +92,7 @@ enum StableGameIdentity {
             .replacingOccurrences(of: "..", with: "_")
             .trimmingCharacters(in: .whitespacesAndNewlines)
         // Collapse runs of unsafe chars to a single underscore.
-        let allowed = CharacterSet.alphanumerics.union(CharacterSet(charactersIn: "_-."))
+        let allowed = allowedCharacters
         out = out.unicodeScalars.map { allowed.contains($0) ? String($0) : "_" }.joined()
         while out.contains("__") { out = out.replacingOccurrences(of: "__", with: "_") }
         out = out.trimmingCharacters(in: CharacterSet(charactersIn: "_"))

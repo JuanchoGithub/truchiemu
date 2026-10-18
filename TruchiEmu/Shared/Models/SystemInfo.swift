@@ -545,7 +545,7 @@ class SystemDatabase {
     }
 
     static func system(forID id: String) -> SystemInfo? {
-        systems.first { $0.id == id }
+        SystemDatabaseWrapper.shared.system(forID: id)
     }
 }
 
@@ -646,13 +646,25 @@ class SystemPreferences: ObservableObject {
         didSet { AppSettings.set(Self.keySystemLanguage, value: String(systemLanguage.rawValue)); updateTrigger += 1 }
     }
 
+    // Hot-path caches: boxType(for:) is called from list/grid row bodies on
+    // every render, and AppSettings.get allocates a JSONDecoder per call.
+    // `setBoxType` is the only writer of boxType keys; `setBoxArtPivotingEnabled`
+    // is the only writer of the pivoting flag.
+    private var boxTypeCache: [String: BoxType] = [:]
+    private var pivotingEnabledCache: Bool?
+
     func boxType(for systemID: String) -> BoxType {
+        if let cached = boxTypeCache[systemID] { return cached }
         let key = "\(Self.keyBoxTypePrefix)\(systemID)"
-        if let rawValue = AppSettings.get(key, type: String.self), let type = BoxType(rawValue: rawValue) { return type }
-        return SystemDatabase.system(forID: systemID)?.defaultBoxType ?? .vertical
+        let resolved = (AppSettings.get(key, type: String.self))
+            .flatMap(BoxType.init(rawValue:))
+            ?? SystemDatabase.system(forID: systemID)?.defaultBoxType ?? .vertical
+        boxTypeCache[systemID] = resolved
+        return resolved
     }
 
     func setBoxType(_ type: BoxType, for systemID: String) {
+        boxTypeCache[systemID] = type
         AppSettings.set("\(Self.keyBoxTypePrefix)\(systemID)", value: type.rawValue)
         updateTrigger += 1
     }
@@ -672,10 +684,14 @@ class SystemPreferences: ObservableObject {
     }
 
     func boxArtPivotingEnabled() -> Bool {
-        AppSettings.getBool(Self.keyBoxArtPivoting, defaultValue: true)
+        if let cached = pivotingEnabledCache { return cached }
+        let resolved = AppSettings.getBool(Self.keyBoxArtPivoting, defaultValue: true)
+        pivotingEnabledCache = resolved
+        return resolved
     }
 
     func setBoxArtPivotingEnabled(_ enabled: Bool) {
+        pivotingEnabledCache = enabled
         AppSettings.setBool(Self.keyBoxArtPivoting, value: enabled)
         updateTrigger += 1
     }
