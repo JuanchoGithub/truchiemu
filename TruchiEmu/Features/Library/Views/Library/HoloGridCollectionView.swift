@@ -135,6 +135,7 @@ final class HoloGridCollectionViewCoordinator: NSObject {
     var gridSpacing: CGFloat = 10
     var library: ROMLibrary?
     var categoryManager: CategoryManager?
+    fileprivate var previousRomsVersion: Int = 0
     fileprivate var previousRomsCount: Int = 0
     fileprivate var previousRomsFingerprint: [String] = []
     fileprivate var previousRomsSystemSet: Set<String?> = []
@@ -542,6 +543,8 @@ private func makeHoloCollectionScrollView(coordinator: HoloGridCollectionViewCoo
 
 struct HoloGridCollectionViewRepresentable: NSViewRepresentable {
     @Binding var roms: [ROM]
+    /// Incremented by LibraryViewModel on every displayedROMs publish.
+    var romsVersion: Int
     @Binding var selection: Set<UUID>
     @Binding var primarySelection: ROM?
     var groupedBySystem: Bool
@@ -593,6 +596,7 @@ struct HoloGridCollectionViewRepresentable: NSViewRepresentable {
         c.contextMenuProvider = contextMenuProvider
         c.library = library
         c.categoryManager = categoryManager
+        c.previousRomsVersion = romsVersion
         c.previousRomsCount = roms.count
         c.previousRomsFingerprint = roms.map { "\($0.id)|\($0.hasBoxArt)|\($0.raMatchStatus ?? "")|\($0.raGameId ?? 0)" }
         c.previousRomsSystemSet = Set(roms.map(\.systemID))
@@ -628,7 +632,8 @@ struct HoloGridCollectionViewRepresentable: NSViewRepresentable {
         let c = context.coordinator
 
         let newFingerprint = roms.map { "\($0.id)|\($0.hasBoxArt)|\($0.raMatchStatus ?? "")|\($0.raGameId ?? 0)" }
-        let dataChanged = roms.count != c.previousRomsCount || newFingerprint != c.previousRomsFingerprint
+        let versionChanged = romsVersion != c.previousRomsVersion
+        let dataChanged = versionChanged || roms.count != c.previousRomsCount || newFingerprint != c.previousRomsFingerprint
         let groupedChanged = groupedBySystem != c.groupedBySystem
         let zoomChanged = zoomLevel != c.previousZoomLevel
         let boxArtChanged = boxArtVersion != c.previousBoxArtVersion
@@ -664,6 +669,7 @@ struct HoloGridCollectionViewRepresentable: NSViewRepresentable {
         c.contextMenuProvider = contextMenuProvider
         c.library = library
         c.categoryManager = categoryManager
+        c.previousRomsVersion = romsVersion
         c.previousRomsCount = roms.count
         c.previousRomsFingerprint = newFingerprint
         c.previousRomsSystemSet = systemSet

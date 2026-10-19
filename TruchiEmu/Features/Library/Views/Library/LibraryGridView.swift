@@ -841,6 +841,7 @@ viewModel.updateFilters(
     private var gridView: some View {
         GridCollectionViewRepresentable(
             roms: $viewModel.displayedROMs,
+            romsVersion: viewModel.displayedROMsVersion,
             selection: $selectedROMs,
             primarySelection: Binding(
                 get: { selectedROM },
@@ -875,6 +876,7 @@ viewModel.updateFilters(
     private var holoGridView: some View {
         HoloGridCollectionViewRepresentable(
             roms: $viewModel.displayedROMs,
+            romsVersion: viewModel.displayedROMsVersion,
             selection: $selectedROMs,
             primarySelection: Binding(
                 get: { selectedROM },
