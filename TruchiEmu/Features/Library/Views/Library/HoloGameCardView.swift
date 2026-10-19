@@ -53,6 +53,11 @@ struct HoloGameCardView: View {
     // below which sits the title text, and hovering the text should NOT light
     // up the holo.
     @State private var artworkFrameInCard: CGRect = .zero
+    // Bumped when hover engages so the artwork-frame tracker re-measures. The
+    // tracker skips writes while the grid scrolls (see cardContent), so a cell
+    // that is created/reconfigured mid-scroll can keep a stale rect. Re-reading
+    // it on hover restores the correct frame without remounting the tracker.
+    @State private var frameMeasureToken: UUID = UUID()
     
     init(
         rom: ROM,
@@ -446,6 +451,13 @@ struct HoloGameCardView: View {
                     glareIntensity = over ? 1 : 0
                 }
             }
+            .onChange(of: effectsActive) { _, active in
+                // Re-measure the artwork frame the moment hover engages. A cell
+                // recycled during a scroll may hold a stale rect (its writes were
+                // skipped while scrolling), which freezes the tilt/parallax. The
+                // token re-reads the now-settled frame for this card only.
+                if active { frameMeasureToken = UUID() }
+            }
             .onReceive(NotificationCenter.default.publisher(for: .libraryScrollActivityChanged)) { _ in
                 // While the grid scrolls, drop all hover-driven state so the
                 // heavy holo view doesn't recompute on every scroll event.
@@ -624,11 +636,15 @@ struct HoloGameCardView: View {
                     GeometryReader { geo in
                         Color.clear
                             .onAppear {
-                                artworkFrameInCard = geo.frame(in: .named("holoCard"))
+                                guard !ScrollActivity.isScrolling else { return }
+                                acceptArtworkFrame(geo.frame(in: .named("holoCard")))
                             }
                             .onChange(of: geo.frame(in: .named("holoCard"))) { _, new in
                                 guard !ScrollActivity.isScrolling else { return }
-                                artworkFrameInCard = new
+                                acceptArtworkFrame(new)
+                            }
+                            .onChange(of: frameMeasureToken) { _, _ in
+                                acceptArtworkFrame(geo.frame(in: .named("holoCard")))
                             }
                     }
                 )
@@ -727,6 +743,14 @@ struct HoloGameCardView: View {
         )
     }
     
+    // Store the measured artwork rect, but reject transient layout rects
+    // (zero/tiny) so a recycled cell never keeps a bad frame. The frame is
+    // re-measured on hover engage via `frameMeasureToken`.
+    private func acceptArtworkFrame(_ rect: CGRect) {
+        guard rect.width > 1, rect.height > 1 else { return }
+        artworkFrameInCard = rect
+    }
+
     private var cardBackground: Color {
         if isSelected { return brandAccent.opacity(0.15) }
         if isHiddenItem { return Color.gray.opacity(0.08) }
