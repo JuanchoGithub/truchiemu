@@ -73,6 +73,7 @@
 		0AEF56681138D5BC6AB3D10B /* fightdata_fightfev.json in Resources */ = {isa = PBXBuildFile; fileRef = 886DF2A7C2891C580F966C89 /* fightdata_fightfev.json */; };
 		0AF7991EBE3D0B573826C1E1 /* fightdata_ggxx.json in Resources */ = {isa = PBXBuildFile; fileRef = D3187653A26E99010FD321FB /* fightdata_ggxx.json */; };
 		0B10D68922FF897D84E44ADC /* x68000@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = F0B9076AD7BB7925979F39EE /* x68000@132w.png */; };
+		0B32C3D0CC374D40AAF72433 /* LibrarySectionModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B29654FE65152310C41E4799 /* LibrarySectionModel.swift */; };
 		0B3844C8731875EDB8151C93 /* jaguar.ico in Resources */ = {isa = PBXBuildFile; fileRef = A01837BDB31E5AD1AFD63D9D /* jaguar.ico */; };
 		0B638D78CA952C3E78538A9D /* Sega - Saturn.dat in Resources */ = {isa = PBXBuildFile; fileRef = ACAB42969FCCA4EAA12C6607 /* Sega - Saturn.dat */; };
 		0B7B6E70EFA78DA521D214DE /* ARDUBOY.png in Resources */ = {isa = PBXBuildFile; fileRef = E4E4281A31C49D575A930421 /* ARDUBOY.png */; };
@@ -234,6 +235,7 @@
 		26C4D46E040DF8B433A63D96 /* input_coreLabels_o2em.json in Resources */ = {isa = PBXBuildFile; fileRef = 0A0B987D3192A6B7AD9E370C /* input_coreLabels_o2em.json */; };
 		26F8A70F65D000DA67AC1095 /* fightdata_samsho5.json in Resources */ = {isa = PBXBuildFile; fileRef = 31D8741D997FF36BBFE4899B /* fightdata_samsho5.json */; };
 		26FEBD6A98CD8D7510E59F40 /* input_systemLabels_wolfenstein3d.json in Resources */ = {isa = PBXBuildFile; fileRef = CE005A57B1B88D3B4EFA25B2 /* input_systemLabels_wolfenstein3d.json */; };
+		276F3C5F91261600404768F8 /* LibrarySectionHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E2ED80F235CD4A44E0FF754 /* LibrarySectionHeader.swift */; };
 		27AAD6EBD24C3A463A413FD8 /* OtherFiltersPopover.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C7DB253E3316EA31A3A1EC /* OtherFiltersPopover.swift */; };
 		27D84DD0993CEDD46E16E0A2 /* ControllerHotkeyCaptureCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = AED4234BBEB8FF8BF9F4214E /* ControllerHotkeyCaptureCoordinator.swift */; };
 		27DF582134423C81176134CB /* sms.ico in Resources */ = {isa = PBXBuildFile; fileRef = 0DC555CD50C720E046ECC55C /* sms.ico */; };
@@ -1566,6 +1568,7 @@
 		1E1F8977ED21416EA5C44A5C /* HoloCardLayers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HoloCardLayers.swift; sourceTree = "<group>"; };
 		1E2B15ECD4A7DD005132B14C /* input_coreLabels_bsnes_mercury_performance.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_bsnes_mercury_performance.json; sourceTree = "<group>"; };
 		1E2D936B5C0CCDBBFB77FDA5 /* dc@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "dc@132w.png"; sourceTree = "<group>"; };
+		1E2ED80F235CD4A44E0FF754 /* LibrarySectionHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibrarySectionHeader.swift; sourceTree = "<group>"; };
 		1E91F2160C588EAA6CCDBF38 /* input_coreLabels_vba_m.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_vba_m.json; sourceTree = "<group>"; };
 		1E94765F417306042D759EAA /* input_systemLabels_gbc.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_gbc.json; sourceTree = "<group>"; };
 		1EB446E5BCE0B5AD486DD219 /* fightdata_kofxi.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_kofxi.json; sourceTree = "<group>"; };
@@ -2403,6 +2406,7 @@
 		B19911BF350A7E2B7C33DAE4 /* input_coreLabels_genesis_plus_gx.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_genesis_plus_gx.json; sourceTree = "<group>"; };
 		B1B0C5B0C75C0BC4460C2913 /* input_systemLabels_snes.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_snes.json; sourceTree = "<group>"; };
 		B1F7B709C5F3776662659B88 /* gc.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = gc.ico; sourceTree = "<group>"; };
+		B29654FE65152310C41E4799 /* LibrarySectionModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibrarySectionModel.swift; sourceTree = "<group>"; };
 		B2A931CA2A371018760BC6F6 /* SharpBilinear.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = SharpBilinear.metal; sourceTree = "<group>"; };
 		B2B270A2A2E79100CB5BD105 /* Nintendo_-_Super_Nintendo_Entertainment_System.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "Nintendo_-_Super_Nintendo_Entertainment_System.json"; sourceTree = "<group>"; };
 		B3351F9CDA9E82BCDB2D7F37 /* AMIGACD.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = AMIGACD.png; sourceTree = "<group>"; };
@@ -3023,6 +3027,7 @@
 			isa = PBXGroup;
 			children = (
 				65A4A31E6B2E47A1C3F13256 /* GameCategory.swift */,
+				B29654FE65152310C41E4799 /* LibrarySectionModel.swift */,
 				E61DCF293FFD1E0B8C9F0F25 /* LibrarySortOrder.swift */,
 				2CE30DEA7A5121428E63E6D3 /* ROM.swift */,
 			);
@@ -3868,6 +3873,7 @@
 				AE6DD9F2D88F252E2CECD2CC /* LibraryAnimations.swift */,
 				44D6E43A22D859720886ECD6 /* LibraryFilterOption.swift */,
 				5C15A861E2696512846B9609 /* LibraryGridView.swift */,
+				1E2ED80F235CD4A44E0FF754 /* LibrarySectionHeader.swift */,
 				62264697086E084CF5A6E26B /* LibrarySortPicker.swift */,
 				3BB12F3155291F4EC9C6EF84 /* LibraryViewModel.swift */,
 				F8403CFFF0198BA2B7A8BDBD /* ListTableView.swift */,
@@ -6392,6 +6398,8 @@
 				0D8A07B323B96EBC8E1F8E1F /* LibraryFilterOption.swift in Sources */,
 				9A20252FD5A94F429367B691 /* LibraryGridView.swift in Sources */,
 				3D1B3E0F90A86CB3D8543AFC /* LibraryMetadataStore.swift in Sources */,
+				276F3C5F91261600404768F8 /* LibrarySectionHeader.swift in Sources */,
+				0B32C3D0CC374D40AAF72433 /* LibrarySectionModel.swift in Sources */,
 				B1AD607C789563921CD5DD74 /* LibrarySettingsViewGroup.swift in Sources */,
 				0A2D13E94E1568F58B17363D /* LibrarySortOrder.swift in Sources */,
 				FBB9B4E7AB6CCC1FE04B5B50 /* LibrarySortPicker.swift in Sources */,

@@ -346,6 +346,13 @@ struct SystemInfo: Identifiable, Codable, Hashable {
         return name
     }
 
+    /// Launch year parsed from the `year` string (e.g. "1983"). Nil when the
+    /// system has no year data.
+    var launchYear: Int? {
+        guard let year, year.count >= 4 else { return nil }
+        return Int(year.prefix(4))
+    }
+
     /// Lowercased concatenation of every field a user might type to find this
     /// system — id ("nes"), name ("Nintendo Entertainment System"), manufacturer,
     /// path keywords, extensions, and database aliases. Used by sidebar search.

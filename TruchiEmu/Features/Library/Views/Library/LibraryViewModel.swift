@@ -164,6 +164,11 @@ class LibraryViewModel: ObservableObject {
             // snapshot is a cheap value-type copy of [String].
             let mameRunnableSet = MAMEDependencyService.shared.rachableShortNamesForCurrentCores
 
+            // System sort info (display name + launch year per internal system
+            // ID), resolved on the MainActor for the same reason as the merged
+            // system IDs above: SystemDatabase lookups read AppSettings.
+            let systemSortInfo = LibrarySectionBuilder.sortInfoTable()
+
             let inputs = FilterInputs(
                 roms: self.library.roms,
                 categories: self.categoryManager.categories,
@@ -175,7 +180,8 @@ class LibraryViewModel: ObservableObject {
                 selectedGenres: self.selectedGenres,
                 mameRunnableSet: mameRunnableSet,
                 genreLookup: genreLookup,
-                precomputedSystemIDs: precomputedSystemIDs
+                precomputedSystemIDs: precomputedSystemIDs,
+                systemSortInfo: systemSortInfo
             )
 
             // Heavy filter+sort runs OFF the MainActor so a 4 000-ROM MAME filter
@@ -277,10 +283,10 @@ class LibraryViewModel: ObservableObject {
         }
 
         // 5. Sorting
-        return applySorting(to: filtered, sortOrder: inputs.sortOrder, ascending: inputs.sortAscending)
+        return applySorting(to: filtered, sortOrder: inputs.sortOrder, ascending: inputs.sortAscending, systemInfo: inputs.systemSortInfo)
     }
 
-    nonisolated private static func applySorting(to roms: [ROM], sortOrder: LibrarySortOrder, ascending: Bool) -> [ROM] {
+    nonisolated private static func applySorting(to roms: [ROM], sortOrder: LibrarySortOrder, ascending: Bool, systemInfo: [String: SystemSortInfo]) -> [ROM] {
         guard !roms.isEmpty else { return [] }
 
         // `name` is always A→Z; direction is ignored.
@@ -289,6 +295,41 @@ class LibraryViewModel: ObservableObject {
                 .map { (rom: $0, key: $0.displayName) }
                 .sorted { $0.key.localizedCaseInsensitiveCompare($1.key) == .orderedAscending }
                 .map { $0.rom }
+        }
+
+        // System sorts: direction flips ONLY the primary key (system name or
+        // launch year). Ties are direction-independent — systems that share
+        // the primary key order by name A→Z, and games inside a system stay
+        // A→Z by display name. Unknown launch years always sort after every
+        // dated system.
+        if sortOrder.isSystemSort {
+            func info(for rom: ROM) -> SystemSortInfo {
+                systemInfo[rom.systemID ?? ""] ?? .unknown(for: rom.systemID)
+            }
+            return roms.sorted { a, b in
+                let aInfo = info(for: a)
+                let bInfo = info(for: b)
+                if sortOrder == .systemAge {
+                    switch (aInfo.year, bInfo.year) {
+                    case (nil, nil): break
+                    case (nil, _):   return false
+                    case (_, nil):  return true
+                    case let (aYear?, bYear?) where aYear != bYear:
+                        // The sort value is AGE: descending = biggest age
+                        // first = oldest system first; ascending = newest
+                        // first (same biggest-value-first rule as the other
+                        // sorts).
+                        return ascending ? aYear > bYear : aYear < bYear
+                    default: break
+                    }
+                } else {
+                    let cmp = aInfo.name.localizedCaseInsensitiveCompare(bInfo.name).rawValue
+                    if cmp != 0 { return ascending ? cmp < 0 : cmp > 0 }
+                }
+                let cmp = aInfo.name.localizedCaseInsensitiveCompare(bInfo.name).rawValue
+                if cmp != 0 { return cmp < 0 }
+                return a.displayName.localizedCaseInsensitiveCompare(b.displayName) == .orderedAscending
+            }
         }
 
         // For every other order, compute a per-ROM sort key, then sort.
@@ -329,6 +370,10 @@ class LibraryViewModel: ObservableObject {
             if aHas != bHas { return aHas ? -1 : 1 }
             if aHours == bHours { return 0 }
             return aHours < bHours ? -1 : 1
+        case .systemName, .systemAge:
+            // Handled by applySorting's system-sort branch before compare is
+            // reached; present only for switch exhaustiveness.
+            return 0
         }
     }
 }
@@ -350,6 +395,10 @@ struct FilterInputs: Sendable {
     /// on the MainActor before the filter ran off-actor. Nil for non-system
     /// filters.
     let precomputedSystemIDs: Set<String>?
+    /// Pre-resolved display name + launch year per internal system ID,
+    /// captured on the MainActor (SystemDatabase lookups read AppSettings).
+    /// Used by the system sorts (`.systemName` / `.systemAge`).
+    let systemSortInfo: [String: SystemSortInfo]
 }
 
 struct FilterSignature: Equatable {

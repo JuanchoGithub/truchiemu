@@ -119,6 +119,12 @@ final class GridCollectionViewItem: NSCollectionViewItem {
 
 final class GridCollectionViewCoordinator: NSObject {
     var roms: [ROM] = []
+    /// True when a system sort is active — the display list interleaves
+    /// per-system section headers between the games.
+    var groupedBySystem = false
+    /// Render-ready form of `roms` (headers + games); rebuilt on data or
+    /// grouping changes.
+    var displayList: LibraryDisplayList = .empty
     var zoomLevel: Double = 0.5
     var filter: LibraryFilter?
     var raEnabled: Bool = false
@@ -181,6 +187,7 @@ final class GridCollectionViewCoordinator: NSObject {
         // NSHostingView (with its own SwiftUI view tree) for every index path
         // scrolled into view (holo-grid parity).
         collectionView.register(GridCollectionViewItem.self, forItemWithIdentifier: itemID)
+        collectionView.register(LibrarySectionHeaderItem.self, forItemWithIdentifier: LibrarySectionHeaderItem.itemIdentifier)
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.prefetchDataSource = self
@@ -233,6 +240,12 @@ final class GridCollectionViewCoordinator: NSObject {
         collectionView?.reloadData()
     }
 
+    /// Rebuilds the render-ready display list (headers + games) from the
+    /// current `roms` and grouping flag. Must run before `reloadData`.
+    func rebuildDisplayList() {
+        displayList = LibrarySectionBuilder.displayList(for: roms, grouped: groupedBySystem)
+    }
+
     func updateItemSizes() {
         guard let cv = collectionView else { return }
         let cardWidth: CGFloat = (80 + (zoomLevel * 200)) * 1.25
@@ -266,8 +279,9 @@ final class GridCollectionViewCoordinator: NSObject {
     }
 
     func scrollToItem(at index: Int) {
-        guard let cv = collectionView, index >= 0, index < roms.count else { return }
-        let ip = IndexPath(item: index, section: 0)
+        guard let cv = collectionView,
+              index >= 0, index < displayList.entryIndexForRomIndex.count else { return }
+        let ip = IndexPath(item: displayList.entryIndexForRomIndex[index], section: 0)
         cv.scrollToItems(at: [ip], scrollPosition: .centeredVertically)
     }
 
@@ -276,8 +290,10 @@ final class GridCollectionViewCoordinator: NSObject {
     @objc private func handleDoubleClick(_ gesture: NSClickGestureRecognizer) {
         guard let cv = collectionView else { return }
         let point = gesture.location(in: cv)
-        if let ip = cv.indexPathForItem(at: point), ip.item < roms.count {
-            onDoubleClick?(roms[ip.item])
+        if let ip = cv.indexPathForItem(at: point),
+           ip.item < displayList.entries.count,
+           case .game(let rom, _) = displayList.entries[ip.item] {
+            onDoubleClick?(rom)
         }
     }
 
@@ -334,10 +350,27 @@ extension GridCollectionViewCoordinator: NSCollectionViewDataSource {
     func numberOfSections(in collectionView: NSCollectionView) -> Int { 1 }
 
     func collectionView(_ collectionView: NSCollectionView, numberOfItemsInSection section: Int) -> Int {
-        roms.count
+        displayList.entries.count
     }
 
     func collectionView(_ collectionView: NSCollectionView, itemForRepresentedObjectAt indexPath: IndexPath) -> NSCollectionViewItem {
+        guard indexPath.item < displayList.entries.count else {
+            return NSCollectionViewItem()
+        }
+
+        // Section header row.
+        if case .header(let title, let year, let count) = displayList.entries[indexPath.item] {
+            // Register defensively every dequeue (see game-item note below).
+            collectionView.register(LibrarySectionHeaderItem.self, forItemWithIdentifier: LibrarySectionHeaderItem.itemIdentifier)
+            let headerItem = collectionView.makeItem(withIdentifier: LibrarySectionHeaderItem.itemIdentifier, for: indexPath) as! LibrarySectionHeaderItem
+            headerItem.configure(title: title, year: year, count: count)
+            return headerItem
+        }
+
+        guard case .game(let rom, let flatIndex) = displayList.entries[indexPath.item] else {
+            return NSCollectionViewItem()
+        }
+
         // Register defensively every dequeue: a prior registration can be
         // invalidated if AppKit recreates the underlying view-layer, and an
         // unregistered identifier makes `makeItem` fail. Dequeue through
@@ -348,11 +381,14 @@ extension GridCollectionViewCoordinator: NSCollectionViewDataSource {
         // items + ~300-590ms main-thread busy per scroll burst at 2108 ROMs).
         collectionView.register(GridCollectionViewItem.self, forItemWithIdentifier: itemID)
         let item = collectionView.makeItem(withIdentifier: itemID, for: indexPath) as! GridCollectionViewItem
-        let rom = roms[indexPath.item]
         let selected = collectionView.selectionIndexPaths.contains(indexPath)
         let selectedIDsProvider: () -> Set<UUID> = { [weak self] in
             guard let self else { return [] }
-            return Set(self.collectionView?.selectionIndexPaths.compactMap { $0.item < self.roms.count ? self.roms[$0.item].id : nil } ?? [])
+            return Set(self.collectionView?.selectionIndexPaths.compactMap { ip in
+                guard ip.item < self.displayList.entries.count,
+                      case .game(let rom, _) = self.displayList.entries[ip.item] else { return nil }
+                return rom.id
+            } ?? [])
         }
         item.configure(
             with: rom,
@@ -361,7 +397,7 @@ extension GridCollectionViewCoordinator: NSCollectionViewDataSource {
             zoomLevel: zoomLevel,
             filter: filter,
             raEnabled: raEnabled,
-            onTap: { [weak self] in self?.onTap?(rom, indexPath.item) },
+            onTap: { [weak self] in self?.onTap?(rom, flatIndex) },
             onDoubleClick: { [weak self] in self?.onDoubleClick?(rom) },
             contextMenuProvider: { [weak self] in
                 self?.contextMenuProvider?(rom) ?? AnyView(EmptyView())
@@ -377,6 +413,16 @@ extension GridCollectionViewCoordinator: NSCollectionViewDataSource {
 // MARK: - Delegate
 
 extension GridCollectionViewCoordinator: NSCollectionViewDelegate {
+    /// Section headers are never selectable (also keeps rubber-band
+    /// selection from sweeping them in).
+    func collectionView(_ collectionView: NSCollectionView, shouldSelectItemsAt indexPaths: Set<IndexPath>) -> Set<IndexPath> {
+        indexPaths.filter { ip in
+            guard ip.item < displayList.entries.count else { return false }
+            if case .game = displayList.entries[ip.item] { return true }
+            return false
+        }
+    }
+
     func collectionView(_ collectionView: NSCollectionView, didSelectItemsAt indexPaths: Set<IndexPath>) {
         forwardSelection(collectionView)
     }
@@ -388,9 +434,28 @@ extension GridCollectionViewCoordinator: NSCollectionViewDelegate {
     private func forwardSelection(_ collectionView: NSCollectionView) {
         let ids = collectionView.selectionIndexPaths
             .sorted { $0.item < $1.item }
-            .compactMap { $0.item < roms.count ? roms[$0.item].id : nil }
+            .compactMap { ip -> UUID? in
+                guard ip.item < displayList.entries.count,
+                      case .game(let rom, _) = displayList.entries[ip.item] else { return nil }
+                return rom.id
+            }
         onSelectionChanged?(ids)
         onPrimarySelectionChanged?(ids.first)
+    }
+}
+
+// MARK: - Flow Layout Delegate
+
+extension GridCollectionViewCoordinator: NSCollectionViewDelegateFlowLayout {
+    /// Headers span the full row width; games use the uniform card size the
+    /// coordinator last stored on the flow layout.
+    func collectionView(_ collectionView: NSCollectionView, layout collectionViewLayout: NSCollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        if indexPath.item < displayList.entries.count,
+           case .header = displayList.entries[indexPath.item] {
+            let width = collectionView.bounds.width - (gridPadding.leading + gridPadding.trailing)
+            return CGSize(width: max(width, 200), height: 40)
+        }
+        return (collectionViewLayout as? NSCollectionViewFlowLayout)?.itemSize ?? CGSize(width: 100, height: 100)
     }
 }
 
@@ -400,8 +465,9 @@ extension GridCollectionViewCoordinator: NSCollectionViewPrefetching {
     func collectionView(_ collectionView: NSCollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
         ScrollPerfCounters.prefetchIndexPaths += indexPaths.count
         let thumbSize = BoxArtThumbnailSize.forGridZoom(zoomLevel)
-        for ip in indexPaths where ip.item < roms.count {
-            let rom = roms[ip.item]
+        for ip in indexPaths {
+            guard ip.item < displayList.entries.count,
+                  case .game(let rom, _) = displayList.entries[ip.item] else { continue }
             // Use the precomputed path; skip ROMs without art. The global
             // resolveLocalBoxArt is only needed for unrecognized naming, which
             // the scan/automation path handles — prefetch shouldn't re-stat.
@@ -448,6 +514,7 @@ struct GridCollectionViewRepresentable: NSViewRepresentable {
     @Binding var roms: [ROM]
     @Binding var selection: Set<UUID>
     @Binding var primarySelection: ROM?
+    var groupedBySystem: Bool
     var zoomLevel: Double
     var filter: LibraryFilter?
     var raEnabled: Bool
@@ -486,6 +553,7 @@ struct GridCollectionViewRepresentable: NSViewRepresentable {
     func makeNSView(context: Context) -> NSScrollView {
         let c = context.coordinator
         c.roms = roms
+        c.groupedBySystem = groupedBySystem
         c.zoomLevel = zoomLevel
         c.filter = filter
         c.raEnabled = raEnabled
@@ -502,6 +570,7 @@ struct GridCollectionViewRepresentable: NSViewRepresentable {
         c.previousSelection = selection
 
         let scrollView = makeCollectionScrollView(coordinator: c)
+        c.rebuildDisplayList()
         c.reloadData()
         return scrollView
     }
@@ -528,11 +597,13 @@ struct GridCollectionViewRepresentable: NSViewRepresentable {
 
         let newFingerprint = roms.map { "\($0.id)|\($0.hasBoxArt)|\($0.raMatchStatus ?? "")|\($0.raGameId ?? 0)" }
         let dataChanged = roms.count != c.previousRomsCount || newFingerprint != c.previousRomsFingerprint
+        let groupedChanged = groupedBySystem != c.groupedBySystem
         let zoomChanged = zoomLevel != c.previousZoomLevel
         let boxArtChanged = boxArtVersion != c.previousBoxArtVersion
-        let needsReload = dataChanged || zoomChanged || boxArtChanged
+        let needsReload = dataChanged || groupedChanged || zoomChanged || boxArtChanged
 
         c.roms = roms
+        c.groupedBySystem = groupedBySystem
         c.zoomLevel = zoomLevel
         c.filter = filter
         c.raEnabled = raEnabled
@@ -547,6 +618,10 @@ struct GridCollectionViewRepresentable: NSViewRepresentable {
         c.previousZoomLevel = zoomLevel
         c.previousBoxArtVersion = boxArtVersion
 
+        if dataChanged || groupedChanged {
+            c.rebuildDisplayList()
+        }
+
         let oldSelection = c.previousSelection
         let selectionChanged = selection != oldSelection
 
@@ -556,9 +631,10 @@ struct GridCollectionViewRepresentable: NSViewRepresentable {
         }
 
         // Sync selection from SwiftUI → NSCollectionView
-        let swiftUISelected = Set(roms.enumerated().compactMap { idx, rom in
-            (selection.contains(rom.id) || primarySelection?.id == rom.id)
-                ? IndexPath(item: idx, section: 0) : nil
+        let swiftUISelected = Set(roms.enumerated().compactMap { (idx, rom) -> IndexPath? in
+            guard idx < c.displayList.entryIndexForRomIndex.count else { return nil }
+            return (selection.contains(rom.id) || primarySelection?.id == rom.id)
+                ? IndexPath(item: c.displayList.entryIndexForRomIndex[idx], section: 0) : nil
         })
         let currentSelected = cv.selectionIndexPaths
         if currentSelected != swiftUISelected {
@@ -570,8 +646,11 @@ struct GridCollectionViewRepresentable: NSViewRepresentable {
 
         // Update only the affected items' selection state to avoid full reload blink
         if selectionChanged && !needsReload {
-            let oldIndexSet = Set(oldSelection.compactMap { id in
-                roms.firstIndex(where: { $0.id == id }).map { IndexPath(item: $0, section: 0) }
+            let oldIndexSet = Set(oldSelection.compactMap { id -> IndexPath? in
+                roms.firstIndex(where: { $0.id == id }).flatMap { romIdx -> IndexPath? in
+                    guard romIdx < c.displayList.entryIndexForRomIndex.count else { return nil }
+                    return IndexPath(item: c.displayList.entryIndexForRomIndex[romIdx], section: 0)
+                }
             })
             let newIndexSet = swiftUISelected
             let changedPaths = oldIndexSet.symmetricDifference(newIndexSet)

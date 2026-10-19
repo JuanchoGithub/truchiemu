@@ -15,6 +15,7 @@ extension Notification.Name {
     static let navigateToFilter = Notification.Name("navigateToFilter")
     static let sortChanged = Notification.Name("sortChanged")
     static let filterToggled = Notification.Name("filterToggled")
+    static let libraryFilterChanged = Notification.Name("libraryFilterChanged")
     static let languageChanged = Notification.Name("languageChanged")
     static let zoomChanged = Notification.Name("zoomChanged")
     static let openAppSettings = Notification.Name("openAppSettings")
@@ -132,6 +133,10 @@ LoggerService.debug(category: category, message)
     @State private var systemDatabase = SystemDatabaseWrapper.shared
     @State private var sortOrder: LibrarySortOrder = LibrarySortOrder.load().order
     @State private var sortAscending: Bool = LibrarySortOrder.load().ascending
+    /// Mirrors the library's current filter (posted by ContentView on every
+    /// filter change) so the app-level Sort menu can hide the system sorts
+    /// while a single-system view is active.
+    @State private var libraryFilterIsSystemView = false
     
     // NOTE: NSApp is NOT available in init() for @main App structs.
     // Activation policy is set in AppDelegate.applicationWillFinishLaunching instead.
@@ -307,6 +312,9 @@ var body: some Scene {
             sortOrder = sort.order
             sortAscending = sort.ascending
         }
+        .onReceive(NotificationCenter.default.publisher(for: .libraryFilterChanged)) { notification in
+            libraryFilterIsSystemView = (notification.object as? Bool) ?? false
+        }
     }
     .windowStyle(.hiddenTitleBar)
     .windowToolbarStyle(.unified(showsTitle: false))
@@ -408,7 +416,8 @@ var body: some Scene {
                             keyboardShortcuts: [
                                 .lastPlayed: KeyboardShortcut("P", modifiers: [.command, .shift]),
                                 .lastAdded: KeyboardShortcut("A", modifiers: [.command, .shift])
-                            ]
+                            ],
+                            includeSystemSorts: !libraryFilterIsSystemView
                         )
                     } label: {
                         Label(loc.localized("app.sortBy"), systemImage: "arrow.up.arrow.down")

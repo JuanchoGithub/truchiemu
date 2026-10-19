@@ -26,11 +26,22 @@ struct LibrarySortPicker: View {
     @Binding var ascending: Bool
     var style: Style
     var keyboardShortcuts: [LibrarySortOrder: KeyboardShortcut] = [:]
+    /// When false, the system sorts (`.systemName` / `.systemAge`) are left
+    /// out of the rendered options — they only make sense where a collection
+    /// can span multiple systems (callers hide them in system views).
+    var includeSystemSorts: Bool = true
 
     enum Style {
         case menu
         case chips
         case popover
+    }
+
+    /// Primary orders after the system-sort exclusion rule.
+    private var visiblePrimary: [LibrarySortOrder] {
+        includeSystemSorts
+            ? LibrarySortOrder.primary
+            : LibrarySortOrder.primary.filter { !$0.isSystemSort }
     }
 
     var body: some View {
@@ -48,7 +59,7 @@ struct LibrarySortPicker: View {
 
     private var menuBody: some View {
         Group {
-            ForEach(LibrarySortOrder.primary) { order in
+            ForEach(visiblePrimary) { order in
                 SortRow(
                     order: order,
                     currentOrder: currentOrder,
@@ -77,7 +88,7 @@ struct LibrarySortPicker: View {
 
     private var chipsBody: some View {
         HStack(spacing: 6) {
-            ForEach(LibrarySortOrder.primary) { order in
+            ForEach(visiblePrimary) { order in
                 SortRow(
                     order: order,
                     currentOrder: currentOrder,

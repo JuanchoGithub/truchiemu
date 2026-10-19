@@ -130,6 +130,37 @@ final class ListTableRowView: NSTableCellView {
     }
 }
 
+// MARK: - Section header row
+
+final class ListSectionHeaderRowView: NSTableCellView {
+    private let hostingView = NSHostingView<AnyView>(rootView: AnyView(EmptyView()))
+
+    override init(frame frameRect: NSRect) {
+        super.init(frame: frameRect)
+        setup()
+    }
+
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        setup()
+    }
+
+    private func setup() {
+        hostingView.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(hostingView)
+        NSLayoutConstraint.activate([
+            hostingView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 8),
+            hostingView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            hostingView.topAnchor.constraint(equalTo: topAnchor),
+            hostingView.bottomAnchor.constraint(equalTo: bottomAnchor),
+        ])
+    }
+
+    func configure(title: String, year: Int?, count: Int) {
+        hostingView.rootView = AnyView(LibrarySectionHeaderView(title: title, year: year, count: count))
+    }
+}
+
 // MARK: - Reload token
 
 struct ListReloadToken: Equatable {
@@ -138,12 +169,18 @@ struct ListReloadToken: Equatable {
     let zoomLevel: Double
     let raEnabled: Bool
     let boxArtVersion: UUID
+    let groupedBySystem: Bool
 }
 
 // MARK: - Coordinator
 
 final class ListTableViewCoordinator: NSObject {
     var roms: [ROM] = []
+    /// True when a system sort is active — the display list interleaves
+    /// per-system section header rows between the games.
+    var groupedBySystem = false
+    /// Render-ready form of `roms` (headers + games); rebuilt on reload.
+    var displayList: LibraryDisplayList = .empty
     var zoomLevel: Double = 0.5
     var showSystemLabel = false
     var raEnabled = false
@@ -168,6 +205,7 @@ final class ListTableViewCoordinator: NSObject {
 
     private weak var tableView: NSTableView?
     private let rowIdentifier = NSUserInterfaceItemIdentifier("ListTableRow")
+    private let headerRowIdentifier = NSUserInterfaceItemIdentifier("ListSectionHeaderRow")
 
     func setup(tableView: NSTableView) {
         self.tableView = tableView
@@ -188,6 +226,12 @@ final class ListTableViewCoordinator: NSObject {
             heightCacheZoom = zoomLevel
             heightCache.removeAll()
         }
+    }
+
+    /// Rebuilds the render-ready display list (header rows + games) from the
+    /// current `roms` and grouping flag. Must run before `reloadData`.
+    func rebuildDisplayList() {
+        displayList = LibrarySectionBuilder.displayList(for: roms, grouped: groupedBySystem)
     }
 
     func estimatedHeight(for rom: ROM) -> CGFloat {
@@ -228,7 +272,7 @@ final class ListTableViewCoordinator: NSObject {
 
 extension ListTableViewCoordinator: NSTableViewDataSource {
     func numberOfRows(in tableView: NSTableView) -> Int {
-        roms.count
+        displayList.entries.count
     }
 }
 
@@ -236,18 +280,27 @@ extension ListTableViewCoordinator: NSTableViewDataSource {
 
 extension ListTableViewCoordinator: NSTableViewDelegate {
     func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
-        guard row >= 0, row < roms.count,
+        guard row >= 0, row < displayList.entries.count else { return nil }
+
+        // Section header row.
+        if case .header(let title, let year, let count) = displayList.entries[row] {
+            let view = tableView.makeView(withIdentifier: headerRowIdentifier, owner: self) as? ListSectionHeaderRowView ?? ListSectionHeaderRowView()
+            view.identifier = headerRowIdentifier
+            view.configure(title: title, year: year, count: count)
+            return view
+        }
+
+        guard case .game(let rom, let flatIndex) = displayList.entries[row],
               let actions,
               let library,
               let categoryManager else { return nil }
-        let rom = roms[row]
         let view = tableView.makeView(withIdentifier: rowIdentifier, owner: self) as? ListTableRowView ?? ListTableRowView()
         view.identifier = rowIdentifier
         view.configure(
             with: rom,
-            index: row,
+            index: flatIndex,
             isSelected: selectionIDs.contains(rom.id),
-            isEvenRow: row.isMultiple(of: 2),
+            isEvenRow: flatIndex.isMultiple(of: 2),
             zoomLevel: zoomLevel,
             showSystemLabel: showSystemLabel,
             raEnabled: raEnabled,
@@ -269,18 +322,32 @@ extension ListTableViewCoordinator: NSTableViewDelegate {
     }
 
     func tableView(_ tableView: NSTableView, heightOfRow row: Int) -> CGFloat {
-        guard row >= 0, row < roms.count else { return 40 }
-        return estimatedHeight(for: roms[row])
+        guard row >= 0, row < displayList.entries.count else { return 40 }
+        if case .header = displayList.entries[row] { return 40 }
+        guard case .game(let rom, _) = displayList.entries[row] else { return 40 }
+        return estimatedHeight(for: rom)
     }
 
     func tableView(_ tableView: NSTableView, typeSelectStringFor tableColumn: NSTableColumn?, row: Int) -> String? {
-        guard row >= 0, row < roms.count else { return nil }
-        return roms[row].displayName
+        guard row >= 0, row < displayList.entries.count,
+              case .game(let rom, _) = displayList.entries[row] else { return nil }
+        return rom.displayName
+    }
+
+    /// Section header rows are never selectable.
+    func tableView(_ tableView: NSTableView, shouldSelectRow row: Int) -> Bool {
+        guard row >= 0, row < displayList.entries.count else { return false }
+        if case .game = displayList.entries[row] { return true }
+        return false
     }
 
     func tableViewSelectionDidChange(_ notification: Notification) {
         guard let tableView else { return }
-        let ids = tableView.selectedRowIndexes.compactMap { $0 < roms.count ? roms[$0].id : nil }
+        let ids = tableView.selectedRowIndexes.compactMap { row -> UUID? in
+            guard row >= 0, row < displayList.entries.count,
+                  case .game(let rom, _) = displayList.entries[row] else { return nil }
+            return rom.id
+        }
         onSelectionChanged?(ids)
         onPrimarySelectionChanged?(ids.first)
     }
@@ -310,6 +377,7 @@ struct ListTableViewRepresentable: NSViewRepresentable {
     var romsVersion: Int
     @Binding var selection: Set<UUID>
     @Binding var primarySelection: ROM?
+    var groupedBySystem: Bool
     var zoomLevel: Double
     var showSystemLabel: Bool
     var raEnabled: Bool
@@ -351,13 +419,15 @@ struct ListTableViewRepresentable: NSViewRepresentable {
             romsCount: roms.count,
             zoomLevel: zoomLevel,
             raEnabled: raEnabled,
-            boxArtVersion: boxArtVersion
+            boxArtVersion: boxArtVersion,
+            groupedBySystem: groupedBySystem
         )
     }
 
     func makeNSView(context: Context) -> NSScrollView {
         let c = context.coordinator
         c.roms = roms
+        c.groupedBySystem = groupedBySystem
         c.zoomLevel = zoomLevel
         c.showSystemLabel = showSystemLabel
         c.raEnabled = raEnabled
@@ -370,6 +440,7 @@ struct ListTableViewRepresentable: NSViewRepresentable {
         c.previousReloadToken = currentToken
 
         let scrollView = makeListScrollView(coordinator: c)
+        c.rebuildDisplayList()
         (scrollView.documentView as? NSTableView)?.reloadData()
         return scrollView
     }
@@ -382,6 +453,7 @@ struct ListTableViewRepresentable: NSViewRepresentable {
         let needsReload = token != c.previousReloadToken
 
         c.roms = roms
+        c.groupedBySystem = groupedBySystem
         c.zoomLevel = zoomLevel
         c.showSystemLabel = showSystemLabel
         c.raEnabled = raEnabled
@@ -395,12 +467,14 @@ struct ListTableViewRepresentable: NSViewRepresentable {
 
         if needsReload {
             c.previousReloadToken = token
+            c.rebuildDisplayList()
             tableView.reloadData()
         }
 
         // Sync selection SwiftUI -> NSTableView
-        let swiftUISelected = IndexSet(roms.enumerated().compactMap { idx, rom in
-            selectionIDsValue.contains(rom.id) ? idx : nil
+        let swiftUISelected = IndexSet(roms.enumerated().compactMap { (idx, rom) -> Int? in
+            guard idx < c.displayList.entryIndexForRomIndex.count else { return nil }
+            return selectionIDsValue.contains(rom.id) ? c.displayList.entryIndexForRomIndex[idx] : nil
         })
         if tableView.selectedRowIndexes != swiftUISelected {
             tableView.selectRowIndexes(swiftUISelected, byExtendingSelection: false)
@@ -411,11 +485,12 @@ struct ListTableViewRepresentable: NSViewRepresentable {
         if !needsReload {
             let visible = tableView.rows(in: tableView.visibleRect)
             for row in visible.toRange() ?? 0..<0 {
-                guard row < roms.count,
-                      let cell = tableView.view(atColumn: 0, row: row, makeIfNecessary: false) as? ListTableRowView
+                guard row < c.displayList.entries.count,
+                      let cell = tableView.view(atColumn: 0, row: row, makeIfNecessary: false) as? ListTableRowView,
+                      case .game(let rom, _) = c.displayList.entries[row]
                 else { continue }
                 cell.updateSelectionState(
-                    isSelected: selectionIDsValue.contains(roms[row].id),
+                    isSelected: selectionIDsValue.contains(rom.id),
                     selectedIDs: selectionIDsValue,
                     lastSelectedIndex: lastSelectedIndex
                 )
@@ -423,8 +498,8 @@ struct ListTableViewRepresentable: NSViewRepresentable {
         }
 
         // Gamepad navigation scroll target
-        if let target = scrollTargetRow, target >= 0, target < roms.count {
-            tableView.scrollRowToVisible(target)
+        if let target = scrollTargetRow, target >= 0, target < c.displayList.entryIndexForRomIndex.count {
+            tableView.scrollRowToVisible(c.displayList.entryIndexForRomIndex[target])
             DispatchQueue.main.async {
                 scrollTargetRow = nil
             }

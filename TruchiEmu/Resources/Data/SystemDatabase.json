@@ -729,6 +729,7 @@
     "defaultShaderPresetID": "builtin-none"
   },
   {
+    "year": "1972",
     "sortOrder": 30,
     "id": "mame",
     "pathKeywords": [
@@ -756,6 +757,7 @@
     "defaultShaderPresetID": "builtin-crt-classic"
   },
   {
+    "year": "1972",
     "sortOrder": 31,
     "id": "fba",
     "displayInUI": false,
@@ -1055,6 +1057,7 @@
     "defaultShaderPresetID": "builtin-none"
   },
   {
+    "year": "1987",
     "sortOrder": 75,
     "id": "scummvm",
     "displayInUI": true,
@@ -1078,6 +1081,7 @@
     "defaultShaderPresetID": "builtin-none"
   },
   {
+    "year": "1985",
     "displayInUI": true,
     "id": "amiga",
     "name": "Commodore Amiga",
@@ -1116,6 +1120,7 @@
     "defaultShaderPresetID": "builtin-none"
   },
   {
+    "year": "1979",
     "displayInUI": true,
     "id": "intellivision",
     "name": "Intellivision",
@@ -1137,6 +1142,7 @@
     "defaultShaderPresetID": "builtin-crt-classic"
   },
   {
+    "year": "2001",
     "displayInUI": true,
     "id": "pokemon_mini",
     "name": "Pokemon Mini",
@@ -1154,6 +1160,7 @@
     "defaultShaderPresetID": "builtin-dot-matrix"
   },
   {
+    "year": "1992",
     "displayInUI": true,
     "id": "wolfenstein3d",
     "name": "Wolfenstein 3D Game Engine",
@@ -1176,6 +1183,7 @@
     "defaultShaderPresetID": "builtin-none"
   },
   {
+    "year": "1979",
     "displayInUI": true,
     "id": "intv",
     "name": "Intellivision",
@@ -1197,6 +1205,7 @@
     "defaultShaderPresetID": "builtin-crt-classic"
   },
   {
+    "year": "1984",
     "displayInUI": true,
     "id": "mac68k",
     "name": "Mac68k",
@@ -1218,6 +1227,7 @@
     "defaultShaderPresetID": "builtin-none"
   },
   {
+    "year": "1981",
     "displayInUI": true,
     "id": "epochcv",
     "name": "Epoch Cassette Vision",
@@ -1237,6 +1247,7 @@
     "defaultShaderPresetID": "builtin-crt-classic"
   },
   {
+    "year": "2008",
     "displayInUI": true,
     "id": "uzebox",
     "name": "Uzebox",
@@ -1253,6 +1264,7 @@
     "defaultShaderPresetID": "builtin-none"
   },
   {
+    "year": "1993",
     "displayInUI": true,
     "id": "doom",
     "name": "DOOM Game Engine",
@@ -1272,6 +1284,7 @@
     "defaultShaderPresetID": "builtin-none"
   },
   {
+    "year": "1972",
     "displayInUI": true,
     "id": "dice",
     "name": "Arcade (various)",
@@ -1298,6 +1311,7 @@
     "defaultShaderPresetID": "builtin-none"
   },
   {
+    "year": "1985",
     "displayInUI": true,
     "id": "commodore_amiga",
     "name": "Amiga",
@@ -1338,6 +1352,7 @@
     "defaultShaderPresetID": "builtin-none"
   },
   {
+    "year": "1995",
     "displayInUI": true,
     "id": "sdlpal",
     "name": "SDLPAL",
@@ -1354,6 +1369,7 @@
     "defaultShaderPresetID": "builtin-none"
   },
   {
+    "year": "1999",
     "displayInUI": true,
     "id": "wonderswan",
     "name": "WonderSwan/Color",
@@ -1373,6 +1389,7 @@
     "defaultShaderPresetID": "builtin-dot-matrix"
   },
   {
+    "year": "2000",
     "displayInUI": true,
     "id": "wonderswancolor",
     "name": "WonderSwan Color",
@@ -1392,6 +1409,7 @@
     "defaultShaderPresetID": "builtin-dot-matrix"
   },
   {
+    "year": "2014",
     "displayInUI": true,
     "id": "2048",
     "name": "2048 Game Clone",
@@ -1408,6 +1426,7 @@
     "defaultShaderPresetID": "builtin-none"
   },
   {
+    "year": "1993",
     "displayInUI": true,
     "id": "atari_jaguar",
     "name": "Jaguar",
@@ -1431,6 +1450,7 @@
     "defaultShaderPresetID": "builtin-crt-classic"
   },
   {
+    "year": "1985",
     "displayInUI": true,
     "id": "atari_st",
     "name": "Atari ST/STE/TT/Falcon",
@@ -1458,6 +1478,7 @@
     "defaultShaderPresetID": "builtin-none"
   },
   {
+    "year": "1999",
     "displayInUI": true,
     "id": "quake_3",
     "name": "Quake 3 Game Engine",
@@ -1475,6 +1496,7 @@
     "defaultShaderPresetID": "builtin-none"
   },
   {
+    "year": "1982",
     "displayInUI": true,
     "id": "commodore_64",
     "name": "C64",
@@ -1522,6 +1544,7 @@
     "defaultShaderPresetID": "builtin-none"
   },
   {
+    "year": "1982",
     "displayInUI": true,
     "id": "pc_98",
     "name": "PC-98",
@@ -1577,6 +1600,7 @@
     "defaultShaderPresetID": "builtin-none"
   },
   {
+    "year": "2013",
     "displayInUI": true,
     "id": "puzzlescript",
     "name": "PuzzleScript",
@@ -1594,6 +1618,7 @@
     "defaultShaderPresetID": "builtin-none"
   },
   {
+    "year": "1996",
     "displayInUI": true,
     "id": "ti_83",
     "name": "TI83",
@@ -1612,6 +1637,7 @@
     "defaultShaderPresetID": "builtin-none"
   },
   {
+    "year": "1972",
     "displayInUI": true,
     "id": "hbmame",
     "name": "Arcade (various)",
@@ -1638,6 +1664,7 @@
     "defaultShaderPresetID": "builtin-crt-classic"
   },
   {
+    "year": "2017",
     "displayInUI": true,
     "id": "chailove",
     "name": "ChaiLove",
@@ -1655,6 +1682,7 @@
     "defaultShaderPresetID": "builtin-none"
   },
   {
+    "year": "1995",
     "displayInUI": true,
     "id": "virtual_boy",
     "name": "Virtual Boy",
@@ -1673,6 +1701,7 @@
     "defaultShaderPresetID": "builtin-none"
   },
   {
+    "year": "2016",
     "displayInUI": true,
     "id": "arduboy",
     "name": "Arduboy",
@@ -1691,6 +1720,7 @@
   "defaultShaderPresetID": "builtin-none"
   },
   {
+    "year": "1977",
     "displayInUI": true,
     "id": "commodore_pet",
     "name": "PET",
@@ -1739,6 +1769,7 @@
     "defaultShaderPresetID": "builtin-none"
   },
   {
+    "year": "2021",
     "displayInUI": true,
     "id": "uw8",
     "name": "MicroW8",
@@ -1801,6 +1832,7 @@
     "defaultShaderPresetID": "builtin-none"
   },
   {
+    "year": "1983",
     "displayInUI": true,
     "id": "laserdisc",
     "name": "Laserdisc arcade game",
@@ -1818,6 +1850,7 @@
     "defaultShaderPresetID": "builtin-crt-classic"
   },
   {
+    "year": "1996",
     "displayInUI": true,
     "id": "tamagotchi",
     "name": "Tamagotchi P1",
@@ -1836,6 +1869,7 @@
     "defaultShaderPresetID": "builtin-none"
   },
   {
+    "year": "1997",
     "displayInUI": true,
     "id": "commodore_c64_supercpu",
     "name": "C64 SuperCPU",
@@ -1887,7 +1921,7 @@
   "defaultShaderPresetID": "builtin-none"
 },
 {
-  "year": "1983",
+  "year": "1977",
   "id": "apple_ii",
     "name": "II",
     "extensions": [
@@ -1963,6 +1997,7 @@
     "defaultShaderPresetID": "builtin-none"
   },
   {
+    "year": "1981",
     "displayInUI": true,
     "id": "bbcmicro",
     "name": "BBC Micro",
@@ -1980,6 +2015,7 @@
     "defaultShaderPresetID": "builtin-none"
   },
   {
+    "year": "1999",
     "displayInUI": true,
     "id": "onscripter",
     "name": "ONScripter",
@@ -1998,6 +2034,7 @@
     "defaultShaderPresetID": "builtin-none"
   },
   {
+    "year": "2007",
     "displayInUI": true,
     "id": "syobonaction",
     "name": "SyobonAction",
@@ -2012,6 +2049,7 @@
     "defaultShaderPresetID": "builtin-none"
   },
   {
+    "year": "1985",
     "displayInUI": true,
     "id": "commodore_c128",
     "name": "C128",
@@ -2059,6 +2097,7 @@
     "defaultShaderPresetID": "builtin-none"
   },
   {
+    "year": "1984",
     "displayInUI": true,
     "id": "cpc",
     "name": "CPC/GX4000",
@@ -2085,6 +2124,7 @@
     "defaultShaderPresetID": "builtin-none"
   },
   {
+    "year": "1977",
     "displayInUI": true,
     "id": "chip_8",
     "name": "CHIP-8",
@@ -2105,6 +2145,7 @@
     "defaultShaderPresetID": "builtin-none"
   },
   {
+    "year": "1982",
     "displayInUI": true,
     "id": "commodore_cbm2",
     "name": "CBM-II",
@@ -2136,6 +2177,7 @@
     "defaultShaderPresetID": "builtin-none"
   },
   {
+    "year": "1990",
     "displayInUI": true,
     "id": "neogeo",
     "pathKeywords": [
@@ -2163,6 +2205,7 @@
     "defaultShaderPresetID": "builtin-crt-classic"
   },
   {
+    "year": "1985",
     "displayInUI": true,
     "id": "ep128",
     "name": "128",
@@ -2226,6 +2269,7 @@
     "defaultShaderPresetID": "builtin-none"
   },
   {
+    "year": "1998",
     "displayInUI": true,
     "id": "bomberman",
     "name": "Mr.Boom",
@@ -2243,6 +2287,7 @@
   "defaultShaderPresetID": "builtin-none"
   },
   {
+    "year": "1982",
     "displayInUI": true,
     "id": "jollycv",
     "name": "ColecoVision/CreatiVision/My Vision",
@@ -2263,6 +2308,7 @@
     "defaultShaderPresetID": "builtin-crt-classic"
   },
   {
+    "year": "2004",
     "displayInUI": true,
     "id": "nxengine",
     "name": "Cave Story Game Engine",
@@ -2282,6 +2328,7 @@
     "defaultShaderPresetID": "builtin-none"
   },
   {
+    "year": "2017",
     "displayInUI": true,
     "id": "tic80",
     "name": "TIC-80",
@@ -2298,6 +2345,7 @@
     "defaultShaderPresetID": "builtin-none"
   },
   {
+    "year": "1983",
     "displayInUI": true,
     "id": "msx",
     "name": "MSX",
@@ -2325,6 +2373,7 @@
   "defaultShaderPresetID": "builtin-none"
   },
   {
+    "year": "2007",
     "displayInUI": true,
     "id": "bgdi",
     "name": "Bennu Game Development",
@@ -2342,6 +2391,7 @@
     "defaultShaderPresetID": "builtin-none"
   },
   {
+    "year": "2004",
     "displayInUI": true,
     "id": "commodore_c64dtv",
     "name": "C64DTV",
@@ -2389,6 +2439,7 @@
     "defaultShaderPresetID": "builtin-none"
   },
   {
+    "year": "1982",
     "displayInUI": true,
     "id": "commodore_c64",
     "name": "C64",
@@ -2437,6 +2488,7 @@
     "defaultShaderPresetID": "builtin-none"
   },
   {
+    "year": "1999",
     "displayInUI": true,
     "id": "J2ME",
     "name": "Java ME",
@@ -2471,6 +2523,7 @@
     "defaultShaderPresetID": "builtin-none"
   },
   {
+    "year": "2001",
     "displayInUI": true,
     "id": "xbox",
     "name": "Xbox",
@@ -2510,6 +2563,7 @@
     "defaultShaderPresetID": "builtin-none"
   },
   {
+    "year": "1991",
     "displayInUI": true,
     "id": "cdi",
     "name": "CD-i",
@@ -2534,6 +2588,7 @@
     "defaultShaderPresetID": "builtin-crt-classic"
   },
   {
+    "year": "1996",
     "displayInUI": true,
     "id": "quake_1",
     "name": "Quake Game Engine",
@@ -2551,6 +2606,7 @@
     "defaultShaderPresetID": "builtin-none"
   },
   {
+    "year": "2015",
     "displayInUI": true,
     "id": "pico8",
     "name": "PICO-8",
@@ -2568,6 +2624,7 @@
     "defaultShaderPresetID": "builtin-none"
   },
   {
+    "year": "1996",
     "displayInUI": true,
     "id": "openlara",
     "name": "Classic Tomb Raider engine",
@@ -2587,6 +2644,7 @@
   "defaultShaderPresetID": "builtin-none"
   },
   {
+    "year": "2004",
     "displayInUI": true,
     "id": "doom_3",
     "name": "Doom 3 XP Game Engine",
@@ -2603,6 +2661,7 @@
     "defaultShaderPresetID": "builtin-none"
   },
   {
+    "year": "1982",
     "displayInUI": true,
     "id": "arcadia",
     "name": "Arcadia 2001",
@@ -2621,6 +2680,7 @@
     "defaultShaderPresetID": "builtin-crt-classic"
   },
   {
+    "year": "2021",
     "displayInUI": true,
     "id": "uxn",
     "name": "Uxn / Varvara",
@@ -2637,6 +2697,7 @@
     "defaultShaderPresetID": "builtin-none"
   },
   {
+    "year": "2011",
     "displayInUI": true,
     "id": "3ds",
     "magicHeaders": [
@@ -2681,6 +2742,7 @@
     "defaultShaderPresetID": "builtin-3ds"
   },
   {
+    "year": "1972",
     "displayInUI": true,
     "id": "gong",
     "name": "Pong Game Clone",
@@ -2697,6 +2759,7 @@
     "defaultShaderPresetID": "builtin-none"
   },
   {
+    "year": "1979",
     "displayInUI": true,
     "id": "pc_88",
     "name": "PC-8000 / PC-8800 series",
@@ -2717,6 +2780,7 @@
     "defaultShaderPresetID": "builtin-none"
   },
   {
+    "year": "1991",
     "displayInUI": true,
     "id": "cdi2015",
     "name": "CDi",
@@ -2733,6 +2797,7 @@
     "defaultShaderPresetID": "builtin-crt-classic"
   },
   {
+    "year": "1984",
     "displayInUI": true,
     "id": "commodore_plus4",
     "name": "PLUS/4",
@@ -2780,6 +2845,7 @@
     "defaultShaderPresetID": "builtin-none"
   },
   {
+    "year": "1998",
     "displayInUI": true,
     "id": "jumpnbump",
     "name": "Jumpnbump",
@@ -2794,6 +2860,7 @@
     "defaultShaderPresetID": "builtin-none"
   },
   {
+    "year": "1980",
     "displayInUI": true,
     "id": "commodore_vic20",
     "name": "VIC-20",
@@ -2847,6 +2914,7 @@
     "defaultShaderPresetID": "builtin-none"
   },
   {
+    "year": "1982",
     "displayInUI": true,
     "id": "sharp_x1",
     "name": "Sharp X1",
@@ -2875,6 +2943,7 @@
     "defaultShaderPresetID": "builtin-none"
   },
   {
+    "year": "1993",
     "displayInUI": true,
     "id": "mega_duck",
     "name": "Mega Duck",
@@ -2892,6 +2961,7 @@
     "defaultShaderPresetID": "builtin-dot-matrix"
   },
   {
+    "year": "1997",
     "displayInUI": true,
     "id": "quake_2",
     "name": "Quake II Game Engine",
@@ -2924,6 +2994,7 @@
     "defaultShaderPresetID": "builtin-none"
   },
   {
+    "year": "2001",
     "displayInUI": true,
     "id": "gamecube",
     "pathKeywords": [
@@ -2964,6 +3035,7 @@
     "defaultShaderPresetID": "builtin-none"
   },
   {
+    "year": "2006",
     "displayInUI": true,
     "id": "wii",
     "pathKeywords": [
@@ -3031,6 +3103,7 @@
     "defaultShaderPresetID": "builtin-none"
   },
   {
+    "year": "2024",
     "displayInUI": true,
     "id": "taylor",
     "name": "C713",
@@ -3045,6 +3118,7 @@
     "defaultShaderPresetID": "builtin-none"
   },
   {
+    "year": "1987",
     "displayInUI": true,
     "id": "sharp_x68000",
     "name": "Sharp X68000",
@@ -3071,6 +3145,7 @@
     "defaultShaderPresetID": "builtin-none"
   },
   {
+    "year": "1983",
     "displayInUI": true,
     "id": "pcxt",
     "name": "PC/XT",
@@ -3089,6 +3164,7 @@
     "defaultShaderPresetID": "builtin-none"
   },
   {
+    "year": "1982",
     "displayInUI": true,
     "id": "colecovision",
     "name": "ColecoVision",
@@ -3115,6 +3191,7 @@
     "defaultShaderPresetID": "builtin-crt-classic"
   },
   {
+    "year": "1983",
     "displayInUI": true,
     "id": "daphne",
     "name": "Arcade (various)",
@@ -3141,6 +3218,7 @@
     "defaultShaderPresetID": "builtin-crt-classic"
   },
   {
+    "year": "1978",
     "displayInUI": true,
     "id": "odyssey2",
     "name": "Magnavox Odyssey2 / Philips Videopac+",
@@ -3158,6 +3236,7 @@
     "defaultShaderPresetID": "builtin-crt-classic"
   },
   {
+    "year": "1980",
     "displayInUI": true,
     "id": "p2000t",
     "name": "P2000T",
@@ -3174,6 +3253,7 @@
     "defaultShaderPresetID": "builtin-none"
   },
   {
+    "year": "2018",
     "displayInUI": true,
     "id": "lowresnx",
     "name": "LowRes NX",
@@ -3190,6 +3270,7 @@
     "defaultShaderPresetID": "builtin-none"
   },
   {
+    "year": "1982",
     "displayInUI": true,
     "id": "zx_spectrum",
     "name": "ZX Spectrum (various)",
@@ -3218,6 +3299,7 @@
   "defaultShaderPresetID": "builtin-none"
   },
   {
+    "year": "2004",
     "displayInUI": true,
     "id": "doukutsu-rs",
     "name": "Cave Story Game Engine",
@@ -3237,6 +3319,7 @@
     "defaultShaderPresetID": "builtin-none"
   },
   {
+    "year": "2019",
     "displayInUI": true,
     "id": "anarch",
     "name": "Anarch",
@@ -3251,6 +3334,7 @@
     "defaultShaderPresetID": "builtin-none"
   },
   {
+    "year": "2021",
     "displayInUI": true,
     "id": "wasm4",
     "name": "WASM-4",
@@ -3267,6 +3351,7 @@
     "defaultShaderPresetID": "builtin-none"
   },
   {
+    "year": "2011",
     "displayInUI": true,
     "id": "craft",
     "name": "Minecraft Game Clone",
@@ -3283,6 +3368,7 @@
     "defaultShaderPresetID": "builtin-none"
   },
   {
+    "year": "1982",
     "displayInUI": true,
     "id": "commodore_cbm5x0",
     "name": "CBM-5x0",
@@ -3344,6 +3430,7 @@
     "defaultShaderPresetID": "builtin-none"
   },
   {
+    "year": "1992",
     "displayInUI": true,
     "id": "supervision",
     "name": "Supervision",
@@ -3375,6 +3462,7 @@
     "defaultShaderPresetID": "builtin-none"
   },
   {
+    "year": "1989",
     "displayInUI": true,
     "id": "xrick",
     "name": "Rick Dangerous Game Engine",
@@ -3392,6 +3480,7 @@
     "defaultShaderPresetID": "builtin-none"
   },
   {
+    "year": "1981",
     "displayInUI": true,
     "id": "zx81",
     "name": "ZX81",
@@ -3411,6 +3500,7 @@
   "defaultShaderPresetID": "builtin-none"
   },
   {
+    "year": "2013",
     "displayInUI": true,
     "id": "dinothawr",
     "name": "Dinothawr Game Engine",
@@ -3443,6 +3533,7 @@
     "defaultShaderPresetID": "builtin-none"
   },
   {
+    "year": "1979",
     "displayInUI": true,
     "id": "zmachine",
     "name": "Z-Machine",
@@ -3460,6 +3551,7 @@
     "defaultShaderPresetID": "builtin-none"
   },
   {
+    "year": "2021",
     "displayInUI": true,
     "id": "vircon32",
     "name": "Vircon32",
@@ -3476,6 +3568,7 @@
     "defaultShaderPresetID": "builtin-none"
   },
   {
+    "year": "1999",
     "displayInUI": true,
     "id": "onsyuri",
     "name": "ONScripter Yuri",
@@ -3494,6 +3587,7 @@
     "defaultShaderPresetID": "builtin-none"
   },
   {
+    "year": "1994",
     "displayInUI": true,
     "id": "pc_fx",
     "name": "PC-FX",
@@ -3514,6 +3608,7 @@
     "defaultShaderPresetID": "builtin-crt-classic"
   },
   {
+    "year": "1982",
     "displayInUI": true,
     "id": "vectrex",
     "name": "Vectrex",
@@ -3547,7 +3642,7 @@
     "defaultShaderPresetID": "builtin-none"
   },
   {
-    "year": null,
+    "year": "1991",
     "id": "segacd",
     "name": "Sega CD",
     "pathKeywords": [],
@@ -3568,7 +3663,7 @@
     "defaultShaderPresetID": "builtin-crt-classic"
   },
   {
-    "year": null,
+    "year": "1993",
     "id": "segapico",
     "name": "Sega Pico",
     "pathKeywords": [],
@@ -3636,32 +3731,6 @@
     "displayInUI": true,
     "database": [
       "Sega - SC-3000"
-    ],
-    "defaultShaderPresetID": "builtin-crt-classic"
-  },
-  {
-    "year": "1986",
-    "id": "pcfx",
-    "name": "PC-FX",
-    "pathKeywords": [
-      "pcfx",
-      "pc fx"
-    ],
-    "magicHeaders": [],
-    "filenamePatterns": [],
-    "extensions": [
-      "cue",
-      "iso"
-    ],
-    "defaultBoxType": "Landscape",
-    "iconName": "gamecontroller",
-    "defaultCoreID": "mednafen_pcfx_libretro",
-    "manufacturer": "NEC",
-    "isRedumpOnly": true,
-    "sortOrder": 62,
-    "displayInUI": true,
-    "database": [
-      "NEC - PC-FX"
     ],
     "defaultShaderPresetID": "builtin-crt-classic"
   },

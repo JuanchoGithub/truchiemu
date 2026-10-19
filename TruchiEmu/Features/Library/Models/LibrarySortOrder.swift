@@ -15,14 +15,21 @@ enum LibrarySortOrder: String, CaseIterable, Identifiable {
     case lastAdded
     case playtime
     case timeToBeat
+    case systemName
+    case systemAge
 
     var id: String { rawValue }
 
     /// Sort orders rendered in the primary section of the picker.
-    static let primary: [LibrarySortOrder] = [.lastPlayed, .playtime, .timeToBeat]
+    static let primary: [LibrarySortOrder] = [.lastPlayed, .playtime, .timeToBeat, .systemName, .systemAge]
 
     /// Sort orders rendered in the "Other" section of the picker.
     static let other: [LibrarySortOrder] = [.lastAdded]
+
+    /// Sorts that group the library into per-system sections. When one of
+    /// these is active, the content views interleave section headers between
+    /// systems (see LibrarySectionBuilder).
+    var isSystemSort: Bool { self == .systemName || self == .systemAge }
 
     /// Persistence keys — single AppSettings entries replace the two legacy
     /// boolean keys (`sortByLastPlayed`, `sortByLastAdded`).
@@ -36,6 +43,8 @@ enum LibrarySortOrder: String, CaseIterable, Identifiable {
         case .lastAdded:  return "calendar"
         case .playtime:   return "hourglass"
         case .timeToBeat: return "timer"
+        case .systemName: return "cpu"
+        case .systemAge:  return "clock.arrow.circlepath"
         }
     }
 
@@ -47,6 +56,8 @@ enum LibrarySortOrder: String, CaseIterable, Identifiable {
         case .lastAdded:  return "app.lastAdded"
         case .playtime:   return "app.sortByPlaytime"
         case .timeToBeat: return "app.sortByTimeToBeat"
+        case .systemName: return "app.sortBySystem"
+        case .systemAge:  return "app.sortBySystemAge"
         }
     }
 

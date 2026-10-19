@@ -846,6 +846,7 @@ viewModel.updateFilters(
                 get: { selectedROM },
                 set: { selectedROM = $0 }
             ),
+            groupedBySystem: sortOrder.isSystemSort,
             zoomLevel: continuousZoom,
             filter: filter,
             raEnabled: raService.isEnabled,
@@ -879,6 +880,7 @@ viewModel.updateFilters(
                 get: { selectedROM },
                 set: { selectedROM = $0 }
             ),
+            groupedBySystem: sortOrder.isSystemSort,
             zoomLevel: continuousZoom,
             filter: filter,
             raEnabled: raService.isEnabled,
@@ -937,12 +939,20 @@ viewModel.updateFilters(
     private func handleGamepadCycleSort() {
         let genres = GenreManager.shared.getAllDisplayGenres(from: library.roms)
 
+        // System sorts only apply to collections that can span multiple
+        // systems; skip them while a single system is in view.
+        let systemSortSteps: [GamepadCycleStep] = filter.isSystemView ? [] : [
+            GamepadCycleStep(sortOrder: .systemName, sortAscending: false, filter: nil, genre: nil),
+            GamepadCycleStep(sortOrder: .systemAge, sortAscending: false, filter: nil, genre: nil),
+        ]
+
         let allSteps: [GamepadCycleStep] = [
             GamepadCycleStep(sortOrder: .name, sortAscending: false, filter: nil, genre: nil),
             GamepadCycleStep(sortOrder: .lastPlayed, sortAscending: false, filter: nil, genre: nil),
             GamepadCycleStep(sortOrder: .lastAdded, sortAscending: false, filter: nil, genre: nil),
             GamepadCycleStep(sortOrder: .playtime, sortAscending: false, filter: nil, genre: nil),
             GamepadCycleStep(sortOrder: .timeToBeat, sortAscending: false, filter: nil, genre: nil),
+        ] + systemSortSteps + [
             GamepadCycleStep(sortOrder: .name, sortAscending: false, filter: .noBoxArt, genre: nil),
             GamepadCycleStep(sortOrder: .name, sortAscending: false, filter: .neverPlayed, genre: nil),
             GamepadCycleStep(sortOrder: .name, sortAscending: false, filter: .unscanned, genre: nil),
@@ -1131,8 +1141,11 @@ viewModel.updateFilters(
                 get: { selectedROM },
                 set: { selectedROM = $0 }
             ),
+            groupedBySystem: sortOrder.isSystemSort,
             zoomLevel: zoomLevel,
-            showSystemLabel: !filter.isSystemView,
+            // Under a system sort the section header already names the
+            // system — the per-row system label is redundant.
+            showSystemLabel: !filter.isSystemView && !sortOrder.isSystemSort,
             raEnabled: raService.isEnabled,
             boxArtVersion: boxArtService.boxArtUpdated,
             lastSelectedIndex: lastSelectedIndex,
@@ -1880,7 +1893,8 @@ viewModel.updateFilters(
                 LibrarySortPicker(
                     currentOrder: $sortOrder,
                     ascending: $sortAscending,
-                    style: .chips
+                    style: .chips,
+                    includeSystemSorts: !filter.isSystemView
                 )
 
                 ForEach(GameFilterOption.primaryFilters) { option in

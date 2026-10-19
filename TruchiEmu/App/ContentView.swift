@@ -277,6 +277,9 @@ case .library:
                          AppSettings.setString("lastSelectedFilter", value: newFilter.id)
                          AppSettings.setString("tvMode_lastFilter", value: newFilter.id)
                          gamepadNavCoordinator.syncSidebarIndex(to: newFilter)
+                         // Let the app-level Sort menu hide the system sorts
+                         // while a single-system view is active.
+                         NotificationCenter.default.post(name: .libraryFilterChanged, object: newFilter.isSystemView)
                      }
                      .onChange(of: selectedROM) { _, newROM in
                          AppSettings.setString("tvMode_entryROM", value: newROM?.id.uuidString)
