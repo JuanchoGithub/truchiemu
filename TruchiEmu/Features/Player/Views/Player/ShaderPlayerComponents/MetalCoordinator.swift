@@ -38,6 +38,13 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
     private var pittmanDepthTex: MTLTexture?
     private var pittmanDepthSize: (w: Int, h: Int) = (0, 0)
     private var pittmanMeshPipelines: [String: MTLRenderPipelineState] = [:]
+    // Intermediate targets for the crt-shader port: horizontal reconstruction
+    // at (game width x source height), then vertical reconstruction at the
+    // game-rect size. The final optics pass renders to the drawable.
+    private var crtShaderHorizontalTex: MTLTexture?
+    private var crtShaderVerticalTex: MTLTexture?
+    private var crtShaderSrcSize: (w: Int, h: Int) = (0, 0)
+    private var crtShaderOutSize: (w: Int, h: Int) = (0, 0)
     // Fragment shader names that require the post-encode temporal-feedback
     // blit copy (rolling history copy of the source frame into T-1's slot).
     // O(1) membership test used per-frame in draw(); replaces a four-way
@@ -265,6 +272,135 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
         pittmanSrcSize = (frameW, frameH)
         pittmanFullSize = (gameW, gameH)
         pittmanPrevReady = false
+    }
+
+    /// Ensure the crt-shader reconstruction targets exist. The horizontal
+    /// pass is game-width by source-height. The vertical pass is game-sized.
+    /// Both use `.bgra8Unorm`, matching the shared pipeline format.
+    private func ensureCRTShaderTextures(frameW: Int, frameH: Int,
+                                         outW: Int, outH: Int, device: MTLDevice) {
+        if crtShaderHorizontalTex != nil, crtShaderVerticalTex != nil,
+           crtShaderSrcSize.w == frameW, crtShaderSrcSize.h == frameH,
+           crtShaderOutSize.w == outW, crtShaderOutSize.h == outH {
+            return
+        }
+        func makeTarget(w: Int, h: Int) -> MTLTexture? {
+            let desc = MTLTextureDescriptor.texture2DDescriptor(
+                pixelFormat: .bgra8Unorm, width: max(1, w), height: max(1, h),
+                mipmapped: false)
+            desc.usage = [.renderTarget, .shaderRead, .shaderWrite]
+            desc.storageMode = .private
+            return device.makeTexture(descriptor: desc)
+        }
+        crtShaderHorizontalTex = makeTarget(w: outW, h: frameH)
+        crtShaderVerticalTex = makeTarget(w: outW, h: outH)
+        crtShaderSrcSize = (frameW, frameH)
+        crtShaderOutSize = (outW, outH)
+    }
+
+    private func crtShaderPassDescriptor(target: MTLTexture) -> MTLRenderPassDescriptor {
+        let rpd = MTLRenderPassDescriptor()
+        rpd.colorAttachments[0].texture = target
+        rpd.colorAttachments[0].loadAction = .clear
+        rpd.colorAttachments[0].clearColor = MTLClearColor(red: 0, green: 0, blue: 0, alpha: 1)
+        rpd.colorAttachments[0].storeAction = .store
+        return rpd
+    }
+
+    /// Build the uniform block for the crt-shader passes. Source width and
+    /// height always describe the prepared input, not an intermediate target.
+    private func crtShaderUniforms(snapshot: [String: Float],
+                                   frameTex: MTLTexture,
+                                   outputOrigin: CGPoint,
+                                   outputW: Float, outputH: Float) -> CRTShaderUniforms {
+        func getUniform(_ name: String, fallback: Float) -> Float {
+            return snapshot[name] ?? fallback
+        }
+        return CRTShaderUniforms(
+            spread: getUniform("spread", fallback: 0.64),
+            bleed: getUniform("bleed", fallback: 0.48),
+            gamma: getUniform("gamma", fallback: 2.2),
+            beam: getUniform("beam", fallback: 0.24),
+            bloom: getUniform("bloom", fallback: 0.16),
+            glow: getUniform("glow", fallback: 0.10),
+            focus: getUniform("focus", fallback: 0.08),
+            mask: getUniform("mask", fallback: 0.10),
+            exposure: getUniform("exposure", fallback: 1.12),
+            outputGamma: getUniform("outputGamma", fallback: 0.0),
+            cameraBlur: getUniform("cameraBlur", fallback: 0.0),
+            blackLevel: getUniform("blackLevel", fallback: 0.0),
+            redGain: getUniform("redGain", fallback: 1.0),
+            greenGain: getUniform("greenGain", fallback: 1.0),
+            blueGain: getUniform("blueGain", fallback: 1.0),
+            maskPitch: getUniform("maskPitch", fallback: 0.0),
+            maskPhase: getUniform("maskPhase", fallback: 0.0),
+            slot: getUniform("slot", fallback: 0.0),
+            slotPhase: getUniform("slotPhase", fallback: 0.0),
+            maskSlant: getUniform("maskSlant", fallback: 0.0),
+            beamTilt: getUniform("beamTilt", fallback: 0.0),
+            maskWarp: getUniform("maskWarp", fallback: 0.0),
+            rg: getUniform("rg", fallback: 0.0),
+            rb: getUniform("rb", fallback: 0.0),
+            gr: getUniform("gr", fallback: 0.0),
+            gb: getUniform("gb", fallback: 0.0),
+            br: getUniform("br", fallback: 0.0),
+            bg: getUniform("bg", fallback: 0.0),
+            sourceW: Float(frameTex.width),
+            sourceH: Float(frameTex.height),
+            outputW: outputW,
+            outputH: outputH,
+            outputOriginX: Float(outputOrigin.x),
+            outputOriginY: Float(outputOrigin.y)
+        )
+    }
+
+    /// Run the horizontal and vertical crt-shader reconstruction passes into
+    /// intermediate targets before the main drawable encoder. The final
+    /// optics pass runs in the shared switch below.
+    private func runCRTShaderIntermediatePasses(device: MTLDevice,
+                                               commandBuffer: MTLCommandBuffer,
+                                               frameTex: MTLTexture,
+                                               viewSize: CGSize) {
+        let rotated = (runner.currentFrameRotation == 1 || runner.currentFrameRotation == 3)
+        let targetAspect = computeTargetAspect(
+            frameTex: frameTex, isRotated: rotated, systemID: runner.rom?.systemID)
+        let outputVP = computeViewport(targetAspect: targetAspect, viewSize: viewSize)
+        let outW = max(1, Int(outputVP.width))
+        let outH = max(1, Int(outputVP.height))
+        ensureCRTShaderTextures(frameW: frameTex.width, frameH: frameTex.height,
+                                outW: outW, outH: outH, device: device)
+        guard let horizontalTex = crtShaderHorizontalTex,
+              let verticalTex = crtShaderVerticalTex,
+              let horizontalPipe = pipelineState(for: "fragmentCRTShaderHorizontal", device: device),
+              let verticalPipe = pipelineState(for: "fragmentCRTShaderVertical", device: device) else {
+            return
+        }
+
+        let snapshot = ShaderManager.shared.getUniformSnapshot()
+        var u = crtShaderUniforms(snapshot: snapshot, frameTex: frameTex,
+                                  outputOrigin: .zero,
+                                  outputW: Float(outW), outputH: Float(outH))
+
+        func runPass(pipe: MTLRenderPipelineState, target: MTLTexture,
+                     input: MTLTexture, uniforms: inout CRTShaderUniforms) {
+            guard let enc = commandBuffer.makeRenderCommandEncoder(
+                descriptor: crtShaderPassDescriptor(target: target)) else { return }
+            enc.setViewport(MTLViewport(originX: 0, originY: 0,
+                                        width: Double(target.width),
+                                        height: Double(target.height),
+                                        znear: 0.0, zfar: 1.0))
+            enc.setRenderPipelineState(pipe)
+            enc.setFragmentTexture(input, index: 0)
+            enc.setFragmentBytes(&uniforms,
+                                 length: MemoryLayout<CRTShaderUniforms>.stride, index: 0)
+            enc.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
+            enc.endEncoding()
+        }
+
+        runPass(pipe: horizontalPipe, target: horizontalTex,
+                input: frameTex, uniforms: &u)
+        runPass(pipe: verticalPipe, target: verticalTex,
+                input: horizontalTex, uniforms: &u)
     }
 
     private func pittmanPassDescriptor(target: MTLTexture) -> MTLRenderPassDescriptor {
@@ -947,6 +1083,10 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
                     runPittmanIntermediatePasses(device: device, commandBuffer: cmdBuffer,
                                                 frameTex: frameTex, viewSize: view.drawableSize)
                 }
+                if fragmentName == "fragmentCRTShaderOptics" {
+                    runCRTShaderIntermediatePasses(device: device, commandBuffer: cmdBuffer,
+                                                   frameTex: frameTex, viewSize: view.drawableSize)
+                }
                 if let enc = cmdBuffer.makeRenderCommandEncoder(descriptor: descriptor) {
                     // ASPECT RATIO — multi-tier fallback resolved by
                     // computeTargetAspect (preferred source:
@@ -1374,6 +1514,17 @@ outputHeight: Float(viewport.height)
                         enc.setFragmentTexture(pittmanScreenTex ?? frameTex, index: 0)
                         enc.setFragmentTexture(pittmanUpTex ?? pittmanDownTex ?? frameTex, index: 1)
                         frameCounter += 1
+                    case "fragmentCRTShaderOptics":
+                        // Horizontal and vertical reconstruction already ran
+                        // into intermediates; render the optics pass here.
+                        var u = crtShaderUniforms(
+                            snapshot: uniformSnapshot,
+                            frameTex: frameTex,
+                            outputOrigin: CGPoint(x: viewport.originX, y: viewport.originY),
+                            outputW: Float(viewport.width),
+                            outputH: Float(viewport.height))
+                        enc.setFragmentBytes(&u, length: MemoryLayout<CRTShaderUniforms>.stride, index: 0)
+                        enc.setFragmentTexture(crtShaderVerticalTex ?? frameTex, index: 0)
                     default:
                         // Fallback to basic passthrough/CRT style
                         let colorB = getUniform("colorBoost", fallback: 1.0)

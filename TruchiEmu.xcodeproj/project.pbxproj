@@ -1133,6 +1133,7 @@
 		CDC8133D2C03E637999E2155 /* CheatSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD4DF5D2F13617BDA825F6F3 /* CheatSettingsView.swift */; };
 		CE0CB7B49E978CFA4F591675 /* PC98.png in Resources */ = {isa = PBXBuildFile; fileRef = 7A121397290660B21B099AD4 /* PC98.png */; };
 		CE1E5958D5DFA5649624A6B0 /* ExternalDisplayPromptManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C63329F8A5AAC634E147BB91 /* ExternalDisplayPromptManager.swift */; };
+		CE295966829D5520A8E902F1 /* CRTShader.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1BE3F4A24A723A9D34DC5BAB /* CRTShader.metal */; };
 		CE385DCA0BB224A7BDA869B4 /* holo_glitter_alpha.png in Resources */ = {isa = PBXBuildFile; fileRef = C077B1331B31733FB844DB00 /* holo_glitter_alpha.png */; };
 		CEC21EB428BB7D5F007C34F2 /* virtualboy.ico in Resources */ = {isa = PBXBuildFile; fileRef = 6069F75B4546F64B16E338E2 /* virtualboy.ico */; };
 		CEDEE26F9187602FC4A1BEEA /* MAMEMissingROMsAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = C15804655F28F2866DFA7C49 /* MAMEMissingROMsAlert.swift */; };
@@ -1547,6 +1548,7 @@
 		1B2DF02F2DB479FC229B1AA0 /* MS.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = MS.png; sourceTree = "<group>"; };
 		1BACF16B239F4702E4A2B3E5 /* GBC.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = GBC.png; sourceTree = "<group>"; };
 		1BDA4A65586BED9B2CD71EFF /* GameButtons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameButtons.swift; sourceTree = "<group>"; };
+		1BE3F4A24A723A9D34DC5BAB /* CRTShader.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = CRTShader.metal; sourceTree = "<group>"; };
 		1BF99ABE2F71BC250A85AC33 /* ScreenshotsTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotsTabView.swift; sourceTree = "<group>"; };
 		1C10E5CE3E9EE5A4E0AB16F4 /* nds.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = nds.ico; sourceTree = "<group>"; };
 		1C15A2A6F35E894F51393AE9 /* XRICK.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = XRICK.png; sourceTree = "<group>"; };
@@ -3307,6 +3309,7 @@
 				62B4EE0802A69845537290E2 /* CRTFilter_multipass.metal */,
 				26D95B905CF18035469C4C59 /* CRTFilter.metal */,
 				4C54C12B5612E8D1855E9A0B /* CRTPittman.metal */,
+				1BE3F4A24A723A9D34DC5BAB /* CRTShader.metal */,
 				BF7A3D8D17275C396BE21173 /* DotMatrixLCD.metal */,
 				625852EC0A71AE15C0A0F6AE /* FamicomRF.metal */,
 				61341295EE2B8A9A3EE7AF16 /* ForceAlpha.metal */,
@@ -6240,6 +6243,7 @@
 				EEFB801BD3A80132FB475EB6 /* CRTFilter.metal in Sources */,
 				5C15E6B7D2E89E337CB85B84 /* CRTFilter_multipass.metal in Sources */,
 				667BF4A1F43E1C78A69BD50A /* CRTPittman.metal in Sources */,
+				CE295966829D5520A8E902F1 /* CRTShader.metal in Sources */,
 				49D2EEDF34D3968A17D6E64E /* CategoryManager.swift in Sources */,
 				F478F42099085BD179E833A5 /* CategoryRowButton.swift in Sources */,
 				F33C60D08AB5B8F8FCD8A40F /* CategoryViews.swift in Sources */,

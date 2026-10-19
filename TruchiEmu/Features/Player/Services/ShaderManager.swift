@@ -393,6 +393,7 @@ class ShaderManager: ObservableObject {
         case "PSP": result = "fragmentPSPShader"
         case "CRTFilter_multipass": result = "fragmentCRTMultipass"
         case "CRTPittman": result = "fragmentPittmanPresent"
+        case "CRTShader": result = "fragmentCRTShaderOptics"
         case "FamicomRF": result = "fragmentFamicomRF"
         case "RfDecoder": result = "fragmentRfDisplay"
         default: result = "fragment" + shaderFile

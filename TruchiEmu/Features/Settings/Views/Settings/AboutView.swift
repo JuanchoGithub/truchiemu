@@ -280,6 +280,16 @@ struct AboutView: View {
                             licenseURL: "https://creativecommons.org/publicdomain/zero/1.0/",
                             description: "Reference CRT simulation from Super Win the Game and Gunmetal Arcadia (also released as SuperCRT on itch.io). Ported to Metal as the CRT Pittman shader and 3D cabinet in TruchiEmu."
                         )
+
+                        Divider()
+
+                        DependencyGroup(
+                            name: "crt-shader by Brooklyn (OutThisLife)",
+                            url: "https://crt-shader.vercel.app",
+                            license: "MIT",
+                            licenseURL: "https://github.com/OutThisLife/crt-shader/blob/main/LICENSE",
+                            description: "Multi-pass CRT reconstruction for WebGL, using horizontal beam spread, vertical beam and phosphor mask, and optics passes. Ported to Metal as the CRT Shader presets in TruchiEmu."
+                        )
                     }
                     
                     // --- Box Art ---

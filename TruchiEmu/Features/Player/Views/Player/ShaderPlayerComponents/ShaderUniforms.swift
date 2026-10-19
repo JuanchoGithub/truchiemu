@@ -277,6 +277,45 @@ struct CRTPittmanUniforms {
     var padding: Float
 }
 
+// CRT Shader (crt-shader port) uniforms - matches CRTShaderUniforms in CRTShader.metal.
+// Field order must match the Metal struct exactly (all Float, sequential layout).
+struct CRTShaderUniforms {
+    var spread: Float
+    var bleed: Float
+    var gamma: Float
+    var beam: Float
+    var bloom: Float
+    var glow: Float
+    var focus: Float
+    var mask: Float
+    var exposure: Float
+    var outputGamma: Float
+    var cameraBlur: Float
+    var blackLevel: Float
+    var redGain: Float
+    var greenGain: Float
+    var blueGain: Float
+    var maskPitch: Float
+    var maskPhase: Float
+    var slot: Float
+    var slotPhase: Float
+    var maskSlant: Float
+    var beamTilt: Float
+    var maskWarp: Float
+    var rg: Float
+    var rb: Float
+    var gr: Float
+    var gb: Float
+    var br: Float
+    var bg: Float
+    var sourceW: Float
+    var sourceH: Float
+    var outputW: Float
+    var outputH: Float
+    var outputOriginX: Float
+    var outputOriginY: Float
+}
+
 // Pittman Poisson blur uniforms - matches PittmanBlurUniforms in CRTPittman.metal
 struct PittmanBlurUniforms {
     var spread: Float

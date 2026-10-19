@@ -191,6 +191,70 @@ struct ShaderPreset: Codable, Hashable, Identifiable {
 // MARK: - Built-in Shader Preset Factory
 
 extension ShaderPreset {
+    // Shared slider set for the crt-shader port. The four built-in presets
+    // differ only in these defaults, matching crt-shader's PRESETS table.
+    private static func crtShaderUniforms(
+        spread: Float = 0.64,
+        bleed: Float = 0.48,
+        gamma: Float = 2.2,
+        beam: Float = 0.24,
+        bloom: Float = 0.16,
+        glow: Float = 0.10,
+        focus: Float = 0.08,
+        mask: Float = 0.10,
+        exposure: Float = 1.12,
+        outputGamma: Float = 0.0,
+        cameraBlur: Float = 0.0,
+        blackLevel: Float = 0.0,
+        redGain: Float = 1.0,
+        greenGain: Float = 1.0,
+        blueGain: Float = 1.0,
+        maskPitch: Float = 0.0,
+        maskPhase: Float = 0.0,
+        slot: Float = 0.0,
+        slotPhase: Float = 0.0,
+        maskSlant: Float = 0.0,
+        beamTilt: Float = 0.0,
+        maskWarp: Float = 0.0,
+        rg: Float = 0.0,
+        rb: Float = 0.0,
+        gr: Float = 0.0,
+        gb: Float = 0.0,
+        br: Float = 0.0,
+        bg: Float = 0.0
+    ) -> [ShaderUniform] {
+        [
+            ShaderUniform(name: "spread", defaultValue: spread, minValue: 0.15, maxValue: 1.6, displayName: "Horizontal Spread"),
+            ShaderUniform(name: "bleed", defaultValue: bleed, minValue: 0.0, maxValue: 2.0, displayName: "Extra Color Spread"),
+            ShaderUniform(name: "gamma", defaultValue: gamma, minValue: 1.0, maxValue: 2.6, step: 0.05, displayName: "Blend Gamma"),
+            ShaderUniform(name: "beam", defaultValue: beam, minValue: 0.1, maxValue: 0.65, displayName: "Beam Width"),
+            ShaderUniform(name: "bloom", defaultValue: bloom, minValue: 0.0, maxValue: 0.35, displayName: "Bright-area Expansion"),
+            ShaderUniform(name: "glow", defaultValue: glow, minValue: 0.0, maxValue: 0.4, displayName: "Light Diffusion"),
+            ShaderUniform(name: "focus", defaultValue: focus, minValue: 0.0, maxValue: 0.4, displayName: "Photo Softness"),
+            ShaderUniform(name: "mask", defaultValue: mask, minValue: 0.0, maxValue: 0.65, displayName: "Phosphor Texture"),
+            ShaderUniform(name: "exposure", defaultValue: exposure, minValue: 0.6, maxValue: 1.8, displayName: "Exposure"),
+            ShaderUniform(name: "outputGamma", defaultValue: outputGamma, minValue: 0.0, maxValue: 3.4, displayName: "Output Gamma (0 = Linked)"),
+            ShaderUniform(name: "cameraBlur", defaultValue: cameraBlur, minValue: 0.0, maxValue: 0.2, step: 0.001, displayName: "Camera Blur"),
+            ShaderUniform(name: "blackLevel", defaultValue: blackLevel, minValue: 0.0, maxValue: 0.08, step: 0.001, displayName: "Black Level"),
+            ShaderUniform(name: "redGain", defaultValue: redGain, minValue: 0.4, maxValue: 2.5, displayName: "Red Response"),
+            ShaderUniform(name: "greenGain", defaultValue: greenGain, minValue: 0.4, maxValue: 2.5, displayName: "Green Response"),
+            ShaderUniform(name: "blueGain", defaultValue: blueGain, minValue: 0.4, maxValue: 2.5, displayName: "Blue Response"),
+            ShaderUniform(name: "maskPitch", defaultValue: maskPitch, minValue: 0.0, maxValue: 1.0, step: 0.001, displayName: "Triad Pitch (0 = Legacy)"),
+            ShaderUniform(name: "maskPhase", defaultValue: maskPhase, minValue: -3.0, maxValue: 3.0, displayName: "RGB Phase"),
+            ShaderUniform(name: "slot", defaultValue: slot, minValue: 0.0, maxValue: 0.98, displayName: "Phosphor Gaps"),
+            ShaderUniform(name: "slotPhase", defaultValue: slotPhase, minValue: -3.0, maxValue: 3.0, displayName: "Gap Phase"),
+            ShaderUniform(name: "maskSlant", defaultValue: maskSlant, minValue: -0.1, maxValue: 0.1, step: 0.001, displayName: "Mask Tilt"),
+            ShaderUniform(name: "beamTilt", defaultValue: beamTilt, minValue: -0.08, maxValue: 0.08, step: 0.001, displayName: "Beam Tilt"),
+            ShaderUniform(name: "maskWarp", defaultValue: maskWarp, minValue: -2.0, maxValue: 2.0, displayName: "Mask Perspective"),
+            ShaderUniform(name: "rg", defaultValue: rg, minValue: -0.4, maxValue: 0.4, displayName: "Green to Red"),
+            ShaderUniform(name: "rb", defaultValue: rb, minValue: -0.4, maxValue: 0.4, displayName: "Blue to Red"),
+            ShaderUniform(name: "gr", defaultValue: gr, minValue: -0.4, maxValue: 0.4, displayName: "Red to Green"),
+            ShaderUniform(name: "gb", defaultValue: gb, minValue: -0.4, maxValue: 0.4, displayName: "Blue to Green"),
+            ShaderUniform(name: "br", defaultValue: br, minValue: -0.4, maxValue: 0.4, displayName: "Red to Blue"),
+            ShaderUniform(name: "bg", defaultValue: bg, minValue: -0.4, maxValue: 0.4, displayName: "Green to Blue"),
+        ]
+    }
+
     // All built-in shader presets
     static let builtinPresets: [ShaderPreset] = [
         // CRT Lottes (High Quality)
@@ -741,6 +805,90 @@ description: "Game Boy Color with temporal feedback, ghosting, and iridescent LC
                 ShaderUniform(name: "useMask", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, displayName: "CRT Subpixel Mask", type: .toggle),
             ],
             description: "Professional CRT simulation with temporal phosphor persistence and high-quality masking.",
+            recommendedSystems: ["nes", "snes", "genesis", "psx", "arcade"]
+        ),
+
+        // CRT Shader (crt-shader by Brooklyn / OutThisLife)
+        ShaderPreset(
+            id: "builtin-crt-shader-reference",
+            name: "CRT Shader (Reference)",
+            shaderType: .crt,
+            passes: [
+                ShaderPass(
+                    shaderFile: "CRTShader",
+                    filter: .linear,
+                    scaleX: 1.0, scaleY: 1.0,
+                    scaleTypeX: .viewport, scaleTypeY: .viewport
+                )
+            ],
+            globalUniforms: crtShaderUniforms(
+                spread: 0.53, bleed: 0.5636315407, gamma: 1.0705261569,
+                beam: 0.1840719213, bloom: 0.1548009529, glow: 0.0,
+                focus: 0.0, mask: 0.1017257735, exposure: 1.0,
+                outputGamma: 0.8485562699, cameraBlur: 0.018, blackLevel: 0.0,
+                redGain: 1.0718383876, greenGain: 0.9021840644,
+                blueGain: 0.8515301518, maskPitch: 0.4177646947,
+                maskPhase: 0.1732497797, slot: 0.0976022686,
+                slotPhase: -0.0199341169, maskSlant: 0.0060042998,
+                beamTilt: 0.0069226077, maskWarp: 0.1809592285,
+                rg: -0.0680113591, rb: -0.1368904736, gr: -0.0344967575,
+                gb: 0.1917875629, br: -0.0753665589, bg: 0.4
+            ),
+            description: "Multi-pass CRT reconstruction by Brooklyn (OutThisLife). Reference preset with sharp pixels and soft beam edges.",
+            recommendedSystems: ["nes", "snes", "genesis", "psx", "arcade"]
+        ),
+        ShaderPreset(
+            id: "builtin-crt-shader-clean",
+            name: "CRT Shader (Clean)",
+            shaderType: .crt,
+            passes: [
+                ShaderPass(
+                    shaderFile: "CRTShader",
+                    filter: .linear,
+                    scaleX: 1.0, scaleY: 1.0,
+                    scaleTypeX: .viewport, scaleTypeY: .viewport
+                )
+            ],
+            globalUniforms: crtShaderUniforms(
+                spread: 0.30, bleed: 0.0, beam: 0.23, bloom: 0.08,
+                glow: 0.035, focus: 0.0, mask: 0.14, exposure: 1.03
+            ),
+            description: "Multi-pass CRT reconstruction by Brooklyn (OutThisLife). Clean preset with tighter color and less diffusion.",
+            recommendedSystems: ["nes", "snes", "genesis", "psx", "arcade"]
+        ),
+        ShaderPreset(
+            id: "builtin-crt-shader-soft",
+            name: "CRT Shader (Soft)",
+            shaderType: .crt,
+            passes: [
+                ShaderPass(
+                    shaderFile: "CRTShader",
+                    filter: .linear,
+                    scaleX: 1.0, scaleY: 1.0,
+                    scaleTypeX: .viewport, scaleTypeY: .viewport
+                )
+            ],
+            globalUniforms: crtShaderUniforms(),
+            description: "Multi-pass CRT reconstruction by Brooklyn (OutThisLife). Soft preset with wider color spread and beam.",
+            recommendedSystems: ["nes", "snes", "genesis", "psx", "arcade"]
+        ),
+        ShaderPreset(
+            id: "builtin-crt-shader-photo",
+            name: "CRT Shader (Photo Soft)",
+            shaderType: .crt,
+            passes: [
+                ShaderPass(
+                    shaderFile: "CRTShader",
+                    filter: .linear,
+                    scaleX: 1.0, scaleY: 1.0,
+                    scaleTypeX: .viewport, scaleTypeY: .viewport
+                )
+            ],
+            globalUniforms: crtShaderUniforms(
+                spread: 0.82, bleed: 0.80, beam: 0.25, bloom: 0.20,
+                glow: 0.15, focus: 0.19, mask: 0.18, exposure: 1.16
+            ),
+            description: "Multi-pass CRT reconstruction by Brooklyn (OutThisLife). Photo Soft preset with a softer, photographed-tube look.",
             recommendedSystems: ["nes", "snes", "genesis", "psx", "arcade"]
         ),
 
