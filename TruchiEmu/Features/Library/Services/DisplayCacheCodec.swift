@@ -12,7 +12,7 @@ import Foundation
 /// Bump `version` whenever the field layout changes.
 enum DisplayCacheCodec {
 
-    static let version: UInt32 = 4
+    static let version: UInt32 = 5
     private static let magic: [UInt8] = [0x54, 0x45, 0x4C, 0x43] // "TELC"
 
     // MARK: - Errors

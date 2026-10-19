@@ -47,7 +47,7 @@ enum GameNameFormatter {
     static func cleanWhitespace(_ name: String) -> String {
         // Replace multiple spaces with single space and trim
         let range = NSRange(name.startIndex..., in: name)
-        return whitespacePattern.stringByReplacingMatches(in: name, range: range, withTemplate: "")
+        return whitespacePattern.stringByReplacingMatches(in: name, range: range, withTemplate: " ")
                    .trimmingCharacters(in: .whitespacesAndNewlines)
     }
     
