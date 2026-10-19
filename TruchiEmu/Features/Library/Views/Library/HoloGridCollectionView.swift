@@ -82,6 +82,15 @@ final class HoloGridCollectionViewItem: NSCollectionViewItem {
         rebuildRootView(isSelectedOverride: isSelected)
     }
 
+    /// Apply a zoom-level change to the currently displayed card without a
+    /// reload (used by `updateNSView` on pinch-zoom ticks). Same pattern as
+    /// `updateSelectionState`.
+    func updateZoomLevel(_ zoomLevel: Double) {
+        guard zoomLevel != zoomLevelCached else { return }
+        zoomLevelCached = zoomLevel
+        rebuildRootView(isSelectedOverride: isMultiSelectedCached)
+    }
+
     private func rebuildRootView(isSelectedOverride: Bool? = nil) {
         guard let rom = rom else { return }
         let card = HoloGameCardView(
@@ -289,6 +298,17 @@ final class HoloGridCollectionViewCoordinator: NSObject {
         )
     }
     
+    /// Reconfigures the currently visible game items in place with the
+    /// coordinator's zoom level. Used by the zoom-only path in
+    /// `updateNSView` so a pinch tick costs O(visible cells) instead of a
+    /// full `reloadData()`.
+    func reconfigureVisibleItemsForZoom() {
+        guard let cv = collectionView else { return }
+        for item in cv.visibleItems() {
+            (item as? HoloGridCollectionViewItem)?.updateZoomLevel(zoomLevel)
+        }
+    }
+
     func scrollToItem(at index: Int) {
         guard let cv = collectionView,
               index >= 0, index < displayList.entryIndexForRomIndex.count else { return }
@@ -612,7 +632,14 @@ struct HoloGridCollectionViewRepresentable: NSViewRepresentable {
         let groupedChanged = groupedBySystem != c.groupedBySystem
         let zoomChanged = zoomLevel != c.previousZoomLevel
         let boxArtChanged = boxArtVersion != c.previousBoxArtVersion
-        let needsReload = dataChanged || groupedChanged || zoomChanged || boxArtChanged
+        // A zoom-only change must NOT `reloadData()`: a pinch fires ~60
+        // ticks per second and a full reload returns every visible cell to
+        // the reuse pool and re-dequeues it, often into a different slot.
+        // The recycled NSHostingViews then briefly show the previous slot's
+        // card content, which reads as the elements changing places. A
+        // layout invalidation re-poses the existing item views instead, and
+        // the visible cells are reconfigured in place.
+        let needsReload = dataChanged || groupedChanged || boxArtChanged
 
         // The user switched systems (the displayed roms now belong to a
         // different set of systems). Abort every in-flight mask generation
@@ -653,6 +680,10 @@ struct HoloGridCollectionViewRepresentable: NSViewRepresentable {
         if needsReload {
             c.updateItemSizes()
             c.reloadData()
+        } else if zoomChanged {
+            c.updateItemSizes()
+            cv.collectionViewLayout?.invalidateLayout()
+            c.reconfigureVisibleItemsForZoom()
         }
 
         // Sync selection from SwiftUI → NSCollectionView
