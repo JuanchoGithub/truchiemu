@@ -73,6 +73,15 @@ extension StandaloneGameWindowController {
             return
         }
 
+        // Live shader editor uses a divide layout: keep the game in the area
+        // left of the sidebar. Preset switches and window resizes must not
+        // expand the game back under the sidebar.
+        if shaderEditorView != nil {
+            let width = max(containerView.bounds.width - shaderEditorSidebarWidth, 0)
+            metalView?.frame = CGRect(x: 0, y: 0, width: width, height: containerView.bounds.height)
+            return
+        }
+
         if isPittmanCabinetActive {
             metalView?.frame = containerView.bounds
             return

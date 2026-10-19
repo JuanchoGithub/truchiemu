@@ -148,6 +148,9 @@ private var p2JoinStatusCancellable: AnyCancellable?
     private var pittmanBezelCancellable: AnyCancellable?
 var guideSidebarView: NSHostingView<AnyView>?
     @MainActor @Published public var isShaderEditorShown: Bool = false
+    /// Width of the live shader editor sidebar. The game viewport is reduced by
+    /// this amount so the sidebar never covers the game.
+    let shaderEditorSidebarWidth: CGFloat = 320
     var shaderEditorView: SafeHostingView<AnyView>?
     /// Full-window overlay that centers the save/discard confirmation over the game
     /// screen (covers the sidebar too) when there are unsaved shader changes.
@@ -1778,7 +1781,7 @@ hostingView.widthAnchor.constraint(equalToConstant: 320)
             hostingView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
             hostingView.topAnchor.constraint(equalTo: containerView.topAnchor),
             hostingView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor),
-            hostingView.widthAnchor.constraint(equalToConstant: 320)
+            hostingView.widthAnchor.constraint(equalToConstant: shaderEditorSidebarWidth)
         ])
 
         // Divide layout: shrink the Metal viewport so the sidebar doesn't cover the game.
@@ -1882,7 +1885,7 @@ hostingView.widthAnchor.constraint(equalToConstant: 320)
     /// (divide layout — the game is never covered).
     private func shrinkGameFrameForSidebar() {
         guard let containerView = gameContainerView else { return }
-        let w = max(containerView.bounds.width - 320, 0)
+        let w = max(containerView.bounds.width - shaderEditorSidebarWidth, 0)
         metalView?.frame = CGRect(x: 0, y: 0, width: w, height: containerView.bounds.height)
     }
 
