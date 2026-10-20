@@ -269,6 +269,7 @@
   "slot.noSaveInSlot": "Ranura vacía",
   "slot.saveToSlot": "Guardar aquí",
   "slot.loadFromSlot": "Cargar desde aquí",
+  "slot.versionCount": "%d versiones",
   "slot.deleteSlot": "Borrar ranura",
   "noSavedStates": "No hay estados",
   "savedStatesHeader": "Estados guardados",

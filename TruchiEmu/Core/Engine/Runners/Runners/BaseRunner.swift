@@ -1491,11 +1491,7 @@ case "scummvm": runner = ScummVMRunner()
     // Cycle to the next save slot (0-9)
     @MainActor
     func nextSlot() {
-        if currentSlot >= 9 {
-            currentSlot = 0
-        } else {
-            currentSlot += 1
-        }
+        selectSlot(currentSlot >= 9 ? 0 : currentSlot + 1)
         osdMessage = LocalizationManager.shared.localized("osd.currentSlot", slotLabel(currentSlot))
         
         Task {
@@ -1507,17 +1503,21 @@ case "scummvm": runner = ScummVMRunner()
     // Cycle to the previous save slot (0-9)
     @MainActor
     func previousSlot() {
-        if currentSlot <= 0 {
-            currentSlot = 9
-        } else {
-            currentSlot -= 1
-        }
+        selectSlot(currentSlot <= 0 ? 9 : currentSlot - 1)
         osdMessage = LocalizationManager.shared.localized("osd.currentSlot", slotLabel(currentSlot))
         
         Task {
             try? await Task.sleep(nanoseconds: 1_000_000_000)
             await MainActor.run { self.osdMessage = nil }
         }
+    }
+
+    // Set the active save slot and persist it for the next launch.
+    @MainActor
+    func selectSlot(_ slot: Int) {
+        let clamped = max(0, min(9, slot))
+        currentSlot = clamped
+        AppSettings.setInt("selected_save_slot", value: clamped)
     }
     
     // Legacy method for backward compat—calls current slot

@@ -132,20 +132,7 @@ extension StandaloneGameWindowController {
             return
         }
         buttonIndex += 1
-        // 4: Load State -> load, close toolbar and resume (per spec)
-        if idx == buttonIndex {
-            if !saveStatesDisabled {
-                HardcoreModeManager.shared.attemptLoadState {
-                    Task { @MainActor in
-                        _ = r.loadState(slot: r.currentSlot)
-                        self.exitGamepadToolbarMode()
-                    }
-                }
-            }
-            return
-        }
-        buttonIndex += 1
-        // 5: Slot picker -> open the slot popover (driven by isSlotPickerShown)
+        // 4: Load State -> open the save-state browser
         if idx == buttonIndex {
             if !saveStatesDisabled {
                 isSlotPickerShown = true
@@ -153,7 +140,7 @@ extension StandaloneGameWindowController {
             return
         }
         buttonIndex += 1
-        // 6: Record / Stream -> mirrors the mouse onTapGesture: clear error,
+        // 5: Record / Stream -> mirrors the mouse onTapGesture: clear error,
         // stop connecting / recording, or open the stream-picker popover.
         if idx == buttonIndex {
             let recordingService = StreamRecordingService.shared
@@ -169,35 +156,36 @@ extension StandaloneGameWindowController {
             return
         }
         buttonIndex += 1
-        // 7: Cheats -> open the cheat popover (mirrors the slot/record popovers)
+        // 6: Cheats -> open the cheat popover (mirrors the slot/record popovers)
         if idx == buttonIndex {
             HardcoreModeManager.shared.attemptUseCheats {
                 self.isCheatPickerShown = true
             }
             return
         }
-        // 8 (conditional): Training
+        // 7 (conditional): Training
         if trainingModeViewModel.hasGameData {
             buttonIndex += 1
             if idx == buttonIndex { toggleTrainingModeOverlay(); return }
         }
-        // 9 (conditional): Guide
+        // 8 (conditional): Guide
         if gameGuideViewModel.hasGuideData {
             buttonIndex += 1
             if idx == buttonIndex { toggleGuideSidebar(); return }
         }
         buttonIndex += 1
-        // 10/11: Fullscreen
+        // 9/10: Fullscreen
         if idx == buttonIndex { toggleFullscreen(); return }
         buttonIndex += 1
-        // 11/12: Auto-fullscreen
+        // 10/11: Auto-fullscreen
         if idx == buttonIndex { toggleAutoFullscreen(); return }
     }
 
     var gamepadToolbarButtonCount: Int {
-        // Indices: 0 stop, 1 pause, 2 restart, 3 save, 4 load, 5 slot,
-        //          6 record, 7 cheats, [8 training], [9 guide], 10/11 fullscreen, 11/12 auto-fullscreen
-        var count = 8
+        // Indices: 0 stop, 1 pause, 2 restart, 3 save, 4 load (browser),
+        //          5 record, 6 cheats, [7 training], [8 guide],
+        //          fullscreen, auto-fullscreen
+        var count = 7
         if trainingModeViewModel.hasGameData { count += 1 }
         if gameGuideViewModel.hasGuideData { count += 1 }
         count += 2 // fullscreen + auto-fullscreen
@@ -208,11 +196,11 @@ extension StandaloneGameWindowController {
     /// for this game, e.g. training/guide). Gamepad navigation skips these so the
     /// focus ring never lands on an invisible control.
     private func computeHiddenToolbarIndices() -> Set<Int> {
-        var visible = Set([0, 1, 2, 3, 4, 5, 6, 7])
-        if trainingModeViewModel.hasGameData { visible.insert(8) }
-        if gameGuideViewModel.hasGuideData { visible.insert(9) }
+        var visible = Set([0, 1, 2, 3, 4, 5, 6])
+        if trainingModeViewModel.hasGameData { visible.insert(7) }
+        if gameGuideViewModel.hasGuideData { visible.insert(8) }
         // Fullscreen / auto-fullscreen sit after the conditional buttons.
-        let fullscreen = 8 + (trainingModeViewModel.hasGameData ? 1 : 0) + (gameGuideViewModel.hasGuideData ? 1 : 0)
+        let fullscreen = 7 + (trainingModeViewModel.hasGameData ? 1 : 0) + (gameGuideViewModel.hasGuideData ? 1 : 0)
         visible.insert(fullscreen)
         visible.insert(fullscreen + 1)
         return Set((0..<gamepadToolbarButtonCount).filter { !visible.contains($0) })

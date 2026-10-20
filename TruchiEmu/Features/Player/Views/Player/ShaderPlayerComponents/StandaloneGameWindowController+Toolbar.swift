@@ -10,6 +10,9 @@ extension StandaloneGameWindowController {
         guard !InputCaptureManager.shared.isCapturing else { return }
         // Never auto-hide while navigating the toolbar by gamepad.
         if isGamepadToolbarMode { return }
+        // Keep the toolbar (and its anchored popover) visible while the save
+        // state browser is open.
+        if isSlotPickerShown { return }
         if isToolbarVisible {
             scheduleHideToolbar()
         } else {
@@ -57,6 +60,18 @@ extension StandaloneGameWindowController {
                 self?.hideToolbar()
             }
         }
+    }
+
+    @MainActor
+    func cancelToolbarAutoHide() {
+        hideToolbarTimer?.invalidate()
+        hideToolbarTimer = nil
+    }
+
+    @MainActor
+    func resumeToolbarAutoHide() {
+        guard !isGamepadToolbarMode else { return }
+        scheduleHideToolbar()
     }
 
     @MainActor

@@ -216,7 +216,7 @@ class FocusableMTKView: MTKView {
         }
         for slot in 0...9 {
             if hotkeys.matches(Self.slotActions[slot], systemID: systemID, event: event) {
-                Task { @MainActor in runner?.currentSlot = slot }
+                Task { @MainActor in runner?.selectSlot(slot) }
                 return
             }
         }

@@ -350,6 +350,7 @@ func launchGame(
         
         // Create runner and window controller
         let runner = EmulatorRunner.forSystem(systemID)
+        runner.selectSlot(AppSettings.getInt("selected_save_slot", defaultValue: 0))
 
  // Auto-detect RA game if achievements enabled but no match yet
  if config.achievementsEnabled, (rom.raGameId == nil || rom.raGameId ?? 0 == 0) {

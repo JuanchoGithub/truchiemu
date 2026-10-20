@@ -269,6 +269,7 @@
   "slot.noSaveInSlot": "このスロットにセーブはありません",
   "slot.saveToSlot": "このスロットに保存",
   "slot.loadFromSlot": "このスロットからロード",
+  "slot.versionCount": "%d バージョン",
   "slot.deleteSlot": "このスロットを削除",
   "noSavedStates": "セーブステートがありません",
   "savedStatesHeader": "ゲームプレイ中に作成されたセーブステート",

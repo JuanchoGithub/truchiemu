@@ -55,9 +55,10 @@ struct GameOverlayToolbar: View {
             toolbarDivider
 
             ToolbarButton(
-                icon: "square.and.arrow.down",
+                icon: "tray.and.arrow.down.fill",
                 label: loc.localized("toolbar.save"),
-                disabled: saveLoadDisabled
+                disabled: saveLoadDisabled,
+                badge: saveLoadDisabled ? nil : slotBadge
             ) {
                 HardcoreModeManager.shared.attemptSaveState {
                     Task { @MainActor in
@@ -68,29 +69,29 @@ struct GameOverlayToolbar: View {
             .gamepadToolbarFocus(index: 3, focusedIndex: focusedIndex)
 
             ToolbarButton(
-                icon: "square.and.arrow.down.on.square",
+                icon: "clock.arrow.circlepath",
                 label: loc.localized("toolbar.load"),
                 disabled: saveLoadDisabled
             ) {
-                HardcoreModeManager.shared.attemptLoadState {
-                    Task { @MainActor in
-                        _ = runner.loadState(slot: runner.currentSlot)
-                    }
-                }
+                windowController.cancelToolbarAutoHide()
+                windowController.isSlotPickerShown = true
             }
             .gamepadToolbarFocus(index: 4, focusedIndex: focusedIndex)
-
-            SlotSelectorButton(
-                currentSlot: runner.currentSlot,
-                isDropdownShown: $windowController.isSlotPickerShown,
-                onSlotChange: { newSlot in
-                    runner.currentSlot = newSlot
-                    AppHaptics.selection()
-                },
-                runner: runner,
-                disabled: saveLoadDisabled
-            )
-            .gamepadToolbarFocus(index: 5, focusedIndex: focusedIndex)
+            .popover(isPresented: $windowController.isSlotPickerShown, arrowEdge: .top) {
+                SaveStatesBrowserView(
+                    runner: runner,
+                    isPresented: $windowController.isSlotPickerShown,
+                    disabled: saveLoadDisabled,
+                    onLoadCompleted: {
+                        if windowController.isGamepadToolbarMode {
+                            windowController.exitGamepadToolbarMode()
+                        }
+                    }
+                )
+                .onDisappear {
+                    windowController.resumeToolbarAutoHide()
+                }
+            }
 
             toolbarDivider
 
@@ -98,7 +99,7 @@ struct GameOverlayToolbar: View {
                 runner: runner,
                 isDropdownShown: $windowController.isRecordStreamPickerShown
             )
-            .gamepadToolbarFocus(index: 6, focusedIndex: focusedIndex)
+            .gamepadToolbarFocus(index: 5, focusedIndex: focusedIndex)
 
             toolbarDivider
 
@@ -110,7 +111,7 @@ struct GameOverlayToolbar: View {
                     windowController.showCheatManager()
                 }
             }
-            .gamepadToolbarFocus(index: 7, focusedIndex: focusedIndex)
+            .gamepadToolbarFocus(index: 6, focusedIndex: focusedIndex)
             .popover(isPresented: $windowController.isCheatPickerShown, arrowEdge: .top) {
                 if let rom = windowController.currentGameROM {
                     CheatPickerView(rom: rom, windowController: windowController)
@@ -184,25 +185,29 @@ struct GameOverlayToolbar: View {
         }
     }
 
+    private var slotBadge: String {
+        runner.currentSlot == -1 ? "A" : "\(max(0, runner.currentSlot))"
+    }
+
     private var trainingFocusIndex: Int {
-        windowController.trainingModeViewModel.hasGameData ? 8 : -1
+        windowController.trainingModeViewModel.hasGameData ? 7 : -1
     }
 
     private var guideFocusIndex: Int {
-        var idx = 8
+        var idx = 7
         if windowController.trainingModeViewModel.hasGameData { idx += 1 }
         return windowController.gameGuideViewModel.hasGuideData ? idx : -1
     }
 
     private var fullscreenFocusIndex: Int {
-        var idx = 8
+        var idx = 7
         if windowController.trainingModeViewModel.hasGameData { idx += 1 }
         if windowController.gameGuideViewModel.hasGuideData { idx += 1 }
         return idx
     }
 
     private var autoFullscreenFocusIndex: Int {
-        var idx = 9
+        var idx = 8
         if windowController.trainingModeViewModel.hasGameData { idx += 1 }
         if windowController.gameGuideViewModel.hasGuideData { idx += 1 }
         return idx

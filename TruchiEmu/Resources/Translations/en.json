@@ -269,6 +269,7 @@
   "slot.noSaveInSlot": "No save in this slot",
   "slot.saveToSlot": "Save to this slot",
   "slot.loadFromSlot": "Load from this slot",
+  "slot.versionCount": "%d versions",
   "slot.deleteSlot": "Delete this slot",
   "noSavedStates": "No saved states",
   "savedStatesHeader": "Save states created during gameplay",

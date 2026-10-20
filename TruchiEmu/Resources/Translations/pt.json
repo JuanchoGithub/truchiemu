@@ -269,6 +269,7 @@
   "slot.noSaveInSlot": "Nenhum salve neste espaço",
   "slot.saveToSlot": "Salvar neste espaço",
   "slot.loadFromSlot": "Carregar deste espaço",
+  "slot.versionCount": "%d versões",
   "slot.deleteSlot": "Excluir este espaço",
   "noSavedStates": "Nenhum estado salvo",
   "savedStatesHeader": "Estados salvos criados durante o jogo",
