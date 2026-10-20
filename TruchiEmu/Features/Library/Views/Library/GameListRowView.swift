@@ -524,6 +524,10 @@ Text(sys.name)
             }
         }
         .task(id: ArtTaskID(romID: rom.id, artVersion: boxArtVersion, hasBoxArt: rom.hasBoxArt)) {
+            // A recycled row can run a task from its previous ROM after the
+            // view has been reconfigured. Never let that stale task write into
+            // the current row.
+            guard !Task.isCancelled else { return }
             // rom.boxArtLocalPath is authoritative and rom.hasBoxArt is correct
             // (resolved during the off-scroll pipeline), so this is zero
             // main-thread I/O. Art-less ROMs show the system placeholder.
@@ -536,12 +540,14 @@ Text(sys.name)
                 if let cached = ImageCache.shared.thumbnailCachedOrPregen(for: artPath, preferredSize: .small) {
                     self.thumb = cached
                 } else if let thumb = await ImageCache.shared.thumbnail(for: artPath, preferredSize: .small) {
+                    guard !Task.isCancelled else { return }
                     self.thumb = thumb
                 }
             } else {
                 self.thumb = nil
             }
 
+            guard !Task.isCancelled else { return }
             if let raGameId = rom.raGameId, raGameId > 0, rom.raMatchStatus == "matched" {
                 raProgress = RetroAchievementsService.cachedAchievementProgress(for: raGameId)
             }

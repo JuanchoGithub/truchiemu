@@ -107,7 +107,7 @@ final class HoloGridCollectionViewItem: NSCollectionViewItem {
         )
         .environmentObject(libraryCached ?? ROMLibrary())
         .environmentObject(categoryManagerCached ?? CategoryManager())
-        hostingView.rootView = AnyView(card)
+        hostingView.rootView = AnyView(card.id(rom.id))
         hostingView.needsLayout = true
     }
 

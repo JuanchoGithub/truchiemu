@@ -107,7 +107,7 @@ final class GridCollectionViewItem: NSCollectionViewItem {
         )
         .environmentObject(libraryCached)
         .environmentObject(categoryManagerCached)
-        hostingView.rootView = AnyView(card)
+        hostingView.rootView = AnyView(card.id(rom.id))
     }
 
     override func prepareForReuse() {

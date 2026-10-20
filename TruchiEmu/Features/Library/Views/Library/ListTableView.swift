@@ -118,7 +118,7 @@ final class ListTableRowView: NSTableCellView {
         )
         .environmentObject(libraryCached)
         .environmentObject(categoryManagerCached)
-        hostingView.rootView = AnyView(row)
+        hostingView.rootView = AnyView(row.id(rom.id))
     }
 
     /// Content height for the current row at the given width. Sets the width

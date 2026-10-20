@@ -374,6 +374,10 @@ struct GameCardView: View {
         .accessibilityHint(Text("Double-click or press Enter to launch"))
         .accessibilityAddTraits(.isButton)
         .task(id: "\(rom.id)-\(rom.hasBoxArt)-\(zoomReloadToken)-\(boxArtService.boxArtUpdated)") {
+            // A recycled item can run a task from its previous ROM after the
+            // view has been reconfigured. Never let that stale task write into
+            // the current card.
+            guard !Task.isCancelled else { return }
             // rom.boxArtLocalPath is now authoritative (resolved during the
             // off-scroll pipeline), so this is zero main-thread I/O. Art-less
             // ROMs bail immediately to the placeholder with no await.
@@ -412,11 +416,13 @@ struct GameCardView: View {
 
             if thumbSize != .tiny {
                 if let tiny = await ImageCache.shared.thumbnail(for: artPath, preferredSize: .tiny) {
+                    guard !Task.isCancelled else { return }
                     self.image = tiny
                 }
             }
 
             if let img = await ImageCache.shared.thumbnail(for: artPath, preferredSize: thumbSize) {
+                guard !Task.isCancelled else { return }
                 self.image = img
                 // After the base thumbnail lands, kick off the blurred-fill
                 // rasterization in the background. The cell renders with the

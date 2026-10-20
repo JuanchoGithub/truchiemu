@@ -338,6 +338,7 @@ struct HoloGameCardView: View {
         // never block the main thread the way the old synchronous
         // `thumbnailSync` pre-pop did.
         .task(id: "\(rom.id)-\(rom.hasBoxArt)-\(zoomReloadToken)-\(boxArtService.boxArtUpdated)") {
+            guard !Task.isCancelled else { return }
             guard rom.hasBoxArt else {
                 if self.image != nil { self.image = nil }
                 return
@@ -346,11 +347,13 @@ struct HoloGameCardView: View {
             let thumbSize = zoomBucket
             if thumbSize != .tiny {
                 if let tiny = await ImageCache.shared.thumbnail(for: artPath, preferredSize: .tiny) {
+                    guard !Task.isCancelled else { return }
                     self.image = tiny
                 }
             }
             if Task.isCancelled { return }
             if let img = await ImageCache.shared.thumbnail(for: artPath, preferredSize: thumbSize) {
+                guard !Task.isCancelled else { return }
                 self.image = img
             }
         }
