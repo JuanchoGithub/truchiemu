@@ -210,12 +210,13 @@ private func parameterSliderRow(for uniform: ShaderUniform) -> some View {
                        Text(uniform.displayLabel)
                            .font(.subheadline)
                        Spacer()
-                       Text(formatUniformValue(currentUniformValue(for: uniform)))
+                       Text(formatUniformValue(currentUniformValue(for: uniform), uniform: uniform))
                            .font(.caption)
                            .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
                            .monospacedDigit()
                    }
     } else {
+                    let stepMode = uniform.stepMode ?? .linear
                     let safeStep = uniform.step > 0 ? uniform.step : 0.001
                     let range = uniform.maxValue - uniform.minValue
                     // Guard against malformed slang `#pragma parameter` values that would
@@ -232,7 +233,7 @@ private func parameterSliderRow(for uniform: ShaderUniform) -> some View {
                                 .font(.subheadline)
                                 .foregroundColor(uniform.disabled ? .secondary : .primary)
                             Spacer()
-                            Text(formatUniformValue(currentUniformValue(for: uniform)))
+                            Text(formatUniformValue(currentUniformValue(for: uniform), uniform: uniform))
                                 .font(.caption)
                                 .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
                                 .monospacedDigit()
@@ -255,7 +256,7 @@ private func parameterSliderRow(for uniform: ShaderUniform) -> some View {
 
                                 Spacer()
 
-                                Text(formatUniformValue(clampedValue))
+                                Text(formatUniformValue(clampedValue, uniform: uniform))
                                     .font(.caption)
                                     .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
                                     .monospacedDigit()
@@ -265,7 +266,15 @@ private func parameterSliderRow(for uniform: ShaderUniform) -> some View {
                                 value: Binding(
                                     get: { clampedValue },
                                     set: { newValue in
-                                        let steppedValue = (newValue / safeStep).rounded() * safeStep
+                                        let steppedValue: Float
+                                        switch stepMode {
+                                        case .integerAboveOne:
+                                            steppedValue = newValue >= 1.0
+                                                ? newValue.rounded()
+                                                : (newValue * 10.0).rounded() / 10.0
+                                        case .linear:
+                                            steppedValue = (newValue / safeStep).rounded() * safeStep
+                                        }
                                         let clamped = min(max(steppedValue, uniform.minValue), uniform.maxValue)
                                         uniformValues[uniform.name] = clamped
                                         onUpdate?(uniform.name, clamped)
@@ -287,7 +296,10 @@ private func parameterSliderRow(for uniform: ShaderUniform) -> some View {
         uniformValues[uniform.name] ?? uniform.defaultValue ?? 0.0 as Float
     }
     
-    private func formatUniformValue(_ value: Float) -> String {
+    private func formatUniformValue(_ value: Float, uniform: ShaderUniform? = nil) -> String {
+        if uniform?.stepMode == .integerAboveOne {
+            return value < 1.0 ? String(format: "%.1f", value) : String(format: "%.0f", value)
+        }
         if value < 0.01 {
             return String(format: "%.3f", value)
         } else if value < 1.0 {
@@ -488,6 +500,7 @@ struct ShaderPresetRowView: View {
         case .lcd: return "iphone"
         case .smoothing: return "sparkles"
         case .composite: return "waveform.path"
+        case .text: return "textformat"
         case .custom: return "wrench"
         }
     }

@@ -121,6 +121,20 @@ struct SharpBilinearUniforms {
     var outputSize: SIMD4<Float>
 }
 
+// Glyph Text uniforms - matches GlyphTextUniforms in GlyphText.metal
+struct GlyphTextUniforms {
+    var cellSize: Float
+    var contrast: Float
+    var gamma: Float
+    var brightness: Float
+    var saturation: Float
+    var background: Float
+    var colorMode: Float
+    var pad: Float
+    var sourceSize: SIMD4<Float>
+    var outputSize: SIMD4<Float>
+}
+
 // Eight Bit Game Boy uniforms - matches EightBitGameBoyUniforms in 8bGameBoy.metal
 struct EightBitGameBoyUniforms {
     var gridStrength: Float

@@ -1174,6 +1174,7 @@
 		D66B93781AA1F09200B679BE /* MSX.png in Resources */ = {isa = PBXBuildFile; fileRef = 7593A3081245E3AFB23AD3B9 /* MSX.png */; };
 		D66D18734803DF49EBD1B61B /* appIcon128.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 2E4D9A8F1E7FEDBCD0A9B62D /* appIcon128.jpg */; };
 		D6737C5333699754970E51E8 /* input_systemLabels_pokemon_mini.json in Resources */ = {isa = PBXBuildFile; fileRef = 7ABD85DBD8EF91C89DA606BB /* input_systemLabels_pokemon_mini.json */; };
+		D682149969AAEF9B555AAFE4 /* GlyphText.metal in Sources */ = {isa = PBXBuildFile; fileRef = 27C6D43ABC544BF059F6AE40 /* GlyphText.metal */; };
 		D6AE742A1E61C54218E15183 /* holo_metal.png in Resources */ = {isa = PBXBuildFile; fileRef = 8EB2FA18857A750DDA8C676A /* holo_metal.png */; };
 		D6F2FCD149D20173B079DB9E /* holo_crossover.png in Resources */ = {isa = PBXBuildFile; fileRef = CBE0822EF493F2A3F9EFA369 /* holo_crossover.png */; };
 		D6FF09E31ACA00FC7494B9E0 /* fightdata_soulclbr.json in Resources */ = {isa = PBXBuildFile; fileRef = F627444ABF1C6A5C798EC26F /* fightdata_soulclbr.json */; };
@@ -1625,6 +1626,7 @@
 		278B2E466CEE5561AE793161 /* input_coreLabels_ep128emu.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_ep128emu.json; sourceTree = "<group>"; };
 		27AE5FEE4E27F0B4505F403E /* frame.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = frame.hpp; sourceTree = "<group>"; };
 		27B228925202DC495CE8144E /* input_coreOverrides_mame2010.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_mame2010.json; sourceTree = "<group>"; };
+		27C6D43ABC544BF059F6AE40 /* GlyphText.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = GlyphText.metal; sourceTree = "<group>"; };
 		27D0B274B9DD6DC3564A70EB /* n64_ique-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "n64_ique-cheats.zip"; sourceTree = "<group>"; };
 		27D53A2C5249F274B10FB5A2 /* input_coreLabels_imageviewer.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_imageviewer.json; sourceTree = "<group>"; };
 		27D70201F3625EF918C47167 /* input_coreLabels_cannonball.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_cannonball.json; sourceTree = "<group>"; };
@@ -3315,6 +3317,7 @@
 				61341295EE2B8A9A3EE7AF16 /* ForceAlpha.metal */,
 				61128A5490F95F51CF67D3B9 /* GBA.metal */,
 				3C9C7DF8B3C788A24004D789 /* GlassOrb.metal */,
+				27C6D43ABC544BF059F6AE40 /* GlyphText.metal */,
 				9B697EA2D197AF7DAFA8D2BE /* HoloBump.metal */,
 				EFD1D1521FD51B428CD6D464 /* LiteCRT.metal */,
 				3BD337DAF7B206DF941EB16D /* LottesCRT.metal */,
@@ -6354,6 +6357,7 @@
 				A09C8307DE97887156851C76 /* GitHubAPIModels.swift in Sources */,
 				A699B8997F87105490413BC8 /* GlassOrb.metal in Sources */,
 				CCF3EE1346F3B310A58EA263 /* GlassOrbPlayButton.swift in Sources */,
+				D682149969AAEF9B555AAFE4 /* GlyphText.metal in Sources */,
 				40235C6A5048EAABFCDA1EB0 /* GridCollectionView.swift in Sources */,
 				9DF8CAD44768455B2895F2A7 /* HLTBWebSearchSheet.swift in Sources */,
 				DA7758EF636546C3E8211BFF /* HaishinKitLogger.swift in Sources */,

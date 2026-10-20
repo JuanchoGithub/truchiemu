@@ -384,6 +384,7 @@ class ShaderManager: ObservableObject {
         case "DotMatrixLCD": result = "fragmentDotMatrixLCD"
         case "LottesCRT": result = "fragmentLottesCRT"
         case "SharpBilinear": result = "fragmentSharpBilinear"
+        case "GlyphText": result = "fragmentGlyphText"
         case "LCDGrid": result = "fragmentLCDGrid"
         case "LiteCRT": result = "fragmentLiteCRT"
         case "ScaleSmooth": result = "fragmentScaleSmooth"

@@ -7,6 +7,7 @@ enum ShaderType: String, Codable, CaseIterable {
     case lcd            // LCD grid for handhelds
     case smoothing      // Edge-directed upscaling (xBRZ, etc.)
     case composite      // Composite/VHS blur
+    case text           // ASCII / glyph rendering
     case custom         // User-defined or other
     
     var displayName: String {
@@ -15,6 +16,7 @@ enum ShaderType: String, Codable, CaseIterable {
         case .lcd:      return LocalizationManager.shared.localized("shader.type.lcd")
         case .smoothing: return LocalizationManager.shared.localized("shader.type.smoothing")
         case .composite: return LocalizationManager.shared.localized("shader.type.composite")
+        case .text:     return LocalizationManager.shared.localized("shader.type.text")
         case .custom:   return LocalizationManager.shared.localized("shader.type.custom")
         }
     }
@@ -60,6 +62,11 @@ enum ShaderUniformType: String, Codable {
   case dropdown
 }
 
+enum ShaderUniformStepMode: String, Codable {
+  case linear
+  case integerAboveOne
+}
+
 struct ShaderUniformOption: Codable, Hashable {
   var value: Float
   var label: String
@@ -93,6 +100,9 @@ struct ShaderUniform: Codable, Hashable, Identifiable {
   /// block has no binding for them. Surfacing this in the UI as a disabled slider
   /// avoids the false impression of non-functional controls.
   var disabled: Bool = false
+  /// Optional non-linear step behavior. `integerAboveOne` keeps one decimal place
+  /// below 1.0 and whole numbers at and above 1.0.
+  var stepMode: ShaderUniformStepMode? = nil
 
   var displayLabel: String {
     if let displayName = displayName {
@@ -958,6 +968,37 @@ description: "Game Boy Color with temporal feedback, ghosting, and iridescent LC
             ],
             description: "CRT simulation by J. Kyle Pittman (Super Win the Game). Faux-NTSC composite, phosphor persistence, shadow mask, and bloom.",
             recommendedSystems: ["nes", "snes", "genesis", "psx", "arcade"]
+        ),
+
+        // Glyph Text (ASCII rendering)
+        ShaderPreset(
+            id: "builtin-glyph-text",
+            name: "Glyph Text",
+            shaderType: .text,
+            passes: [
+                ShaderPass(
+                    shaderFile: "GlyphText",
+                    filter: .nearest,
+                    scaleX: 1.0, scaleY: 1.0,
+                    scaleTypeX: .viewport, scaleTypeY: .viewport
+                )
+            ],
+            globalUniforms: [
+                ShaderUniform(name: "cellSize", defaultValue: 2.0, minValue: 0.1, maxValue: 16.0, step: 0.1, displayName: "Cell Size (source pixels)", stepMode: .integerAboveOne),
+                ShaderUniform(name: "contrast", defaultValue: 1.15, minValue: 0.5, maxValue: 2.5, displayName: "Contrast"),
+                ShaderUniform(name: "gamma", defaultValue: 1.0, minValue: 0.3, maxValue: 2.5, displayName: "Gamma"),
+                ShaderUniform(name: "brightness", defaultValue: 1.0, minValue: 0.2, maxValue: 2.0, displayName: "Brightness"),
+                ShaderUniform(name: "saturation", defaultValue: 0.85, minValue: 0.0, maxValue: 1.0, displayName: "Saturation"),
+                ShaderUniform(name: "background", defaultValue: 0.0, minValue: 0.0, maxValue: 0.25, step: 0.01, displayName: "Background"),
+                ShaderUniform(name: "colorMode", defaultValue: 0.0, minValue: 0.0, maxValue: 3.0, step: 1.0, displayName: "Color", type: .dropdown, options: [
+                    ShaderUniformOption(value: 0.0, label: "Source Color"),
+                    ShaderUniformOption(value: 1.0, label: "Green Phosphor"),
+                    ShaderUniformOption(value: 2.0, label: "Amber Phosphor"),
+                    ShaderUniformOption(value: 3.0, label: "White"),
+                ]),
+            ],
+            description: "Renders the image as a grid of monospaced ASCII characters. Character density follows luminance, and glyphs can keep the source colors or use a phosphor tint.",
+            recommendedSystems: ["nes", "snes", "genesis", "gb", "gbc", "gba", "psx", "n64", "arcade", "scummvm"]
         ),
 
         // No Filter (raw pixels)

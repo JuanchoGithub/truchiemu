@@ -76,6 +76,7 @@ HStack {
         case .lcd: return "iphone"
         case .smoothing: return "sparkles"
         case .composite: return "waveform.path"
+        case .text: return "textformat"
         case .custom: return "wrench"
         }
     }

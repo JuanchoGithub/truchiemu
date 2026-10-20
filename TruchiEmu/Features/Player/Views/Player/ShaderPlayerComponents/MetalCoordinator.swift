@@ -1304,6 +1304,20 @@ outputHeight: Float(viewport.height)
                             outputSize: SIMD4<Float>(vpW, vpH, 0.0, 0.0)
                         )
                         enc.setFragmentBytes(&u, length: MemoryLayout<SharpBilinearUniforms>.stride, index: 0)
+                    case "fragmentGlyphText":
+                        var u = GlyphTextUniforms(
+                            cellSize: getUniform("cellSize", fallback: 2.0),
+                            contrast: getUniform("contrast", fallback: 1.15),
+                            gamma: getUniform("gamma", fallback: 1.0),
+                            brightness: getUniform("brightness", fallback: 1.0),
+                            saturation: getUniform("saturation", fallback: 0.85),
+                            background: getUniform("background", fallback: 0.0),
+                            colorMode: getUniform("colorMode", fallback: 0.0),
+                            pad: 0,
+                            sourceSize: SIMD4<Float>(fw, fh, 1.0/fw, 1.0/fh),
+                            outputSize: SIMD4<Float>(vpW, vpH, 1.0/vpW, 1.0/vpH)
+                        )
+                        enc.setFragmentBytes(&u, length: MemoryLayout<GlyphTextUniforms>.stride, index: 0)
                     case "fragment8bGameBoy":
                         let colorB = getUniform("colorBoost", fallback: 1.0)
                         var u = EightBitGameBoyUniforms(
