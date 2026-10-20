@@ -1313,7 +1313,7 @@ outputHeight: Float(viewport.height)
                             saturation: getUniform("saturation", fallback: 0.85),
                             background: getUniform("background", fallback: 0.0),
                             colorMode: getUniform("colorMode", fallback: 0.0),
-                            pad: 0,
+                            glyphSet: getUniform("glyphSet", fallback: 0.0),
                             sourceSize: SIMD4<Float>(fw, fh, 1.0/fw, 1.0/fh),
                             outputSize: SIMD4<Float>(vpW, vpH, 1.0/vpW, 1.0/vpH)
                         )

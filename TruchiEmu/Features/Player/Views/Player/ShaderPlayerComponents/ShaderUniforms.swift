@@ -130,7 +130,7 @@ struct GlyphTextUniforms {
     var saturation: Float
     var background: Float
     var colorMode: Float
-    var pad: Float
+    var glyphSet: Float
     var sourceSize: SIMD4<Float>
     var outputSize: SIMD4<Float>
 }

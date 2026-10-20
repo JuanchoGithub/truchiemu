@@ -996,8 +996,13 @@ description: "Game Boy Color with temporal feedback, ghosting, and iridescent LC
                     ShaderUniformOption(value: 2.0, label: "Amber Phosphor"),
                     ShaderUniformOption(value: 3.0, label: "White"),
                 ]),
+                ShaderUniform(name: "glyphSet", defaultValue: 0.0, minValue: 0.0, maxValue: 2.0, step: 1.0, displayName: "Glyph Set", type: .dropdown, options: [
+                    ShaderUniformOption(value: 0.0, label: "ASCII"),
+                    ShaderUniformOption(value: 1.0, label: "Extended"),
+                    ShaderUniformOption(value: 2.0, label: "Blocks"),
+                ]),
             ],
-            description: "Renders the image as a grid of monospaced ASCII characters. Character density follows luminance, and glyphs can keep the source colors or use a phosphor tint.",
+            description: "Renders the image as a grid of monospaced glyphs. Density follows luminance; choose ASCII, Extended (Latin, Greek, shading), or Blocks, and keep source colors or use a phosphor tint.",
             recommendedSystems: ["nes", "snes", "genesis", "gb", "gbc", "gba", "psx", "n64", "arcade", "scummvm"]
         ),
 
