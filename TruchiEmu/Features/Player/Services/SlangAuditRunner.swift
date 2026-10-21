@@ -108,6 +108,18 @@ enum SlangAuditRunner {
             "border/gameboy-player/gameboy-player-tvout+interlacing.slangp",
             "border/gameboy-player/gameboy-player-tvout-gba-color.slangp",
             "border/gameboy-player/gameboy-player-tvout-gba-color+interlacing.slangp",
+            // Single-pass preset whose final pass samples its own
+            // `PassFeedback0` output. Guards the librashader Metal
+            // feedback-intermediate path: the intermediate must render
+            // into its own FBO extent, not the host viewport.
+            "motionblur/feedback.slangp",
+            // Source-scaled chain: earlier passes scale 3x, so the
+            // source-sized intermediate must be 3x the input, not input
+            // sized. Guards `sourceSizedIntermediateScale`.
+            "edge-smoothing/scalefx/scalefx.slangp",
+            // Explicit source final pass with a 0.5 y factor. Guards the
+            // smaller-than-input intermediate (upscaled on blit).
+            "misc/half_res.slangp",
         ]
         for rel in survivingCurated {
             let url = root.appendingPathComponent(rel)
@@ -250,23 +262,26 @@ enum SlangAuditRunner {
         // Compute the target aspect for `computeAspectOK` — this is the
         // aspect we expect the rendered chain output's bbox to match.
         // Match what `MetalCoordinator.draw` actually does:
-        // - scale_type = "viewport" final pass (e.g. plain CRT presets):
-        //   host pre-letterboxes the viewport to the input's aspect.
-        // - scale_type = "absolute" final pass (e.g. gameboy-player-tvout,
-        //   koko-aio): host passes the full canvas as the viewport, and
-        //   the chain's intrinsic outer-frame aspect is what we measure
-        //   against.
+        // - final pass with no declared scale, or `scale_type = viewport`
+        //   (plain CRT presets): the host pre-letterboxes the viewport to
+        //   the input's aspect. An omitted scale is full output, not source.
+        // - border/bezel chains (`finalPassIsAbsolute`): the host passes the
+        //   full canvas as the viewport, and the chain owns its outer-frame
+        //   layout. The non-black bbox is the border itself, whose aspect is
+        //   an artistic choice (e.g. gameboy-player-tvout stretches its
+        //   608x448 border to the viewport width). Skip the bbox check.
+        //
+        // The audit renders the chain direct. The app may route an explicit
+        // source-scaled final pass through a source-sized texture; that
+        // route preserves the same aspect, so this check still applies.
         let inputAspect = Float(inputW) / Float(inputH)
-        let canvasAspect = Float(outW) / Float(outH)
-        let aspect: Float
+        let aspect = inputAspect
         let vp: MTLViewport
         if SlangCompilerService.shared.finalPassIsAbsolute {
-            aspect = canvasAspect
             vp = MTLViewport(originX: 0, originY: 0,
                              width: Double(outW), height: Double(outH),
                              znear: 0.0, zfar: 1.0)
         } else {
-            aspect = inputAspect
             let targetAspect = CGFloat(aspect)
             var drawW = CGFloat(outW)
             var drawH = drawW / targetAspect
@@ -311,7 +326,9 @@ enum SlangAuditRunner {
             nonBlack = computeNonBlack(bytes: outBytes, w: outW, h: outH)
             nonPassThrough = computeNonPassThrough(outBytes: outBytes, outW: outW, outH: outH,
                                                   inputBytes: inputBytes, inW: inputW, inH: inputH)
-            aspectOK = computeAspectOK(bytes: outBytes, w: outW, h: outH, expectedAspect: aspect)
+            aspectOK = SlangCompilerService.shared.finalPassIsAbsolute
+                ? true
+                : computeAspectOK(bytes: outBytes, w: outW, h: outH, expectedAspect: aspect)
         }
 
         // Always write the PNG if we have bytes — even a black frame is useful
@@ -408,8 +425,11 @@ enum SlangAuditRunner {
     }
 
     private static func makeOutputTexture(device: MTLDevice, w: Int, h: Int) -> MTLTexture? {
+        // Match the app's drawable format. librashader's Metal runtime
+        // compiles per-pass pipelines for BGRA8Unorm; an RGBA8 output trips
+        // Metal validation with a framebuffer/pipeline format mismatch.
         let desc = MTLTextureDescriptor.texture2DDescriptor(
-            pixelFormat: .rgba8Unorm,
+            pixelFormat: .bgra8Unorm,
             width: w, height: h,
             mipmapped: false
         )
@@ -425,6 +445,12 @@ enum SlangAuditRunner {
                          bytesPerRow: w * 4,
                          from: region,
                          mipmapLevel: 0)
+        }
+        // Checks and PNG output expect RGBA; the texture is BGRA.
+        if tex.pixelFormat == .bgra8Unorm {
+            for i in stride(from: 0, to: out.count, by: 4) {
+                out.swapAt(i, i + 2)
+            }
         }
         return out
     }

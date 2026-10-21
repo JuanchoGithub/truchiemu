@@ -75,6 +75,7 @@ final class XPCBridgeAdapter {
     // the in-process call is a plain pointer dereference with no XPC cost.
     private let aspectRatioCacheLock = NSLock()
     private var cachedAspectRatio: Float?
+    private var cachedFPS: Double = 0
 
     private init() {
         g_xpcModeActive = ObjCBool(useXPC)
@@ -279,6 +280,7 @@ final class XPCBridgeAdapter {
         // `onGeometryChanged` callback.
         aspectRatioCacheLock.lock()
         cachedAspectRatio = nil
+        cachedFPS = 0
         aspectRatioCacheLock.unlock()
         hasLoggedPoll = false
     }
@@ -734,6 +736,26 @@ final class XPCBridgeAdapter {
         return xpcReplySync(timeout: .seconds(2)) {
             XPCConnectionManager.shared.remoteProxy?.getAudioSampleRate(reply: $0)
         } ?? 44100.0
+    }
+
+    func fps() -> Double {
+        guard useXPC else { return LibretroBridgeSwift.fps() }
+        // FPS is fixed for the session; cache the first successful reply so
+        // the render thread does not pay a synchronous XPC round trip.
+        aspectRatioCacheLock.lock()
+        let cached = cachedFPS
+        aspectRatioCacheLock.unlock()
+        if cached > 0 { return cached }
+
+        let result = xpcReplySync(timeout: .seconds(2)) {
+            XPCConnectionManager.shared.remoteProxy?.getFPS(reply: $0)
+        }
+        if let result, result > 0 {
+            aspectRatioCacheLock.lock()
+            cachedFPS = result
+            aspectRatioCacheLock.unlock()
+        }
+        return result ?? 0
     }
 
     // MARK: - Save States (XPC async with semaphore for sync needs)

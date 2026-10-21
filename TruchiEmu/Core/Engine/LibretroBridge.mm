@@ -453,6 +453,10 @@ g_frame_poll_callback = callback;
     return (rate > 0.0) ? rate : 44100.0;
 }
 
++ (double)fps {
+    return g_instance ? g_instance->_avInfo.timing.fps : 0.0;
+}
+
 + (NSString *)getOptionValueForKey:(NSString *)key {
     dispatch_once(&g_optAccessQueueOnce, ^{
         g_optAccessQueue = dispatch_queue_create("com.truchiemu.bridge.options", DISPATCH_QUEUE_SERIAL);

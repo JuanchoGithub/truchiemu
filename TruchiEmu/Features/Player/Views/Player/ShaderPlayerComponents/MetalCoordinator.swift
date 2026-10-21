@@ -17,6 +17,8 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
     private var temporalTextures: [MTLTexture?] = [nil, nil, nil, nil, nil]
     private var temporalIndex: Int = 0 // Cycles 0-4, points to "current" frame
     private var frameCounter: UInt32 = 0
+    /// Timestamp of the previous slang frame, used to feed `FrametimeDelta`.
+    private var lastSlangFrameTime: CFTimeInterval = 0
     // Intermediate targets for the Pittman CRTSim chain (MinorKeyGames CRTSim
     // port): composite + previous-composite at source size (even/odd RTT
     // ping-pong in the original), screen + upsample at full size, Poisson
@@ -115,12 +117,12 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
     private var pendingOnComplete: (([URL]) -> Void)?
 
     /// Source-sized offscreen texture used as the slang chain's render
-    /// target when the active chain has `PassFeedback` binding with
-    /// `scale_type = source` (see `SlangPreset.hasPassFeedbackWithSourceScale`).
-    /// librashader's Metal runtime scissor rect overflows on those chains
-    /// when the host viewport is drawable-sized, so we route the chain
-    /// through this source-sized texture and then bilinearly letterbox it
-    /// into the drawable.
+    /// target when the active chain's final pass explicitly declares
+    /// `scale_type = source` on both axes and no earlier pass is
+    /// viewport/absolute-scaled (see
+    /// `SlangPreset.needsSourceSizedIntermediate`). The chain renders into
+    /// this texture and the result is bilinearly letterboxed into the
+    /// drawable, matching RetroArch's composite-then-upscale path.
     private var slangSourceSizedTexture: MTLTexture?
     private var slangSourceSizedTextureWidth: Int = 0
     private var slangSourceSizedTextureHeight: Int = 0
@@ -161,6 +163,7 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
         resizeTimer?.invalidate()
         resizeTimer = nil
         frameCounter = 0
+        lastSlangFrameTime = 0
         innerDrawCount = 0
         recordingTextureCache = nil
         recordingPassthroughPipeline = nil
@@ -896,6 +899,25 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
                 systemID: runner.rom?.systemID
             )
 
+            // The `AspectRatio` slang uniform describes the core's output,
+            // not the host letterbox or the 16:10 display cap. Use the raw
+            // core aspect when the core reports one.
+            let coreAspect = XPCBridgeAdapter.shared.aspectRatio()
+            let slangAspect: Float = coreAspect > 0.0
+                ? coreAspect
+                : Float(frameTex.width) / Float(max(frameTex.height, 1))
+
+            let coreFPS = XPCBridgeAdapter.shared.fps()
+            let slangFPS: Float = coreFPS > 0 ? Float(coreFPS) : 60
+
+            let now = CACurrentMediaTime()
+            let frametimeDeltaMs: UInt32 = lastSlangFrameTime > 0
+                ? UInt32(min(max(now - lastSlangFrameTime, 0), 1.0) * 1000.0)
+                : 0
+            lastSlangFrameTime = now
+
+            let frameDirection: Int32 = runner.isRewindingStorage ? -1 : 1
+
             // Two viewport strategies depending on the chain's final-pass
             // scale type (parsed from the .slangp at activation time and
             // cached on SlangCompilerService):
@@ -920,34 +942,25 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
                 slangVP = computeViewport(targetAspect: targetAspect, viewSize: view.drawableSize)
             }
 
-            // Workaround for a librashader Metal-runtime scissor bug on
-            // PassFeedback chains with `scale_type = source` (see
-            // `SlangPreset.hasPassFeedbackWithSourceScale` for the full
-            // rationale). librashader renders the final pass twice — first
-            // into a source-sized intermediate (to capture the feedback for
-            // the next frame), then into the host's drawable — and both
-            // renders use the host viewport's scissor. The intermediate is
-            // only source-sized, so a drawable-sized scissor aborts the
-            // process with `Set Scissor Rect Validation` when the game
-            // window is upscaled (the user-visible crash).
+            // One source-sized route remains:
             //
-            // Routing the chain into a source-sized offscreen texture
-            // (with a source-sized viewport) avoids the scissor overflow
-            // on the intermediate render. After the chain finishes we
-            // bilinearly letterbox the source-sized output into the
-            // drawable, replacing both the upscale and the alpha fixup
-            // in a single pass.
+            // - `needsSourceSizedIntermediate`: the final pass explicitly
+            //   declares `scale_type = source` on both axes and every pass is
+            //   source-scaled. Rendering this chain at its declared output
+            //   size keeps the final pass's `params.OutputSize` correct,
+            //   matching the RetroArch composite-then-upscale path. A final
+            //   pass with no declared scale is NOT in this group: librashader
+            //   renders it directly to the full output.
             //
-            // The same route is taken when the chain's final pass declares
-            // (or defaults to) `scale_type = source` even without pass
-            // feedback (`needsSourceSizedIntermediate`). Multi-pass presets
-            // like `ntsc-md-rainbows` compile shaders that read
-            // `params.OutputSize`; routing straight to a drawable-sized
-            // output makes `OutputSize` resolve to the window dimensions,
-            // breaking the chain's dimensioned math (NTSC `TimePerSample`,
-            // `VScale`, etc.). Going through the source-sized intermediate
-            // keeps `OutputSize` source-sized as the shader authors
-            // expected, matching the RetroArch composite-then-upscale path.
+            //   The intermediate is not always input-sized: a source-scaled
+            //   pass multiplies the running size (e.g. the scalefx presets
+            //   scale 3x before the final pass), so apply
+            //   `sourceSizedIntermediateScale` to the input dimensions.
+            //
+            // Final-pass feedback no longer needs a host route. The patched
+            // runtime (`scripts/build_librashader.sh`) renders the feedback
+            // intermediate into its own FBO extent instead of the host
+            // viewport, so the scissor rect no longer overflows.
             //
             // librashader's Metal runtime compiles its per-pass pipelines
             // against a fixed `MTLPixelFormatBGRA8Unorm` color attachment
@@ -956,23 +969,20 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
             // chain output we provide. Mismatching the two trips Metal's
             // `setRenderPipelineState` validation abort. The
             // `needsSourceSizedIntermediate` route must therefore use
-            // `.bgra8Unorm`. The existing `needsSourceSizedOutput` route
-            // (PassFeedback workaround) was already validated against
-            // `frameTex.pixelFormat`, so we preserve its behavior.
-            let sourceSizedFormat: MTLPixelFormat = SlangCompilerService.shared.needsSourceSizedIntermediate
-                ? .bgra8Unorm
-                : frameTex.pixelFormat
-            if (SlangCompilerService.shared.needsSourceSizedOutput
-                || SlangCompilerService.shared.needsSourceSizedIntermediate),
+            // `.bgra8Unorm`.
+            let intermediateScale = SlangCompilerService.shared.sourceSizedIntermediateScale
+            let intermediateWidth = min(16384, max(1, Int((Double(frameTex.width) * Double(intermediateScale.x)).rounded())))
+            let intermediateHeight = min(16384, max(1, Int((Double(frameTex.height) * Double(intermediateScale.y)).rounded())))
+            if SlangCompilerService.shared.needsSourceSizedIntermediate,
                let chainOutput = ensureSlangSourceSizedTexture(
-                width: frameTex.width,
-                height: frameTex.height,
-                format: sourceSizedFormat,
+                width: intermediateWidth,
+                height: intermediateHeight,
+                format: .bgra8Unorm,
                 device: device
                ) {
                 let chainVP = MTLViewport(originX: 0, originY: 0,
-                                          width: Double(frameTex.width),
-                                          height: Double(frameTex.height),
+                                          width: Double(intermediateWidth),
+                                          height: Double(intermediateHeight),
                                           znear: 0.0, zfar: 1.0)
                 SlangCompilerService.shared.renderFrame(
                     commandBuffer: cmdBuffer,
@@ -980,7 +990,10 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
                     outputTexture: chainOutput,
                     frameCount: UInt64(frameCounter),
                     viewport: chainVP,
-                    aspectRatio: Float(targetAspect)
+                    aspectRatio: slangAspect,
+                    frameDirection: frameDirection,
+                    framesPerSecond: slangFPS,
+                    frametimeDelta: frametimeDeltaMs
                 )
                 blitSlangOutputToDrawable(
                     device: device,
@@ -998,7 +1011,10 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
                     outputTexture: drawable.texture,
                     frameCount: UInt64(frameCounter),
                     viewport: slangVP,
-                    aspectRatio: Float(targetAspect)
+                    aspectRatio: slangAspect,
+                    frameDirection: frameDirection,
+                    framesPerSecond: slangFPS,
+                    frametimeDelta: frametimeDeltaMs
                 )
 
                 // librashader's slang chain clears each render pass with clearColor
@@ -1068,6 +1084,7 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
                     }
                 }
             }
+            frameCounter &+= 1
             cmdBuffer.present(drawable)
             cmdBuffer.commit()
             return
@@ -2330,11 +2347,9 @@ outputHeight: Float(viewport.height)
         }
     }
 
-    /// Lazily-allocates a source-sized texture sized to match the slang
-    /// chain's expected `OutputSize` (== input texture dimensions for
-    /// `scale_type = source` chains). The chain renders into this texture
-    /// to avoid librashader's Metal scissor-rect bug on PassFeedback chains
-    /// (see `SlangPreset.hasPassFeedbackWithSourceScale`).
+    /// Lazily-allocates a texture sized to match the slang chain's declared
+    /// `OutputSize` (input dimensions times the chain's source-scale factors;
+    /// see `SlangPreset.sourceSizedIntermediateScale`).
     ///
     /// Cached and reused as long as `(width, height, format)` stays the
     /// same. Recreated lazily on size/format change. Returns nil if the

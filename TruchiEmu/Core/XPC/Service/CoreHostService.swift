@@ -526,6 +526,10 @@ class CoreHostImplementation: NSObject, CoreHostProtocol {
         reply(LibretroBridge.audioSampleRate())
     }
 
+    func getFPS(reply: @escaping (Double) -> Void) {
+        reply(LibretroBridge.fps())
+    }
+
     func setControllerPortDevice(port: Int, device: Int, reply: @escaping () -> Void) {
         LibretroBridge.setControllerPortDevice(UInt32(port), device: UInt32(device))
         reply()

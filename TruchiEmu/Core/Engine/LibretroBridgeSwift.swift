@@ -307,6 +307,10 @@ static func setKeyState(retroID: Int, pressed: Bool) {
         return LibretroBridge.audioSampleRate()
     }
 
+    static func fps() -> Double {
+        return LibretroBridge.fps()
+    }
+
     // MARK: - Core Options Accessors
 
     

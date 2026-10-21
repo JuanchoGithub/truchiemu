@@ -16,14 +16,13 @@ class SlangCompilerService: ObservableObject {
     /// `loadAndActivatePreset` and `destroyFilterChain`.
     nonisolated(unsafe) private var _finalPassIsAbsolute: Bool = false
     nonisolated(unsafe) private var _needsSourceSizedIntermediate: Bool = false
+    /// Multipliers applied to the input texture to size the source-scaled
+    /// intermediate (usually 1x1; source-scaled passes can make it larger or
+    /// smaller). Mirrors `SlangPreset.sourceSizedIntermediateScale`.
+    nonisolated(unsafe) private var _sourceSizedIntermediateScale: (x: Float, y: Float) = (1, 1)
 
-    /// Cached flag mirroring `activePreset?.hasPassFeedbackWithSourceScale`.
-    /// When true, the Metal coordinator must render the chain into a
-    /// source-sized offscreen texture instead of the host drawable, then
-    /// upscale to the drawable itself. This works around a librashader
-    /// Metal-runtime scissor bug for PassFeedback chains (see
-    /// `SlangPreset.hasPassFeedbackWithSourceScale` for details).
-    nonisolated(unsafe) private var _needsSourceSizedOutput: Bool = false
+    /// Set by `requestHistoryClear()` and consumed by the next `renderFrame`.
+    nonisolated(unsafe) private var _clearHistoryRequested: Bool = false
 
     private init() {}
 
@@ -99,11 +98,12 @@ class SlangCompilerService: ObservableObject {
         _filterChain = chain
         _queue = queue
         _finalPassIsAbsolute = slangPreset.usesAbsoluteFinalPass
-        _needsSourceSizedOutput = slangPreset.hasPassFeedbackWithSourceScale
-        _needsSourceSizedIntermediate = slangPreset.hasSourceSizedFinalPass
+        _needsSourceSizedIntermediate = slangPreset.needsSourceSizedIntermediate
+        _sourceSizedIntermediateScale = slangPreset.sourceSizedIntermediateScale
+        _clearHistoryRequested = false
         chainLock.unlock()
         activePreset = slangPreset
-        LoggerService.info(category: "Slang", "Chain created successfully for preset: \(slangPreset.name) (final_pass_absolute=\(slangPreset.usesAbsoluteFinalPass), pass_feedback_source=\(slangPreset.hasPassFeedbackWithSourceScale), source_sized_intermediate=\(slangPreset.hasSourceSizedFinalPass))")
+        LoggerService.info(category: "Slang", "Chain created successfully for preset: \(slangPreset.name) (final_pass_absolute=\(slangPreset.usesAbsoluteFinalPass), final_pass_feedback=\(slangPreset.hasFinalPassFeedback), source_sized_intermediate=\(slangPreset.needsSourceSizedIntermediate))")
         return slangPreset
     }
 
@@ -114,23 +114,27 @@ class SlangCompilerService: ObservableObject {
         Self.shared.chainLock.withLock { Self.shared._finalPassIsAbsolute }
     }
 
-    /// Nonisolated read of the cached `needs_source_sized_output` flag.
-    /// When true, the Metal coordinator must render the chain into a
-    /// source-sized offscreen texture instead of the host drawable (see
-    /// `_needsSourceSizedOutput` for the librashader scissor-bug rationale).
-    nonisolated var needsSourceSizedOutput: Bool {
-        Self.shared.chainLock.withLock { Self.shared._needsSourceSizedOutput }
+    /// Asks the next `renderFrame` to clear the chain's history textures.
+    /// Call after a save-state load or a core reset, so temporal effects do
+    /// not blend frames from before the state change.
+    nonisolated func requestHistoryClear() {
+        Self.shared.chainLock.withLock {
+            Self.shared._clearHistoryRequested = true
+        }
     }
 
     /// Nonisolated read of the cached `needs_source_sized_intermediate` flag.
-    /// When true, the chain's final pass declares (or defaults to)
-    /// `scale_type = source`, so the host must route the chain through a
-    /// source-sized offscreen texture before the host blits to the drawable
-    /// — otherwise shaders reading `params.OutputSize` get the window
-    /// dimensions instead of the source dimensions and break their math
-    /// (see `SlangPreset.hasSourceSizedFinalPass` for the rationale).
+    /// True only for chains whose final pass explicitly declares
+    /// `scale_type = source` on both axes and whose earlier passes are not
+    /// viewport/absolute-scaled (see `SlangPreset.needsSourceSizedIntermediate`).
     nonisolated var needsSourceSizedIntermediate: Bool {
         Self.shared.chainLock.withLock { Self.shared._needsSourceSizedIntermediate }
+    }
+
+    /// Multipliers the source-sized intermediate applies to the input texture.
+    /// `(1, 1)` unless the active chain scales source passes.
+    nonisolated var sourceSizedIntermediateScale: (x: Float, y: Float) {
+        Self.shared.chainLock.withLock { Self.shared._sourceSizedIntermediateScale }
     }
 
     nonisolated func renderFrame(commandBuffer: MTLCommandBuffer,
@@ -138,9 +142,14 @@ class SlangCompilerService: ObservableObject {
                                   outputTexture: MTLTexture,
                                   frameCount: UInt64,
                                   viewport: MTLViewport,
-                                  aspectRatio: Float) {
-        let chain: OpaquePointer? = Self.shared.chainLock.withLock {
-            Self.shared._filterChain
+                                  aspectRatio: Float,
+                                  frameDirection: Int32 = 1,
+                                  framesPerSecond: Float = 0,
+                                  frametimeDelta: UInt32 = 0) {
+        let (chain, clearHistory): (OpaquePointer?, Bool) = Self.shared.chainLock.withLock {
+            let requested = Self.shared._clearHistoryRequested
+            Self.shared._clearHistoryRequested = false
+            return (Self.shared._filterChain, requested)
         }
         guard let chain = chain else {
             #if LOG_DEBUG
@@ -161,14 +170,14 @@ class SlangCompilerService: ObservableObject {
         // does not double-rotate the chain's output texture.
         var frameOpts = frame_mtl_opt_t(
             version: 5,
-            clear_history: false,
-            frame_direction: 1,
+            clear_history: clearHistory,
+            frame_direction: frameDirection,
             rotation: 0,
             total_subframes: 1,
             current_subframe: 1,
             aspect_ratio: aspectRatio,
-            frames_per_second: 0,
-            frametime_delta: 0,
+            frames_per_second: framesPerSecond,
+            frametime_delta: frametimeDelta,
             color_space: LIBRA_COLOR_SPACE_SDR.rawValue,
             brightness_nits: 200.0,
             expand_gamut: 0,
@@ -223,8 +232,9 @@ class SlangCompilerService: ObservableObject {
         _filterChain = nil
         _queue = nil
         _finalPassIsAbsolute = false
-        _needsSourceSizedOutput = false
         _needsSourceSizedIntermediate = false
+        _sourceSizedIntermediateScale = (1, 1)
+        _clearHistoryRequested = false
         chainLock.unlock()
         if let chain = chain {
             var chainVar: OpaquePointer? = chain

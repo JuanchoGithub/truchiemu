@@ -14,6 +14,15 @@ struct SlangPreset: Identifiable, Hashable {
     var displayName: String { friendlyName }
     var displayCategory: String { category }
 
+    /// Reads a preset/shader source. A handful of shipped `.slang`/`.inc`
+    /// files are ISO-8859-1 (they contain `©` in comments); a strict UTF-8
+    /// read throws on them and silently drops every parameter they use.
+    private static func readSourceText(at url: URL) -> String? {
+        guard let data = try? Data(contentsOf: url) else { return nil }
+        return String(data: data, encoding: .utf8)
+            ?? String(data: data, encoding: .isoLatin1)
+    }
+
     /// Cached regex used by `stripLibrashaderParamPrefix`. Hoisted to a
     /// `static let` so it is compiled once at process start instead of per
     /// parameter (a 1000-param preset otherwise re-compiles this ~1000 times).
@@ -29,6 +38,24 @@ struct SlangPreset: Identifiable, Hashable {
     private static let bracketedContentRegex: NSRegularExpression = {
         try! NSRegularExpression(pattern: #"[\[\(]([^\]\)]*)[\]\)]"#)
     }()
+
+    /// Shader parameter references come in two forms: the custom `global.X`
+    /// name and the reflected `params.X` name. Both must count as consumed.
+    private static let globalReferenceRegex = try! NSRegularExpression(
+        pattern: "global\\.([A-Za-z_][A-Za-z0-9_]*)"
+    )
+    private static let paramsReferenceRegex = try! NSRegularExpression(
+        pattern: "params\\.([A-Za-z_][A-Za-z0-9_]*)"
+    )
+    /// Any dot-member access (`registers.CRTgamma`, `param.CURVATURE_X`,
+    /// `global.FrameCount`, ...). Old slang shaders put the parameters in a
+    /// custom push-constant/UBO struct with an arbitrary instance name, so
+    /// scanning only `global.`/`params.` marks every such parameter disabled.
+    /// False positives (a struct field that happens to share a parameter
+    /// name) are harmless: they only leave a control interactive.
+    private static let memberReferenceRegex = try! NSRegularExpression(
+        pattern: "\\.([A-Za-z_][A-Za-z0-9_]*)"
+    )
 
     var friendlyName: String {
         if group.hasPrefix("presets") && !name.contains(" (") {
@@ -63,53 +90,57 @@ struct SlangPreset: Identifiable, Hashable {
         return chainHasBezierStyle(at: path, depth: 0)
     }
 
-    /// True when the chain's final pass samples a previous-frame feedback
+    /// True when the chain's **final pass** samples a previous-frame feedback
     /// texture (e.g. `sampler2D PassFeedback0`, `sampler2D MainPassFeedback`,
-    /// or the matching `*Size` uniform) AND the final pass uses
-    /// `scale_type = source` (explicit or default).
+    /// or the matching `*Size` uniform).
     ///
-    /// librashader renders the final pass twice when feedback is bound:
-    /// first into a source-sized intermediate (to capture the feedback for
-    /// the next frame), then into the host's drawable. Both renders read
-    /// the scissor/viewport from the host viewport. For
-    /// `scale_type = source` chains, the intermediate is source-sized, so
-    /// a drawable-sized host viewport (the upscaled-window case) trips
-    /// Metal's scissor validation and aborts the process. Routing the
-    /// chain through a source-sized offscreen texture avoids the bug.
-    ///
-    /// For `scale_type = viewport` / `scale_type = absolute` feedback
-    /// chains, the intermediate is sized to viewport / absolute — not
-    /// source — so the host viewport fits and the upstream behavior is
-    /// correct. We deliberately do NOT route those through the
-    /// offscreen path, since their upscale-aware shaders would lose
-    /// their final composite on a source-sized target.
-    var hasPassFeedbackWithSourceScale: Bool {
-        return chainHasPassFeedbackWithSourceScale(at: path, depth: 0)
+    /// librashader renders the final pass twice only when the final pass
+    /// itself binds feedback. A feedback binding in an earlier pass does not
+    /// trigger the double render.
+    var hasFinalPassFeedback: Bool {
+        return Self.readFinalPassInfo(at: path)?.usesFeedback ?? false
     }
 
-    /// True when the chain's final pass declares (or defaults to)
-    /// `scale_type = source`. Such chains expect their last pass to write
-    /// into a source-sized target before the host upscales the result to
-    /// the drawable.
+    /// True when the host should render the chain into an offscreen texture
+    /// sized to the chain's declared output and then blit it to the drawable.
     ///
-    /// When this is `true` and the host writes the chain output straight to
-    /// a drawable-sized texture, shaders that read `params.OutputSize`
-    /// (or any `*Size` uniform) get the window dimensions instead of the
-    /// source dimensions, breaking dimensioned math (e.g. mame_ntsc's
-    /// `TimePerSample = ScanTime / (OutputSize.x * 4)`). Routing the chain
-    /// through a source-sized offscreen texture preserves the dimensions
-    /// the shader math was authored against, matching the RetroArch
-    /// behavior of compositing the final `scale_type = source` pass at
-    /// source size before upscaling.
-    var hasSourceSizedFinalPass: Bool {
-        return chainHasSourceSizedFinalPass(at: path, depth: 0)
+    /// This route is exact only when the final pass explicitly declares
+    /// `scale_type = source` on both axes and every pass in the chain is
+    /// source-scaled (`Input`, the slang default). An omitted scale on a
+    /// non-final pass is `Input`; an omitted scale on the final pass is not:
+    /// librashader renders that pass directly to the full output, matching
+    /// the RetroArch default (treating it as `source` shrank 678 presets to
+    /// the core resolution). If any pass uses `viewport`, `absolute`, or
+    /// `original`, the source-sized target would break it, so the chain
+    /// renders direct instead.
+    ///
+    /// With the patched librashader runtime (`scripts/build_librashader.sh`)
+    /// scaled final passes get the correct `OutputSize` without this route,
+    /// so the route remains only for final-pass raster fidelity.
+    var needsSourceSizedIntermediate: Bool {
+        guard let info = Self.readFinalPassInfo(at: path) else { return false }
+        return info.explicitSourceBothAxes && !info.hasNonFinalViewportOrAbsolutePass
+    }
+
+    /// Multipliers applied to the input texture to get the chain's declared
+    /// output size. Source-scaled passes multiply the running size, so a
+    /// `scale = 3.0` pass followed by a `scale_type = source` final pass
+    /// needs a 3x intermediate, not an input-sized one. Returns `(1, 1)`
+    /// when the route is not used.
+    var sourceSizedIntermediateScale: (x: Float, y: Float) {
+        guard let info = Self.readFinalPassInfo(at: path),
+              info.explicitSourceBothAxes,
+              !info.hasNonFinalViewportOrAbsolutePass else {
+            return (1, 1)
+        }
+        return (info.outputScaleX, info.outputScaleY)
     }
 
     /// Walks the preset (and `#reference`-inherited chains up to 4 levels)
     /// looking for any shader whose path contains `border`, `bezel`, or
     /// `imgborder` AND any `scale_type* = "absolute"` directive.
     private func chainHasBezierStyle(at url: URL, depth: Int) -> Bool {
-        guard depth < 4, let text = try? String(contentsOf: url, encoding: .utf8) else {
+        guard depth < 4, let text = Self.readSourceText(at: url) else {
             return false
         }
         var hasBorderShader = false
@@ -151,19 +182,29 @@ struct SlangPreset: Identifiable, Hashable {
         return nil
     }
 
-    /// Walks the preset (and `#reference`-inherited chains up to 4 levels)
-    /// looking for any shader that binds a previous-frame feedback texture
-    /// AND uses `scale_type = source` on the final pass. See
-    /// `hasPassFeedbackWithSourceScale` for the rationale.
-    private func chainHasPassFeedbackWithSourceScale(at url: URL, depth: Int) -> Bool {
-        guard depth < 4, let text = try? String(contentsOf: url, encoding: .utf8) else {
-            return false
-        }
+    /// Facts about a preset chain's final pass, used by the route decisions
+    /// above. A preset with no local `shaderN` entries inherits the
+    /// referenced preset's facts.
+    private struct FinalPassInfo {
+        let explicitSourceBothAxes: Bool
+        let hasNonFinalViewportOrAbsolutePass: Bool
+        let usesFeedback: Bool
+        /// Cumulative factor for a source-scaled chain (inputs are multiplied
+        /// by each pass's factor, including the final pass). Only valid when
+        /// no pass uses `viewport`, `absolute`, or `original`.
+        let outputScaleX: Float
+        let outputScaleY: Float
+    }
 
-        var shaderPaths: [String] = []
-        var finalScaleIsSource: Bool? = nil
-        var finalShaderIndex: Int = -1
-        var maxShaderIndex: Int = -1
+    private static func readFinalPassInfo(at url: URL, depth: Int = 0) -> FinalPassInfo? {
+        guard depth < 4, let text = Self.readSourceText(at: url) else {
+            return nil
+        }
+        let baseDir = url.deletingLastPathComponent()
+
+        var shaderValues: [Int: [String]] = [:]
+        var scaleValues: [Int: [String: String]] = [:]
+        var factorValues: [Int: [String: String]] = [:]
 
         for line in text.split(whereSeparator: \.isNewline) {
             let trimmed = line.trimmingCharacters(in: .whitespaces)
@@ -174,126 +215,100 @@ struct SlangPreset: Identifiable, Hashable {
                 .trimmingCharacters(in: CharacterSet(charactersIn: "\"'"))
 
             if key.hasPrefix("shader") {
-                // shaderN, shaderN_x, shaderN_y, etc. Capture the leading integer.
-                let digits = key.drop(while: { !$0.isNumber }).prefix(while: { $0.isNumber })
-                if let n = Int(digits) {
-                    if n > maxShaderIndex {
-                        maxShaderIndex = n
-                        finalShaderIndex = n
-                        finalScaleIsSource = nil  // reset until we see a scale line
-                    }
-                    shaderPaths.append(val)
-                }
+                let digits = key.dropFirst("shader".count).prefix(while: { $0.isNumber })
+                guard !digits.isEmpty, let n = Int(digits) else { continue }
+                shaderValues[n, default: []].append(val)
             } else if key.hasPrefix("scale_type") {
                 let digits = key.drop(while: { !$0.isNumber }).prefix(while: { $0.isNumber })
-                if let n = Int(digits), n == maxShaderIndex {
-                    // Final-pass scale_type. `source` is the librashader default
-                    // when no scale_type is specified.
-                    finalScaleIsSource = (val.lowercased() == "source")
-                }
+                guard let n = Int(digits) else { continue }
+                let suffix = key.dropLast(digits.count).dropFirst("scale_type".count)
+                let axis = suffix == "_x" ? "x" : (suffix == "_y" ? "y" : "all")
+                scaleValues[n, default: [:]][axis] = val.lowercased()
+            } else if key.hasPrefix("scale") {
+                let digits = key.dropFirst("scale".count).prefix(while: { $0.isNumber })
+                guard !digits.isEmpty, let n = Int(digits) else { continue }
+                let suffix = key.dropFirst("scale".count + digits.count)
+                let axis = suffix == "_x" ? "x" : (suffix == "_y" ? "y" : "all")
+                factorValues[n, default: [:]][axis] = val
             }
         }
 
-        // Final pass defaults to scale_type = source when not specified.
-        let usesSource = finalScaleIsSource ?? true
+        // A preset with no local passes inherits the referenced chain.
+        guard !shaderValues.isEmpty else {
+            if let refPath = parseFirstReference(text), refPath.hasSuffix(".slangp") {
+                let refURL = URL(fileURLWithPath: refPath, relativeTo: baseDir)
+                return readFinalPassInfo(at: refURL, depth: depth + 1)
+            }
+            return nil
+        }
 
-        // Resolve each shader path relative to the .slangp and grep for the
-        // PassFeedback / MainPassFeedback binding marker. A shader is
-        // considered to use PassFeedback if its source contains either
-        // token as a sampler binding or as a *Size uniform name.
-        let baseDir = url.deletingLastPathComponent()
-        for path in shaderPaths {
+        guard let maxIndex = shaderValues.keys.max() else { return nil }
+        let finalScale = scaleValues[maxIndex] ?? [:]
+        let scaleX = finalScale["x"] ?? finalScale["all"]
+        let scaleY = finalScale["y"] ?? finalScale["all"]
+
+        // Compute the running source-size multiplier. Each pass multiplies
+        // the previous size by its factor; omitted type/factor are
+        // `Input`/1.0. Any `viewport`, `absolute`, or `original` pass breaks
+        // the simple multiplier, so the route must be disabled.
+        var hasNonFinalViewportOrAbsolutePass = false
+        var outputScaleX: Float = 1
+        var outputScaleY: Float = 1
+        for index in shaderValues.keys.sorted() {
+            let values = scaleValues[index] ?? [:]
+            let xType = values["x"] ?? values["all"]
+            let yType = values["y"] ?? values["all"]
+            if index < maxIndex,
+               (xType != nil && xType != "source") || (yType != nil && yType != "source") {
+                hasNonFinalViewportOrAbsolutePass = true
+            }
+
+            let factors = factorValues[index] ?? [:]
+            let fx = Float(factors["x"] ?? factors["all"] ?? "1") ?? 1
+            let fy = Float(factors["y"] ?? factors["all"] ?? "1") ?? 1
+            outputScaleX *= fx
+            outputScaleY *= fy
+        }
+
+        var usesFeedback = false
+        for path in shaderValues[maxIndex] ?? [] {
             let resolved: URL
             if path.hasPrefix("/") {
                 resolved = URL(fileURLWithPath: path)
             } else {
                 resolved = URL(fileURLWithPath: path, relativeTo: baseDir)
             }
-            if let src = try? String(contentsOf: resolved, encoding: .utf8),
-               Self.shaderUsesPassFeedback(src) {
-                if usesSource { return true }
+            if let src = Self.readSourceText(at: resolved),
+               shaderUsesPassFeedback(src) {
+                usesFeedback = true
+                break
             }
         }
 
-        if let refPath = Self.parseFirstReference(text),
-           refPath.hasSuffix(".slangp") {
-            let refURL = URL(fileURLWithPath: refPath, relativeTo: url.deletingLastPathComponent())
-            if chainHasPassFeedbackWithSourceScale(at: refURL, depth: depth + 1) {
-                return true
-            }
-        }
-        return false
-    }
-
-    /// Walks the preset (and `#reference`-inherited chains up to 4 levels)
-    /// looking at the FINAL declared pass's `scale_type`. Returns `true`
-    /// when that pass uses `scale_type = source` (explicitly set or
-    /// defaulted, since `source` is the librashader default when no
-    /// `scale_type` is specified).
-    ///
-    /// See `hasSourceSizedFinalPass` for the rationale.
-    private func chainHasSourceSizedFinalPass(at url: URL, depth: Int) -> Bool {
-        guard depth < 4, let text = try? String(contentsOf: url, encoding: .utf8) else {
-            return false
-        }
-
-        var finalScaleIsSource: Bool? = nil
-        var maxShaderIndex: Int = -1
-
-        for line in text.split(whereSeparator: \.isNewline) {
-            let trimmed = line.trimmingCharacters(in: .whitespaces)
-            guard let eq = trimmed.firstIndex(of: "=") else { continue }
-            let key = String(trimmed[..<eq]).trimmingCharacters(in: .whitespaces).lowercased()
-            let val = trimmed[trimmed.index(after: eq)...]
-                .trimmingCharacters(in: .whitespaces)
-                .trimmingCharacters(in: CharacterSet(charactersIn: "\"'"))
-
-            if key.hasPrefix("shader") {
-                // shaderN, shaderN_x, shaderN_y, etc. Capture the leading integer.
-                let digits = key.drop(while: { !$0.isNumber }).prefix(while: { $0.isNumber })
-                if let n = Int(digits), n > maxShaderIndex {
-                    maxShaderIndex = n
-                    finalScaleIsSource = nil  // reset until we see a scale line
-                }
-            } else if key.hasPrefix("scale_type") {
-                let digits = key.drop(while: { !$0.isNumber }).prefix(while: { $0.isNumber })
-                if let n = Int(digits), n == maxShaderIndex {
-                    // Final-pass scale_type. `source` is the librashader default
-                    // when no scale_type is specified.
-                    finalScaleIsSource = (val.lowercased() == "source")
-                }
-            }
-        }
-
-        // Final pass defaults to scale_type = source when not specified.
-        let usesSource = finalScaleIsSource ?? true
-
-        if usesSource { return true }
-
-        if let refPath = Self.parseFirstReference(text),
-           refPath.hasSuffix(".slangp") {
-            let refURL = URL(fileURLWithPath: refPath, relativeTo: url.deletingLastPathComponent())
-            if chainHasSourceSizedFinalPass(at: refURL, depth: depth + 1) {
-                return true
-            }
-        }
-        return false
+        return FinalPassInfo(
+            explicitSourceBothAxes: scaleX == "source" && scaleY == "source",
+            hasNonFinalViewportOrAbsolutePass: hasNonFinalViewportOrAbsolutePass,
+            usesFeedback: usesFeedback,
+            outputScaleX: outputScaleX,
+            outputScaleY: outputScaleY
+        )
     }
 
     /// Walks the preset (and `#reference`-inherited chains up to 4 levels)
     /// collecting the set of parameter names that any compiled pass actually
-    /// reads via `global.<name>`. The .slang file of every `shaderN` entry is
-    /// read; any `#include "..."` it pulls in is also read (a single level
-    /// deep — the mame_hlsl family only nests one .inc deep, and going
-    /// further risks runaway divergence on the picker pre-launch reflection
-    /// path). All `global.<identifier>` substrings are extracted via regex
-    /// and the identifier parts are returned as a set.
+    /// reads via `global.<name>` or `params.<name>`. The .slang file of every
+    /// `shaderN` entry is read; any `#include "..."` it pulls in is also read
+    /// (a single level deep — the mame_hlsl family only nests one .inc deep,
+    /// and going further risks runaway divergence on the picker pre-launch
+    /// reflection path). All `global.<identifier>` and `params.<identifier>`
+    /// substrings are extracted via regex and the identifier parts are
+    /// returned as a set.
     ///
     /// This is what `SlangPreset.buildUniforms` uses to mark reflected
     /// parameters as `disabled: true` when no compiled pass references them
     /// (see `ShaderUniform.disabled` for the rationale).
     private static func consumedParameterNames(at url: URL, depth: Int) -> Set<String> {
-        guard depth < 4, let text = try? String(contentsOf: url, encoding: .utf8) else {
+        guard depth < 4, let text = Self.readSourceText(at: url) else {
             return []
         }
 
@@ -321,20 +336,24 @@ struct SlangPreset: Identifiable, Hashable {
             }
         }
 
-        /// Adds `global.X` identifier matches from `source` to `consumed`,
-        /// then recursively reads any `#include "..."` directive in
-        /// `source` and processes it too (one level deep — see header).
-        func consumeGlobals(in source: String, includeDepth: Int) {
-            // `global.<identifier>` where identifier is [A-Za-z_][A-Za-z0-9_]*
-            if let regex = try? NSRegularExpression(pattern: "global\\.([A-Za-z_][A-Za-z0-9_]*)") {
-                let ns = source as NSString
-                let range = NSRange(location: 0, length: ns.length)
+        /// Adds parameter-name references from `source` to `consumed`, then
+        /// recursively reads any `#include "..."` directive in `source` and
+        /// processes it too (one level deep — see header).
+        ///
+        /// All member-reference styles are collected: `global.X` (built-in
+        /// UBO), `params.X` (newer shaders), and `<customStruct>.X`
+        /// (`registers.X`, `param.X`, ... in older shaders). Scanning only
+        /// `global.`/`params.` leaves the older shaders' parameters disabled
+        /// in the UI.
+        func consumeGlobals(in source: String, sourceURL: URL, includeDepth: Int) {
+            let ns = source as NSString
+            let range = NSRange(location: 0, length: ns.length)
+            for regex in [Self.globalReferenceRegex, Self.paramsReferenceRegex, Self.memberReferenceRegex] {
                 regex.enumerateMatches(in: source, range: range) { match, _, _ in
                     if let match = match, match.numberOfRanges >= 2 {
                         let r = match.range(at: 1)
                         if r.location != NSNotFound {
-                            let name = ns.substring(with: r)
-                            consumed.insert(name)
+                            consumed.insert(ns.substring(with: r))
                         }
                     }
                 }
@@ -352,11 +371,16 @@ struct SlangPreset: Identifiable, Hashable {
                             if rest.hasPrefix("/") {
                                 incURL = URL(fileURLWithPath: rest)
                             } else {
-                                incURL = URL(fileURLWithPath: rest, relativeTo: baseDir)
+                                // `#include` is relative to the including file,
+                                // not to the preset. Resolving against the preset
+                                // folder left every header-declared parameter
+                                // disabled (crt-royale, gameboy-player, ...).
+                                incURL = URL(fileURLWithPath: rest,
+                                             relativeTo: sourceURL.deletingLastPathComponent())
                             }
                             referencedFiles.append(incURL)
-                            if let inc = try? String(contentsOf: incURL, encoding: .utf8) {
-                                consumeGlobals(in: inc, includeDepth: includeDepth + 1)
+                            if let inc = Self.readSourceText(at: incURL) {
+                                consumeGlobals(in: inc, sourceURL: incURL, includeDepth: includeDepth + 1)
                             }
                         }
                     }
@@ -372,8 +396,8 @@ struct SlangPreset: Identifiable, Hashable {
                 resolved = URL(fileURLWithPath: path, relativeTo: baseDir)
             }
             referencedFiles.append(resolved)
-            if let src = try? String(contentsOf: resolved, encoding: .utf8) {
-                consumeGlobals(in: src, includeDepth: 0)
+            if let src = Self.readSourceText(at: resolved) {
+                consumeGlobals(in: src, sourceURL: resolved, includeDepth: 0)
             }
         }
 
@@ -829,7 +853,11 @@ extension SlangPreset {
         for r in raw {
             let (category, label) = parseParam(name: r.name, description: r.description)
 
-            if r.minimum == r.maximum {
+            if r.minimum == r.maximum || r.name.lowercased().hasPrefix("bogus") {
+                // Section label. Many older presets use a dummy `bogus_*`
+                // parameter with a real 0..1 range purely to carry the
+                // bracket title (e.g. `bogus_brightness "[ BRIGHTNESS
+                // SETTINGS ]:"`); those are not controls.
                 let title = cleanHeaderTitle(label)
                 currentHeader = title.isEmpty ? nil : title
                 continue

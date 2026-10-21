@@ -845,6 +845,7 @@ case "scummvm": runner = ScummVMRunner()
     func reloadGame() {
         applyPauseState(.running)
         XPCBridgeAdapter.shared.resetGame()
+        SlangCompilerService.shared.requestHistoryClear()
         rcheevosLock.lock()
         _needsRcheevosReset = true
         rcheevosLock.unlock()
@@ -1364,6 +1365,7 @@ case "scummvm": runner = ScummVMRunner()
         if success {
             osdMessage = LocalizationManager.shared.localized("osd.loadedSaveState")
             AppHaptics.success()
+            SlangCompilerService.shared.requestHistoryClear()
             rcheevosLock.lock()
             _needsRcheevosReset = true
             rcheevosLock.unlock()
@@ -1439,6 +1441,7 @@ case "scummvm": runner = ScummVMRunner()
         let success = XPCBridgeAdapter.shared.unserializeState(actualData)
         if success {
                 osdMessage = LocalizationManager.shared.localized("osd.loadedSaveState")
+                SlangCompilerService.shared.requestHistoryClear()
             rcheevosLock.lock()
             _needsRcheevosReset = true
             rcheevosLock.unlock()
@@ -1479,6 +1482,7 @@ case "scummvm": runner = ScummVMRunner()
         if success {
             undoBuffer = nil
             osdMessage = LocalizationManager.shared.localized("osd.undoSuccess")
+            SlangCompilerService.shared.requestHistoryClear()
             
             // Clear OSD after 2 seconds
             Task {

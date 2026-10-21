@@ -546,6 +546,10 @@ The app supports RetroArch `.slangp` shader presets via **librashader** (Rust li
 ### Build dependencies
 
 - `librashader.dylib` built from https://github.com/SnowflakePowered/librashader; requires Rust toolchain
+- The bundled dylib is upstream commit `cde6ad63b034dba0621b6a69d3654a79fe34a058` (0.11.3) plus `scripts/patches/librashader-mtl-final-scale.patch`. Rebuild with `scripts/build_librashader.sh` (uses `LIBRASHADER_SRC` to reuse a checkout). The patch fixes two Metal runtime bugs:
+  1. Final-pass feedback intermediates render into their own FBO extent (`RenderTarget::identity` + `QuadType::Offscreen`) instead of the host viewport, avoiding Metal `Set Scissor Rect Validation`.
+  2. An explicitly scaled final pass reports its declared scale in the `OutputSize` semantic instead of the drawable size.
+- Do not replace the dylib with an unpatched upstream build: final-pass feedback presets (e.g. `motionblur/feedback.slangp`) regress.
 - `Resources/slang-shaders/` is a git submodule for `https://github.com/libretro/slang-shaders`
 - Offline shader cache: `scripts/compile_slang_cache.py` needs `glslangValidator` + `spirv-cross` (`brew install glslang spirv-cross`)
 
@@ -569,7 +573,7 @@ It runs in a `Task.detached(priority: .utility)` at launch, using its own `MTLDe
 - The 9 surviving `curatedRelativePaths` entries
 - One representative `.slangp` per top-level slang-shaders category folder
 
-For each preset it loads the chain via `SlangCompilerService.shared.loadAndActivatePreset`, renders one frame of a 256×224 synthetic pattern through an offscreen 1280×960 letterboxed viewport, then checks: not-black, not-pass-through, aspect-correct. Output goes to:
+For each preset (including the `motionblur/feedback.slangp` final-pass-feedback guard) it loads the chain via `SlangCompilerService.shared.loadAndActivatePreset`, renders one frame of a 256×224 synthetic pattern through an offscreen 1280×960 letterboxed viewport, then checks: not-black, not-pass-through, aspect-correct. Border/bezel chains skip the bbox aspect check because their chain owns the outer-frame layout. Output goes to:
 ```
 ~/Library/Application Support/TruchiEmu/SlangAudit/
 ├── report.md     # Summary + per-preset table with PNG links

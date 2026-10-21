@@ -91,6 +91,9 @@ typedef void (*FramePollCallbackType)(void);
 /* Audio — returns the core's audio sample rate from retro_system_av_info */
 + (double)audioSampleRate;
 
+/* Timing — returns the core's nominal frame rate from retro_system_av_info */
++ (double)fps;
+
 /* Cheat Management */
 + (void)setCheatEnabled:(int)index code:(NSString *)code enabled:(BOOL)enabled;
 + (void)resetCheats;

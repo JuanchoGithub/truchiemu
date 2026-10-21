@@ -1,0 +1,37 @@
+diff --git a/librashader-runtime-mtl/src/filter_chain.rs b/librashader-runtime-mtl/src/filter_chain.rs
+index 6719faa..c302af3 100644
+--- a/librashader-runtime-mtl/src/filter_chain.rs
++++ b/librashader-runtime-mtl/src/filter_chain.rs
+@@ -529,9 +529,12 @@ impl FilterChainMetal {
+                 // overridden to the FB scale.
+                 //
+                 // Shaders need to see the pass's declared scale rather than the viewport size,
+-                // or they won't render correctly for feedback.
++                // or they won't render correctly for feedback. The intermediate is the pass's
++                // own FBO, so it must use its own extent and the identity MVP. Reusing the
++                // host viewport here makes the scissor rect exceed the FBO and Metal aborts
++                // with "Set Scissor Rect Validation".
+                 let output_size_override = if self.draw_last_pass_feedback {
+-                    let out = RenderTarget::viewport_with_output(target.texture.as_ref(), viewport);
++                    let out = RenderTarget::identity(target.texture.as_ref())?;
+                     pass.draw(
+                         &cmd,
+                         index,
+@@ -543,9 +546,16 @@ impl FilterChainMetal {
+                         &source,
+                         &out,
+                         None,
+-                        QuadType::Final,
++                        QuadType::Offscreen,
+                     )?;
+                     Some(size)
++                } else if pass.meta.scaling.valid {
++                    // An explicitly scaled final pass declares its own framebuffer
++                    // extent. The pass itself still renders to the host viewport, but
++                    // shaders must see the declared size in `OutputSize` rather than
++                    // the drawable size (RetroArch renders this pass at the declared
++                    // scale, then stretches it to the backbuffer).
++                    Some(size)
+                 } else {
+                     None
+                 };
