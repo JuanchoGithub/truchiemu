@@ -30,6 +30,11 @@ struct LibrarySortPicker: View {
     /// out of the rendered options — they only make sense where a collection
     /// can span multiple systems (callers hide them in system views).
     var includeSystemSorts: Bool = true
+    /// Optional commit handler. When provided, the picker updates the bindings
+    /// and calls this instead of persisting to the global AppSettings keys and
+    /// posting `.sortChanged`. Callers use this to scope persistence (e.g.
+    /// per-category). When nil, default global behavior is used.
+    var onCommit: ((LibrarySortOrder, Bool) -> Void)? = nil
 
     enum Style {
         case menu
@@ -62,10 +67,11 @@ struct LibrarySortPicker: View {
             ForEach(visiblePrimary) { order in
                 SortRow(
                     order: order,
-                    currentOrder: currentOrder,
-                    ascending: ascending,
+                    currentOrder: $currentOrder,
+                    ascending: $ascending,
                     style: .menu,
-                    keyboardShortcut: keyboardShortcuts[order]
+                    keyboardShortcut: keyboardShortcuts[order],
+                    onCommit: onCommit
                 )
             }
             Divider()
@@ -75,10 +81,11 @@ struct LibrarySortPicker: View {
             ForEach(LibrarySortOrder.other) { order in
                 SortRow(
                     order: order,
-                    currentOrder: currentOrder,
-                    ascending: ascending,
+                    currentOrder: $currentOrder,
+                    ascending: $ascending,
                     style: .menu,
-                    keyboardShortcut: keyboardShortcuts[order]
+                    keyboardShortcut: keyboardShortcuts[order],
+                    onCommit: onCommit
                 )
             }
         }
@@ -91,10 +98,11 @@ struct LibrarySortPicker: View {
             ForEach(visiblePrimary) { order in
                 SortRow(
                     order: order,
-                    currentOrder: currentOrder,
-                    ascending: ascending,
+                    currentOrder: $currentOrder,
+                    ascending: $ascending,
                     style: .chips,
-                    keyboardShortcut: nil
+                    keyboardShortcut: nil,
+                    onCommit: onCommit
                 )
             }
         }
@@ -107,10 +115,11 @@ struct LibrarySortPicker: View {
             ForEach(LibrarySortOrder.other) { order in
                 SortRow(
                     order: order,
-                    currentOrder: currentOrder,
-                    ascending: ascending,
+                    currentOrder: $currentOrder,
+                    ascending: $ascending,
                     style: .popover,
-                    keyboardShortcut: nil
+                    keyboardShortcut: nil,
+                    onCommit: onCommit
                 )
             }
         }
@@ -121,10 +130,11 @@ struct LibrarySortPicker: View {
 
 private struct SortRow: View {
     let order: LibrarySortOrder
-    let currentOrder: LibrarySortOrder
-    let ascending: Bool
+    @Binding var currentOrder: LibrarySortOrder
+    @Binding var ascending: Bool
     let style: LibrarySortPicker.Style
     let keyboardShortcut: KeyboardShortcut?
+    var onCommit: ((LibrarySortOrder, Bool) -> Void)? = nil
 
     @ObservedObject private var loc = LocalizationManager.shared
     @State private var isHovered: Bool = false
@@ -278,14 +288,26 @@ private struct SortRow: View {
     }
 
     private func setActive(ascending: Bool) {
-        AppSettings.setString(LibrarySortOrder.orderKey, value: order.rawValue)
-        AppSettings.setBool(LibrarySortOrder.ascendingKey, value: ascending)
-        NotificationCenter.default.post(name: .sortChanged, object: nil)
+        currentOrder = order
+        self.ascending = ascending
+        if let onCommit {
+            onCommit(order, ascending)
+        } else {
+            AppSettings.setString(LibrarySortOrder.orderKey, value: order.rawValue)
+            AppSettings.setBool(LibrarySortOrder.ascendingKey, value: ascending)
+            NotificationCenter.default.post(name: .sortChanged, object: nil)
+        }
     }
 
     private func clear() {
-        AppSettings.setString(LibrarySortOrder.orderKey, value: LibrarySortOrder.name.rawValue)
-        AppSettings.setBool(LibrarySortOrder.ascendingKey, value: false)
-        NotificationCenter.default.post(name: .sortChanged, object: nil)
+        currentOrder = .name
+        ascending = false
+        if let onCommit {
+            onCommit(.name, false)
+        } else {
+            AppSettings.setString(LibrarySortOrder.orderKey, value: LibrarySortOrder.name.rawValue)
+            AppSettings.setBool(LibrarySortOrder.ascendingKey, value: false)
+            NotificationCenter.default.post(name: .sortChanged, object: nil)
+        }
     }
 }

@@ -345,6 +345,7 @@
 		3B7605901537797C0FC9556D /* RecordingTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 944B0903687B28CB8F29FCD9 /* RecordingTabView.swift */; };
 		3B836A8CF8AC9458A417899C /* HelpSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D12FCF47C4E8A17755ADDBE1 /* HelpSettingsView.swift */; };
 		3B88FC3E9144AA0B9B4B496F /* fightdata_svc.json in Resources */ = {isa = PBXBuildFile; fileRef = F8AEDBF02AB7BFEEBFD3B243 /* fightdata_svc.json */; };
+		3C13847BC86014F2E3F9F680 /* CategoryViewConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = C146C1DE922C50CEB4FD27E3 /* CategoryViewConfig.swift */; };
 		3C59CECB1DEB28AC1428256B /* input_coreLabels_fmsx.json in Resources */ = {isa = PBXBuildFile; fileRef = F84249DEACE74441114A7544 /* input_coreLabels_fmsx.json */; };
 		3C862B7239FAD0AF2C98BD00 /* fightdata_rbff2.json in Resources */ = {isa = PBXBuildFile; fileRef = 93E8602A6E52216C65C002F8 /* fightdata_rbff2.json */; };
 		3CFAF1A0F4B743FCAC2117B7 /* input_systemLabels_anarch.json in Resources */ = {isa = PBXBuildFile; fileRef = E4BED3A7AFE26FE54B54224B /* input_systemLabels_anarch.json */; };
@@ -2494,6 +2495,7 @@
 		C077B1331B31733FB844DB00 /* holo_glitter_alpha.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = holo_glitter_alpha.png; sourceTree = "<group>"; };
 		C0D2689389A8F41C564E8983 /* NotationTokenImageCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotationTokenImageCache.swift; sourceTree = "<group>"; };
 		C0F5DA53816F3DA50BB5CBF4 /* LibretroCallbacks.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = LibretroCallbacks.mm; sourceTree = "<group>"; };
+		C146C1DE922C50CEB4FD27E3 /* CategoryViewConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryViewConfig.swift; sourceTree = "<group>"; };
 		C15804655F28F2866DFA7C49 /* MAMEMissingROMsAlert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MAMEMissingROMsAlert.swift; sourceTree = "<group>"; };
 		C195B54A0B1C73946726BAF4 /* ntsc_encoder.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ntsc_encoder.hpp; sourceTree = "<group>"; };
 		C25C27746F28191394C4D999 /* VIDEOTON.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = VIDEOTON.png; sourceTree = "<group>"; };
@@ -3040,6 +3042,7 @@
 		141865EF07D53DE04BD87EA3 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				C146C1DE922C50CEB4FD27E3 /* CategoryViewConfig.swift */,
 				65A4A31E6B2E47A1C3F13256 /* GameCategory.swift */,
 				B29654FE65152310C41E4799 /* LibrarySectionModel.swift */,
 				E61DCF293FFD1E0B8C9F0F25 /* LibrarySortOrder.swift */,
@@ -6264,6 +6267,7 @@
 				CE295966829D5520A8E902F1 /* CRTShader.metal in Sources */,
 				49D2EEDF34D3968A17D6E64E /* CategoryManager.swift in Sources */,
 				F478F42099085BD179E833A5 /* CategoryRowButton.swift in Sources */,
+				3C13847BC86014F2E3F9F680 /* CategoryViewConfig.swift in Sources */,
 				F33C60D08AB5B8F8FCD8A40F /* CategoryViews.swift in Sources */,
 				ADAAC616676FE9F7F52D297C /* CelebrationOverlay.swift in Sources */,
 				1D56B2305EF0DA5A06F98BE4 /* CelebrationPillOverlay.swift in Sources */,

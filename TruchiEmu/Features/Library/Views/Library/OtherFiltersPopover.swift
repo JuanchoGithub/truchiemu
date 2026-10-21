@@ -10,6 +10,7 @@ struct OtherFiltersPopover: View {
     let onToggle: (GameFilterOption) -> Void
     @Binding var sortOrder: LibrarySortOrder
     @Binding var sortAscending: Bool
+    var onCommit: ((LibrarySortOrder, Bool) -> Void)? = nil
 
     @ObservedObject private var loc = LocalizationManager.shared
     @Environment(\.colorScheme) private var colorScheme
@@ -42,7 +43,8 @@ struct OtherFiltersPopover: View {
             LibrarySortPicker(
                 currentOrder: $sortOrder,
                 ascending: $sortAscending,
-                style: .popover
+                style: .popover,
+                onCommit: onCommit
             )
             .padding(.horizontal, 10)
             .padding(.bottom, 10)

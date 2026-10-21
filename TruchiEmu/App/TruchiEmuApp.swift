@@ -137,6 +137,7 @@ LoggerService.debug(category: category, message)
     /// filter change) so the app-level Sort menu can hide the system sorts
     /// while a single-system view is active.
     @State private var libraryFilterIsSystemView = false
+    @State private var currentCategoryID: String? = nil
     
     // NOTE: NSApp is NOT available in init() for @main App structs.
     // Activation policy is set in AppDelegate.applicationWillFinishLaunching instead.
@@ -308,12 +309,20 @@ var body: some Scene {
           MAMEVerificationService.shared.pause()
         }
         .onReceive(NotificationCenter.default.publisher(for: .sortChanged)) { _ in
-            let sort = LibrarySortOrder.load()
-            sortOrder = sort.order
-            sortAscending = sort.ascending
+            if let catID = currentCategoryID,
+               let cfg = AppSettings.get("categoryViewConfig_\(catID)", type: CategoryViewConfig.self) {
+                sortOrder = LibrarySortOrder(rawValue: cfg.sortOrder) ?? .name
+                sortAscending = cfg.sortAscending
+            } else {
+                let sort = LibrarySortOrder.load()
+                sortOrder = sort.order
+                sortAscending = sort.ascending
+            }
         }
         .onReceive(NotificationCenter.default.publisher(for: .libraryFilterChanged)) { notification in
-            libraryFilterIsSystemView = (notification.object as? Bool) ?? false
+            let filterID = (notification.object as? String) ?? ""
+            libraryFilterIsSystemView = filterID.hasPrefix("system-")
+            currentCategoryID = filterID.hasPrefix("category-") ? String(filterID.dropFirst("category-".count)) : nil
         }
     }
     .windowStyle(.hiddenTitleBar)
@@ -417,7 +426,20 @@ var body: some Scene {
                                 .lastPlayed: KeyboardShortcut("P", modifiers: [.command, .shift]),
                                 .lastAdded: KeyboardShortcut("A", modifiers: [.command, .shift])
                             ],
-                            includeSystemSorts: !libraryFilterIsSystemView
+                            includeSystemSorts: !libraryFilterIsSystemView,
+                            onCommit: { order, asc in
+                                if let catID = currentCategoryID {
+                                    var cfg = AppSettings.get("categoryViewConfig_\(catID)", type: CategoryViewConfig.self)
+                                        ?? CategoryViewConfig(sortOrder: LibrarySortOrder.name.rawValue, sortAscending: false, viewMode: "grid", zoom: 0.5, activeFilters: [], selectedGenres: [])
+                                    cfg.sortOrder = order.rawValue
+                                    cfg.sortAscending = asc
+                                    AppSettings.set("categoryViewConfig_\(catID)", value: cfg)
+                                } else {
+                                    AppSettings.setString(LibrarySortOrder.orderKey, value: order.rawValue)
+                                    AppSettings.setBool(LibrarySortOrder.ascendingKey, value: asc)
+                                }
+                                NotificationCenter.default.post(name: .sortChanged, object: nil)
+                            }
                         )
                     } label: {
                         Label(loc.localized("app.sortBy"), systemImage: "arrow.up.arrow.down")

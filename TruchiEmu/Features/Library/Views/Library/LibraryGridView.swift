@@ -238,6 +238,7 @@ struct LibraryGridView: View {
     @State private var activeFilters: Set<String> = []
     @State private var sortOrder: LibrarySortOrder = .name
     @State private var sortAscending: Bool = false
+    @State private var isLoadingConfig: Bool = false
     @State private var selectedGenres: Set<String> = []
     @State private var showGenrePicker: Bool = false
     @State private var showOtherFilters: Bool = false
@@ -301,9 +302,14 @@ struct LibraryGridView: View {
         VStack(spacing: 0) {
             Color.clear
                 .frame(height: 0)
-                .onChange(of: continuousZoom) { _, newValue in
+            .onChange(of: continuousZoom) { _, newValue in
+                guard !isLoadingConfig else { return }
+                if case .category(let id) = filter {
+                    saveCategoryConfig(for: id)
+                } else {
                     AppSettings.setDouble("gridZoomLevel", value: newValue)
                 }
+            }
             
             filterChips
             
@@ -655,22 +661,17 @@ struct LibraryGridView: View {
         }
         .gamepadDismissable { systemPickerItem = nil }
     }
-    .onAppear {
+        .onAppear {
             // Recompute columns from saved zoom level
             updateColumnCountFromZoom()
-            let sort = LibrarySortOrder.load()
-            sortOrder = sort.order
-            sortAscending = sort.ascending
-
-            // Initialize view mode from settings
-            if let savedMode = AppSettings.getString("gridViewMode"),
-               let parsed = ViewMode(rawValue: savedMode),
-               parsed != .tv {
-                viewMode = parsed
+            if case .category(let id) = filter {
+                applyCategoryConfig(for: id)
+            } else {
+                applyGlobalConfig()
             }
 
             // Sync view model with restored sort settings
-viewModel.updateFilters(
+            viewModel.updateFilters(
                 filter: effectiveFilter,
                 searchText: searchText,
                 activeFilters: activeFilters,
@@ -700,9 +701,15 @@ viewModel.updateFilters(
             }
         }
         .onReceive(NotificationCenter.default.publisher(for: .sortChanged)) { _ in
-            let sort = LibrarySortOrder.load()
-            sortOrder = sort.order
-            sortAscending = sort.ascending
+            if case .category(let id) = filter,
+               let cfg = loadCategoryConfig(for: id) {
+                sortOrder = LibrarySortOrder(rawValue: cfg.sortOrder) ?? sortOrder
+                sortAscending = cfg.sortAscending
+            } else {
+                let sort = LibrarySortOrder.load()
+                sortOrder = sort.order
+                sortAscending = sort.ascending
+            }
             viewModel.updateFilters(
                 filter: effectiveFilter,
                 searchText: searchText,
@@ -761,7 +768,17 @@ viewModel.updateFilters(
                 }
             }
         }
-        .onChange(of: filter) { _, newFilter in
+        .onChange(of: filter) { oldFilter, newFilter in
+            if case .category(let oldID) = oldFilter {
+                saveCategoryConfig(for: oldID)
+            }
+            if case .category(let newID) = newFilter {
+                applyCategoryConfig(for: newID)
+            } else {
+                isLoadingConfig = true
+                applyGlobalConfig()
+                isLoadingConfig = false
+            }
             handleFilterChange(newFilter)
             viewModel.updateFilters(
                 filter: newFilter,
@@ -771,6 +788,18 @@ viewModel.updateFilters(
                 sortAscending: sortAscending,
                 selectedGenres: selectedGenres
             )
+        }
+        .onChange(of: activeFilters) { _, _ in
+            guard !isLoadingConfig else { return }
+            if case .category(let id) = filter {
+                saveCategoryConfig(for: id)
+            }
+        }
+        .onChange(of: selectedGenres) { _, _ in
+            guard !isLoadingConfig else { return }
+            if case .category(let id) = filter {
+                saveCategoryConfig(for: id)
+            }
         }
         .onChange(of: searchText) { _, newValue in
             viewModel.updateFilters(
@@ -786,7 +815,20 @@ viewModel.updateFilters(
             if newMode != .tv { _previousViewMode = newMode }
             // Persist the *previous* (non-TV) mode when entering TV mode so
             // exiting TV restores grid/list/holo instead of falling back to grid.
-            AppSettings.set("gridViewMode", value: newMode == .tv ? _previousViewMode.rawValue : newMode.rawValue)
+            guard !isLoadingConfig else {
+                gamepadNav.columnCount = newMode == .list ? 1 : columnCount
+                if newMode == .tv {
+                    TVModeSettingsManager.shared.enter()
+                    let restore = previousViewMode
+                    DispatchQueue.main.async { viewMode = restore }
+                }
+                return
+            }
+            if case .category(let id) = filter {
+                saveCategoryConfig(for: id)
+            } else {
+                AppSettings.set("gridViewMode", value: newMode == .tv ? _previousViewMode.rawValue : newMode.rawValue)
+            }
             gamepadNav.columnCount = newMode == .list ? 1 : columnCount
             if newMode == .tv {
                 TVModeSettingsManager.shared.enter()
@@ -997,8 +1039,12 @@ viewModel.updateFilters(
         selectedGenres.removeAll()
         if let g = step.genre { selectedGenres.insert(g) }
 
-        AppSettings.setString(LibrarySortOrder.orderKey, value: sortOrder.rawValue)
-        AppSettings.setBool(LibrarySortOrder.ascendingKey, value: sortAscending)
+        if case .category(let id) = filter {
+            saveCategoryConfig(for: id)
+        } else {
+            AppSettings.setString(LibrarySortOrder.orderKey, value: sortOrder.rawValue)
+            AppSettings.setBool(LibrarySortOrder.ascendingKey, value: sortAscending)
+        }
         viewModel.updateFilters(
             filter: filter,
             searchText: searchText,
@@ -1900,7 +1946,16 @@ viewModel.updateFilters(
                     currentOrder: $sortOrder,
                     ascending: $sortAscending,
                     style: .chips,
-                    includeSystemSorts: !filter.isSystemView
+                    includeSystemSorts: !filter.isSystemView,
+                    onCommit: { order, asc in
+                        if case .category(let id) = filter {
+                            saveCategoryConfig(for: id)
+                        } else {
+                            AppSettings.setString(LibrarySortOrder.orderKey, value: order.rawValue)
+                            AppSettings.setBool(LibrarySortOrder.ascendingKey, value: asc)
+                            NotificationCenter.default.post(name: .sortChanged, object: nil)
+                        }
+                    }
                 )
 
                 ForEach(GameFilterOption.primaryFilters) { option in
@@ -1942,7 +1997,16 @@ viewModel.updateFilters(
                         activeFilters: $activeFilters,
                         onToggle: { toggleFilter($0) },
                         sortOrder: $sortOrder,
-                        sortAscending: $sortAscending
+                        sortAscending: $sortAscending,
+                        onCommit: { order, asc in
+                            if case .category(let id) = filter {
+                                saveCategoryConfig(for: id)
+                            } else {
+                                AppSettings.setString(LibrarySortOrder.orderKey, value: order.rawValue)
+                                AppSettings.setBool(LibrarySortOrder.ascendingKey, value: asc)
+                                NotificationCenter.default.post(name: .sortChanged, object: nil)
+                            }
+                        }
                     )
                     .gamepadDismissable { showOtherFilters = false }
                 }
@@ -2085,6 +2149,51 @@ viewModel.updateFilters(
             coreID: cid,
             library: library
         )
+    }
+
+    private func categoryConfigKey(_ id: String) -> String { "categoryViewConfig_\(id)" }
+
+    private func saveCategoryConfig(for id: String) {
+        let cfg = CategoryViewConfig(
+            sortOrder: sortOrder.rawValue,
+            sortAscending: sortAscending,
+            viewMode: viewMode.rawValue,
+            zoom: continuousZoom,
+            activeFilters: Array(activeFilters),
+            selectedGenres: Array(selectedGenres)
+        )
+        AppSettings.set(categoryConfigKey(id), value: cfg)
+    }
+
+    private func loadCategoryConfig(for id: String) -> CategoryViewConfig? {
+        AppSettings.get(categoryConfigKey(id), type: CategoryViewConfig.self)
+    }
+
+    private func applyGlobalConfig() {
+        let sort = LibrarySortOrder.load()
+        sortOrder = sort.order
+        sortAscending = sort.ascending
+        if let savedMode = AppSettings.getString("gridViewMode"),
+           let parsed = ViewMode(rawValue: savedMode),
+           parsed != .tv {
+            viewMode = parsed
+        }
+        continuousZoom = AppSettings.getDouble("gridZoomLevel", defaultValue: 0.5)
+    }
+
+    private func applyCategoryConfig(for id: String) {
+        isLoadingConfig = true
+        if let cfg = loadCategoryConfig(for: id) {
+            sortOrder = LibrarySortOrder(rawValue: cfg.sortOrder) ?? sortOrder
+            sortAscending = cfg.sortAscending
+            if let vm = ViewMode(rawValue: cfg.viewMode), vm != .tv { viewMode = vm }
+            continuousZoom = cfg.zoom
+            activeFilters = Set(cfg.activeFilters)
+            selectedGenres = Set(cfg.selectedGenres)
+        } else {
+            applyGlobalConfig()
+        }
+        isLoadingConfig = false
     }
 
     private func handleFilterChange(_ filter: LibraryFilter) {

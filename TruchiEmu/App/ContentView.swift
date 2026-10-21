@@ -279,7 +279,7 @@ case .library:
                          gamepadNavCoordinator.syncSidebarIndex(to: newFilter)
                          // Let the app-level Sort menu hide the system sorts
                          // while a single-system view is active.
-                         NotificationCenter.default.post(name: .libraryFilterChanged, object: newFilter.isSystemView)
+                          NotificationCenter.default.post(name: .libraryFilterChanged, object: newFilter.id)
                      }
                      .onChange(of: selectedROM) { _, newROM in
                          AppSettings.setString("tvMode_entryROM", value: newROM?.id.uuidString)
