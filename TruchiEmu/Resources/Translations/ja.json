@@ -1469,6 +1469,7 @@
   "shader.import": "インポート...",
   "shader.apply": "適用",
   "shader.applyAndSave": "適用して保存",
+  "shader.compileFailed": "シェーダー「%@」をコンパイルできませんでした。以前のシェーダーが引き続き使用されます。",
   "shader.renamePreset": "プリセット名を変更",
   "shader.newName": "新しい名前",
   "shader.rename": "名前を変更",

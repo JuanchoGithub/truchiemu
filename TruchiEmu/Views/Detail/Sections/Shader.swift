@@ -122,15 +122,32 @@ LoggerService.debug(category: "ShaderPicker", "Settings context: systemID=\(Stri
 
 // Activate the shader if a game is currently running with this runner
 var activatedSlang = false
+var slangFailureName: String?
 if let preset = ShaderPreset.preset(id: newPresetID) {
     ShaderManager.shared.activatePreset(preset)
 } else if let savedPreset = ShaderPresetStorageService.shared.savedPresets.first(where: { $0.id.uuidString == newPresetID }) {
-    ShaderManager.shared.activateSavedPreset(savedPreset)
+    if !ShaderManager.shared.activateSavedPreset(savedPreset) {
+        slangFailureName = savedPreset.name
+    }
     activatedSlang = ShaderManager.shared.activeSlangPreset != nil
 } else if let slangPreset = SlangPresetDiscoveryService.shared.presets.first(where: { $0.path.path == newPresetID }) {
-    ShaderManager.shared.activateSlangPreset(slangPreset, overrides: newUniformValues)
-    activatedSlang = true
+    if !ShaderManager.shared.activateSlangPreset(slangPreset, overrides: newUniformValues) {
+        slangFailureName = slangPreset.name
+    }
+    activatedSlang = ShaderManager.shared.activeSlangPreset != nil
 }
+
+if let slangFailureName = slangFailureName {
+    // Compile failed: the previously active shader keeps running. Keep
+    // the window open so the message stays visible, and do not persist
+    // the failed selection.
+    shaderWindowSettings?.notificationMessage = String(
+        format: LocalizationManager.shared.localized("shader.compileFailed"),
+        slangFailureName
+    )
+    return
+}
+
 // Confirmed-persisted uniform overrides for a slang preset were applied during
 // activation above; only route remaining (Metal) uniforms through the in-house store.
 if !activatedSlang {

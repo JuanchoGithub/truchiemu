@@ -1309,7 +1309,14 @@ controller.close()
                 onSelect: {
                     settings.shaderPresetID = preset.id.uuidString
                     settings.uniformValues = preset.uniformValues
-                    ShaderManager.shared.activateSavedPreset(preset)
+                    settings.notificationMessage = nil
+                    if !ShaderManager.shared.activateSavedPreset(preset) {
+                        settings.notificationMessage = String(
+                            format: loc.localized("shader.compileFailed"),
+                            preset.name
+                        )
+                        return
+                    }
                     // Cache reflected slang params for the right column (no-op for Metal presets)
                     if let slangBase = SlangPresetDiscoveryService.shared.presets.first(where: { $0.path.path == preset.basePresetID }) {
                         if let live = SlangCompilerService.shared.activePreset, live.path.path == slangBase.path.path {
@@ -1414,10 +1421,13 @@ controller.close()
             .onTapGesture {
                 settings.shaderPresetID = preset.path.path
                 // Clear immediately; the reflect-only callback repopulates
-                // the slider list when the background parse lands.
+                // the slider list when the background prepare lands.
                 reflectedSlangParams = []
                 settings.uniformValues = [:]
+                settings.notificationMessage = nil
+                isReflectingParameters = true
                 ShaderManager.shared.reflectSlangPreset(preset) { reflected in
+                    isReflectingParameters = false
                     guard let reflected = reflected else { return }
                     let live = SlangCompilerService.shared.activePreset
                     if live?.path.path == preset.path.path, let live = live {
@@ -1427,6 +1437,11 @@ controller.close()
                         reflectedSlangParams = reflected.parameters
                         settings.uniformValues = reflected.defaults
                     }
+                } onError: { name in
+                    settings.notificationMessage = String(
+                        format: loc.localized("shader.compileFailed"),
+                        name
+                    )
                 }
             }
 

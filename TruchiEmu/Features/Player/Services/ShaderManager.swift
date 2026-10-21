@@ -26,10 +26,21 @@ class ShaderManager: ObservableObject {
     // Current uniform values (updated by UI sliders)
     @Published private(set) var uniformValues: [String: Float] = [:]
 
-    // Monotonic counter bumped on every reflectSlangPreset call so that
-    // out-of-order background chain completions can detect they are stale
-    // and skip committing their results.
-    private var slangActivationToken: UInt64 = 0
+    /// Path of the most recent slang preset request from the picker /
+    /// sidebar. Background prepare completions install only while their
+    /// path still matches; anything else is stale and gets freed.
+    private var slangLatestRequestPath: String?
+    /// Path of the preset whose prepare is currently running in the
+    /// background. A repeat request for the same path adopts the
+    /// in-flight prepare instead of starting a duplicate compile (rapid
+    /// re-taps are a common picker pattern).
+    private var slangPendingPreparePath: String?
+    /// Callbacks of the LATEST request. An in-flight prepare that
+    /// completes for the still-current path reports through these, so an
+    /// adopting second tap gets its UI populated by the first tap's
+    /// background completion.
+    private var slangLatestOnReflect: (((parameters: [ShaderUniform], defaults: [String: Float])?) -> Void)?
+    private var slangLatestOnError: ((String) -> Void)?
     
     // Thread-safe storage for the renderer (nonisolated for thread-safe renderer access)
     private nonisolated(unsafe) static let parameterStore = ShaderParameterStore()
@@ -68,12 +79,11 @@ class ShaderManager: ObservableObject {
     private var library: MTLLibrary?
     
     
-    func activateSlangPreset(_ preset: SlangPreset, overrides: [String: Float] = [:]) {
+    @discardableResult
+    func activateSlangPreset(_ preset: SlangPreset, overrides: [String: Float] = [:]) -> Bool {
         do {
             let reflected = try SlangCompilerService.shared.loadAndActivatePreset(at: preset.path, queue: commandQueue ?? device!.makeCommandQueue()!)
-            activePreset = ShaderPreset.defaultPreset
-            clearPipelineCache()
-            Self.parameterStore.updateFragmentFunctionName("slang")
+            activateSlangBookkeeping()
 
             var values = reflected.parameterDefaults
             for (name, value) in overrides {
@@ -83,8 +93,11 @@ class ShaderManager: ObservableObject {
             uniformValues = values
 
             LoggerService.info(category: "ShaderManager", "Activated slang shader preset: \(preset.name) (params=\(reflected.parameters.count))")
+            return true
         } catch {
+            // The previously installed chain stays active.
             LoggerService.error(category: "ShaderManager", "Failed to activate slang preset: \(error.localizedDescription)")
+            return false
         }
     }
 
@@ -93,66 +106,128 @@ class ShaderManager: ObservableObject {
         resetToDefault()
     }
 
-    /// Reflect-only path for picker/sidebar taps. Runs the slow parse-only
-    /// reflection (`SlangPreset.reflectParametersAsync` — `libra_preset_create`
-    /// can spend seconds reading hundreds of `.slang` files for big presets)
-    /// on a background task, then invokes `onReflect` on `@MainActor` when
-    /// the parameter list is ready.
+    /// Post-install bookkeeping shared by every slang activation path:
+    /// the built-in preset marker points at the default preset (the slang
+    /// chain owns rendering), stale Metal pipelines are dropped, and the
+    /// renderer is pointed at the slang draw branch.
+    private func activateSlangBookkeeping() {
+        activePreset = ShaderPreset.defaultPreset
+        clearPipelineCache()
+        Self.parameterStore.updateFragmentFunctionName("slang")
+    }
+
+    /// Selection path for picker/sidebar taps. Prepares the chain
+    /// (`SlangCompilerService.prepareChain` — one `libra_preset_create`
+    /// plus the full GLSL→SPIR-V→MSL + Metal pipeline compile, hundreds of
+    /// ms for multi-pass presets) on a background task, then installs it
+    /// on the `@MainActor`.
     ///
-    /// The filter-chain compile (`SlangCompilerService.loadAndActivatePreset`,
-    /// which calls `libra_mtl_filter_chain_create`) deliberately runs on the
-    /// `@MainActor`, NOT on the background task. It frees the previously-
-    /// installed librashader chain and drives the shared `MTLCommandQueue`;
-    /// doing either from a non-main thread races the main-thread
-    /// `MTKView.draw` callback (which calls `slang_mtl_filter_chain_frame`
-    /// against the same chain every frame) and violates Metal's
-    /// single-thread-per-queue contract. The SPIR-V/MSL pipeline is cached
-    /// on disk after the first run, so the on-main compile is only a few ms
-    /// on tap — far less than the parse we off-loaded.
+    /// Threading contract: only `installPreparedChain` mutates shared
+    /// chain state, and the main thread runs it — the same thread as the
+    /// MTKView draw callback that renders the chain every frame. While
+    /// the prepare runs, the previously installed chain keeps rendering,
+    /// so the game never stalls.
     ///
-    /// `onReflect` receives the reflected parameter list + default values
-    /// if reflection succeeded, or nil if it failed. Successful GPU
-    /// activation also surfaces via `SlangCompilerService.shared.activePreset`
-    /// (the single source of truth) once the chain is built.
+    /// Order of shortcuts:
+    ///   1. the active chain already matches and disk is unchanged →
+    ///      no build;
+    ///   2. a prepare for this preset is in flight → adopt it;
+    ///   3. a compiled chain for this preset is cached and disk is
+    ///      unchanged → install it at once;
+    ///   4. background prepare → main-thread install.
+    ///
+    /// `onReflect` gets the reflected parameters + defaults when the
+    /// preset is ready, or nil on failure or when superseded by a newer
+    /// selection. `onError` fires when the latest request fails to
+    /// compile — the previously active chain stays running in that case.
     func reflectSlangPreset(
         _ preset: SlangPreset,
         overrides: [String: Float] = [:],
-        onReflect: @escaping ((parameters: [ShaderUniform], defaults: [String: Float])?) -> Void
+        onReflect: @escaping ((parameters: [ShaderUniform], defaults: [String: Float])?) -> Void,
+        onError: ((String) -> Void)? = nil
     ) {
-        slangActivationToken &+= 1
-        let token = slangActivationToken
         let path = preset.path
+        slangLatestRequestPath = path.path
+        slangLatestOnReflect = onReflect
+        slangLatestOnError = onError
 
         guard let queue = self.commandQueue ?? self.device?.makeCommandQueue() else {
             LoggerService.error(category: "ShaderManager", "reflectSlangPreset: no Metal device/command queue")
+            slangLatestOnReflect = nil
+            slangLatestOnError = nil
+            onError?(preset.name)
             onReflect(nil)
             return
         }
         if self.commandQueue == nil { self.commandQueue = queue }
 
-        Task.detached(priority: .userInitiated) {
-            let reflected = await SlangPreset.reflectParametersAsync(at: path)
-            await MainActor.run {
-                // If the user has selected another preset while we were
-                // parsing, drop this result — a newer call will arrive
-                // with its own reflection.
-                guard token == Self.shared.slangActivationToken else {
-                    onReflect(nil)
-                    return
+        // 1. The active chain already IS this preset and nothing changed
+        //    on disk: no rebuild, just reapply the overrides.
+        if SlangCompilerService.shared.activeChainIsFresh(at: path) {
+            slangLatestOnReflect = nil
+            slangLatestOnError = nil
+            activateSlangBookkeeping()
+            if let live = SlangCompilerService.shared.activePreset {
+                var values = live.parameterDefaults
+                for (name, value) in overrides {
+                    values[name] = value
+                    SlangCompilerService.shared.setParameter(name: name, value: value)
                 }
-                if reflected == nil {
-                    LoggerService.error(category: "ShaderManager", "reflectSlangPreset: reflection failed for \(preset.name)")
-                }
-                onReflect(reflected)
+                uniformValues = values
+                onReflect((live.parameters, live.parameterDefaults))
+            } else {
+                onReflect(nil)
+            }
+            return
+        }
 
-                // Chain compile runs on @MainActor so it cannot race
-                // MTKView.draw (also @MainActor) and shares its
-                // MTLCommandQueue thread contract.
-                do {
-                    let activated = try SlangCompilerService.shared.loadAndActivatePreset(at: path, queue: queue)
-                    Self.shared.activePreset = ShaderPreset.defaultPreset
-                    Self.shared.clearPipelineCache()
-                    Self.parameterStore.updateFragmentFunctionName("slang")
+        // 2. Same-preset prepare already running: adopt it. Its
+        //    completion installs the chain and reports through the latest
+        //    callbacks recorded above.
+        if slangPendingPreparePath == path.path { return }
+
+        // 3. Cached compiled chain, disk unchanged: install at once. The
+        //    chain has rendered before, so its history textures still
+        //    hold frames from the previous run — ask for a history clear
+        //    so it does not flash that old feedback.
+        if let prepared = SlangCompilerService.shared.takeFreshChainFromCache(at: path) {
+            slangLatestOnReflect = nil
+            slangLatestOnError = nil
+            let activated = SlangCompilerService.shared.installPreparedChain(prepared, clearHistory: true)
+            activateSlangBookkeeping()
+            var values = activated.parameterDefaults
+            for (name, value) in overrides {
+                values[name] = value
+                SlangCompilerService.shared.setParameter(name: name, value: value)
+            }
+            uniformValues = values
+            onReflect((activated.parameters, activated.parameterDefaults))
+            LoggerService.info(category: "ShaderManager", "Activated slang shader preset from cache: \(preset.name) (params=\(activated.parameters.count))")
+            return
+        }
+
+        // 4. Background prepare → main-thread install.
+        slangPendingPreparePath = path.path
+        Task.detached(priority: .userInitiated) {
+            do {
+                let prepared = try SlangCompilerService.prepareChain(at: path, queue: queue)
+                await MainActor.run {
+                    if Self.shared.slangPendingPreparePath == path.path {
+                        Self.shared.slangPendingPreparePath = nil
+                    }
+                    guard Self.shared.slangLatestRequestPath == path.path else {
+                        // Superseded by a newer selection: free this
+                        // chain; the newer request reports on its own.
+                        SlangCompilerService.shared.discardPreparedChain(prepared)
+                        onReflect(nil)
+                        return
+                    }
+                    let latestOnReflect = Self.shared.slangLatestOnReflect
+                    let latestOnError = Self.shared.slangLatestOnError
+                    Self.shared.slangLatestOnReflect = nil
+                    Self.shared.slangLatestOnError = nil
+                    let activated = SlangCompilerService.shared.installPreparedChain(prepared)
+                    Self.shared.activateSlangBookkeeping()
                     var values = activated.parameterDefaults
                     for (name, value) in overrides {
                         values[name] = value
@@ -160,8 +235,23 @@ class ShaderManager: ObservableObject {
                     }
                     Self.shared.uniformValues = values
                     LoggerService.info(category: "ShaderManager", "Activated slang shader preset: \(preset.name) (params=\(activated.parameters.count))")
-                } catch {
+                    latestOnReflect?((activated.parameters, activated.parameterDefaults))
+                }
+            } catch {
+                await MainActor.run {
+                    if Self.shared.slangPendingPreparePath == path.path {
+                        Self.shared.slangPendingPreparePath = nil
+                    }
+                    guard Self.shared.slangLatestRequestPath == path.path else {
+                        onReflect(nil)
+                        return
+                    }
+                    let latestOnError = Self.shared.slangLatestOnError
+                    Self.shared.slangLatestOnReflect = nil
+                    Self.shared.slangLatestOnError = nil
                     LoggerService.error(category: "ShaderManager", "Slang chain compile failed for \(preset.name): \(error.localizedDescription)")
+                    latestOnError?(preset.name)
+                    onReflect(nil)
                 }
             }
         }
@@ -317,9 +407,12 @@ class ShaderManager: ObservableObject {
     }
 
     // Activate a saved preset whose base may be a built-in Metal preset or a slang .slangp path.
-    func activateSavedPreset(_ saved: SavedShaderPreset) {
+    // Returns false when a slang base fails to compile (the previous
+    // chain stays active in that case).
+    @discardableResult
+    func activateSavedPreset(_ saved: SavedShaderPreset) -> Bool {
         if let slangPreset = SlangPresetDiscoveryService.shared.presets.first(where: { $0.path.path == saved.basePresetID }) {
-            activateSlangPreset(slangPreset, overrides: saved.uniformValues)
+            return activateSlangPreset(slangPreset, overrides: saved.uniformValues)
         } else {
             // If the saved base looks like a slang path but the lookup missed,
             // the preset file was moved/deleted between launches or didn't
@@ -328,6 +421,7 @@ class ShaderManager: ObservableObject {
                 LoggerService.error(category: "ShaderManager", "activateSavedPreset: slang preset at \(saved.basePresetID) is no longer discoverable; falling back to built-in lookup")
             }
             activatePresetWithOverrides(presetID: saved.basePresetID, overrides: saved.uniformValues)
+            return true
         }
     }
 

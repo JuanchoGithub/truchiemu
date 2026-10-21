@@ -317,6 +317,8 @@ struct SlangPreset: Identifiable, Hashable {
         }
 
         var shaderPaths: [String] = []
+        var textureNames: [String] = []
+        var keyValues: [String: String] = [:]
         let baseDir = url.deletingLastPathComponent()
         var consumed = Set<String>()
         var referencedFiles: [URL] = []
@@ -328,12 +330,31 @@ struct SlangPreset: Identifiable, Hashable {
             let val = String(trimmed[trimmed.index(after: eq)...])
                 .trimmingCharacters(in: .whitespaces)
                 .trimmingCharacters(in: CharacterSet(charactersIn: "\"'"))
+            keyValues[key] = val
+            if key == "textures" {
+                textureNames = val.split(separator: ";")
+                    .map { $0.trimmingCharacters(in: .whitespaces) }
+                    .filter { !$0.isEmpty }
+            }
             if key.hasPrefix("shader") {
                 let digits = key.drop(while: { !$0.isNumber }).prefix(while: { $0.isNumber })
                 if !digits.isEmpty || key == "shader" {
                     shaderPaths.append(val)
                 }
             }
+        }
+
+        // LUT texture files feed the compiled chain; include them in the
+        // referenced-file list so their mtimes flow into the fingerprint.
+        for name in textureNames {
+            guard let texPath = keyValues[name.lowercased()], !texPath.isEmpty else { continue }
+            let resolved: URL
+            if texPath.hasPrefix("/") {
+                resolved = URL(fileURLWithPath: texPath)
+            } else {
+                resolved = URL(fileURLWithPath: texPath, relativeTo: baseDir)
+            }
+            referencedFiles.append(resolved)
         }
 
         /// Adds parameter-name references from `source` to `consumed`, then
@@ -466,7 +487,11 @@ struct SlangPreset: Identifiable, Hashable {
         if let mtime = attrs?[.modificationDate] as? Date {
             combined ^= UInt64(bitPattern: Int64(mtime.timeIntervalSince1970 * 1_000_000_000))
         }
-        for f in referencedFiles {
+        // Deduplicate before folding: XOR-ing the same value twice cancels
+        // itself out, so a file referenced twice (two passes sharing a
+        // header or LUT) would otherwise drop out of the fingerprint.
+        var seen = Set<String>()
+        for f in referencedFiles where seen.insert(f.path).inserted {
             let attrs = try? FileManager.default.attributesOfItem(atPath: f.path)
             if let mtime = attrs?[.modificationDate] as? Date {
                 combined ^= UInt64(bitPattern: Int64(mtime.timeIntervalSince1970 * 1_000_000_000)) &+ 0x9E37_79B9_7F4A_7C15
@@ -511,6 +536,20 @@ struct SlangPreset: Identifiable, Hashable {
         consumedCache.removeAll(keepingCapacity: true)
         referencedFilesForPathCache.removeAll(keepingCapacity: true)
         consumedCacheLock.unlock()
+    }
+
+    /// Fingerprint covering the .slangp plus every referenced shader,
+    /// `#include`, and LUT texture, computed from the referenced-file list
+    /// stored by the last `consumedParameterNames` scan. Returns nil when
+    /// this path has never been scanned (the first prepare populates it).
+    /// Used by the prepared-chain cache in `SlangCompilerService` to skip
+    /// rebuilds while nothing on disk changed.
+    static func chainFingerprint(at url: URL) -> UInt64? {
+        consumedCacheLock.lock()
+        let refs = referencedFilesForPathCache[url.path]
+        consumedCacheLock.unlock()
+        guard let refs = refs else { return nil }
+        return fingerprint(for: url, referencedFiles: refs)
     }
 
     /// True if the given .slang source binds a previous-frame feedback

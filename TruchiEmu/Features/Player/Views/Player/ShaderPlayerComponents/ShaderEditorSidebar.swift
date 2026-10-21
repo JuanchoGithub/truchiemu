@@ -35,6 +35,7 @@ struct ShaderEditorSidebar: View {
     @State private var savedPresets: [SavedShaderPreset] = []
     @State private var reflectedSlangParams: [ShaderUniform] = []
     @State private var isReflectingParameters: Bool = false
+    @State private var compileErrorMessage: String?
     @State private var showSaveDialog = false
     @State private var savePresetName = ""
 
@@ -200,6 +201,15 @@ struct ShaderEditorSidebar: View {
                 .padding(.bottom, 4)
 
             Divider()
+
+            if let compileErrorMessage {
+                Text(verbatim: compileErrorMessage)
+                    .font(.caption)
+                    .foregroundColor(AppColors.textSecondary(colorScheme))
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 12)
+                    .padding(.top, 8)
+            }
 
             if hasSelectedUniforms && settings.shaderPresetID.isEmpty == false {
                 ScrollView {
@@ -609,7 +619,14 @@ struct ShaderEditorSidebar: View {
         }
         settings.shaderPresetID = preset.id.uuidString
         settings.uniformValues = preset.uniformValues
-        ShaderManager.shared.activateSavedPreset(preset)
+        compileErrorMessage = nil
+        if !ShaderManager.shared.activateSavedPreset(preset) {
+            compileErrorMessage = String(
+                format: loc.localized("shader.compileFailed"),
+                preset.name
+            )
+            return
+        }
         if let slangBase = SlangPresetDiscoveryService.shared.presets.first(where: { $0.path.path == preset.basePresetID }) {
             if let live = SlangCompilerService.shared.activePreset, live.path.path == slangBase.path.path {
                 reflectedSlangParams = live.parameters
@@ -649,7 +666,10 @@ struct ShaderEditorSidebar: View {
         // while we parse; the reflect-only callback repopulates them.
         reflectedSlangParams = []
         settings.uniformValues = [:]
+        compileErrorMessage = nil
+        isReflectingParameters = true
         ShaderManager.shared.reflectSlangPreset(preset) { [self] reflected in
+            isReflectingParameters = false
             guard let reflected = reflected else { return }
             let live = SlangCompilerService.shared.activePreset
             if live?.path.path == preset.path.path, let live {
@@ -659,6 +679,11 @@ struct ShaderEditorSidebar: View {
                 reflectedSlangParams = reflected.parameters
                 settings.uniformValues = reflected.defaults
             }
+        } onError: { [self] name in
+            compileErrorMessage = String(
+                format: loc.localized("shader.compileFailed"),
+                name
+            )
         }
     }
 

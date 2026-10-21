@@ -1469,6 +1469,7 @@
   "shader.import": "Import...",
   "shader.apply": "Apply",
   "shader.applyAndSave": "Apply & Save",
+  "shader.compileFailed": "The shader \"%@\" could not be compiled. The previous shader stays active.",
   "shader.renamePreset": "Rename Preset",
   "shader.newName": "New name",
   "shader.rename": "Rename",
