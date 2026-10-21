@@ -328,6 +328,23 @@ struct AboutView: View {
                         )
                     }
                     
+                    // --- Iconography ---
+                    DependencySection(
+                        title: loc.localized("about.iconography"),
+                        isExpanded: Binding(
+                            get: { expandedSections.contains("iconography") },
+                            set: { if $0 { expandedSections.insert("iconography") } else { expandedSections.remove("iconography") } }
+                        )
+                    ) {
+                        DependencyGroup(
+                            name: "game-icons.net",
+                            url: "https://game-icons.net",
+                            license: "CC BY 3.0",
+                            licenseURL: "https://creativecommons.org/licenses/by/3.0/",
+                            description: "Category and system icon library by Lorc, Delapouite and contributors: 4180 game-themed vector icons (vampires, castles, weapons, arcade, and more), bundled with the app."
+                        )
+                    }
+
                     // --- RetroAchievements ---
                     DependencySection(
                         title: loc.localized("about.achievementTracking"),

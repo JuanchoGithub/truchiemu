@@ -52,6 +52,7 @@
 		07A6D0CCDB18449662D35B4B /* mame_libretro.json in Resources */ = {isa = PBXBuildFile; fileRef = 9E53D67A79EFFF76BBC2A45B /* mame_libretro.json */; };
 		08122F4305BEC84133D0793B /* fightdata_sf2hf.json in Resources */ = {isa = PBXBuildFile; fileRef = 56C1CCC370F61E8A198FE0FD /* fightdata_sf2hf.json */; };
 		08724A1C5294340425F2DA9A /* LoggerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30CC526A551953B4E9BB08C9 /* LoggerService.swift */; };
+		08B36BECDBD9A4963396B066 /* GamingIconBrowserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1327C2617ECE3ABC8B71F920 /* GamingIconBrowserView.swift */; };
 		08B5DC4072EE0BF4F53673B5 /* SettingsCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB2874E76788F8B07928F378 /* SettingsCatalog.swift */; };
 		08EC743DFCF5B42618FB4B87 /* LiquidGlassSheen.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD952A2B5F85CAEF3404A82C /* LiquidGlassSheen.swift */; };
 		092218AA2BA476F8746B2B1A /* input_coreLabels_beetle_psx_hw.json in Resources */ = {isa = PBXBuildFile; fileRef = B666AFBA89C9094D3D77ADBE /* input_coreLabels_beetle_psx_hw.json */; };
@@ -271,6 +272,7 @@
 		2B7ADEE0D5BE48565424CACA /* input_coreLabels_pcsx_rearmed.json in Resources */ = {isa = PBXBuildFile; fileRef = 183B1AA28F701CE236CE2B74 /* input_coreLabels_pcsx_rearmed.json */; };
 		2B95E49D725335181C02F77A /* input_coreOverrides_dosbox_pure.json in Resources */ = {isa = PBXBuildFile; fileRef = FEB592DF53C6205FF44A6CC7 /* input_coreOverrides_dosbox_pure.json */; };
 		2B9825A721FDA0F1C6DD4F5F /* Technical.swift in Sources */ = {isa = PBXBuildFile; fileRef = A712FED2F557D01548C2747B /* Technical.swift */; };
+		2B995A92A95E7EEA261CE70B /* game-icons-manifest.json in Resources */ = {isa = PBXBuildFile; fileRef = 9BF3FCFFDC359E04B222A690 /* game-icons-manifest.json */; };
 		2C0B2084279F991E2305FE51 /* CursorAutoHideManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DAF1E2107BE928D81F50371 /* CursorAutoHideManager.swift */; };
 		2C6E4ADDC404B2350DF1A01C /* input_coreLabels_ep128emu.json in Resources */ = {isa = PBXBuildFile; fileRef = 278B2E466CEE5561AE793161 /* input_coreLabels_ep128emu.json */; };
 		2C9024BA5490B4581DE6A7B3 /* VulkanLibraryHelper.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3096FDE9747F1C356CCEA84B /* VulkanLibraryHelper.mm */; };
@@ -659,6 +661,7 @@
 		76A64AEE375194E5F3B9D586 /* input_coreOverrides_pocketcdg.json in Resources */ = {isa = PBXBuildFile; fileRef = 528DFC43C3B775A6DEDCD296 /* input_coreOverrides_pocketcdg.json */; };
 		76AF02E86B8838FFA28E9E22 /* input_systemLabels_zx81.json in Resources */ = {isa = PBXBuildFile; fileRef = 08E76098C4A079BA9B1A9D55 /* input_systemLabels_zx81.json */; };
 		76CC37645550ACEC08D6927C /* LibretroThumbnailManifestService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 352DC36DB12EA05E9995055B /* LibretroThumbnailManifestService.swift */; };
+		76F9F037BD2991CFC7B21B63 /* game-icons.zip in Resources */ = {isa = PBXBuildFile; fileRef = 742D46F5A54238EC0883EABC /* game-icons.zip */; };
 		77077487D47B90D885E377B6 /* input_coreOverrides_doukutsu-rs.json in Resources */ = {isa = PBXBuildFile; fileRef = 2086F701B570A5B41B53C540 /* input_coreOverrides_doukutsu-rs.json */; };
 		770785ABF1E21F7077ED79A6 /* GameButtons+Recording.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40E9A04286134165A59D945D /* GameButtons+Recording.swift */; };
 		770AF88BE94B01408EB74751 /* fightdata_tmnttf.json in Resources */ = {isa = PBXBuildFile; fileRef = 8C7EDF4935396D204BD55A85 /* fightdata_tmnttf.json */; };
@@ -1118,6 +1121,7 @@
 		C916DA023088126C7C4AFEBA /* VIC20.png in Resources */ = {isa = PBXBuildFile; fileRef = E47D0C2017B8EF325DC468DD /* VIC20.png */; };
 		C93B719292E0FD963B52AB4F /* holo_metal_alpha.png in Resources */ = {isa = PBXBuildFile; fileRef = 9A39CCD55CF84AA54DA5C662 /* holo_metal_alpha.png */; };
 		C9CB226983F0BD31476B263B /* saturn-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = D406D131E06C70B206A4AC1D /* saturn-cheats.zip */; };
+		C9E55977A5C90BB24CDFD29F /* GamingIconService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57EFF79E74D3893A0F90BABD /* GamingIconService.swift */; };
 		C9F06BE0E73542ACCEB038B4 /* MAME2010.png in Resources */ = {isa = PBXBuildFile; fileRef = 3B5A0C53E7EE0FE463B3CEB1 /* MAME2010.png */; };
 		CA01FA6DBAD5615E6EE293E8 /* ShaderPresetPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C72372490BF3D6F53F7ADEEC /* ShaderPresetPickerView.swift */; };
 		CA09AE31D8F7FB1E0B23B0F3 /* fightdata_killbld.json in Resources */ = {isa = PBXBuildFile; fileRef = 918DD5620D5DCC0EA08E81FB /* fightdata_killbld.json */; };
@@ -1520,6 +1524,7 @@
 		1243D5911A71789DFD45D8CA /* SaveDirectoryManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveDirectoryManager.swift; sourceTree = "<group>"; };
 		12FE5E06C4DBA803CF2D7CC6 /* CoreOverrideBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CoreOverrideBridge.h; sourceTree = "<group>"; };
 		1303390457692B07BF63B7B6 /* gg@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "gg@132w.png"; sourceTree = "<group>"; };
+		1327C2617ECE3ABC8B71F920 /* GamingIconBrowserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GamingIconBrowserView.swift; sourceTree = "<group>"; };
 		13A112551790EB584A91B3F6 /* BezelStorageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezelStorageManager.swift; sourceTree = "<group>"; };
 		13E4A2F34938242C4F50AF42 /* dreamcast-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "dreamcast-cheats.zip"; sourceTree = "<group>"; };
 		1432F9680D00AB51A7B817C8 /* LibraryBackupService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryBackupService.swift; sourceTree = "<group>"; };
@@ -1911,6 +1916,7 @@
 		573ADD6C067C3C9C9F87EE3E /* fightdata_tektagt.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_tektagt.json; sourceTree = "<group>"; };
 		579FF46D161EC2DD3CE4C105 /* CHAILOVE.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = CHAILOVE.png; sourceTree = "<group>"; };
 		57D2E2F6CB71E8188AA78090 /* input_coreOverrides_mame.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_mame.json; sourceTree = "<group>"; };
+		57EFF79E74D3893A0F90BABD /* GamingIconService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GamingIconService.swift; sourceTree = "<group>"; };
 		5803663F2F57F8B8212A8444 /* input_systemLabels_cpc.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_cpc.json; sourceTree = "<group>"; };
 		588987634A889D5C53A7EA69 /* input_systemLabels_pce.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_pce.json; sourceTree = "<group>"; };
 		58D13A1BA2A086DFF84123BB /* input_coreLabels_bsnes_cplusplus98.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_bsnes_cplusplus98.json; sourceTree = "<group>"; };
@@ -2076,6 +2082,7 @@
 		73BD7423F6C7A07044398C5C /* input_coreLabels_bsnes_mercury_balanced.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_bsnes_mercury_balanced.json; sourceTree = "<group>"; };
 		73CA49048DEA756D26158CE3 /* input_coreOverrides_boom3.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_boom3.json; sourceTree = "<group>"; };
 		7416C41D936AA57A67C27159 /* input_coreLabels_nxengine.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_nxengine.json; sourceTree = "<group>"; };
+		742D46F5A54238EC0883EABC /* game-icons.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "game-icons.zip"; sourceTree = "<group>"; };
 		7442198CF891F84CE81220FA /* CheatManagerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheatManagerService.swift; sourceTree = "<group>"; };
 		747C0EFB4B9531260931F3BE /* input_systemLabels_odyssey2.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_odyssey2.json; sourceTree = "<group>"; };
 		74A082F4D292DFBCCD09B3E6 /* fightdata_karatblz.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_karatblz.json; sourceTree = "<group>"; };
@@ -2281,6 +2288,7 @@
 		9B06488DE005018FB65D9950 /* input_coreLabels_mesen-s.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "input_coreLabels_mesen-s.json"; sourceTree = "<group>"; };
 		9B697EA2D197AF7DAFA8D2BE /* HoloBump.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = HoloBump.metal; sourceTree = "<group>"; };
 		9B9365CD6FC031FDA5FC4E59 /* CPS1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = CPS1.png; sourceTree = "<group>"; };
+		9BF3FCFFDC359E04B222A690 /* game-icons-manifest.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "game-icons-manifest.json"; sourceTree = "<group>"; };
 		9C0E8F85B2C2893C2F36FAB0 /* MoveDataGamesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoveDataGamesView.swift; sourceTree = "<group>"; };
 		9C2D4457E6499AA2F5779FF4 /* input_systemOverrides_segacd.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemOverrides_segacd.json; sourceTree = "<group>"; };
 		9C414D93A2ECA0F8D6F1A5F3 /* fightdata_wargods.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_wargods.json; sourceTree = "<group>"; };
@@ -3057,6 +3065,7 @@
 				A14A3003974DDDF09684961B /* CategoryManager.swift */,
 				065628712592EA28D2B70F4B /* DisplayCacheCodec.swift */,
 				DF68254BB5CE5328745136C2 /* GamepadNavCoordinator.swift */,
+				57EFF79E74D3893A0F90BABD /* GamingIconService.swift */,
 				34377D9B77D3186AEB2B669A /* GenreManager.swift */,
 				025E75768BE1E06F25F7AA7D /* HoloColorSampler.swift */,
 				F94B1536361C39252F23DE3C /* HoloPatternStore.swift */,
@@ -3087,6 +3096,15 @@
 				F20EF6C414682B78AE383860 /* appIcon1024.jpg */,
 			);
 			path = AppIcons;
+			sourceTree = "<group>";
+		};
+		1B29B614326E9AF610CEC51F /* GamingIcons */ = {
+			isa = PBXGroup;
+			children = (
+				9BF3FCFFDC359E04B222A690 /* game-icons-manifest.json */,
+				742D46F5A54238EC0883EABC /* game-icons.zip */,
+			);
+			path = GamingIcons;
 			sourceTree = "<group>";
 		};
 		1C1E3BFC79AD6E4451FA7219 /* Views */ = {
@@ -3654,6 +3672,7 @@
 				35AF3E1D0EA8DD7BDA67C06A /* Data */,
 				0CBD37D03C917E1671224137 /* EmulatorIcons */,
 				FB84C6DEBBF6DD736FF3B564 /* FightData */,
+				1B29B614326E9AF610CEC51F /* GamingIcons */,
 				7BCD0394A17EF0807F79BAF9 /* HoloPatterns */,
 				2C1F6F4977C3CAF4BED9345C /* HoloWeb */,
 				422DEDE00C8B12820B215CCB /* InputDescriptors */,
@@ -3881,6 +3900,7 @@
 				E65528ABEAB97C567F9B73A1 /* FilterChipView.swift */,
 				4C0D8487DF2A9BB2EAB70BAB /* GameCardView.swift */,
 				07A377CFF1945DD917DC921B /* GameListRowView.swift */,
+				1327C2617ECE3ABC8B71F920 /* GamingIconBrowserView.swift */,
 				AC76D35E66386E6C5D242961 /* GenrePickerView.swift */,
 				A7DC866436BB8788D4ED66A9 /* GridCollectionView.swift */,
 				1E1F8977ED21416EA5C44A5C /* HoloCardLayers.swift */,
@@ -5617,6 +5637,8 @@
 				D4A8E0A8AC22900911681C6D /* frame.m3d in Resources */,
 				9DD091FE2E6381261DCC7DE0 /* gambatte_libretro_default.json in Resources */,
 				91D7A0C32EC24E49171F7544 /* gambatte_libretro_gb.json in Resources */,
+				2B995A92A95E7EEA261CE70B /* game-icons-manifest.json in Resources */,
+				76F9F037BD2991CFC7B21B63 /* game-icons.zip in Resources */,
 				A50E7CAE481BBA4B17A3D864 /* gamegear.ico in Resources */,
 				212F5EF173A82C954392C288 /* gb-cheats.zip in Resources */,
 				DAB669E3BDEA87EADF3AF042 /* gb.ico in Resources */,
@@ -6371,6 +6393,8 @@
 				1ACE2B4563E908571208698E /* GamepadNavCoordinator.swift in Sources */,
 				7E45C123959B64DF17F0371E /* GamepadNavSettingsView.swift in Sources */,
 				22D45EF6813F1B4ADDD34BAD /* GamepadNavigationManager.swift in Sources */,
+				08B36BECDBD9A4963396B066 /* GamingIconBrowserView.swift in Sources */,
+				C9E55977A5C90BB24CDFD29F /* GamingIconService.swift in Sources */,
 				CC4C936CF4AAB9EBE49E8F47 /* GeneralSettingsView.swift in Sources */,
 				9C0148E6E8847F7537E526D1 /* GenreGroupingDiagram.swift in Sources */,
 				5DC85C85056E986328B9BC36 /* GenreManager.swift in Sources */,

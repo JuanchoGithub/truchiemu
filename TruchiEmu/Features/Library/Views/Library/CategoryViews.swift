@@ -1,5 +1,35 @@
 import SwiftUI
 
+// MARK: - Icon Name View
+
+/// Renders a stored icon name: "gi:author/name" -> template image from the
+/// bundled game-icons.net library (tinted by the ambient foreground style);
+/// anything else -> SF Symbol. Falls back to "tag" while the library is not
+/// yet unpacked or the name is empty.
+struct IconNameView: View {
+    let iconName: String
+    var size: CGFloat = 22
+
+    var body: some View {
+        Group {
+            if GamingIconService.isGamingIconName(iconName) {
+                if let image = GamingIconService.shared.image(for: iconName) {
+                    Image(nsImage: image)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                } else {
+                    Image(systemName: "tag")
+                        .font(.system(size: size * 0.55))
+                }
+            } else {
+                Image(systemName: iconName.isEmpty ? "tag" : iconName)
+                    .font(.system(size: size * 0.55))
+            }
+        }
+        .frame(width: size, height: size)
+    }
+}
+
 // MARK: - Category Icon View
 
 struct GameCategoryIconView: View {
@@ -14,8 +44,7 @@ struct GameCategoryIconView: View {
                     .resizable()
                     .aspectRatio(contentMode: .fit)
             } else {
-                Image(systemName: category.iconName.isEmpty ? "tag" : category.iconName)
-                    .font(.system(size: size * 0.55))
+                IconNameView(iconName: category.iconName, size: size)
             }
         }
         .frame(width: size, height: size)

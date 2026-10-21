@@ -550,8 +550,7 @@ struct CreateCategorySheet: View {
                                 .aspectRatio(contentMode: .fit)
                                 .frame(width: 22, height: 22)
                         } else {
-                            Image(systemName: selectedIconName ?? "gamecontroller.fill")
-                                .font(.title2)
+                            IconNameView(iconName: selectedIconName ?? "gamecontroller.fill", size: 32)
                                 .foregroundColor(Color(hex: selectedColor) ?? .blue)
                         }
                         Text(name.isEmpty ? "Category Name" : name)
@@ -648,8 +647,7 @@ struct EditCategorySheet: View {
                                     .aspectRatio(contentMode: .fit)
                                     .frame(width: 22, height: 22)
                             } else {
-                                Image(systemName: selectedIconName ?? category.iconName)
-                                    .font(.title2)
+                                IconNameView(iconName: selectedIconName ?? category.iconName, size: 32)
                                     .foregroundColor(Color(hex: selectedColor) ?? .blue)
                             }
                             Text(category.name.isEmpty ? "Category Name" : category.name)
@@ -740,18 +738,16 @@ struct RenameSystemSheet: View {
                                     .aspectRatio(contentMode: .fit)
                                     .frame(width: 22, height: 22)
                             } else if let name = selectedIconName, !name.isEmpty {
-                                Image(systemName: name)
+                                IconNameView(iconName: name, size: 32)
                                     .foregroundStyle(AppColors.brandAccent)
-                                    .font(.system(size: 18))
                             } else if let img = system.emuImage(size: 132, includeCustom: false) {
                                 Image(nsImage: img)
                                     .resizable()
                                     .aspectRatio(contentMode: .fit)
                                     .frame(width: 22, height: 22)
                             } else {
-                                Image(systemName: system.iconName)
+                                IconNameView(iconName: system.iconName, size: 32)
                                     .foregroundStyle(AppColors.brandAccent)
-                                    .font(.system(size: 18))
                             }
                             Text(displayName.isEmpty ? system.name : displayName)
                         }

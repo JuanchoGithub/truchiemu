@@ -62,6 +62,7 @@ struct TruchiEmuApp: App {
         DispatchQueue.main.async {
             CoreOverrideService.shared.syncBundledOverridesToAppSupport()
             BoxArtThumbnailService.shared.migrateOldThumbnailCache()
+            _ = GamingIconService.shared // unpacks bundled game icons once, off the first frame
         }
         
         // Optional slang preset audit, env-gated: run with

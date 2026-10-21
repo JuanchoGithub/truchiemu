@@ -15,8 +15,29 @@ struct IconPickerView: View {
     @State private var pickedImage: NSImage?
     @State private var iconSearchText: String = ""
     @State private var showSFSymbolBrowser = false
+    @State private var showGamingIconBrowser = false
+
+    /// Curated picks from the bundled game-icons.net library, shown once it
+    /// has been unpacked. Before that, the SF Symbols gaming set is used.
+    private static let defaultGamingIcons = [
+        "gi:delapouite/gamepad",
+        "gi:lorc/super-mushroom",
+        "gi:delapouite/vampire-dracula",
+        "gi:lorc/dragon-head",
+        "gi:lorc/castle",
+        "gi:lorc/cannon",
+        "gi:lorc/bloody-sword",
+        "gi:delapouite/triforce",
+        "gi:lorc/robot-golem",
+        "gi:skoll/console-controller",
+        "gi:delapouite/warp-pipe",
+        "gi:lorc/crossed-swords",
+    ]
 
     private var defaultIcons: [String] {
+        if GamingIconService.shared.state == .ready {
+            return Self.defaultGamingIcons
+        }
         let catalog = SFSymbolCatalog.shared
         if let gaming = catalog.categories.first(where: { $0.id == "gaming" }) {
             return Array(gaming.symbols.prefix(12))
@@ -25,7 +46,14 @@ struct IconPickerView: View {
     }
 
     private var searchResults: [String] {
-        SFSymbolCatalog.shared.search(iconSearchText)
+        var results: [String] = []
+        let iconService = GamingIconService.shared
+        if iconService.state == .ready {
+            results.append(contentsOf: iconService.search(iconSearchText)
+                .map { GamingIconService.iconPrefix + $0.id })
+        }
+        results.append(contentsOf: SFSymbolCatalog.shared.search(iconSearchText))
+        return results
     }
 
     var body: some View {
@@ -57,6 +85,21 @@ struct IconPickerView: View {
             }
 
             HStack(spacing: 12) {
+                Button {
+                    showGamingIconBrowser = true
+                } label: {
+                    HStack(spacing: 4) {
+                        IconNameView(iconName: "gi:lorc/super-mushroom", size: 20)
+                            .foregroundStyle(AppColors.brandAccent)
+                        Text(loc.localized("app.gameIcons"))
+                            .font(.subheadline)
+                    }
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+
                 Button {
                     showImagePicker = true
                 } label: {
@@ -128,6 +171,13 @@ struct IconPickerView: View {
             }
             .gamepadDismissable { showSFSymbolBrowser = false }
         }
+        .sheet(isPresented: $showGamingIconBrowser) {
+            GamingIconBrowserView { selectedName in
+                selectedIconName = selectedName
+                customIconPath = nil
+            }
+            .gamepadDismissable { showGamingIconBrowser = false }
+        }
     }
 
     @ViewBuilder
@@ -138,9 +188,7 @@ struct IconPickerView: View {
                     selectedIconName = iconName
                     customIconPath = nil
                 } label: {
-                    Image(systemName: iconName)
-                        .font(.system(size: 16))
-                        .frame(width: 36, height: 36)
+                    IconNameView(iconName: iconName, size: 36)
                         .background(
                             RoundedRectangle(cornerRadius: 6)
                                 .fill(isIconSelected(iconName) ? AppColors.accentBackground(colorScheme) : .clear)
@@ -163,14 +211,14 @@ struct IconPickerView: View {
                 .resizable()
                 .aspectRatio(contentMode: .fit)
         } else if let name = selectedIconName, !name.isEmpty {
-            Image(systemName: name)
+            IconNameView(iconName: name, size: 32)
                 .foregroundStyle(AppColors.brandAccent)
         } else if let defaultImg = defaultIconImage?() {
             Image(nsImage: defaultImg)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
         } else if !defaultIconName.isEmpty {
-            Image(systemName: defaultIconName)
+            IconNameView(iconName: defaultIconName, size: 32)
                 .foregroundStyle(AppColors.brandAccent)
         }
     }
