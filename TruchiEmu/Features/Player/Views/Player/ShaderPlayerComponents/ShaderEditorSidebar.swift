@@ -136,6 +136,12 @@ struct ShaderEditorSidebar: View {
 
             Spacer()
 
+            Button(loc.localized("shader.cancel")) {
+                requestDismiss()
+            }
+            .buttonStyle(.bordered)
+            .controlSize(.small)
+
             Button(action: applyAndSave) {
                 Label(loc.localized("shader.applyAndSave"), systemImage: "checkmark")
                     .font(.caption.weight(.semibold))

@@ -15,31 +15,20 @@ struct RecordStreamButton: View {
     }
 
     private var defaultLabel: String {
-        if case .connecting = recordingService.streamStatus { return "CONNECTING" }
-        if recordingService.streamError != nil { return recordingService.streamError! }
+        if case .connecting = recordingService.streamStatus { return loc.localized("toolbar.connecting") }
+        if recordingService.streamError != nil { return loc.localized("toolbar.streamError") }
         if recordingService.isUserRecording {
             return loc.localized("toolbar.stopRecording")
         }
         return loc.localized("toolbar.record")
     }
 
-    private var hasTwitchKey: Bool {
-        if let key = StreamRecordingService.twitchStreamKey, !key.isEmpty { true } else { false }
-    }
-
-    private var hasYoutubeKey: Bool {
-        if let key = StreamRecordingService.youtubeStreamKey, !key.isEmpty { true } else { false }
-    }
-
-    private var hasCustomKey: Bool {
-        if let key = StreamRecordingService.customStreamKey, !key.isEmpty { true } else { false }
+    private var helpText: String {
+        recordingService.streamError ?? defaultLabel
     }
 
     private var shouldShowButton: Bool {
-        recordingService.isUserRecording
-        || recordingService.isRecording
-        || AppSettings.getBool("streaming_enabled", defaultValue: false)
-        || AppSettings.getBool("recording_local_enabled", defaultValue: true)
+        recordingService.isToolbarFeatureAvailable
     }
 
     var body: some View {
@@ -69,20 +58,42 @@ struct RecordStreamButton: View {
                     isDropdownShown = true
                 }
             }
-            .popover(isPresented: $isDropdownShown, arrowEdge: .top) {
-                StreamPickerView(
-                    isDropdownShown: $isDropdownShown,
-                    runner: runner,
-                    recordingService: recordingService,
-                    captureSize: runner.captureSize,
-                    hasTwitchKey: hasTwitchKey,
-                    hasYoutubeKey: hasYoutubeKey,
-                    hasCustomKey: hasCustomKey,
-                    dismissAction: { isDropdownShown = false }
-                )
-                .frame(width: 220)
-            }
+            .help(helpText)
+            .accessibilityLabel(defaultLabel)
+            .accessibilityAddTraits(.isButton)
         }
+    }
+}
+
+struct RecordStreamPickerPopover: View {
+    @ObservedObject var runner: EmulatorRunner
+    @Binding var isDropdownShown: Bool
+    @ObservedObject private var recordingService = StreamRecordingService.shared
+
+    private var hasTwitchKey: Bool {
+        if let key = StreamRecordingService.twitchStreamKey, !key.isEmpty { true } else { false }
+    }
+
+    private var hasYoutubeKey: Bool {
+        if let key = StreamRecordingService.youtubeStreamKey, !key.isEmpty { true } else { false }
+    }
+
+    private var hasCustomKey: Bool {
+        if let key = StreamRecordingService.customStreamKey, !key.isEmpty { true } else { false }
+    }
+
+    var body: some View {
+        StreamPickerView(
+            isDropdownShown: $isDropdownShown,
+            runner: runner,
+            recordingService: recordingService,
+            captureSize: runner.captureSize,
+            hasTwitchKey: hasTwitchKey,
+            hasYoutubeKey: hasYoutubeKey,
+            hasCustomKey: hasCustomKey,
+            dismissAction: { isDropdownShown = false }
+        )
+        .frame(width: 220)
     }
 }
 
@@ -92,6 +103,7 @@ private struct RecordStreamButtonContent: View {
     let isRecording: Bool
     @Binding var isHovered: Bool
     @Environment(\.toolbarCompactMode) private var mode
+    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         Group {
@@ -100,7 +112,7 @@ private struct RecordStreamButtonContent: View {
                 VStack(spacing: 4) {
                     Image(systemName: icon)
                         .font(.system(size: 16, weight: .semibold))
-                    Text(label)
+                    Text(verbatim: label)
                         .font(.system(size: 10, weight: .medium))
                         .lineLimit(1)
                         .fixedSize(horizontal: true, vertical: false)
@@ -111,7 +123,7 @@ private struct RecordStreamButtonContent: View {
                 VStack(spacing: 2) {
                     Image(systemName: icon)
                         .font(.system(size: 13, weight: .semibold))
-                    Text(label)
+                    Text(verbatim: label)
                         .font(.system(size: 9, weight: .medium))
                         .lineLimit(1)
                         .fixedSize(horizontal: true, vertical: false)
@@ -125,10 +137,10 @@ private struct RecordStreamButtonContent: View {
                     .padding(.vertical, 8)
             }
         }
-        .foregroundColor(isRecording ? .red : .white)
+        .foregroundColor(isRecording ? AppColors.error(colorScheme) : AppColors.textPrimary(colorScheme))
         .background(
             RoundedRectangle(cornerRadius: 8)
-                .fill(Color.white.opacity(isHovered ? 0.08 : 0))
+                .fill(isRecording ? AppColors.error(colorScheme).opacity(0.16) : Color.primary.opacity(isHovered ? 0.08 : 0))
         )
     }
 }
@@ -215,6 +227,16 @@ private struct StreamPickerView: View {
                 }
             ))
         }
+        rows.append(RowAction(
+            id: "screenshot",
+            label: loc.localized("toolbar.screenshot"),
+            icon: "camera.fill",
+            tintRed: false,
+            perform: {
+                runner.performScreenshot()
+                dismissAction()
+            }
+        ))
         return rows
     }
 
@@ -229,7 +251,7 @@ private struct StreamPickerView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            Text(recordingService.isUserRecording
+            Text(verbatim: recordingService.isUserRecording
                  ? loc.localized("toolbar.stopRecording")
                  : loc.localized("toolbar.record"))
                 .font(.headline)
@@ -241,7 +263,7 @@ private struct StreamPickerView: View {
                         let isFocused = sheetFocusIndex == index
                         Button(action: action.perform) {
                             Label(action.label, systemImage: action.icon)
-                                .foregroundColor(action.tintRed ? .red : .primary)
+                                .foregroundColor(action.tintRed ? AppColors.error(colorScheme) : AppColors.textPrimary(colorScheme))
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .padding(.horizontal, 12)
                                 .padding(.vertical, 8)

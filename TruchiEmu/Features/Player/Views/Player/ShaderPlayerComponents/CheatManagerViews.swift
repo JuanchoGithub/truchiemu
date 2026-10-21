@@ -106,7 +106,8 @@ struct CheatPickerView: View {
                 }
                 Spacer()
                 Button {
-                    windowController?.isCheatPickerShown = false
+                    isPresented = false
+                    windowController?.dismissCheatManager()
                 } label: {
                     Image(systemName: "xmark.circle.fill")
                         .font(.title3)
@@ -162,7 +163,9 @@ struct CheatPickerView: View {
             itemCount: orderedCheats.count,
             onSelect: { idx in toggleCheat(at: idx) },
             onDismiss: {
+                isPresented = false
                 windowController?.isCheatPickerShown = false
+                windowController?.dismissCheatManager()
             }
         )
         .onChange(of: orderedCheats.count) { _, newCount in

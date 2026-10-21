@@ -225,6 +225,72 @@ enum SettingsCatalog {
             ),
 
             SettingsCatalogEntry(
+                page: .gameToolbar, sectionID: "preview",
+                sectionTitle: "Preview",
+                optionTitles: ["Toolbar preview"],
+                keywords: ["toolbar", "preview", "layout", "order", "buttons"]
+            ),
+            SettingsCatalogEntry(
+                page: .gameToolbar, sectionID: "behavior",
+                sectionTitle: "Toolbar Behavior",
+                optionTitles: ["Keep toolbar visible", "Auto-hide delay"],
+                keywords: ["toolbar", "overlay", "auto hide", "delay", "pin", "visible", "game controls"]
+            ),
+            SettingsCatalogEntry(
+                page: .gameToolbar, sectionID: "groups",
+                sectionTitle: "Group Order",
+                optionTitles: ["Groups"],
+                keywords: ["toolbar", "groups", "order", "reorder", "layout", "drag"]
+            ),
+            SettingsCatalogEntry(
+                page: .gameToolbar, sectionID: "window",
+                sectionTitle: "Window",
+                optionTitles: ["Stop"],
+                keywords: ["toolbar", "stop", "close", "quit", "window"]
+            ),
+            SettingsCatalogEntry(
+                page: .gameToolbar, sectionID: "playback",
+                sectionTitle: "Playback",
+                optionTitles: ["Pause", "Restart"],
+                keywords: ["toolbar", "pause", "resume", "restart", "reload"]
+            ),
+            SettingsCatalogEntry(
+                page: .gameToolbar, sectionID: "state",
+                sectionTitle: "Save States",
+                optionTitles: ["Save State", "Load State", "Undo Load State"],
+                keywords: ["toolbar", "save", "load", "state", "slot", "undo"]
+            ),
+            SettingsCatalogEntry(
+                page: .gameToolbar, sectionID: "capture",
+                sectionTitle: "Capture",
+                optionTitles: ["Record"],
+                keywords: ["toolbar", "record", "capture", "stream"]
+            ),
+            SettingsCatalogEntry(
+                page: .gameToolbar, sectionID: "time",
+                sectionTitle: "Time Controls",
+                optionTitles: ["Rewind", "Fast Forward", "Slow Motion"],
+                keywords: ["toolbar", "rewind", "fast forward", "slow motion", "time machine", "speed"]
+            ),
+            SettingsCatalogEntry(
+                page: .gameToolbar, sectionID: "tools",
+                sectionTitle: "Tools",
+                optionTitles: ["Cheats", "Fight Training", "Game Guide", "Shader", "Bezel"],
+                keywords: ["toolbar", "cheats", "training", "guide", "shader", "bezel"]
+            ),
+            SettingsCatalogEntry(
+                page: .gameToolbar, sectionID: "view",
+                sectionTitle: "View",
+                optionTitles: ["Fullscreen"],
+                keywords: ["toolbar", "fullscreen", "view", "display"]
+            ),
+            SettingsCatalogEntry(
+                page: .gameToolbar, sectionID: "reset",
+                sectionTitle: "Reset Toolbar",
+                keywords: ["toolbar", "reset", "defaults", "restore"]
+            ),
+
+            SettingsCatalogEntry(
                 page: .bezels, sectionID: "storage",
                 sectionTitle: "Bezel Storage",
                 keywords: ["storage", "path", "folder", "directory"]

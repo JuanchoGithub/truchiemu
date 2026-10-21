@@ -164,7 +164,7 @@ struct GameTimeBarOverlay: View {
                         .padding(.horizontal, 16)
                     }
                 }
-                .padding(.bottom, 44 + 64)
+                .padding(.bottom, 44 + 64 + 16)
                 .transition(.opacity)
             }
         }
@@ -218,7 +218,7 @@ struct GameTimeBarOverlay: View {
     /// Visibility predicate for the bubble. Mirrors `showBubble` in the body
     /// so the timer-gating logic and the render logic always agree.
     private var isOverlayVisible: Bool {
-        overlayEnabled && (runner.isRewinding || runner.speedMultiplier != 1.0)
+        overlayEnabled && runner.isRewinding
     }
 
     /// Connect `pollTimer` only while the overlay is visible, cancel it

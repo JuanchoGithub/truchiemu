@@ -126,6 +126,13 @@ class StreamRecordingService: ObservableObject {
     @Published var streamStatus: StreamStatus = .idle
     @Published var streamError: String?
 
+    var isToolbarFeatureAvailable: Bool {
+        isUserRecording
+        || isRecording
+        || AppSettings.getBool("streaming_enabled", defaultValue: false)
+        || AppSettings.getBool("recording_local_enabled", defaultValue: true)
+    }
+
     @Published var customVideoBitrate: Int = 12_000_000
     @Published var customAudioBitrate: Int = 192_000
     @Published var customFrameRate: Int = 60

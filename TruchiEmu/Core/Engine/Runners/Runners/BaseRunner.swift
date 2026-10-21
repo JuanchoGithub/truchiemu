@@ -1104,7 +1104,9 @@ case "scummvm": runner = ScummVMRunner()
         let idx = speeds.firstIndex { $0 == speedMultiplier } ?? -1
         let next = (idx + 1) % (speeds.count + 1)
         speedMultiplier = next < speeds.count ? speeds[next] : 1.0
-        let label = speedMultiplier > 1.0 ? "\(Int(speedMultiplier))x" : "Normal Speed"
+        let label = speedMultiplier > 1.0
+            ? String(format: "%gx", Double(speedMultiplier))
+            : "Normal Speed"
         osdMessage = label
         LoggerService.info(category: "TimeMachine", "toggleFastForward → \(speedMultiplier)")
         XPCBridgeAdapter.shared.setSpeedMultiplier(speedMultiplier)
@@ -1125,7 +1127,9 @@ case "scummvm": runner = ScummVMRunner()
         let idx = speeds.firstIndex { $0 == speedMultiplier } ?? -1
         let next = (idx + 1) % (speeds.count + 1)
         speedMultiplier = next < speeds.count ? speeds[next] : 1.0
-        let label = speedMultiplier < 1.0 ? "\(Int(1.0 / speedMultiplier))x Slow" : "Normal Speed"
+        let label = speedMultiplier < 1.0
+            ? String(format: "%gx", Double(speedMultiplier))
+            : "Normal Speed"
         osdMessage = label
         LoggerService.info(category: "TimeMachine", "toggleSlowMotion → \(speedMultiplier)")
         XPCBridgeAdapter.shared.setSpeedMultiplier(speedMultiplier)

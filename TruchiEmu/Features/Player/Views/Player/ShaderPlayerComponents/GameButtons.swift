@@ -4,7 +4,7 @@ import Combine
 
 // MARK: - Toolbar Compact Mode
 
-enum ToolbarCompactMode {
+enum ToolbarCompactMode: Equatable {
     case full        // icon + label, normal spacing
     case compact     // icon + label, tighter spacing, smaller fonts
     case iconOnly    // icon only, minimal spacing
@@ -26,6 +26,8 @@ struct ToolbarButtonContent: View {
     let icon: String
     let label: String
     var badge: String? = nil
+    var horizontal: Bool = false
+    var textAsIcon: Bool = false
     @Environment(\.toolbarCompactMode) private var mode
     @Environment(\.colorScheme) private var colorScheme
 
@@ -48,130 +50,60 @@ struct ToolbarButtonContent: View {
 
     var body: some View {
         Group {
-            switch mode {
-            case .full:
-                VStack(spacing: 4) {
-                    iconRow(size: 16, badgeSize: 10)
-                    Text(label)
-                        .font(.system(size: 10, weight: .medium))
+            if horizontal {
+                HStack(spacing: 5) {
+                    iconRow(
+                        size: mode == .full ? 14 : 12,
+                        badgeSize: mode == .full ? 9 : 8
+                    )
+                    Text(verbatim: label)
+                        .font(.system(size: mode == .full ? 10 : 9, weight: .medium))
                         .lineLimit(1)
                         .fixedSize(horizontal: true, vertical: false)
                 }
-                .padding(.horizontal, 10)
-                .padding(.vertical, 6)
-            case .compact:
-                VStack(spacing: 2) {
-                    iconRow(size: 13, badgeSize: 9)
-                    Text(label)
-                        .font(.system(size: 9, weight: .medium))
-                        .lineLimit(1)
-                        .fixedSize(horizontal: true, vertical: false)
+                .padding(.horizontal, mode == .full ? 8 : 6)
+                .padding(.vertical, mode == .full ? 6 : 5)
+                .frame(maxWidth: .infinity)
+            } else if textAsIcon {
+                Text(verbatim: label)
+                    .font(.system(
+                        size: mode == .full ? 15 : 13,
+                        weight: .semibold,
+                        design: .rounded
+                    ))
+                    .monospacedDigit()
+                    .lineLimit(1)
+                    .fixedSize(horizontal: true, vertical: false)
+                    .frame(minWidth: mode == .full ? 46 : 38)
+                    .padding(.horizontal, mode == .full ? 8 : 6)
+                    .padding(.vertical, mode == .full ? 8 : 7)
+            } else {
+                switch mode {
+                case .full:
+                    VStack(spacing: 4) {
+                        iconRow(size: 16, badgeSize: 10)
+                        Text(verbatim: label)
+                            .font(.system(size: 10, weight: .medium))
+                            .lineLimit(1)
+                            .fixedSize(horizontal: true, vertical: false)
+                    }
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 6)
+                case .compact:
+                    VStack(spacing: 2) {
+                        iconRow(size: 13, badgeSize: 9)
+                        Text(verbatim: label)
+                            .font(.system(size: 9, weight: .medium))
+                            .lineLimit(1)
+                            .fixedSize(horizontal: true, vertical: false)
+                    }
+                    .padding(.horizontal, 6)
+                    .padding(.vertical, 4)
+                case .iconOnly:
+                    iconRow(size: 14, badgeSize: 9)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 8)
                 }
-                .padding(.horizontal, 6)
-                .padding(.vertical, 4)
-            case .iconOnly:
-                iconRow(size: 14, badgeSize: 9)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 8)
-            }
-        }
-    }
-}
-
-class MouseDownButton: NSButton {
-    override func mouseDown(with event: NSEvent) {
-        if let target = self.target, let action = self.action {
-            NSApp.sendAction(action, to: target, from: self)
-        }
-    }
-}
-
-struct MouseDownButtonAction<Label: View>: NSViewRepresentable {
-    let action: () -> Void
-    let label: () -> Label
-    
-    func makeNSView(context: Context) -> NSView {
-        let container = NSView()
-        
-        let button = MouseDownButton()
-        button.title = ""
-        button.bezelStyle = .regularSquare
-        button.isBordered = false
-        button.target = context.coordinator
-        button.action = #selector(Coordinator.performAction)
-        button.translatesAutoresizingMaskIntoConstraints = false
-        
-        let hostingView = NSHostingView(rootView: label())
-        hostingView.translatesAutoresizingMaskIntoConstraints = false
-        
-        container.addSubview(button)
-        container.addSubview(hostingView)
-        
-        NSLayoutConstraint.activate([
-            button.leadingAnchor.constraint(equalTo: container.leadingAnchor),
-            button.trailingAnchor.constraint(equalTo: container.trailingAnchor),
-            button.topAnchor.constraint(equalTo: container.topAnchor),
-            button.bottomAnchor.constraint(equalTo: container.bottomAnchor),
-            hostingView.leadingAnchor.constraint(equalTo: container.leadingAnchor),
-            hostingView.trailingAnchor.constraint(equalTo: container.trailingAnchor),
-            hostingView.topAnchor.constraint(equalTo: container.topAnchor),
-            hostingView.bottomAnchor.constraint(equalTo: container.bottomAnchor)
-        ])
-        
-        return container
-    }
-    
-    func updateNSView(_ nsView: NSView, context: Context) {
-        if let hostingView = nsView.subviews.first(where: { $0 is NSHostingView<Label> }) as? NSHostingView<Label> {
-            hostingView.rootView = label()
-        }
-    }
-    
-    func makeCoordinator() -> Coordinator {
-        Coordinator(action: action)
-    }
-    
-    class Coordinator: NSObject {
-        let action: () -> Void
-        init(action: @escaping () -> Void) {
-            self.action = action
-        }
-        @objc func performAction() {
-            action()
-        }
-    }
-}
-
-struct MouseDownButtonActionStyled<Label: View>: View {
-  let action: () -> Void
-  let label: () -> Label
-  @Environment(\.colorScheme) private var colorScheme
-  @State private var isPressed = false
-  @State private var isHovered = false
-
-  var body: some View {
-        MouseDownButtonAction(action: {
-            withAnimation(.easeInOut(duration: 0.1)) {
-                isPressed = true
-            }
-            action()
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                withAnimation(.easeInOut(duration: 0.1)) {
-                    isPressed = false
-                }
-            }
-        }) {
-            label()
-            .opacity(isPressed ? 0.7 : 1.0)
-            .background(
-                RoundedRectangle(cornerRadius: 8)
-                    .fill(Color.white.opacity(isPressed ? 0.15 : (isHovered ? 0.08 : 0)))
-            )
-            .contentShape(Rectangle())
-        }
-        .onHover { hovering in
-            withAnimation(.easeOut(duration: 0.1)) {
-                isHovered = hovering
             }
         }
     }
@@ -188,7 +120,6 @@ struct ToolbarButtonStyle: ButtonStyle {
 }
 
 struct ToolbarHoverButtonStyle: ButtonStyle {
-    @Environment(\.colorScheme) private var colorScheme
     var isHovered: Bool
 
     func makeBody(configuration: Configuration) -> some View {
@@ -197,7 +128,7 @@ struct ToolbarHoverButtonStyle: ButtonStyle {
         .scaleEffect(configuration.isPressed ? 0.95 : 1.0)
         .background(
             RoundedRectangle(cornerRadius: 8)
-                .fill(Color.white.opacity(configuration.isPressed ? 0.15 : (isHovered ? 0.08 : 0)))
+                .fill(Color.primary.opacity(configuration.isPressed ? 0.15 : (isHovered ? 0.08 : 0)))
         )
         .contentShape(Rectangle())
         .animation(.easeOut(duration: 0.1), value: configuration.isPressed)
@@ -227,77 +158,45 @@ struct ToolbarButton: View {
   let label: String
   var danger: Bool = false
   var disabled: Bool = false
+  var active: Bool = false
   var badge: String? = nil
+  var horizontal: Bool = false
+  var textAsIcon: Bool = false
   let action: () -> Void
   @Environment(\.colorScheme) private var colorScheme
 
+  private var foreground: Color {
+    if disabled { return AppColors.textTertiary(colorScheme) }
+    if danger { return AppColors.error(colorScheme) }
+    if active { return AppColors.brandAccent }
+    return AppColors.textPrimary(colorScheme)
+  }
+
+  private var background: Color {
+    if danger { return AppColors.error(colorScheme).opacity(0.15) }
+    if active { return AppColors.brandAccent.opacity(0.16) }
+    return .clear
+  }
+
   var body: some View {
         HoverButton(action: action) {
-            ToolbarButtonContent(icon: icon, label: label, badge: badge)
-            .foregroundColor(disabled ? .white.opacity(0.3) : (danger ? AppColors.error(colorScheme).opacity(0.9) : .white.opacity(0.9)))
+            ToolbarButtonContent(
+                icon: icon,
+                label: label,
+                badge: badge,
+                horizontal: horizontal,
+                textAsIcon: textAsIcon
+            )
+            .foregroundColor(foreground)
             .background(
                 RoundedRectangle(cornerRadius: 8)
-                    .fill(danger ? AppColors.error(colorScheme).opacity(0.15) : Color.clear)
+                    .fill(background)
             )
             .contentShape(Rectangle())
         }
         .disabled(disabled)
-    }
-}
-
-struct PauseResumeButton: View {
-  @ObservedObject var runner: EmulatorRunner
-  @ObservedObject private var loc = LocalizationManager.shared
-  @Environment(\.colorScheme) private var colorScheme
-
-  var body: some View {
-        HoverButton(action: {
-            runner.togglePause()
-        }) {
-            ToolbarButtonContent(icon: runner.isPaused ? "play.fill" : "pause.fill", label: runner.isPaused ? loc.localized("toolbar.resume") : loc.localized("toolbar.pause"))
-        }
-        .foregroundColor(runner.isPaused ? .green : .white)
-    }
-}
-
-struct FullscreenButton: View {
-  @ObservedObject var windowController: StandaloneGameWindowController
-  @ObservedObject private var loc = LocalizationManager.shared
-
-  var body: some View {
-        HoverButton(action: {
-            windowController.toggleFullscreen()
-        }) {
-            ToolbarButtonContent(icon: windowController.isFullscreen ? "arrow.down.right.and.arrow.up.left" : "arrow.up.left.and.arrow.down.right", label: windowController.isFullscreen ? loc.localized("toolbar.exitFullscreen") : loc.localized("toolbar.fullscreen"))
-        }
-    }
-}
-
-struct RestartButton: View {
-    @ObservedObject var runner: EmulatorRunner
-    @ObservedObject private var loc = LocalizationManager.shared
-    
-    var body: some View {
-        MouseDownButtonActionStyled(action: {
-            runner.reloadGame()
-        }) {
-            ToolbarButtonContent(icon: "arrow.counterclockwise", label: loc.localized("toolbar.restart"))
-        }
-    }
-}
-
-struct AutoFullscreenButton: View {
-  @ObservedObject var windowController: StandaloneGameWindowController
-  @ObservedObject private var loc = LocalizationManager.shared
-  @Environment(\.colorScheme) private var colorScheme
-
-  var body: some View {
-        HoverButton(action: {
-            windowController.toggleAutoFullscreen()
-        }) {
-            ToolbarButtonContent(icon: windowController.autoFullscreenEnabled ? "rectangle.expand.vertical" : "rectangle", label: loc.localized("toolbar.autoFullscreen"))
-        }
-        .foregroundColor(windowController.autoFullscreenEnabled ? .green : .white)
+        .help(label)
+        .accessibilityLabel(label)
     }
 }
 
@@ -719,45 +618,4 @@ struct SaveStatesBrowserView: View {
             loadSlot(selectedSlot)
         }
     }
-}
-
-struct FightTrainingToolbarButton: View {
-    @ObservedObject var windowController: StandaloneGameWindowController
-    @ObservedObject private var loc = LocalizationManager.shared
-    @ObservedObject private var trainingManager = TrainingModeManager.shared
-
-    private var isActive: Bool {
-        trainingManager.isMenuVisible
-    }
-
-    var body: some View {
-        if windowController.trainingModeViewModel.hasGameData {
-            HoverButton(action: {
-                windowController.toggleTrainingModeOverlay()
-            }) {
-                ToolbarButtonContent(icon: "figure.martial.arts", label: loc.localized("toolbar.fightTraining"))
-            }
-            .foregroundColor(isActive ? AppColors.brandAccent : .white)
-        }
-    }
-}
-
-struct GameGuideToolbarButton: View {
-@ObservedObject var windowController: StandaloneGameWindowController
-@ObservedObject private var loc = LocalizationManager.shared
-
-private var isActive: Bool {
-windowController.gameGuideViewModel.isSidebarVisible
-}
-
-var body: some View {
-if windowController.gameGuideViewModel.hasGuideData {
-HoverButton(action: {
-windowController.toggleGuideSidebar()
-}) {
-ToolbarButtonContent(icon: "book", label: loc.localized("toolbar.gameGuide"))
-                }
-                .foregroundColor(isActive ? AppColors.brandAccent : .white)
-}
-}
 }

@@ -5,21 +5,31 @@ extension StandaloneGameWindowController {
 
     @MainActor
     func showGamepadToolbar() {
-        // Guard against a second open while already open. Each open pushes
-        // a nav context. A duplicate push leaks the first context. The stale
-        // context then keeps routing A (Select) to the toolbar after close.
-        // Pressing A on the Restart button calls reloadGame and looks like
-        // "A+B resets the game".
-        if isGamepadToolbarMode && gameToolbarNavContext != nil { return }
+        if isGamepadToolbarMode && gameToolbarNavContext != nil {
+            if !isToolbarVisible {
+                showToolbar()
+            }
+            return
+        }
         hideToolbarTimer?.invalidate()
         isGamepadToolbarMode = true
         GamepadNavigationManager.shared.isGamepadToolbarActive = true
         gamepadToolbarFocusedIndex = 0
         isStopConfirmArmed = false
+        isSlotPickerShown = false
+        isRecordStreamPickerShown = false
+        isToolbarMoreShown = false
 
-        let ctx = GamepadGameToolbarContext(itemCount: gamepadToolbarButtonCount)
+        let itemIDs = activeToolbarItemIDs
+        let itemCount = itemIDs.count + (toolbarHasMore ? 1 : 0)
+        guard itemCount > 0 else {
+            isGamepadToolbarMode = false
+            GamepadNavigationManager.shared.isGamepadToolbarActive = false
+            return
+        }
+
+        let ctx = GamepadGameToolbarContext(itemCount: itemCount)
         ctx.ownedWindow = window
-        ctx.skipIndices = computeHiddenToolbarIndices()
         ctx.onSelect = { [weak self] _ in self?.gamepadToolbarActivateFocusedButton() }
         ctx.onDismiss = { [weak self] in self?.exitGamepadToolbarMode() }
         ctx.onNavigate = { [weak self] in
@@ -38,19 +48,12 @@ extension StandaloneGameWindowController {
         if !isToolbarVisible {
             showToolbar()
         }
-        // Keep the toolbar visible while navigating by gamepad; don't let the
-        // mouse-activity auto-hide timer dismiss it during couch play.
         hideToolbarTimer?.invalidate()
         hideToolbarTimer = nil
-        // Pause the game while navigating the toolbar. Remember whether it was
-        // already paused so exiting the toolbar restores that state instead of
-        // unconditionally resuming.
         if let r = runner {
             wasPausedBeforeGamepadToolbar = r.isPaused
             r.setPaused(true)
         }
-        // Releases during toolbar nav are dropped, so Start+Select stick in
-        // the core. Clear them now or A+B after close looks like a reset.
         XPCBridgeAdapter.shared.clearAllJoypadInputs()
     }
 
@@ -59,10 +62,9 @@ extension StandaloneGameWindowController {
         isGamepadToolbarMode = false
         gamepadToolbarFocusedIndex = nil
         GamepadNavigationManager.shared.isGamepadToolbarActive = false
-        // Swallow the close press. It can arrive at the runner after this
-        // flag clears and leak into the game as an extra B (or A) press.
         GamepadNavigationManager.shared.suppressGameInputsUntil = CACurrentMediaTime() + 0.25
         isStopConfirmArmed = false
+        isToolbarMoreShown = false
 
         if let ctx = gameToolbarNavContext {
             GamepadNavContextStack.shared.remove(ctx)
@@ -71,8 +73,6 @@ extension StandaloneGameWindowController {
 
         let nav = GamepadNavigationManager.shared
         nav.suppressLeftStickInToolbar = false
-        // Clear again. Presses made inside the toolbar must not leak into
-        // the game when it resumes.
         XPCBridgeAdapter.shared.clearAllJoypadInputs()
         if let r = runner {
             r.setPaused(wasPausedBeforeGamepadToolbar)
@@ -94,115 +94,27 @@ extension StandaloneGameWindowController {
 
     @MainActor
     func gamepadToolbarActivateFocusedButton() {
-        // Never fire toolbar buttons when toolbar mode is off. This stops
-        // a late A press from hitting Restart (reloadGame) after close.
         guard isGamepadToolbarMode else { return }
-        guard let idx = gamepadToolbarFocusedIndex, let r = runner else { return }
-        var buttonIndex = 0
-        // 0: Stop (gamepad-only confirm; mouse clicks bypass this and close immediately)
-        if idx == buttonIndex {
-            if isStopConfirmArmed {
-                window?.close()
-            } else {
-                isStopConfirmArmed = true
-            }
+        guard let idx = gamepadToolbarFocusedIndex else { return }
+        let itemIDs = activeToolbarItemIDs
+
+        if idx < itemIDs.count {
+            performToolbarItem(itemIDs[idx], source: .gamepad)
             return
         }
-        buttonIndex += 1
-        // 1: Pause / Resume -> close toolbar and resume play (matches spec)
-        if idx == buttonIndex {
-            exitGamepadToolbarMode()
-            return
+
+        if idx == itemIDs.count && toolbarHasMore {
+            isToolbarMoreShown = true
         }
-        buttonIndex += 1
-        // 2: Restart -> reload, close toolbar, resume
-        if idx == buttonIndex {
-            r.reloadGame()
-            exitGamepadToolbarMode()
-            return
-        }
-        buttonIndex += 1
-        // 3: Save State -> save, keep toolbar open, game stays paused (per spec)
-        if idx == buttonIndex {
-            if !saveStatesDisabled {
-                HardcoreModeManager.shared.attemptSaveState {
-                    Task { @MainActor in _ = r.saveState(slot: r.currentSlot) }
-                }
-            }
-            return
-        }
-        buttonIndex += 1
-        // 4: Load State -> open the save-state browser
-        if idx == buttonIndex {
-            if !saveStatesDisabled {
-                isSlotPickerShown = true
-            }
-            return
-        }
-        buttonIndex += 1
-        // 5: Record / Stream -> mirrors the mouse onTapGesture: clear error,
-        // stop connecting / recording, or open the stream-picker popover.
-        if idx == buttonIndex {
-            let recordingService = StreamRecordingService.shared
-            if recordingService.streamError != nil {
-                recordingService.streamError = nil
-            } else if case .connecting = recordingService.streamStatus {
-                recordingService.stop()
-            } else if recordingService.isUserRecording {
-                recordingService.stop()
-            } else {
-                isRecordStreamPickerShown = true
-            }
-            return
-        }
-        buttonIndex += 1
-        // 6: Cheats -> open the cheat popover (mirrors the slot/record popovers)
-        if idx == buttonIndex {
-            HardcoreModeManager.shared.attemptUseCheats {
-                self.isCheatPickerShown = true
-            }
-            return
-        }
-        // 7 (conditional): Training
-        if trainingModeViewModel.hasGameData {
-            buttonIndex += 1
-            if idx == buttonIndex { toggleTrainingModeOverlay(); return }
-        }
-        // 8 (conditional): Guide
-        if gameGuideViewModel.hasGuideData {
-            buttonIndex += 1
-            if idx == buttonIndex { toggleGuideSidebar(); return }
-        }
-        buttonIndex += 1
-        // 9/10: Fullscreen
-        if idx == buttonIndex { toggleFullscreen(); return }
-        buttonIndex += 1
-        // 10/11: Auto-fullscreen
-        if idx == buttonIndex { toggleAutoFullscreen(); return }
     }
 
-    var gamepadToolbarButtonCount: Int {
-        // Indices: 0 stop, 1 pause, 2 restart, 3 save, 4 load (browser),
-        //          5 record, 6 cheats, [7 training], [8 guide],
-        //          fullscreen, auto-fullscreen
-        var count = 7
-        if trainingModeViewModel.hasGameData { count += 1 }
-        if gameGuideViewModel.hasGuideData { count += 1 }
-        count += 2 // fullscreen + auto-fullscreen
-        return count
-    }
-
-    /// Indices of toolbar buttons that are currently hidden (feature unsupported
-    /// for this game, e.g. training/guide). Gamepad navigation skips these so the
-    /// focus ring never lands on an invisible control.
-    private func computeHiddenToolbarIndices() -> Set<Int> {
-        var visible = Set([0, 1, 2, 3, 4, 5, 6])
-        if trainingModeViewModel.hasGameData { visible.insert(7) }
-        if gameGuideViewModel.hasGuideData { visible.insert(8) }
-        // Fullscreen / auto-fullscreen sit after the conditional buttons.
-        let fullscreen = 7 + (trainingModeViewModel.hasGameData ? 1 : 0) + (gameGuideViewModel.hasGuideData ? 1 : 0)
-        visible.insert(fullscreen)
-        visible.insert(fullscreen + 1)
-        return Set((0..<gamepadToolbarButtonCount).filter { !visible.contains($0) })
+    @MainActor
+    private var activeToolbarItemIDs: [GameToolbarItemID] {
+        if !toolbarInlineItemIDs.isEmpty { return toolbarInlineItemIDs }
+        return GameToolbarModel.availableItems(
+            runner: runner,
+            windowController: self,
+            preferences: GameToolbarPreferences.shared
+        ).map(\.id)
     }
 }

@@ -82,7 +82,10 @@ class LiveShaderEditManager: ObservableObject {
 
     private func showShaderSidebar(rom: ROM) {
         guard let controller = activeGameController else { return }
+        presentEditor(on: controller, rom: rom, closeGameOnDiscard: true)
+    }
 
+    func presentEditor(on controller: StandaloneGameWindowController, rom: ROM, closeGameOnDiscard: Bool = false) {
         let settings = ShaderWindowSettings(
             shaderPresetID: rom.settings.shaderPresetID,
             uniformValues: extractCurrentUniformValues(from: rom.settings),
@@ -91,38 +94,47 @@ class LiveShaderEditManager: ObservableObject {
             contextImageData: boxArtData(for: rom)
         )
 
-        // Apply + persist to the ROM without closing the sidebar (live editing).
         controller.showShaderEditor(
             settings: settings,
-            onApply: { [weak self] newPresetID, newUniformValues in
-                guard let self = self else { return }
+            onApply: { [weak self, weak controller] newPresetID, newUniformValues in
+                guard let self else { return }
                 self.applyToRunningGame(presetID: newPresetID, uniformValues: newUniformValues)
 
                 var updated = rom
                 updated.settings.shaderPresetID = newPresetID
                 self.applyUniformValues(newUniformValues, to: &updated.settings)
 
-                if let library = self.library {
+                if let library = controller?.library ?? self.library {
                     library.updateROM(updated)
                 }
             },
-            onDiscard: { [weak self] in
-                self?.cleanup()
+            onDiscard: { [weak self, weak controller] in
+                if closeGameOnDiscard {
+                    self?.cleanup()
+                } else {
+                    controller?.dismissShaderEditor()
+                }
             },
-            onApplyAndClose: { [weak self] in
-                guard let self = self else { return }
-                let settings = self.activeGameController?.shaderEditorSettings
+            onApplyAndClose: { [weak self, weak controller] in
+                guard let self else { return }
+                let settings = controller?.shaderEditorSettings
                 let presetID = settings?.shaderPresetID ?? rom.settings.shaderPresetID
                 let uniforms = settings?.uniformValues ?? [:]
+
+                self.applyToRunningGame(presetID: presetID, uniformValues: uniforms)
 
                 var updated = rom
                 updated.settings.shaderPresetID = presetID
                 self.applyUniformValues(uniforms, to: &updated.settings)
 
-                if let library = self.library {
+                if let library = controller?.library ?? self.library {
                     library.updateROM(updated)
                 }
-                self.cleanup()
+                if closeGameOnDiscard {
+                    self.cleanup()
+                } else {
+                    controller?.dismissShaderEditor()
+                }
             }
         )
     }

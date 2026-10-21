@@ -34,7 +34,7 @@ struct SettingsView: View {
     enum Page: Hashable, Codable, RawRepresentable, Identifiable {
 
         var id: String { rawValue }
-        case general, saves, library, controllers, analogMouse, dosJoystick, boxArt, holo, cheats, bezels, retroAchievements, genre, logging, moveList, hotkeys, timeMachine, perSystem, streaming, tvMode, help, about, reset
+        case general, saves, library, controllers, analogMouse, dosJoystick, boxArt, holo, gameToolbar, cheats, bezels, retroAchievements, genre, logging, moveList, hotkeys, timeMachine, perSystem, streaming, tvMode, help, about, reset
 
         var rawValue: String {
             switch self {
@@ -46,6 +46,7 @@ struct SettingsView: View {
             case .dosJoystick: return "dosJoystick"
             case .boxArt: return "boxArt"
             case .holo: return "holo"
+            case .gameToolbar: return "gameToolbar"
             case .cheats: return "cheats"
             case .bezels: return "bezels"
             case .retroAchievements: return "retroAchievements"
@@ -73,6 +74,7 @@ struct SettingsView: View {
             case "dosJoystick": self = .dosJoystick
             case "boxArt": self = .boxArt
             case "holo": self = .holo
+            case "gameToolbar": self = .gameToolbar
             case "cheats": self = .cheats
             case "bezels": self = .bezels
             case "retroAchievements": self = .retroAchievements
@@ -93,7 +95,7 @@ struct SettingsView: View {
 
         var sidebarSection: SidebarSection {
             switch self {
-            case .general, .saves, .boxArt, .holo, .bezels, .perSystem, .tvMode:
+            case .general, .saves, .boxArt, .holo, .gameToolbar, .bezels, .perSystem, .tvMode:
                 return .general
             case .library, .controllers, .analogMouse, .dosJoystick, .hotkeys:
                 return .library
@@ -114,6 +116,7 @@ struct SettingsView: View {
             case .dosJoystick: return "gamecontroller.fill"
             case .boxArt: return "photo.stack.fill"
             case .holo: return "sparkles"
+            case .gameToolbar: return "menubar.rectangle"
             case .cheats: return "wand.and.stars"
             case .bezels: return "rectangle.on.rectangle"
             case .retroAchievements: return "trophy.fill"
@@ -141,6 +144,7 @@ struct SettingsView: View {
             case .dosJoystick: return LocalizationManager.shared.localized("settings.dosJoystick")
             case .boxArt: return LocalizationManager.shared.localized("settings.boxArt")
             case .holo: return LocalizationManager.shared.localized("settings.holo")
+            case .gameToolbar: return LocalizationManager.shared.localized("settings.gameToolbar")
             case .cheats: return LocalizationManager.shared.localized("settings.cheats")
             case .bezels: return LocalizationManager.shared.localized("settings.bezels")
             case .retroAchievements: return LocalizationManager.shared.localized("settings.retroAchievements")
@@ -176,6 +180,8 @@ struct SettingsView: View {
                 return "box art thumbnail images pictures cover"
             case .holo:
                 return "holo holographic foil sparkles effect mask masks vision layer character sky background freeze reveal folder"
+            case .gameToolbar:
+                return "toolbar overlay game controls buttons items show hide pause save load record rewind screenshot slot fullscreen training guide shader bezel auto hide pin"
             case .cheats:
                 return "cheats codes cheat code action replay"
             case .bezels:
@@ -220,7 +226,7 @@ struct SettingsView: View {
     }
 
     static let allPages: [Page] = [
-        .general, .saves, .boxArt, .holo, .bezels, .perSystem, .tvMode,
+        .general, .saves, .boxArt, .holo, .gameToolbar, .bezels, .perSystem, .tvMode,
         .library, .controllers, .analogMouse, .dosJoystick, .hotkeys,
         .cheats, .retroAchievements, .moveList, .streaming, .genre, .timeMachine,
         .logging, .reset, .help, .about
@@ -627,6 +633,7 @@ struct SettingsView: View {
             case .dosJoystick: DOSJoystickSettingsView(searchText: $searchText, focusedSectionID: $focusedSectionID, scopedSectionID: $scopedSectionID)
             case .boxArt: BoxArtSettingsView(searchText: $searchText, focusedSectionID: $focusedSectionID, scopedSectionID: $scopedSectionID)
             case .holo: HoloSettingsView(searchText: $searchText, focusedSectionID: $focusedSectionID, scopedSectionID: $scopedSectionID)
+            case .gameToolbar: ToolbarSettingsView(searchText: $searchText, focusedSectionID: $focusedSectionID, scopedSectionID: $scopedSectionID)
             case .cheats:      CheatSettingsView(systemID: effectiveSystemID, searchText: $searchText, focusedSectionID: $focusedSectionID, scopedSectionID: $scopedSectionID)
             case .bezels:     BezelSettingsView(systemID: effectiveSystemID, searchText: $searchText, focusedSectionID: $focusedSectionID, scopedSectionID: $scopedSectionID)
             case .retroAchievements: RetroAchievementsSettingsView(searchText: $searchText, focusedSectionID: $focusedSectionID, scopedSectionID: $scopedSectionID, system: system)

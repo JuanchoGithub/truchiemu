@@ -25,22 +25,23 @@ extension StandaloneGameWindowController {
 
     // Called when the window is resized. Dynamically scales bezel to fit new window size.
     func onWindowResized() {
-        guard let containerView = window?.contentView as? GameContainerView,
-              let bezelLayer = bezelBackgroundLayer else {
+        guard let containerView = window?.contentView as? GameContainerView else {
             updateWindowContentSize()
             return
         }
 
-        // Update bezel layer frame to match container
-        bezelLayer.frame = containerView.bounds
+        if let bezelLayer = bezelBackgroundLayer {
+            // Update bezel layer frame to match container
+            bezelLayer.frame = containerView.bounds
 
-        // If we have a bezel image, update the screen-scaled version
-        if let bezelImage = bezelImage {
-            let screenBounds = window?.screen?.visibleFrame ?? NSScreen.main?.visibleFrame ?? NSRect(x: 0, y: 0, width: 1920, height: 1080)
-            bezelLayer.setBezelImageForScreen(bezelImage, screenSize: screenBounds.size)
+            // If we have a bezel image, update the screen-scaled version
+            if let bezelImage = bezelImage {
+                let screenBounds = window?.screen?.visibleFrame ?? NSScreen.main?.visibleFrame ?? NSRect(x: 0, y: 0, width: 1920, height: 1080)
+                bezelLayer.setBezelImageForScreen(bezelImage, screenSize: screenBounds.size)
+            }
         }
 
-        // Update Metal view frame to match bezel playable area
+        // Update Metal view frame to match bezel playable area or shader sidebar.
         updateMetalViewFrameForBezel()
 
         updateWindowContentSize()
@@ -68,7 +69,7 @@ extension StandaloneGameWindowController {
     // This ensures the bezel is visible around the edges of the game content.
     // Pittman CRT owns its 3D cabinet: the Metal view fills the container
     // and no playable-area inset applies while its preset is active.
-    private func updateMetalViewFrameForBezel() {
+    func updateMetalViewFrameForBezel() {
         guard let containerView = window?.contentView as? GameContainerView else {
             return
         }
@@ -165,9 +166,27 @@ extension StandaloneGameWindowController {
                 LoggerService.info(category: "Bezel", "Bezel applied for \(rom.displayName)")
             }
         } else {
+            clearBezelForGame(systemID: systemID)
             #if LOG_DEBUG
             LoggerService.debug(category: "Bezel", "No bezel image loaded for \(rom.displayName)")
             #endif
+        }
+    }
+
+    @MainActor
+    private func clearBezelForGame(systemID: String) {
+        bezelImage = nil
+        if let layer = bezelBackgroundLayer {
+            layer.removeFromSuperview()
+            bezelBackgroundLayer = nil
+        }
+        updateMetalViewFrameForBezel()
+
+        let coreAspect = Float(XPCBridgeAdapter.shared.aspectRatio())
+        if coreAspect > 0 {
+            window?.contentAspectRatio = NSSize(width: CGFloat(coreAspect), height: 1)
+        } else if let info = SystemDatabase.system(forID: systemID), info.displayAspectRatio > 0 {
+            window?.contentAspectRatio = NSSize(width: CGFloat(info.displayAspectRatio), height: 1)
         }
     }
 

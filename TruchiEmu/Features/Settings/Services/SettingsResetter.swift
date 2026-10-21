@@ -19,6 +19,7 @@ import Foundation
         AppSettings.remove(AppSettings.SaveDirectoryKey.userSaveDirectory)
         AppSettings.remove(AppSettings.SaveDirectoryKey.userSystemDirectory)
         AppSettings.remove("settings_selectedTab")
+        GameToolbarPreferences.shared.resetToDefaults()
         HotkeyEMuResetDeep()
         AppSettings.flush()
     }

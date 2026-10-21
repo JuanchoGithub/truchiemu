@@ -13,6 +13,8 @@ class SafeHostingView<Content: View>: NSHostingView<Content> {
 @objc var isPassThroughOverlay = false
 @objc var passesThroughEmptyAreas = false
 @objc var isGuideSidebar = false
+var usesInteractiveRect = false
+var interactiveRect: CGRect = .zero
 
 override func layout() {
     guard !XPCConnectionManager.isShuttingDown else { return }
@@ -24,10 +26,23 @@ override func hitTest(_ point: NSPoint) -> NSView? {
         return nil
     }
     let result = super.hitTest(point)
-    if passesThroughEmptyAreas && result === self {
+    guard passesThroughEmptyAreas else {
+        return result
+    }
+
+    if usesInteractiveRect {
+        guard !interactiveRect.isEmpty else { return result }
+        let local = convert(point, from: superview)
+        let normalized = isFlipped
+            ? local
+            : CGPoint(x: local.x, y: bounds.height - local.y)
+        if interactiveRect.contains(normalized) {
+            return result ?? self
+        }
         return nil
     }
-    return result
+
+    return result === self ? nil : result
 }
 
 override func acceptsFirstMouse(for event: NSEvent?) -> Bool {
@@ -73,6 +88,8 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
     
     // The sheet window for the cheat manager (if currently presented).
     private var cheatManagerSheetWindow: NSWindow?
+    // Whether the cheat sheet paused a running game (and should resume it on close).
+    private var cheatManagerPausedGame = false
     // Whether cheats are enabled for this game launch.
     @MainActor @Published var cheatsEnabled: Bool = false
     // Track the ROM path for this window instance (for cleanup on close)
@@ -82,6 +99,7 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
     @MainActor @Published var bezelImage: NSImage?
     var bezelBackgroundLayer: BezelBackgroundLayer?
     var bezelViewModel: BezelViewModel?
+    var bezelSelectorController: BezelSelectorWindowController?
     
     // Toolbar auto-hide state
     @MainActor @Published var isToolbarVisible: Bool = true
@@ -91,6 +109,11 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
     @MainActor @Published var isSlotPickerShown: Bool = false
     @MainActor @Published var isRecordStreamPickerShown: Bool = false
     @MainActor @Published var isCheatPickerShown: Bool = false
+    @MainActor @Published var isToolbarMoreShown: Bool = false
+    @MainActor @Published var toolbarInlineItemIDs: [GameToolbarItemID] = []
+    @MainActor @Published var toolbarHasMore: Bool = false
+    @MainActor var isToolbarHovered: Bool = false
+    @MainActor var toolbarFadeGeneration: Int = 0
     @MainActor var gameToolbarNavContext: GamepadGameToolbarContext?
     @MainActor var gameRunningNavContext: GamepadGameRunningContext?
     @MainActor var wasPausedBeforeGamepadToolbar: Bool = false
@@ -183,6 +206,8 @@ return MoveListOverlayViewModel(runner: runner)
     @MainActor
     func detachSwiftUI() {
         StreamRecordingService.shared.forceStop()
+        bezelSelectorController?.close()
+        bezelSelectorController = nil
         if let sheetWindow = cheatManagerSheetWindow, let window = window {
             window.endSheet(sheetWindow)
             cheatManagerSheetWindow = nil
@@ -401,13 +426,17 @@ super.init(window: window)
         ).environment(SystemDatabaseWrapper.shared)))
         hostingView.translatesAutoresizingMaskIntoConstraints = false
         hostingView.wantsLayer = true
+        hostingView.passesThroughEmptyAreas = true
+        hostingView.usesInteractiveRect = true
         containerView.addSubview(hostingView)
         self.toolbarView = hostingView
         
-        // Position toolbar at bottom center
+        // Full-width bottom strip so the adaptive toolbar can measure the window.
         NSLayoutConstraint.activate([
-            hostingView.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
-            hostingView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -8)
+            hostingView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
+            hostingView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
+            hostingView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -8),
+            hostingView.heightAnchor.constraint(equalToConstant: 120)
         ])
 
         // Separate full-size overlay for escape toast (passes through clicks to game below)
@@ -748,6 +777,9 @@ super.init(window: window)
     @objc private func handleInputCaptureStateChanged(_ notification: Notification) {
         let isCapturing = notification.userInfo?["isCapturing"] as? Bool ?? false
         if isCapturing {
+            if isGamepadToolbarMode {
+                exitGamepadToolbarMode()
+            }
             hideToolbarImmediateForCapture()
             if gameGuideViewModel.isSidebarVisible {
                 gameGuideViewModel.deactivate()
@@ -1475,7 +1507,11 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
         guard cheatManagerSheetWindow == nil else { return }
         
         // Pause the game while sheet is shown
-        runner?.togglePause()
+        let wasPaused = runner?.isPaused == true
+        cheatManagerPausedGame = !wasPaused
+        if !wasPaused {
+            runner?.setPaused(true)
+        }
 
         // Gamepad entry: ensure cheats are downloaded, then show a focused,
         // navigable list instead of the full mouse-oriented browser.
@@ -1512,9 +1548,12 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
         
         window.beginSheet(sheetWindow) { [weak self] _ in
             Task { @MainActor in
-                self?.cheatManagerSheetWindow = nil
-                // Resume the game if it was paused for the sheet
-                self?.runner?.setPaused(false)
+                guard let self else { return }
+                self.cheatManagerSheetWindow = nil
+                if self.cheatManagerPausedGame {
+                    self.runner?.setPaused(false)
+                }
+                self.cheatManagerPausedGame = false
             }
         }
     }
@@ -1525,7 +1564,10 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
         guard let sheetWindow = cheatManagerSheetWindow, let window = window else { return }
         window.endSheet(sheetWindow)
         cheatManagerSheetWindow = nil
-        runner?.setPaused(false)
+        if cheatManagerPausedGame {
+            runner?.setPaused(false)
+        }
+        cheatManagerPausedGame = false
     }
 
     @MainActor
@@ -1884,17 +1926,13 @@ hostingView.widthAnchor.constraint(equalToConstant: 320)
     /// Shrinks the Metal viewport width to leave room for the 320pt sidebar
     /// (divide layout — the game is never covered).
     private func shrinkGameFrameForSidebar() {
-        guard let containerView = gameContainerView else { return }
-        let w = max(containerView.bounds.width - shaderEditorSidebarWidth, 0)
-        metalView?.frame = CGRect(x: 0, y: 0, width: w, height: containerView.bounds.height)
+        metalView?.autoresizingMask = []
+        updateMetalViewFrameForBezel()
     }
 
     private func restoreGameFrame() {
-        if let bezelLayer = bezelBackgroundLayer, let playable = bezelLayer.playableAreaRect {
-            metalView?.frame = playable
-        } else if let containerView = gameContainerView {
-            metalView?.frame = containerView.bounds
-        }
+        metalView?.autoresizingMask = [.width, .height]
+        updateMetalViewFrameForBezel()
     }
 
     @MainActor

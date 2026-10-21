@@ -5,9 +5,9 @@ class BezelSelectorWindowController: NSWindowController, NSWindowDelegate {
 
     private var navContext: GamepadSheetContext?
 
-    init(rom: ROM, systemID: String, library: ROMLibrary) {
+    init(rom: ROM, systemID: String, library: ROMLibrary, onBezelSelected: ((String) -> Void)? = nil) {
         let hostingView = NSHostingView(
-            rootView: BezelSelectorSheet(rom: rom, systemID: systemID, onBezelSelected: { _ in })
+            rootView: BezelSelectorSheet(rom: rom, systemID: systemID, onBezelSelected: onBezelSelected)
                 .environmentObject(library)
         )
 
