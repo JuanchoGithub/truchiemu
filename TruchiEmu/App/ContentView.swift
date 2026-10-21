@@ -456,9 +456,6 @@ LoggerService.info(category: "Shaders", "Updated shader for \(updatedROMIDs.coun
 
 // Shows whichever background task is currently active (library automation takes precedence).
     private var activeBackgroundTask: String? {
-        if libraryAutomation.isActive {
-            return libraryAutomation.statusLine
-        }
         if metadataSync.isActive {
             return metadataSync.statusLine
         }

@@ -22,6 +22,7 @@ struct LibraryGridView: View {
     @ObservedObject private var loc = LocalizationManager.shared
     @ObservedObject private var raService = RetroAchievementsService.shared
     @ObservedObject private var boxArtService = BoxArtService.shared
+    @ObservedObject private var libraryAutomation = LibraryAutomationCoordinator.shared
     @Binding var showCreateCategorySheet: Bool
     @Binding var filter: LibraryFilter
     @Binding var selectedROM: ROM?
@@ -308,6 +309,20 @@ struct LibraryGridView: View {
             
             if !activeFilters.isEmpty || !selectedGenres.isEmpty || !searchText.isEmpty {
                 filterStatusStrip
+            }
+
+            if libraryAutomation.isActive {
+                HStack(spacing: 12) {
+                    BouncingProgressBar()
+                        .frame(width: 240)
+                    Text(libraryAutomation.statusLine)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                        .lineLimit(2)
+                    Spacer()
+                }
+                .padding(.horizontal)
+                .padding(.vertical, 6)
             }
 
             if raService.isMatchingAll {
@@ -1288,11 +1303,6 @@ viewModel.updateFilters(
                     .font(.system(size: 28))
                     .foregroundStyle(AppGradients.accent)
                     .shadow(color: AppColors.brandAccent.opacity(0.4), radius: 6)
-
-                // CRT scan line
-                ScanningScanLine()
-                    .frame(width: 56, height: 40)
-                    .clipShape(RoundedRectangle(cornerRadius: 6))
             }
             .modifier(ScanningPulseAnimation())
 
@@ -1300,8 +1310,10 @@ viewModel.updateFilters(
                 .frame(width: 320)
 
             Group {
-		Text(scanningMessages[scanningMessageIndex])
-		.foregroundColor(AppColors.textSecondary(colorScheme))
+                Text(library.roms.count > 0
+                     ? "\(scanningMessages[scanningMessageIndex]) (\(library.roms.count))"
+                     : scanningMessages[scanningMessageIndex])
+                    .foregroundColor(AppColors.textSecondary(colorScheme))
                     .contentTransition(.numericText())
             }
             .font(.body)
@@ -1311,14 +1323,6 @@ viewModel.updateFilters(
                         scanningMessageIndex = (scanningMessageIndex + 1) % scanningMessages.count
                     }
                 }
-            }
-
-            // Fun stats during scan
-            if library.roms.count > 0 {
-		Text("\(library.roms.count) \(loc.localized("library.gamesFound"))")
-		.font(.caption)
-		.foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
-                    .contentTransition(.numericText())
             }
 
             Button(role: .cancel) {
