@@ -10,6 +10,7 @@ final class HoloGridCollectionViewItem: NSCollectionViewItem {
     private var isMultiSelectedCached: Bool = false
     private var zoomLevelCached: Double = 0.5
     private var filterCached: LibraryFilter?
+    private var groupedBySystemCached = false
     private var raEnabledCached: Bool = false
     private var onTapCached: (() -> Void)?
     private var onDoubleClickCached: (() -> Void)?
@@ -53,6 +54,7 @@ final class HoloGridCollectionViewItem: NSCollectionViewItem {
                    isMultiSelected: Bool,
                    zoomLevel: Double,
                    filter: LibraryFilter?,
+                   groupedBySystem: Bool,
                    raEnabled: Bool,
                    onTap: (() -> Void)?,
                    onDoubleClick: (() -> Void)?,
@@ -65,6 +67,7 @@ final class HoloGridCollectionViewItem: NSCollectionViewItem {
         self.isMultiSelectedCached = isMultiSelected
         self.zoomLevelCached = zoomLevel
         self.filterCached = filter
+        self.groupedBySystemCached = groupedBySystem
         self.raEnabledCached = raEnabled
         self.onTapCached = onTap
         self.onDoubleClickCached = onDoubleClick
@@ -99,6 +102,7 @@ final class HoloGridCollectionViewItem: NSCollectionViewItem {
             isMultiSelected: isMultiSelectedCached,
             zoomLevel: zoomLevelCached,
             filter: filterCached,
+            groupedBySystem: groupedBySystemCached,
             raEnabled: raEnabledCached,
             onTap: onTapCached,
             onDoubleClick: onDoubleClickCached,
@@ -264,7 +268,33 @@ final class HoloGridCollectionViewCoordinator: NSObject {
     /// Rebuilds the render-ready display list (headers + games) from the
     /// current `roms` and grouping flag. Must run before `reloadData`.
     func rebuildDisplayList() {
-        displayList = LibrarySectionBuilder.displayList(for: roms, grouped: groupedBySystem)
+        displayList = LibrarySectionBuilder.displayList(for: roms, grouped: groupedBySystem, collapsedSystems: LibrarySectionCollapse.collapsedSystems)
+    }
+
+    /// Collapses/expands one system section. reloadData preserves selection
+    /// by INDEX, which shifts when entries disappear — so selection is
+    /// captured by ROM id first and re-applied by identity after the reload.
+    func toggleSystemSection(_ title: String) {
+        if !LibrarySectionCollapse.collapsedSystems.insert(title).inserted {
+            LibrarySectionCollapse.collapsedSystems.remove(title)
+        }
+        let selectedIDs = Set((collectionView?.selectionIndexPaths ?? []).compactMap { ip -> UUID? in
+            guard ip.item < displayList.entries.count,
+                  case .game(let rom, _) = displayList.entries[ip.item] else { return nil }
+            return rom.id
+        })
+        rebuildDisplayList()
+        reloadData()
+        collectionView?.deselectAll(nil)
+        var entryIndexByID: [UUID: Int] = [:]
+        for (i, entry) in displayList.entries.enumerated() where entryIndexByID.count < selectedIDs.count {
+            if case .game(let rom, _) = entry, selectedIDs.contains(rom.id) {
+                entryIndexByID[rom.id] = i
+            }
+        }
+        let paths = Set(entryIndexByID.values.map { IndexPath(item: $0, section: 0) })
+        collectionView?.selectItems(at: paths, scrollPosition: [])
+        if let cv = collectionView { forwardSelection(cv) }
     }
     
     func updateItemSizes() {
@@ -313,7 +343,9 @@ final class HoloGridCollectionViewCoordinator: NSObject {
     func scrollToItem(at index: Int) {
         guard let cv = collectionView,
               index >= 0, index < displayList.entryIndexForRomIndex.count else { return }
-        let ip = IndexPath(item: displayList.entryIndexForRomIndex[index], section: 0)
+        let entryIndex = displayList.entryIndexForRomIndex[index]
+        guard entryIndex >= 0 else { return }
+        let ip = IndexPath(item: entryIndex, section: 0)
         cv.scrollToItems(at: [ip], scrollPosition: .centeredVertically)
     }
 
@@ -391,11 +423,18 @@ extension HoloGridCollectionViewCoordinator: NSCollectionViewDataSource {
         }
 
         // Section header row.
-        if case .header(let title, let year, let count) = displayList.entries[indexPath.item] {
+        if case .header(let title, let year, let count, let systemID) = displayList.entries[indexPath.item] {
             // Register defensively every dequeue (see game-item note below).
             collectionView.register(LibrarySectionHeaderItem.self, forItemWithIdentifier: LibrarySectionHeaderItem.itemIdentifier)
             let headerItem = collectionView.makeItem(withIdentifier: LibrarySectionHeaderItem.itemIdentifier, for: indexPath) as! LibrarySectionHeaderItem
-            headerItem.configure(title: title, year: year, count: count)
+            headerItem.configure(
+                title: title,
+                year: year,
+                count: count,
+                systemID: systemID,
+                isCollapsed: LibrarySectionCollapse.collapsedSystems.contains(title),
+                onToggle: { [weak self] in self?.toggleSystemSection(title) }
+            )
             return headerItem
         }
 
@@ -424,6 +463,7 @@ extension HoloGridCollectionViewCoordinator: NSCollectionViewDataSource {
             isMultiSelected: selected,
             zoomLevel: zoomLevel,
             filter: filter,
+            groupedBySystem: groupedBySystem,
             raEnabled: raEnabled,
             onTap: { [weak self] in self?.onTap?(rom, flatIndex) },
             onDoubleClick: { [weak self] in self?.onDoubleClick?(rom) },
@@ -479,7 +519,7 @@ extension HoloGridCollectionViewCoordinator: NSCollectionViewDelegateFlowLayout 
         if indexPath.item < displayList.entries.count,
            case .header = displayList.entries[indexPath.item] {
             let width = collectionView.bounds.width - (gridPadding.leading + gridPadding.trailing)
-            return CGSize(width: max(width, 200), height: 40)
+            return CGSize(width: max(width, 200), height: 48)
         }
         return (collectionViewLayout as? NSCollectionViewFlowLayout)?.itemSize ?? CGSize(width: 100, height: 100)
     }
@@ -695,8 +735,10 @@ struct HoloGridCollectionViewRepresentable: NSViewRepresentable {
         // Sync selection from SwiftUI → NSCollectionView
         let swiftUISelected = Set(roms.enumerated().compactMap { (idx, rom) -> IndexPath? in
             guard idx < c.displayList.entryIndexForRomIndex.count else { return nil }
+            let entryIndex = c.displayList.entryIndexForRomIndex[idx]
+            guard entryIndex >= 0 else { return nil }
             return (selection.contains(rom.id) || primarySelection?.id == rom.id)
-                ? IndexPath(item: c.displayList.entryIndexForRomIndex[idx], section: 0) : nil
+                ? IndexPath(item: entryIndex, section: 0) : nil
         })
         let currentSelected = cv.selectionIndexPaths
         if currentSelected != swiftUISelected {
@@ -711,7 +753,9 @@ struct HoloGridCollectionViewRepresentable: NSViewRepresentable {
             let oldIndexSet = Set(oldSelection.compactMap { id -> IndexPath? in
                 roms.firstIndex(where: { $0.id == id }).flatMap { romIdx -> IndexPath? in
                     guard romIdx < c.displayList.entryIndexForRomIndex.count else { return nil }
-                    return IndexPath(item: c.displayList.entryIndexForRomIndex[romIdx], section: 0)
+                    let entryIndex = c.displayList.entryIndexForRomIndex[romIdx]
+                    guard entryIndex >= 0 else { return nil }
+                    return IndexPath(item: entryIndex, section: 0)
                 }
             })
             let newIndexSet = swiftUISelected

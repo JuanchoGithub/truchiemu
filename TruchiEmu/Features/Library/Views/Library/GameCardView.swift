@@ -16,6 +16,10 @@ struct GameCardView: View {
         return base * factor
     }
     let filter: LibraryFilter?
+    /// True when a system sort groups the library into per-system sections;
+    /// the section header already names the system, so the card subtitle is
+    /// hidden to avoid repeating it under every box art.
+    let groupedBySystem: Bool
     let raEnabled: Bool
     let onTap: (() -> Void)?
     let onDoubleClick: (() -> Void)?
@@ -46,6 +50,7 @@ struct GameCardView: View {
         isMultiSelected: Bool,
         zoomLevel: Double,
         filter: LibraryFilter?,
+        groupedBySystem: Bool,
         raEnabled: Bool,
         onTap: (() -> Void)?,
         onDoubleClick: (() -> Void)?,
@@ -57,6 +62,7 @@ struct GameCardView: View {
         self.isMultiSelected = isMultiSelected
         self.zoomLevel = zoomLevel
         self.filter = filter
+        self.groupedBySystem = groupedBySystem
         self.raEnabled = raEnabled
         self.onTap = onTap
         self.onDoubleClick = onDoubleClick
@@ -171,7 +177,8 @@ struct GameCardView: View {
     }
 
     private var systemSubtitle: String? {
-        guard !isSingleBoxTypeView,
+        guard !groupedBySystem,
+              !isSingleBoxTypeView,
               let systemID = rom.systemID, systemID != "unknown",
               let sys = SystemDatabase.system(forID: systemID) else { return nil }
         return sys.sidebarDisplayName

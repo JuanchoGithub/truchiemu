@@ -156,8 +156,17 @@ final class ListSectionHeaderRowView: NSTableCellView {
         ])
     }
 
-    func configure(title: String, year: Int?, count: Int) {
-        hostingView.rootView = AnyView(LibrarySectionHeaderView(title: title, year: year, count: count))
+    func configure(title: String, year: Int?, count: Int, systemID: String?, isCollapsed: Bool, onToggle: @escaping () -> Void) {
+        hostingView.rootView = AnyView(
+            LibrarySectionHeaderView(
+                title: title,
+                year: year,
+                count: count,
+                systemID: systemID,
+                isCollapsed: isCollapsed,
+                onToggle: onToggle
+            )
+        )
     }
 }
 
@@ -231,7 +240,37 @@ final class ListTableViewCoordinator: NSObject {
     /// Rebuilds the render-ready display list (header rows + games) from the
     /// current `roms` and grouping flag. Must run before `reloadData`.
     func rebuildDisplayList() {
-        displayList = LibrarySectionBuilder.displayList(for: roms, grouped: groupedBySystem)
+        displayList = LibrarySectionBuilder.displayList(for: roms, grouped: groupedBySystem, collapsedSystems: LibrarySectionCollapse.collapsedSystems)
+    }
+
+    func reloadData() {
+        tableView?.reloadData()
+    }
+
+    /// Collapses/expands one system section. reloadData preserves selection
+    /// by INDEX, which shifts when entries disappear — so selection is
+    /// captured by ROM id first and re-applied by identity after the reload.
+    func toggleSystemSection(_ title: String) {
+        if !LibrarySectionCollapse.collapsedSystems.insert(title).inserted {
+            LibrarySectionCollapse.collapsedSystems.remove(title)
+        }
+        let selectedIDs = Set((tableView?.selectedRowIndexes ?? []).compactMap { row -> UUID? in
+            guard row >= 0, row < displayList.entries.count,
+                  case .game(let rom, _) = displayList.entries[row] else { return nil }
+            return rom.id
+        })
+        rebuildDisplayList()
+        reloadData()
+        tableView?.deselectAll(nil)
+        var entryIndexByID: [UUID: Int] = [:]
+        for (i, entry) in displayList.entries.enumerated() where entryIndexByID.count < selectedIDs.count {
+            if case .game(let rom, _) = entry, selectedIDs.contains(rom.id) {
+                entryIndexByID[rom.id] = i
+            }
+        }
+        let indexes = IndexSet(entryIndexByID.values)
+        tableView?.selectRowIndexes(indexes, byExtendingSelection: false)
+        if let tableView { forwardSelection(tableView) }
     }
 
     func estimatedHeight(for rom: ROM) -> CGFloat {
@@ -283,10 +322,17 @@ extension ListTableViewCoordinator: NSTableViewDelegate {
         guard row >= 0, row < displayList.entries.count else { return nil }
 
         // Section header row.
-        if case .header(let title, let year, let count) = displayList.entries[row] {
+        if case .header(let title, let year, let count, let systemID) = displayList.entries[row] {
             let view = tableView.makeView(withIdentifier: headerRowIdentifier, owner: self) as? ListSectionHeaderRowView ?? ListSectionHeaderRowView()
             view.identifier = headerRowIdentifier
-            view.configure(title: title, year: year, count: count)
+            view.configure(
+                title: title,
+                year: year,
+                count: count,
+                systemID: systemID,
+                isCollapsed: LibrarySectionCollapse.collapsedSystems.contains(title),
+                onToggle: { [weak self] in self?.toggleSystemSection(title) }
+            )
             return view
         }
 
@@ -323,7 +369,7 @@ extension ListTableViewCoordinator: NSTableViewDelegate {
 
     func tableView(_ tableView: NSTableView, heightOfRow row: Int) -> CGFloat {
         guard row >= 0, row < displayList.entries.count else { return 40 }
-        if case .header = displayList.entries[row] { return 40 }
+        if case .header = displayList.entries[row] { return 48 }
         guard case .game(let rom, _) = displayList.entries[row] else { return 40 }
         return estimatedHeight(for: rom)
     }
@@ -343,6 +389,10 @@ extension ListTableViewCoordinator: NSTableViewDelegate {
 
     func tableViewSelectionDidChange(_ notification: Notification) {
         guard let tableView else { return }
+        forwardSelection(tableView)
+    }
+
+    private func forwardSelection(_ tableView: NSTableView) {
         let ids = tableView.selectedRowIndexes.compactMap { row -> UUID? in
             guard row >= 0, row < displayList.entries.count,
                   case .game(let rom, _) = displayList.entries[row] else { return nil }
@@ -474,7 +524,9 @@ struct ListTableViewRepresentable: NSViewRepresentable {
         // Sync selection SwiftUI -> NSTableView
         let swiftUISelected = IndexSet(roms.enumerated().compactMap { (idx, rom) -> Int? in
             guard idx < c.displayList.entryIndexForRomIndex.count else { return nil }
-            return selectionIDsValue.contains(rom.id) ? c.displayList.entryIndexForRomIndex[idx] : nil
+            let entryIndex = c.displayList.entryIndexForRomIndex[idx]
+            guard entryIndex >= 0 else { return nil }
+            return selectionIDsValue.contains(rom.id) ? entryIndex : nil
         })
         if tableView.selectedRowIndexes != swiftUISelected {
             tableView.selectRowIndexes(swiftUISelected, byExtendingSelection: false)
@@ -498,7 +550,9 @@ struct ListTableViewRepresentable: NSViewRepresentable {
         }
 
         // Gamepad navigation scroll target
-        if let target = scrollTargetRow, target >= 0, target < c.displayList.entryIndexForRomIndex.count {
+        if let target = scrollTargetRow,
+           target >= 0, target < c.displayList.entryIndexForRomIndex.count,
+           c.displayList.entryIndexForRomIndex[target] >= 0 {
             tableView.scrollRowToVisible(c.displayList.entryIndexForRomIndex[target])
             DispatchQueue.main.async {
                 scrollTargetRow = nil

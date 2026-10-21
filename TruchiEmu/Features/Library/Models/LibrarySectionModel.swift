@@ -12,26 +12,39 @@ import Foundation
 struct SystemSortInfo: Sendable, Equatable {
     let name: String
     let year: Int?
+    /// ID of the section's display system (merged groups resolve to the
+    /// merged display system, e.g. GB+GBC → "gb"). Used to load the section
+    /// header's system icon.
+    let systemID: String?
 
     /// Fallback for ROMs whose system ID is not in the precomputed sort
     /// table (dynamic systems discovered after the snapshot was taken).
     /// Matches `LibrarySectionBuilder.info`'s fallback: the raw ID as the
     /// name, no year.
     static func unknown(for systemID: String?) -> SystemSortInfo {
-        SystemSortInfo(name: systemID ?? "Unknown", year: nil)
+        SystemSortInfo(name: systemID ?? "Unknown", year: nil, systemID: systemID)
     }
 }
 
 /// One visible row of a grouped library: a section header or a game.
 enum LibraryDisplayEntry {
     case game(ROM, flatIndex: Int)
-    case header(title: String, year: Int?, count: Int)
+    case header(title: String, year: Int?, count: Int, systemID: String?)
+}
+
+/// Section titles the user collapsed (the section shows only its header
+/// row). Shared by the grid, holo grid and list so the state survives view
+/// switches — same static pattern as `ScrollActivity`. Keyed by the
+/// display-system name, which is unique per section. Not persisted.
+enum LibrarySectionCollapse {
+    static var collapsedSystems: Set<String> = []
 }
 
 /// The flat, render-ready form of the displayed ROM list. `entries` is what
 /// the AppKit views index; `entryIndexForRomIndex` maps a ROM's position in
 /// the sorted `roms` array to its position in `entries` (selection sync and
-/// scroll targeting).
+/// scroll targeting). ROMs hidden inside a collapsed section map to `-1`
+/// and must be skipped by consumers.
 struct LibraryDisplayList {
     let entries: [LibraryDisplayEntry]
     let entryIndexForRomIndex: [Int]
@@ -48,9 +61,9 @@ enum LibrarySectionBuilder {
     static func info(forSystemID id: String?) -> SystemSortInfo {
         let internalID = (id?.isEmpty == false) ? id! : "unknown"
         if let display = SystemDatabase.displaySystem(forInternalID: internalID) {
-            return SystemSortInfo(name: display.sidebarDisplayName, year: display.launchYear)
+            return SystemSortInfo(name: display.sidebarDisplayName, year: display.launchYear, systemID: display.id)
         }
-        return SystemSortInfo(name: internalID, year: nil)
+        return SystemSortInfo(name: internalID, year: nil, systemID: internalID)
     }
 
     /// Snapshot of `info(forSystemID:)` for every known internal system ID,
@@ -69,8 +82,10 @@ enum LibrarySectionBuilder {
     /// so grouping is a single linear pass keyed on the display-system name
     /// (merged groups like Game Boy + Game Boy Color form ONE section). A
     /// list that spans only one system stays flat — headers only appear
-    /// where more than one system is present.
-    static func displayList(for roms: [ROM], grouped: Bool) -> LibraryDisplayList {
+    /// where more than one system is present. Sections whose title is in
+    /// `collapsedSystems` render as a single header row; their games are
+    /// dropped from `entries` and map to `-1`.
+    static func displayList(for roms: [ROM], grouped: Bool, collapsedSystems: Set<String> = []) -> LibraryDisplayList {
         guard !roms.isEmpty else { return .empty }
 
         let flat = { () -> LibraryDisplayList in
@@ -115,9 +130,10 @@ enum LibrarySectionBuilder {
         guard groups.count > 1 else { return flat() }
 
         var entries: [LibraryDisplayEntry] = []
-        var entryIndexForRomIndex = [Int](repeating: 0, count: roms.count)
+        var entryIndexForRomIndex = [Int](repeating: -1, count: roms.count)
         for group in groups {
-            entries.append(.header(title: group.info.name, year: group.info.year, count: group.range.count))
+            entries.append(.header(title: group.info.name, year: group.info.year, count: group.range.count, systemID: group.info.systemID))
+            guard !collapsedSystems.contains(group.info.name) else { continue }
             for i in group.range {
                 entryIndexForRomIndex[i] = entries.count
                 entries.append(.game(roms[i], flatIndex: i))
