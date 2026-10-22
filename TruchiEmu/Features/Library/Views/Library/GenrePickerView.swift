@@ -5,9 +5,11 @@ struct GenrePickerView: View {
     let allGenres: [String]
     var genreCounts: [String: Int] = [:]
     let onChange: () -> Void
+    var onClose: (() -> Void)? = nil
 
     @State private var searchText: String = ""
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.dismiss) private var dismiss
     @ObservedObject private var loc = LocalizationManager.shared
     @ObservedObject private var genreManager = GenreManager.shared
 
@@ -84,6 +86,12 @@ struct GenrePickerView: View {
             .font(.caption)
             .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
             .disabled(selectedGenres.isEmpty)
+
+            Button(loc.localized("app.done")) {
+                if let onClose { onClose() } else { dismiss() }
+            }
+            .font(.caption)
+            .keyboardShortcut(.defaultAction)
         }
         .padding(.horizontal, 10)
         .padding(.vertical, 8)

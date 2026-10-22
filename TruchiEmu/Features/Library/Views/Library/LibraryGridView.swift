@@ -267,11 +267,19 @@ struct LibraryGridView: View {
     @State private var scrollDebounceTimer: Timer?
     @State private var keyMonitor: Any?
 
-    // When searching, the system filter is honored only when a specific system is
-    // selected (so clicking a system in the sidebar during search narrows results
-    // to that system's matching games). Otherwise all systems are matched.
+    // The smart category currently selected, if any.
+    private var activeSmartCategory: GameCategory? {
+        guard case .category(let id) = filter else { return nil }
+        return categoryManager.categories.first { $0.id == id && $0.isSmart }
+    }
+
+    // When searching, a system view or a smart category stays active so the
+    // typed search narrows inside it. Other views search the whole library.
     private var effectiveFilter: LibraryFilter {
-        searchText.isEmpty ? filter : (filter.isSystemView ? filter : .all)
+        guard !searchText.isEmpty else { return filter }
+        if filter.isSystemView { return filter }
+        if activeSmartCategory != nil { return filter }
+        return .all
     }
 
     /// ROMs scoped to the active filter (system view's merged internal IDs,
@@ -287,6 +295,20 @@ struct LibraryGridView: View {
         }
     }
 
+    // Display systems that currently have at least one ROM in the library.
+    // The smart-category editors and save flow use this active list only.
+    private var activeDisplaySystems: [SystemInfo] {
+        return SystemDatabase.systemsForDisplay.filter { system in
+            SystemDatabase.allInternalIDs(forDisplayID: system.id).contains {
+                (library.romCounts[$0] ?? 0) > 0
+            }
+        }
+    }
+
+    private var shouldShowFilterStatus: Bool {
+        !activeFilters.isEmpty || !selectedGenres.isEmpty || !searchText.isEmpty || activeSmartCategory != nil
+    }
+
     private var activeFilterDisplayText: String {
         let filterNames: [String] = activeFilters.compactMap { rawValue -> String? in
             GameFilterOption(rawValue: rawValue)?.label
@@ -295,10 +317,17 @@ struct LibraryGridView: View {
         if !selectedGenres.isEmpty {
             allNames.append(contentsOf: selectedGenres.sorted())
         }
-        return allNames.joined(separator: ", ")
+        if let smart = activeSmartCategory {
+            let label = smart.smartQuery.isEmpty ? smart.name : smart.smartQuery
+            allNames.insert("⚡ \(label)", at: 0)
+        }
+        if !searchText.isEmpty {
+            allNames.append("\(loc.localized("library.searchLabel")) \"\(searchText)\"")
+        }
+        return allNames.joined(separator: " · ")
     }
     
-    var body: some View {
+    private var libraryContent: some View {
         VStack(spacing: 0) {
             Color.clear
                 .frame(height: 0)
@@ -313,7 +342,7 @@ struct LibraryGridView: View {
             
             filterChips
             
-            if !activeFilters.isEmpty || !selectedGenres.isEmpty || !searchText.isEmpty {
+            if shouldShowFilterStatus {
                 filterStatusStrip
             }
 
@@ -414,10 +443,17 @@ struct LibraryGridView: View {
     gamepadNav.contentItemCount = newCount
     gamepadNav.clampCurrentIndex()
 }
-.onAppear {
-    gamepadNav.contentItemCount = viewModel.displayedROMs.count
-}
-}
+        .onAppear {
+            gamepadNav.contentItemCount = viewModel.displayedROMs.count
+        }
+        }
+        // Outer scope: the grid below must slide down/up when the
+        // "Filtering:" status strip appears, not just resize.
+        .animation(AppMotion.stateChange, value: shouldShowFilterStatus)
+    }
+
+    private var libraryChrome: some View {
+        libraryContent
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .alert(loc.localized("library.renameGame"), isPresented: Binding(
             get: { renamingROM != nil },
@@ -639,6 +675,10 @@ struct LibraryGridView: View {
             }
 
     }
+    }
+
+    private var libraryObserved: some View {
+        libraryChrome
     .sheet(isPresented: $showBoxArtDownloadSheet) {
         BoxArtDownloadSheet(
             isPresented: $showBoxArtDownloadSheet,
@@ -719,6 +759,9 @@ struct LibraryGridView: View {
                 selectedGenres: selectedGenres
             )
         }
+        .onReceive(NotificationCenter.default.publisher(for: .saveSearchAsCategoryRequested)) { _ in
+            saveSearchAsCategory()
+        }
         .onReceive(NotificationCenter.default.publisher(for: .filterToggled)) { notification in
             if let rawValue = notification.object as? String {
                 if activeFilters.contains(rawValue) {
@@ -762,11 +805,7 @@ struct LibraryGridView: View {
             // Trigger UI refresh - handled by AppSettings getBool in view
         }
         .onReceive(NotificationCenter.default.publisher(for: .navigateToFilter)) { notification in
-            if let filterID = notification.object as? String {
-                if let newFilter = restoreFilter(from: filterID) {
-                    filter = newFilter
-                }
-            }
+            handleNavigateToFilter(notification)
         }
         .onChange(of: filter) { oldFilter, newFilter in
             if case .category(let oldID) = oldFilter {
@@ -836,6 +875,10 @@ struct LibraryGridView: View {
                 DispatchQueue.main.async { viewMode = restore }
             }
         }
+    }
+
+    var body: some View {
+        libraryObserved
         .onDisappear {
             // Save zoom level persistently (backup)
             AppSettings.setDouble("gridZoomLevel", value: continuousZoom)
@@ -1659,7 +1702,7 @@ struct LibraryGridView: View {
         let targetIDsSet = Set(targetIDs)
         // O(selection) lookups via the library index — was a full-ROMs filter.
         let menuTargetROMs = targetIDsSet.compactMap { library.rom(withID: $0) }
-        let romStableKey = rom.stableIdentityKey
+
         return AnyView(
             Group {
                 Button {
@@ -1697,7 +1740,7 @@ struct LibraryGridView: View {
                     }
 
                     ForEach(categoryManager.categories) { category in
-                        let isInCategory = categoryManager.contains(romID: rom.id, stableKey: romStableKey, categoryID: category.id)
+                        let isInCategory = categoryManager.contains(rom, categoryID: category.id)
                         Button {
                             if isInCategory {
                                 categoryManager.removeRomsFromCategory(menuTargetROMs, categoryID: category.id)
@@ -2053,7 +2096,8 @@ struct LibraryGridView: View {
                                 sortAscending: sortAscending,
                                 selectedGenres: selectedGenres
                             )
-                        }
+                        },
+                        onClose: { showGenrePicker = false }
                     )
                     .gamepadDismissable { showGenrePicker = false }
                 }
@@ -2101,17 +2145,75 @@ struct LibraryGridView: View {
         HStack(spacing: 6) {
             Image(systemName: "line.3.horizontal.decrease.circle.fill")
                 .font(.caption)
-            Text("Filtering: " + activeFilterDisplayText)
+            Text(loc.localized("library.filtering"))
+                .font(.caption)
+                .layoutPriority(1)
+            Text(activeFilterDisplayText)
                 .font(.caption)
                 .lineLimit(1)
-            Spacer()
+                .truncationMode(.tail)
+            Spacer(minLength: 6)
+
+            if !searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                SaveSearchButton(query: searchText, style: .chip) {
+                    saveSearchAsCategory()
+                }
+                .transition(.move(edge: .trailing).combined(with: .opacity))
+            }
+
             Text("\(viewModel.displayedROMs.count) game\(viewModel.displayedROMs.count == 1 ? "" : "s")")
                 .font(.caption)
+                .fixedSize()
         }
         .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
         .padding(.horizontal, 16)
         .padding(.vertical, 5)
         .background(AppColors.cardBackgroundSubtle(colorScheme))
+        .transition(.move(edge: .top).combined(with: .opacity))
+        .animation(AppMotion.stateChange, value: searchText.isEmpty)
+    }
+
+    private func handleNavigateToFilter(_ notification: Notification) {
+        guard let filterID = notification.object as? String,
+              let newFilter = restoreFilter(from: filterID) else { return }
+        filter = newFilter
+    }
+
+    private func saveSearchAsCategory() {
+        let query = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !query.isEmpty else { return }
+
+        let enabledSystemIDs: [String]
+        let enabledDisplayCount: Int
+        if case .system(let system) = filter {
+            enabledSystemIDs = SystemDatabase.allInternalIDs(forDisplayID: system.id)
+            enabledDisplayCount = 1
+        } else {
+            enabledSystemIDs = activeDisplaySystems.flatMap {
+                SystemDatabase.allInternalIDs(forDisplayID: $0.id)
+            }
+            enabledDisplayCount = activeDisplaySystems.count
+        }
+        let allActiveIDs = activeDisplaySystems.flatMap {
+            SystemDatabase.allInternalIDs(forDisplayID: $0.id)
+        }
+        let disabledSystemIDs = allActiveIDs.filter { !enabledSystemIDs.contains($0) }
+
+        let category = categoryManager.addSmartCategory(
+            name: query,
+            query: query,
+            disabledSystemIDs: disabledSystemIDs,
+            enabledSystemIDs: enabledSystemIDs,
+            followsNewSystems: enabledDisplayCount > 1,
+            activeFilters: activeFilters.sorted(),
+            genres: selectedGenres.sorted(),
+            colorHex: AppColors.brandAccent.hex ?? "FFCC00"
+        )
+
+        activeFilters.removeAll()
+        selectedGenres.removeAll()
+        searchText = ""
+        filter = .category(category.id)
     }
     
     private func toggleFilter(_ option: GameFilterOption) {

@@ -25,6 +25,78 @@ enum LibraryBackupService {
         var colorHex: String
         var sortOrder: Int
         var gameKeys: [String]
+        var isSmart: Bool = false
+        var smartQuery: String = ""
+        var smartDisabledSystemIDs: [String] = []
+        var smartEnabledSystemIDs: [String] = []
+        var smartFollowsNewSystems: Bool = true
+        var smartActiveFilters: [String] = []
+        var smartGenres: [String] = []
+        var smartIncludedGameKeys: [String] = []
+        var smartExcludedGameKeys: [String] = []
+
+        enum CodingKeys: String, CodingKey {
+            case id, name, iconName, customIconPath, colorHex, sortOrder, gameKeys
+            case isSmart, smartQuery, smartDisabledSystemIDs, smartEnabledSystemIDs
+            case smartFollowsNewSystems, smartActiveFilters
+            case smartGenres, smartIncludedGameKeys, smartExcludedGameKeys
+        }
+
+        init(
+            id: String,
+            name: String,
+            iconName: String,
+            customIconPath: String?,
+            colorHex: String,
+            sortOrder: Int,
+            gameKeys: [String],
+            isSmart: Bool = false,
+            smartQuery: String = "",
+            smartDisabledSystemIDs: [String] = [],
+            smartEnabledSystemIDs: [String] = [],
+            smartFollowsNewSystems: Bool = true,
+            smartActiveFilters: [String] = [],
+            smartGenres: [String] = [],
+            smartIncludedGameKeys: [String] = [],
+            smartExcludedGameKeys: [String] = []
+        ) {
+            self.id = id
+            self.name = name
+            self.iconName = iconName
+            self.customIconPath = customIconPath
+            self.colorHex = colorHex
+            self.sortOrder = sortOrder
+            self.gameKeys = gameKeys
+            self.isSmart = isSmart
+            self.smartQuery = smartQuery
+            self.smartDisabledSystemIDs = smartDisabledSystemIDs
+            self.smartEnabledSystemIDs = smartEnabledSystemIDs
+            self.smartFollowsNewSystems = smartFollowsNewSystems
+            self.smartActiveFilters = smartActiveFilters
+            self.smartGenres = smartGenres
+            self.smartIncludedGameKeys = smartIncludedGameKeys
+            self.smartExcludedGameKeys = smartExcludedGameKeys
+        }
+
+        init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            id = try container.decode(String.self, forKey: .id)
+            name = try container.decode(String.self, forKey: .name)
+            iconName = try container.decodeIfPresent(String.self, forKey: .iconName) ?? "gamecontroller.fill"
+            customIconPath = try container.decodeIfPresent(String.self, forKey: .customIconPath)
+            colorHex = try container.decodeIfPresent(String.self, forKey: .colorHex) ?? "007AFF"
+            sortOrder = try container.decodeIfPresent(Int.self, forKey: .sortOrder) ?? 0
+            gameKeys = try container.decodeIfPresent([String].self, forKey: .gameKeys) ?? []
+            isSmart = try container.decodeIfPresent(Bool.self, forKey: .isSmart) ?? false
+            smartQuery = try container.decodeIfPresent(String.self, forKey: .smartQuery) ?? ""
+            smartDisabledSystemIDs = try container.decodeIfPresent([String].self, forKey: .smartDisabledSystemIDs) ?? []
+            smartEnabledSystemIDs = try container.decodeIfPresent([String].self, forKey: .smartEnabledSystemIDs) ?? []
+            smartFollowsNewSystems = try container.decodeIfPresent(Bool.self, forKey: .smartFollowsNewSystems) ?? true
+            smartActiveFilters = try container.decodeIfPresent([String].self, forKey: .smartActiveFilters) ?? []
+            smartGenres = try container.decodeIfPresent([String].self, forKey: .smartGenres) ?? []
+            smartIncludedGameKeys = try container.decodeIfPresent([String].self, forKey: .smartIncludedGameKeys) ?? []
+            smartExcludedGameKeys = try container.decodeIfPresent([String].self, forKey: .smartExcludedGameKeys) ?? []
+        }
     }
 
     struct Payload: Codable {
@@ -86,7 +158,16 @@ enum LibraryBackupService {
                 customIconPath: $0.customIconPath,
                 colorHex: $0.colorHex,
                 sortOrder: $0.sortOrder,
-                gameKeys: $0.gameKeys
+                gameKeys: $0.gameKeys,
+                isSmart: $0.isSmart,
+                smartQuery: $0.smartQuery,
+                smartDisabledSystemIDs: $0.smartDisabledSystemIDs,
+                smartEnabledSystemIDs: $0.smartEnabledSystemIDs,
+                smartFollowsNewSystems: $0.smartFollowsNewSystems,
+                smartActiveFilters: $0.smartActiveFilters,
+                smartGenres: $0.smartGenres,
+                smartIncludedGameKeys: $0.smartIncludedGameKeys,
+                smartExcludedGameKeys: $0.smartExcludedGameKeys
             )
         }
         write(payload)
@@ -120,7 +201,16 @@ enum LibraryBackupService {
                     customIconPath: $0.customIconPath,
                     colorHex: $0.colorHex,
                     gameKeys: $0.gameKeys,
-                    sortOrder: $0.sortOrder
+                    sortOrder: $0.sortOrder,
+                    isSmart: $0.isSmart,
+                    smartQuery: $0.smartQuery,
+                    smartDisabledSystemIDs: $0.smartDisabledSystemIDs,
+                    smartEnabledSystemIDs: $0.smartEnabledSystemIDs,
+                    smartFollowsNewSystems: $0.smartFollowsNewSystems,
+                    smartActiveFilters: $0.smartActiveFilters,
+                    smartGenres: $0.smartGenres,
+                    smartIncludedGameKeys: $0.smartIncludedGameKeys,
+                    smartExcludedGameKeys: $0.smartExcludedGameKeys
                 )
             }
     }

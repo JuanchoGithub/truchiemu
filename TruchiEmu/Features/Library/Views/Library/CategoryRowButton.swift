@@ -32,6 +32,13 @@ struct CategoryRowButton: View {
 
         Spacer()
 
+        if category.isSmart {
+            Image(systemName: "bolt.fill")
+                .font(.system(size: 9, weight: .bold))
+                .foregroundColor(Color(hex: category.colorHex) ?? .yellow)
+                .help(loc.localized("category.smartRules"))
+        }
+
         Text("\(count)")
         .font(.caption2.monospacedDigit())
         .foregroundColor(isSelected ? (Color(hex: category.colorHex) ?? .blue) : AppColors.textPrimary(colorScheme))

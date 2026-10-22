@@ -61,12 +61,16 @@ class LibraryViewModel: ObservableObject {
             .sink { [weak self] _ in self?.refreshData() }
             .store(in: &cancellables)
 
-        // Observe category changes — debounced + deduplicated.
+        // Observe category changes. Smart-category rules live inside the
+        // category value, so the fingerprint cannot detect edits. Invalidate
+        // the cached signature to force a recompute after every change.
         categoryManager.objectWillChange
-            .map { [weak self] _ in self?.currentInputsFingerprint() ?? 0 }
-            .removeDuplicates()
             .debounce(for: .milliseconds(120), scheduler: DispatchQueue.main)
-            .sink { [weak self] _ in self?.refreshData() }
+            .sink { [weak self] _ in
+                guard let self else { return }
+                self.lastComputedSignature = nil
+                self.refreshData()
+            }
             .store(in: &cancellables)
 
         // System preference changes (mergeGBC, etc.) — debounced + deduplicated.
@@ -233,8 +237,17 @@ class LibraryViewModel: ObservableObject {
             base = systemRoms
         case .category(let categoryID):
             let category = inputs.categories.first { $0.id == categoryID }
-            let categoryGameIDs = category?.gameIDs ?? []
-            base = inputs.roms.filter { categoryGameIDs.contains($0.id) && !$0.isHidden }
+            if let category, category.isSmart {
+                base = inputs.roms.filter { rom in
+                    guard !rom.isHidden else { return false }
+                    return category.smartMember(rom) { rom in
+                        let displayGenres = inputs.genreLookup[rom.metadata?.genre ?? ""] ?? ["Unknown"]
+                        return displayGenres.contains { category.smartGenres.contains($0) }
+                    }
+                }
+            } else {
+                base = inputs.roms.filter { category?.contains($0) == true && !$0.isHidden }
+            }
         case .hidden:
             base = inputs.roms.filter { $0.isHidden }
         case .mameNonGames:

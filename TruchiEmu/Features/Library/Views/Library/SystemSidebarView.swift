@@ -133,14 +133,69 @@ struct SystemSidebarView: View {
         return searchMatchedROMs.filter { $0.raMatchStatus == "matched" && !$0.isHidden }.count
     }
 
+    private var selectedSmartCategory: GameCategory? {
+        guard case .category(let id) = selectedFilter else { return nil }
+        return categoryManager.categories.first { $0.id == id && $0.isSmart }
+    }
+
+    private var hasSearchQuery: Bool {
+        !searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+
+    private func smartCategoryCount(_ category: GameCategory) -> Int {
+        let members = library.roms.filter { rom in
+            guard !rom.isHidden else { return false }
+            return category.smartMember(rom) { rom in
+                let displayGenres = GenreManager.shared.effectiveDisplayNames(for: rom.metadata?.genre)
+                return displayGenres.contains { category.smartGenres.contains($0) }
+            }
+        }
+        guard !searchText.isEmpty else { return members.count }
+        let terms = searchText.lowercased().split(separator: " ").map(String.init)
+        guard !terms.isEmpty else { return members.count }
+        return members.filter { rom in
+            terms.allSatisfy { rom.displayName.localizedCaseInsensitiveContains($0) }
+        }.count
+    }
+
     var body: some View {
         let _ = SidebarPerfCounters.noteSidebarBody()
         return VStack(spacing: 0) {
-        AppSearchField(
-            text: $searchText,
-            placeholder: loc.localized("app.search"),
-            focusBinding: searchFocused
-        )
+        VStack(spacing: 6) {
+            AppSearchField(
+                text: $searchText,
+                placeholder: loc.localized("app.search"),
+                focusBinding: searchFocused
+            )
+
+            if let smart = selectedSmartCategory {
+                HStack(spacing: 5) {
+                    Image(systemName: "bolt.fill")
+                        .font(.system(size: 9, weight: .semibold))
+                    MarqueeText(
+                        text: String(format: loc.localized("search.searchingIn"), smart.name),
+                        font: .system(size: 10, weight: .medium),
+                        speed: 22,
+                        height: 12
+                    )
+                }
+                .foregroundStyle(AppColors.textSecondary(colorScheme))
+                .padding(.horizontal, 9)
+                .padding(.vertical, 4)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(
+                    Capsule().fill(AppColors.accentBackground(colorScheme))
+                )
+                .transition(.move(edge: .top).combined(with: .opacity))
+            }
+
+            if hasSearchQuery {
+                SaveSearchButton(query: searchText) {
+                    NotificationCenter.default.post(name: .saveSearchAsCategoryRequested, object: nil)
+                }
+                .transition(.move(edge: .top).combined(with: .opacity))
+            }
+        }
         .padding(.horizontal, 8)
         .padding(.top, 12)
         .padding(.bottom, 8)
@@ -264,6 +319,10 @@ struct SystemSidebarView: View {
         )
         .frame(minWidth: 220, idealWidth: 240)
         .navigationTitle(loc.localized("app.library"))
+        // Outer scope: the ScrollView below the search header must slide
+        // down/up when the banner and save card appear, not just resize.
+        .animation(AppMotion.stateChange, value: selectedSmartCategory?.id)
+        .animation(AppMotion.stateChange, value: hasSearchQuery)
         .onReceive(NotificationCenter.default.publisher(for: .gamepadSidebarContextMenu)) { _ in
             handleGamepadSidebarContextMenu()
         }
@@ -450,9 +509,11 @@ onSystemAction: system != nil ? { sys, action, targetID in
     
     @ViewBuilder
     private func categoryRow(category: GameCategory) -> some View {
-        let count = searchText.isEmpty
-            ? categoryManager.gamesInCategory(categoryID: category.id, fromROMs: library.roms).count
-            : searchMatchedROMs.filter { category.contains($0) && !$0.isHidden }.count
+        let count = category.isSmart
+            ? smartCategoryCount(category)
+            : (searchText.isEmpty
+                ? categoryManager.gamesInCategory(categoryID: category.id, fromROMs: library.roms).count
+                : searchMatchedROMs.filter { category.contains($0) && !$0.isHidden }.count)
         let isSelected = selectedFilter.id == LibraryFilter.category(category.id).id
         let isGamepadFocusedRow = gamepadNav.isGamepadActive && gamepadNav.activeZone == .sidebar && gamepadFocusedFilter?.id == LibraryFilter.category(category.id).id
 
@@ -463,7 +524,12 @@ onSystemAction: system != nil ? { sys, action, targetID in
 			selectedFilter: $selectedFilter,
 			handleDropOnCategory: handleDropOnCategory,
 			showEditCategorySheet: showEditCategorySheet,
-			onDeleteCategory: { id in categoryManager.deleteCategory(id: id) },
+			onDeleteCategory: { id in
+				categoryManager.deleteCategory(id: id)
+				if selectedFilter.id == LibraryFilter.category(id).id {
+					selectedFilter = .all
+				}
+			},
             isGamepadFocused: isGamepadFocusedRow
 		)
     }
@@ -586,13 +652,40 @@ struct EditCategorySheet: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.colorScheme) private var colorScheme
     @EnvironmentObject var categoryManager: CategoryManager
+    @EnvironmentObject var library: ROMLibrary
     @ObservedObject private var loc = LocalizationManager.shared
     @State var category: GameCategory
-    
+
     @State private var selectedIconName: String? = ""
     @State private var customIconPath: String?
     @State private var selectedColor: String = ""
-    
+    @State private var showSystemsSheet = false
+    @State private var showGamesSheet = false
+    @State private var showGenrePicker = false
+
+    private var activeDisplaySystems: [SystemInfo] {
+        return SystemDatabase.systemsForDisplay.filter { system in
+            SystemDatabase.allInternalIDs(forDisplayID: system.id).contains {
+                (library.romCounts[$0] ?? 0) > 0
+            }
+        }
+    }
+
+    private var enabledSystemCount: Int {
+        activeDisplaySystems.filter { system in
+            category.smartSystemEnabled(
+                internalIDs: SystemDatabase.allInternalIDs(forDisplayID: system.id)
+            )
+        }.count
+    }
+
+    private var smartGenresBinding: Binding<Set<String>> {
+        Binding(
+            get: { Set(category.smartGenres) },
+            set: { category.smartGenres = Array($0).sorted() }
+        )
+    }
+
     var body: some View {
         NavigationStack {
             ZStack {
@@ -602,6 +695,80 @@ struct EditCategorySheet: View {
                 Form {
                     Section(loc.localized("app.categoryName")) {
                         TextField(loc.localized("app.name"), text: $category.name)
+                    }
+
+                    if category.isSmart {
+                        Section(loc.localized("category.smartRules")) {
+                            TextField(loc.localized("category.searchTerms"), text: $category.smartQuery)
+
+                            Button {
+                                showSystemsSheet = true
+                            } label: {
+                                HStack {
+                                    Label(loc.localized("category.systems"), systemImage: "desktopcomputer")
+                                    Spacer()
+                                    Text(verbatim: "\(enabledSystemCount)/\(activeDisplaySystems.count)")
+                                        .foregroundStyle(AppColors.textSecondaryNeutral(colorScheme))
+                                    Image(systemName: "chevron.right")
+                                        .font(.caption)
+                                        .foregroundStyle(AppColors.textTertiary(colorScheme))
+                                }
+                            }
+                            .buttonStyle(.plain)
+
+                            Button {
+                                showGenrePicker = true
+                            } label: {
+                                HStack {
+                                    Label(loc.localized("category.genres"), systemImage: "tag")
+                                    Spacer()
+                                    Text(verbatim: category.smartGenres.isEmpty
+                                        ? loc.localized("app.all")
+                                        : "\(category.smartGenres.count)")
+                                        .foregroundStyle(AppColors.textSecondaryNeutral(colorScheme))
+                                    Image(systemName: "chevron.right")
+                                        .font(.caption)
+                                        .foregroundStyle(AppColors.textTertiary(colorScheme))
+                                }
+                            }
+                            .buttonStyle(.plain)
+                        }
+
+                        Section(loc.localized("category.filterChips")) {
+                            ForEach(GameFilterOption.allCases) { option in
+                                Toggle(isOn: Binding(
+                                    get: { category.smartActiveFilters.contains(option.rawValue) },
+                                    set: { isOn in
+                                        if isOn {
+                                            if !category.smartActiveFilters.contains(option.rawValue) {
+                                                category.smartActiveFilters.append(option.rawValue)
+                                            }
+                                        } else {
+                                            category.smartActiveFilters.removeAll { $0 == option.rawValue }
+                                        }
+                                    }
+                                )) {
+                                    Label(option.label, systemImage: option.icon)
+                                }
+                            }
+                        }
+
+                        Section(loc.localized("category.games")) {
+                            Button {
+                                showGamesSheet = true
+                            } label: {
+                                HStack {
+                                    Label(loc.localized("category.manageGames"), systemImage: "gamecontroller")
+                                    Spacer()
+                                    Text(verbatim: loc.localized("category.gameRuleCount", category.smartIncludedGameKeys.count, category.smartExcludedGameKeys.count))
+                                        .foregroundStyle(AppColors.textSecondaryNeutral(colorScheme))
+                                    Image(systemName: "chevron.right")
+                                        .font(.caption)
+                                        .foregroundStyle(AppColors.textTertiary(colorScheme))
+                                }
+                            }
+                            .buttonStyle(.plain)
+                        }
                     }
                     
                     IconPickerView(
@@ -675,6 +842,23 @@ struct EditCategorySheet: View {
             }
         }
         .frame(width: 420, height: 560)
+        .sheet(isPresented: $showSystemsSheet) {
+            SmartCategorySystemsSheet(category: $category)
+                .environmentObject(library)
+        }
+        .sheet(isPresented: $showGamesSheet) {
+            SmartCategoryGamesSheet(category: $category)
+                .environmentObject(library)
+        }
+        .sheet(isPresented: $showGenrePicker) {
+            GenrePickerView(
+                selectedGenres: smartGenresBinding,
+                allGenres: GenreManager.shared.getAllDisplayGenres(from: library.roms),
+                genreCounts: GenreManager.shared.countPerGenre(from: library.roms),
+                onChange: {},
+                onClose: { showGenrePicker = false }
+            )
+        }
         .onAppear {
             selectedIconName = category.iconName
             selectedColor = category.colorHex

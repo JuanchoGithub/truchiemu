@@ -16,6 +16,7 @@ extension Notification.Name {
     static let sortChanged = Notification.Name("sortChanged")
     static let filterToggled = Notification.Name("filterToggled")
     static let libraryFilterChanged = Notification.Name("libraryFilterChanged")
+    static let saveSearchAsCategoryRequested = Notification.Name("saveSearchAsCategoryRequested")
     static let languageChanged = Notification.Name("languageChanged")
     static let zoomChanged = Notification.Name("zoomChanged")
     static let openAppSettings = Notification.Name("openAppSettings")

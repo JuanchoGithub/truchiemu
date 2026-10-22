@@ -33,9 +33,13 @@ class CategoryManager: ObservableObject {
         memberIndexByStableKey = byKey
     }
 
-    // O(1) membership test (UUID or stable key) against one category.
+    // Membership test (UUID or stable key) against one category. Smart
+    // categories evaluate their rules instead of the stored membership index.
     func contains(_ rom: ROM, categoryID: String) -> Bool {
-        memberIndexByROMID[rom.id]?.contains(categoryID) == true
+        if let category = categories.first(where: { $0.id == categoryID }), category.isSmart {
+            return smartContains(rom, category: category)
+        }
+        return memberIndexByROMID[rom.id]?.contains(categoryID) == true
             || memberIndexByStableKey[rom.stableIdentityKey]?.contains(categoryID) == true
     }
 
@@ -46,11 +50,28 @@ class CategoryManager: ObservableObject {
             || memberIndexByStableKey[stableKey]?.contains(categoryID) == true
     }
 
+    private func smartContains(_ rom: ROM, category: GameCategory) -> Bool {
+        category.smartMember(rom) { [weak self] rom in
+            self?.genreMatches(rom, category: category) ?? false
+        }
+    }
+
+    private func genreMatches(_ rom: ROM, category: GameCategory) -> Bool {
+        guard !category.smartGenres.isEmpty else { return true }
+        let displayGenres = GenreManager.shared.effectiveDisplayNames(for: rom.metadata?.genre)
+        return displayGenres.contains { category.smartGenres.contains($0) }
+    }
+
     // Categories containing this ROM, in display order.
     func categories(containing rom: ROM) -> [GameCategory] {
-        let memberOf = (memberIndexByROMID[rom.id] ?? []).union(memberIndexByStableKey[rom.stableIdentityKey] ?? [])
-        guard !memberOf.isEmpty else { return [] }
-        return categories.filter { memberOf.contains($0.id) }
+        var memberOf = memberIndexByROMID[rom.id] ?? []
+        memberOf.formUnion(memberIndexByStableKey[rom.stableIdentityKey] ?? [])
+        return categories.filter { category in
+            if category.isSmart {
+                return smartContains(rom, category: category)
+            }
+            return memberOf.contains(category.id)
+        }
     }
 
     // Categories containing ANY of the given ROMs, in display order.
@@ -60,8 +81,12 @@ class CategoryManager: ObservableObject {
             memberOf.formUnion(memberIndexByROMID[rom.id] ?? [])
             memberOf.formUnion(memberIndexByStableKey[rom.stableIdentityKey] ?? [])
         }
-        guard !memberOf.isEmpty else { return [] }
-        return categories.filter { memberOf.contains($0.id) }
+        return categories.filter { category in
+            if category.isSmart {
+                return roms.contains { smartContains($0, category: category) }
+            }
+            return memberOf.contains(category.id)
+        }
     }
     
     init() {
@@ -99,6 +124,36 @@ class CategoryManager: ObservableObject {
         saveCategories()
     }
     
+    @discardableResult
+    func addSmartCategory(
+        name: String,
+        query: String,
+        disabledSystemIDs: [String],
+        enabledSystemIDs: [String],
+        followsNewSystems: Bool,
+        activeFilters: [String],
+        genres: [String],
+        iconName: String = "bolt.fill",
+        colorHex: String = "FFCC00"
+    ) -> GameCategory {
+        let category = GameCategory(
+            name: name,
+            iconName: iconName,
+            colorHex: colorHex,
+            sortOrder: categories.count,
+            isSmart: true,
+            smartQuery: query,
+            smartDisabledSystemIDs: disabledSystemIDs,
+            smartEnabledSystemIDs: enabledSystemIDs,
+            smartFollowsNewSystems: followsNewSystems,
+            smartActiveFilters: activeFilters,
+            smartGenres: genres
+        )
+        categories.append(category)
+        saveCategories()
+        return category
+    }
+
     func updateCategory(_ category: GameCategory) {
         categories = categories.map { $0.id == category.id ? category : $0 }
         saveCategories()
@@ -127,6 +182,17 @@ class CategoryManager: ObservableObject {
     func addGamesToCategory(gameIDs: [UUID], gameKeys: [String] = [], categoryID: String) {
         guard let index = categories.firstIndex(where: { $0.id == categoryID }) else { return }
 
+        if categories[index].isSmart {
+            for key in gameKeys {
+                if !categories[index].smartIncludedGameKeys.contains(key) {
+                    categories[index].smartIncludedGameKeys.append(key)
+                }
+            }
+            categories[index].smartExcludedGameKeys.removeAll { gameKeys.contains($0) }
+            saveCategories()
+            return
+        }
+
         for gameID in gameIDs {
             if !categories[index].gameIDs.contains(gameID) {
                 categories[index].gameIDs.append(gameID)
@@ -142,6 +208,16 @@ class CategoryManager: ObservableObject {
 
     func removeGamesFromCategory(gameIDs: [UUID], gameKeys: [String] = [], categoryID: String) {
         guard let index = categories.firstIndex(where: { $0.id == categoryID }) else { return }
+        if categories[index].isSmart {
+            for key in gameKeys {
+                if !categories[index].smartExcludedGameKeys.contains(key) {
+                    categories[index].smartExcludedGameKeys.append(key)
+                }
+            }
+            categories[index].smartIncludedGameKeys.removeAll { gameKeys.contains($0) }
+            saveCategories()
+            return
+        }
         categories[index].gameIDs.removeAll { gameIDs.contains($0) }
         if !gameKeys.isEmpty {
             categories[index].gameKeys.removeAll { gameKeys.contains($0) }
@@ -191,6 +267,9 @@ class CategoryManager: ObservableObject {
     func gamesInCategory(categoryID: String, fromROMs roms: [ROM]) -> [ROM] {
         guard let index = categories.firstIndex(where: { $0.id == categoryID }) else { return [] }
         let category = categories[index]
+        if category.isSmart {
+            return roms.filter { smartContains($0, category: category) }
+        }
         let matched = roms.filter { category.contains($0) }
         // Heal: record current UUIDs for key-matched games, and stable keys
         // for UUID-matched games from before stable identity existed.

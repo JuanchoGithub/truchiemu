@@ -21,9 +21,76 @@ struct GameCategory: Identifiable, Codable, Hashable, Equatable {
     // Display order in the sidebar
     var sortOrder: Int = 0
 
+    // MARK: - Smart category rules
+
+    // A smart category stores a search query plus rules. Membership is
+    // evaluated against the live library, so new matching games appear
+    // automatically.
+    var isSmart: Bool = false
+    var smartQuery: String = ""
+    // Internal system IDs (ROM.systemID values) hidden from this category.
+    var smartDisabledSystemIDs: [String] = []
+    // Internal system IDs explicitly enabled at save/edit time.
+    var smartEnabledSystemIDs: [String] = []
+    // When true, systems that become active later are added automatically.
+    // False for single-system categories, so a new system does not silently
+    // join them.
+    var smartFollowsNewSystems: Bool = true
+    // GameFilterOption raw values captured as part of the category.
+    var smartActiveFilters: [String] = []
+    // Display genre names captured as part of the category.
+    var smartGenres: [String] = []
+    // Explicit per-game overrides. Includes bypass the system and query rules;
+    // excludes override everything.
+    var smartIncludedGameKeys: [String] = []
+    var smartExcludedGameKeys: [String] = []
+
     // Membership test that survives database loss and re-add.
     func contains(_ rom: ROM) -> Bool {
-        gameIDs.contains(rom.id) || gameKeys.contains(rom.stableIdentityKey)
+        if isSmart { return smartMember(rom) }
+        return gameIDs.contains(rom.id) || gameKeys.contains(rom.stableIdentityKey)
+    }
+
+    // True when every internal ID of one display system is enabled in the
+    // stored rules. Falls back to the disabled list for older categories.
+    func smartSystemEnabled(internalIDs: [String]) -> Bool {
+        if !smartEnabledSystemIDs.isEmpty {
+            return internalIDs.allSatisfy { smartEnabledSystemIDs.contains($0) }
+        }
+        return !internalIDs.allSatisfy { smartDisabledSystemIDs.contains($0) }
+    }
+
+    // Full smart membership evaluation. `genreMatches` lets callers supply
+    // the display-genre mapping (GenreManager lives on the main actor).
+    func smartMember(_ rom: ROM, genreMatches: (ROM) -> Bool = { _ in true }) -> Bool {
+        guard isSmart else { return contains(rom) }
+
+        let key = rom.stableIdentityKey
+        if smartExcludedGameKeys.contains(key) { return false }
+        if smartIncludedGameKeys.contains(key) { return true }
+
+        if let systemID = rom.systemID {
+            if smartDisabledSystemIDs.contains(systemID) { return false }
+            if !smartFollowsNewSystems && !smartEnabledSystemIDs.contains(systemID) {
+                return false
+            }
+        }
+
+        let terms = smartQuery.split(separator: " ").map(String.init)
+        if !terms.isEmpty {
+            let matches = terms.allSatisfy { term in
+                rom.displayName.localizedCaseInsensitiveContains(term)
+            }
+            if !matches { return false }
+        }
+
+        for rawValue in smartActiveFilters {
+            guard let option = GameFilterOption(rawValue: rawValue) else { continue }
+            if !option.matches(rom) { return false }
+        }
+
+        if !smartGenres.isEmpty && !genreMatches(rom) { return false }
+        return true
     }
 
     // MARK: - Codable (tolerant: gameKeys missing in pre-migration data)
@@ -31,6 +98,9 @@ struct GameCategory: Identifiable, Codable, Hashable, Equatable {
     enum CodingKeys: String, CodingKey {
         case id, name, iconName, customIconPath, colorHex
         case gameIDs, gameKeys, sortOrder
+        case isSmart, smartQuery, smartDisabledSystemIDs, smartEnabledSystemIDs
+        case smartFollowsNewSystems, smartActiveFilters
+        case smartGenres, smartIncludedGameKeys, smartExcludedGameKeys
     }
 
     init(
@@ -41,7 +111,16 @@ struct GameCategory: Identifiable, Codable, Hashable, Equatable {
         colorHex: String,
         gameIDs: [UUID] = [],
         gameKeys: [String] = [],
-        sortOrder: Int = 0
+        sortOrder: Int = 0,
+        isSmart: Bool = false,
+        smartQuery: String = "",
+        smartDisabledSystemIDs: [String] = [],
+        smartEnabledSystemIDs: [String] = [],
+        smartFollowsNewSystems: Bool = true,
+        smartActiveFilters: [String] = [],
+        smartGenres: [String] = [],
+        smartIncludedGameKeys: [String] = [],
+        smartExcludedGameKeys: [String] = []
     ) {
         self.id = id
         self.name = name
@@ -51,6 +130,15 @@ struct GameCategory: Identifiable, Codable, Hashable, Equatable {
         self.gameIDs = gameIDs
         self.gameKeys = gameKeys
         self.sortOrder = sortOrder
+        self.isSmart = isSmart
+        self.smartQuery = smartQuery
+        self.smartDisabledSystemIDs = smartDisabledSystemIDs
+        self.smartEnabledSystemIDs = smartEnabledSystemIDs
+        self.smartFollowsNewSystems = smartFollowsNewSystems
+        self.smartActiveFilters = smartActiveFilters
+        self.smartGenres = smartGenres
+        self.smartIncludedGameKeys = smartIncludedGameKeys
+        self.smartExcludedGameKeys = smartExcludedGameKeys
     }
 
     init(from decoder: Decoder) throws {
@@ -63,6 +151,15 @@ struct GameCategory: Identifiable, Codable, Hashable, Equatable {
         gameIDs = try container.decodeIfPresent([UUID].self, forKey: .gameIDs) ?? []
         gameKeys = try container.decodeIfPresent([String].self, forKey: .gameKeys) ?? []
         sortOrder = try container.decodeIfPresent(Int.self, forKey: .sortOrder) ?? 0
+        isSmart = try container.decodeIfPresent(Bool.self, forKey: .isSmart) ?? false
+        smartQuery = try container.decodeIfPresent(String.self, forKey: .smartQuery) ?? ""
+        smartDisabledSystemIDs = try container.decodeIfPresent([String].self, forKey: .smartDisabledSystemIDs) ?? []
+        smartEnabledSystemIDs = try container.decodeIfPresent([String].self, forKey: .smartEnabledSystemIDs) ?? []
+        smartFollowsNewSystems = try container.decodeIfPresent(Bool.self, forKey: .smartFollowsNewSystems) ?? true
+        smartActiveFilters = try container.decodeIfPresent([String].self, forKey: .smartActiveFilters) ?? []
+        smartGenres = try container.decodeIfPresent([String].self, forKey: .smartGenres) ?? []
+        smartIncludedGameKeys = try container.decodeIfPresent([String].self, forKey: .smartIncludedGameKeys) ?? []
+        smartExcludedGameKeys = try container.decodeIfPresent([String].self, forKey: .smartExcludedGameKeys) ?? []
     }
 
     func encode(to encoder: Encoder) throws {
@@ -75,6 +172,15 @@ struct GameCategory: Identifiable, Codable, Hashable, Equatable {
         try container.encode(gameIDs, forKey: .gameIDs)
         try container.encode(gameKeys, forKey: .gameKeys)
         try container.encode(sortOrder, forKey: .sortOrder)
+        try container.encode(isSmart, forKey: .isSmart)
+        try container.encode(smartQuery, forKey: .smartQuery)
+        try container.encode(smartDisabledSystemIDs, forKey: .smartDisabledSystemIDs)
+        try container.encode(smartEnabledSystemIDs, forKey: .smartEnabledSystemIDs)
+        try container.encode(smartFollowsNewSystems, forKey: .smartFollowsNewSystems)
+        try container.encode(smartActiveFilters, forKey: .smartActiveFilters)
+        try container.encode(smartGenres, forKey: .smartGenres)
+        try container.encode(smartIncludedGameKeys, forKey: .smartIncludedGameKeys)
+        try container.encode(smartExcludedGameKeys, forKey: .smartExcludedGameKeys)
     }
     
     // Derived color
