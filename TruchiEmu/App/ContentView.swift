@@ -291,6 +291,10 @@ case .library:
                 }
 .sheet(item: $editingCategory) { category in
                       EditCategorySheet(category: category)
+                          // Fresh state per presented category: editing a
+                          // normal category must never inherit a smart one's
+                          // stale sheet state.
+                          .id(category.id)
                           .gamepadDismissable { editingCategory = nil }
                   }
                   .sheet(item: $renamingSystem) { system in

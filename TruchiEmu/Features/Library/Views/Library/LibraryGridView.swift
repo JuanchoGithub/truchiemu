@@ -1705,6 +1705,17 @@ struct LibraryGridView: View {
 
         return AnyView(
             Group {
+                if let smart = activeSmartCategory,
+                   categoryManager.contains(rom, categoryID: smart.id) {
+                    Button {
+                        categoryManager.removeRomsFromCategory(menuTargetROMs, categoryID: smart.id)
+                    } label: {
+                        Label(loc.localized("contextMenu.removeFromSmart"), systemImage: "bolt.slash.fill")
+                    }
+
+                    Divider()
+                }
+
                 Button {
                     openWindow(id: "game-info", value: rom.id)
                 } label: {
@@ -2200,7 +2211,7 @@ struct LibraryGridView: View {
         let disabledSystemIDs = allActiveIDs.filter { !enabledSystemIDs.contains($0) }
 
         let category = categoryManager.addSmartCategory(
-            name: query,
+            name: GameCategory.autoName(fromQuery: query),
             query: query,
             disabledSystemIDs: disabledSystemIDs,
             enabledSystemIDs: enabledSystemIDs,

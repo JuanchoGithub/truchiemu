@@ -183,6 +183,18 @@ struct GameCategory: Identifiable, Codable, Hashable, Equatable {
         try container.encode(smartExcludedGameKeys, forKey: .smartExcludedGameKeys)
     }
     
+    // Title-cased name derived from a search query ("mario kart 64" ->
+    // "Mario Kart 64"). Existing capitalisation (acronyms) is preserved.
+    static func autoName(fromQuery query: String) -> String {
+        query
+            .split(separator: " ", omittingEmptySubsequences: true)
+            .map { word -> String in
+                guard let first = word.first else { return String(word) }
+                return first.uppercased() + word.dropFirst()
+            }
+            .joined(separator: " ")
+    }
+
     // Derived color
     var color: Color {
         Color(hex: colorHex) ?? .blue

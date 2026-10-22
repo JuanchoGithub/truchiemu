@@ -327,3 +327,188 @@ struct SmartCategoryGamesSheet: View {
         .frame(width: 520, height: 560)
     }
 }
+
+// MARK: - Shared smart rules (create + edit)
+
+// The full smart rule editor: search terms with a live match preview,
+// systems, genres, filter chips, and per-game overrides. Used by both the
+// create sheet and the edit sheet so they stay identical.
+struct SmartCategoryRulesSections: View {
+    @Environment(\.colorScheme) private var colorScheme
+    @EnvironmentObject var library: ROMLibrary
+    @ObservedObject private var loc = LocalizationManager.shared
+    @Binding var category: GameCategory
+
+    @State private var showSystemsSheet = false
+    @State private var showGamesSheet = false
+    @State private var showGenrePicker = false
+
+    private var activeDisplaySystems: [SystemInfo] {
+        SystemDatabase.systemsForDisplay.filter { system in
+            SystemDatabase.allInternalIDs(forDisplayID: system.id).contains {
+                (library.romCounts[$0] ?? 0) > 0
+            }
+        }
+    }
+
+    private var enabledSystemCount: Int {
+        activeDisplaySystems.filter { system in
+            category.smartSystemEnabled(
+                internalIDs: SystemDatabase.allInternalIDs(forDisplayID: system.id)
+            )
+        }.count
+    }
+
+    private var smartGenresBinding: Binding<Set<String>> {
+        Binding(
+            get: { Set(category.smartGenres) },
+            set: { category.smartGenres = Array($0).sorted() }
+        )
+    }
+
+    private var trimmedQuery: String {
+        category.smartQuery.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    // Live preview of what the rules currently match.
+    private var matchingROMs: [ROM] {
+        library.roms.filter { rom in
+            guard !rom.isHidden else { return false }
+            return category.smartMember(rom) { rom in
+                let displayGenres = GenreManager.shared.effectiveDisplayNames(for: rom.metadata?.genre)
+                return displayGenres.contains { category.smartGenres.contains($0) }
+            }
+        }
+    }
+
+    private var previewSummary: String {
+        let matches = matchingROMs
+        var seen = Set<String>()
+        var systems: [String] = []
+        for rom in matches {
+            let name = SystemDatabase.systemName(forInternalID: rom.systemID ?? "")
+            if seen.insert(name).inserted { systems.append(name) }
+        }
+        let count = loc.localized("category.gameCount", matches.count)
+        return systems.isEmpty ? count : "\(count) · \(systems.joined(separator: ", "))"
+    }
+
+    private var previewGames: String {
+        let matches = matchingROMs.sorted {
+            $0.displayName.localizedCaseInsensitiveCompare($1.displayName) == .orderedAscending
+        }
+        let sample = matches.prefix(3).map { $0.displayName }.joined(separator: ", ")
+        if matches.count > 3 {
+            return "\(sample) +\(matches.count - 3)"
+        }
+        return sample
+    }
+
+    var body: some View {
+        Section(loc.localized("category.smartRules")) {
+            TextField(loc.localized("category.searchTerms"), text: $category.smartQuery)
+
+            if !trimmedQuery.isEmpty {
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(verbatim: previewSummary)
+                        .font(.caption)
+                        .foregroundStyle(AppColors.textSecondaryNeutral(colorScheme))
+                    Text(verbatim: previewGames)
+                        .font(.caption)
+                        .foregroundStyle(AppColors.textTertiary(colorScheme))
+                        .lineLimit(2)
+                        .truncationMode(.tail)
+                }
+            }
+
+            Button {
+                showSystemsSheet = true
+            } label: {
+                HStack {
+                    Label(loc.localized("category.systems"), systemImage: "desktopcomputer")
+                    Spacer()
+                    Text(verbatim: "\(enabledSystemCount)/\(activeDisplaySystems.count)")
+                        .foregroundStyle(AppColors.textSecondaryNeutral(colorScheme))
+                    Image(systemName: "chevron.right")
+                        .font(.caption)
+                        .foregroundStyle(AppColors.textTertiary(colorScheme))
+                }
+            }
+            .buttonStyle(.plain)
+            .sheet(isPresented: $showSystemsSheet) {
+                SmartCategorySystemsSheet(category: $category)
+                    .environmentObject(library)
+            }
+
+            Button {
+                showGenrePicker = true
+            } label: {
+                HStack {
+                    Label(loc.localized("category.genres"), systemImage: "tag")
+                    Spacer()
+                    Text(verbatim: category.smartGenres.isEmpty
+                        ? loc.localized("app.all")
+                        : "\(category.smartGenres.count)")
+                        .foregroundStyle(AppColors.textSecondaryNeutral(colorScheme))
+                    Image(systemName: "chevron.right")
+                        .font(.caption)
+                        .foregroundStyle(AppColors.textTertiary(colorScheme))
+                }
+            }
+            .buttonStyle(.plain)
+            .sheet(isPresented: $showGenrePicker) {
+                GenrePickerView(
+                    selectedGenres: smartGenresBinding,
+                    allGenres: GenreManager.shared.getAllDisplayGenres(from: library.roms),
+                    genreCounts: GenreManager.shared.countPerGenre(from: library.roms),
+                    onChange: {},
+                    onClose: { showGenrePicker = false }
+                )
+            }
+        }
+
+        Section(loc.localized("category.filterChips")) {
+            ForEach(GameFilterOption.allCases) { option in
+                Toggle(isOn: Binding(
+                    get: { category.smartActiveFilters.contains(option.rawValue) },
+                    set: { isOn in
+                        if isOn {
+                            if !category.smartActiveFilters.contains(option.rawValue) {
+                                category.smartActiveFilters.append(option.rawValue)
+                            }
+                        } else {
+                            category.smartActiveFilters.removeAll { $0 == option.rawValue }
+                        }
+                    }
+                )) {
+                    Label(option.label, systemImage: option.icon)
+                }
+            }
+        }
+
+        Section(loc.localized("category.games")) {
+            Button {
+                showGamesSheet = true
+            } label: {
+                HStack {
+                    Label(loc.localized("category.manageGames"), systemImage: "gamecontroller")
+                    Spacer()
+                    Text(verbatim: loc.localized(
+                        "category.gameRuleCount",
+                        category.smartIncludedGameKeys.count,
+                        category.smartExcludedGameKeys.count
+                    ))
+                        .foregroundStyle(AppColors.textSecondaryNeutral(colorScheme))
+                    Image(systemName: "chevron.right")
+                        .font(.caption)
+                        .foregroundStyle(AppColors.textTertiary(colorScheme))
+                }
+            }
+            .buttonStyle(.plain)
+            .sheet(isPresented: $showGamesSheet) {
+                SmartCategoryGamesSheet(category: $category)
+                    .environmentObject(library)
+            }
+        }
+    }
+}

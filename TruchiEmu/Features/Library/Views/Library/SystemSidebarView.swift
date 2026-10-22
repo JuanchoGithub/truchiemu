@@ -178,9 +178,24 @@ struct SystemSidebarView: View {
                         speed: 22,
                         height: 12
                     )
+
+                    // Leave the smart category so the search applies globally.
+                    Button {
+                        selectedFilter = .all
+                    } label: {
+                        Image(systemName: "xmark")
+                            .font(.system(size: 8, weight: .bold))
+                            .foregroundStyle(AppColors.textSecondary(colorScheme))
+                            .padding(3)
+                            .contentShape(Circle())
+                    }
+                    .buttonStyle(.plain)
+                    .layoutPriority(1)
+                    .help(loc.localized("search.dismiss"))
                 }
                 .foregroundStyle(AppColors.textSecondary(colorScheme))
-                .padding(.horizontal, 9)
+                .padding(.leading, 9)
+                .padding(.trailing, 5)
                 .padding(.vertical, 4)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .background(
@@ -558,20 +573,66 @@ onSystemAction: system != nil ? { sys, action, targetID in
 struct CreateCategorySheet: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var categoryManager: CategoryManager
+    @EnvironmentObject var library: ROMLibrary
     @ObservedObject private var loc = LocalizationManager.shared
-    
+
+    @State private var isSmart = false
+    // ObservableObject (not @State) so rule edits made inside nested sheets
+    // update this sheet live on macOS.
+    @StateObject private var smartDraft = CategoryDraft(
+        category: GameCategory(name: "", iconName: "bolt.fill", colorHex: "FFCC00", isSmart: true)
+    )
     @State private var name: String = ""
     @State private var selectedIconName: String? = "gamecontroller.fill"
     @State private var customIconPath: String?
     @State private var selectedColor: String = "007AFF"
-    
+
     private let pendingCategoryId = UUID().uuidString
+
+    private var activeDisplaySystems: [SystemInfo] {
+        SystemDatabase.systemsForDisplay.filter { system in
+            SystemDatabase.allInternalIDs(forDisplayID: system.id).contains {
+                (library.romCounts[$0] ?? 0) > 0
+            }
+        }
+    }
+
+    private var canCreate: Bool {
+        if isSmart {
+            let hasQuery = !smartDraft.category.smartQuery.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            return hasQuery || !smartDraft.category.smartIncludedGameKeys.isEmpty
+        }
+        return !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
     
     var body: some View {
         NavigationStack {
             Form {
                 Section(loc.localized("app.categoryName")) {
+                    Picker("", selection: $isSmart) {
+                        Text(verbatim: loc.localized("category.typeNormal")).tag(false)
+                        Text(verbatim: loc.localized("category.smartRules")).tag(true)
+                    }
+                    .pickerStyle(.segmented)
+                    .labelsHidden()
+                    .onChange(of: isSmart) { _, smart in
+                        guard smart else { return }
+                        if selectedIconName == "gamecontroller.fill" {
+                            selectedIconName = "bolt.fill"
+                        }
+                        if smartDraft.category.smartEnabledSystemIDs.isEmpty {
+                            smartDraft.category.smartEnabledSystemIDs = activeDisplaySystems.flatMap {
+                                SystemDatabase.allInternalIDs(forDisplayID: $0.id)
+                            }
+                            smartDraft.category.smartFollowsNewSystems = activeDisplaySystems.count > 1
+                        }
+                    }
+
                     TextField(loc.localized("app.name"), text: $name)
+                }
+
+                if isSmart {
+                    SmartCategoryRulesSections(category: $smartDraft.category)
                 }
                 
                 IconPickerView(
@@ -631,21 +692,50 @@ struct CreateCategorySheet: View {
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button(loc.localized("app.create")) {
-                        categoryManager.addCategory(
-                            name: name,
-                            iconName: selectedIconName ?? "gamecontroller.fill",
-                            customIconPath: customIconPath,
-                            colorHex: selectedColor,
-                            id: pendingCategoryId
-                        )
+                        if isSmart {
+                            let finalName = name.trimmingCharacters(in: .whitespacesAndNewlines)
+                                .isEmpty
+                                ? GameCategory.autoName(fromQuery: smartDraft.category.smartQuery)
+                                : name
+                            categoryManager.addSmartCategory(
+                                name: finalName,
+                                query: smartDraft.category.smartQuery,
+                                disabledSystemIDs: smartDraft.category.smartDisabledSystemIDs,
+                                enabledSystemIDs: smartDraft.category.smartEnabledSystemIDs,
+                                followsNewSystems: smartDraft.category.smartFollowsNewSystems,
+                                activeFilters: smartDraft.category.smartActiveFilters,
+                                genres: smartDraft.category.smartGenres,
+                                includedGameKeys: smartDraft.category.smartIncludedGameKeys,
+                                excludedGameKeys: smartDraft.category.smartExcludedGameKeys,
+                                iconName: selectedIconName ?? "bolt.fill",
+                                colorHex: selectedColor,
+                                id: pendingCategoryId
+                            )
+                        } else {
+                            categoryManager.addCategory(
+                                name: name,
+                                iconName: selectedIconName ?? "gamecontroller.fill",
+                                customIconPath: customIconPath,
+                                colorHex: selectedColor,
+                                id: pendingCategoryId
+                            )
+                        }
                         dismiss()
                     }
-                    .disabled(name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                    .disabled(!canCreate)
                 }
             }
         }
         .frame(width: 420, height: 560)
     }
+}
+
+// Editable copy of a category while the edit sheet is open. A class (not
+// @State) so rule edits made inside nested sheets (games/systems) update the
+// edit sheet live on macOS.
+final class CategoryDraft: ObservableObject {
+    @Published var category: GameCategory
+    init(category: GameCategory) { self.category = category }
 }
 
 struct EditCategorySheet: View {
@@ -654,37 +744,15 @@ struct EditCategorySheet: View {
     @EnvironmentObject var categoryManager: CategoryManager
     @EnvironmentObject var library: ROMLibrary
     @ObservedObject private var loc = LocalizationManager.shared
-    @State var category: GameCategory
+    @StateObject private var draft: CategoryDraft
+
+    init(category: GameCategory) {
+        _draft = StateObject(wrappedValue: CategoryDraft(category: category))
+    }
 
     @State private var selectedIconName: String? = ""
     @State private var customIconPath: String?
     @State private var selectedColor: String = ""
-    @State private var showSystemsSheet = false
-    @State private var showGamesSheet = false
-    @State private var showGenrePicker = false
-
-    private var activeDisplaySystems: [SystemInfo] {
-        return SystemDatabase.systemsForDisplay.filter { system in
-            SystemDatabase.allInternalIDs(forDisplayID: system.id).contains {
-                (library.romCounts[$0] ?? 0) > 0
-            }
-        }
-    }
-
-    private var enabledSystemCount: Int {
-        activeDisplaySystems.filter { system in
-            category.smartSystemEnabled(
-                internalIDs: SystemDatabase.allInternalIDs(forDisplayID: system.id)
-            )
-        }.count
-    }
-
-    private var smartGenresBinding: Binding<Set<String>> {
-        Binding(
-            get: { Set(category.smartGenres) },
-            set: { category.smartGenres = Array($0).sorted() }
-        )
-    }
 
     var body: some View {
         NavigationStack {
@@ -694,93 +762,22 @@ struct EditCategorySheet: View {
                 
                 Form {
                     Section(loc.localized("app.categoryName")) {
-                        TextField(loc.localized("app.name"), text: $category.name)
+                        TextField(loc.localized("app.name"), text: $draft.category.name)
                     }
 
-                    if category.isSmart {
-                        Section(loc.localized("category.smartRules")) {
-                            TextField(loc.localized("category.searchTerms"), text: $category.smartQuery)
-
-                            Button {
-                                showSystemsSheet = true
-                            } label: {
-                                HStack {
-                                    Label(loc.localized("category.systems"), systemImage: "desktopcomputer")
-                                    Spacer()
-                                    Text(verbatim: "\(enabledSystemCount)/\(activeDisplaySystems.count)")
-                                        .foregroundStyle(AppColors.textSecondaryNeutral(colorScheme))
-                                    Image(systemName: "chevron.right")
-                                        .font(.caption)
-                                        .foregroundStyle(AppColors.textTertiary(colorScheme))
-                                }
-                            }
-                            .buttonStyle(.plain)
-
-                            Button {
-                                showGenrePicker = true
-                            } label: {
-                                HStack {
-                                    Label(loc.localized("category.genres"), systemImage: "tag")
-                                    Spacer()
-                                    Text(verbatim: category.smartGenres.isEmpty
-                                        ? loc.localized("app.all")
-                                        : "\(category.smartGenres.count)")
-                                        .foregroundStyle(AppColors.textSecondaryNeutral(colorScheme))
-                                    Image(systemName: "chevron.right")
-                                        .font(.caption)
-                                        .foregroundStyle(AppColors.textTertiary(colorScheme))
-                                }
-                            }
-                            .buttonStyle(.plain)
-                        }
-
-                        Section(loc.localized("category.filterChips")) {
-                            ForEach(GameFilterOption.allCases) { option in
-                                Toggle(isOn: Binding(
-                                    get: { category.smartActiveFilters.contains(option.rawValue) },
-                                    set: { isOn in
-                                        if isOn {
-                                            if !category.smartActiveFilters.contains(option.rawValue) {
-                                                category.smartActiveFilters.append(option.rawValue)
-                                            }
-                                        } else {
-                                            category.smartActiveFilters.removeAll { $0 == option.rawValue }
-                                        }
-                                    }
-                                )) {
-                                    Label(option.label, systemImage: option.icon)
-                                }
-                            }
-                        }
-
-                        Section(loc.localized("category.games")) {
-                            Button {
-                                showGamesSheet = true
-                            } label: {
-                                HStack {
-                                    Label(loc.localized("category.manageGames"), systemImage: "gamecontroller")
-                                    Spacer()
-                                    Text(verbatim: loc.localized("category.gameRuleCount", category.smartIncludedGameKeys.count, category.smartExcludedGameKeys.count))
-                                        .foregroundStyle(AppColors.textSecondaryNeutral(colorScheme))
-                                    Image(systemName: "chevron.right")
-                                        .font(.caption)
-                                        .foregroundStyle(AppColors.textTertiary(colorScheme))
-                                }
-                            }
-                            .buttonStyle(.plain)
-                        }
+                    if draft.category.isSmart {
+                        SmartCategoryRulesSections(category: $draft.category)
                     }
-                    
-                    IconPickerView(
+                                        IconPickerView(
                         selectedIconName: $selectedIconName,
                         customIconPath: $customIconPath,
-                        defaultIconName: category.iconName,
+                        defaultIconName: draft.category.iconName,
                         defaultIconImage: nil,
                         saveCustomIcon: { image in
                             IconPickerView.saveCustomIcon(
                                 image: image,
                                 directory: "CategoryIcons",
-                                fileName: "\(category.id).png"
+                                fileName: "\(draft.category.id).png"
                             )
                         }
                     )
@@ -790,7 +787,7 @@ struct EditCategorySheet: View {
                             ForEach(GameCategory.colorPalette, id: \.hex) { color in
                                 Button {
                                     selectedColor = color.hex
-                                    category.colorHex = color.hex
+                                    draft.category.colorHex = color.hex
                                 } label: {
                                     Circle()
                                         .fill(Color(hex: color.hex) ?? .blue)
@@ -814,10 +811,10 @@ struct EditCategorySheet: View {
                                     .aspectRatio(contentMode: .fit)
                                     .frame(width: 22, height: 22)
                             } else {
-                                IconNameView(iconName: selectedIconName ?? category.iconName, size: 32)
+                                IconNameView(iconName: selectedIconName ?? draft.category.iconName, size: 32)
                                     .foregroundColor(Color(hex: selectedColor) ?? .blue)
                             }
-                            Text(category.name.isEmpty ? "Category Name" : category.name)
+                            Text(draft.category.name.isEmpty ? "Category Name" : draft.category.name)
                         }
                     }
                 }
@@ -830,8 +827,8 @@ struct EditCategorySheet: View {
                     }
                     ToolbarItem(placement: .confirmationAction) {
                         Button(loc.localized("app.save")) {
-                            var updated = category
-                            updated.iconName = selectedIconName ?? category.iconName
+                            var updated = draft.category
+                            updated.iconName = selectedIconName ?? draft.category.iconName
                             updated.customIconPath = customIconPath
                             updated.colorHex = selectedColor
                             categoryManager.updateCategory(updated)
@@ -842,27 +839,10 @@ struct EditCategorySheet: View {
             }
         }
         .frame(width: 420, height: 560)
-        .sheet(isPresented: $showSystemsSheet) {
-            SmartCategorySystemsSheet(category: $category)
-                .environmentObject(library)
-        }
-        .sheet(isPresented: $showGamesSheet) {
-            SmartCategoryGamesSheet(category: $category)
-                .environmentObject(library)
-        }
-        .sheet(isPresented: $showGenrePicker) {
-            GenrePickerView(
-                selectedGenres: smartGenresBinding,
-                allGenres: GenreManager.shared.getAllDisplayGenres(from: library.roms),
-                genreCounts: GenreManager.shared.countPerGenre(from: library.roms),
-                onChange: {},
-                onClose: { showGenrePicker = false }
-            )
-        }
         .onAppear {
-            selectedIconName = category.iconName
-            selectedColor = category.colorHex
-            customIconPath = category.customIconPath
+            selectedIconName = draft.category.iconName
+            selectedColor = draft.category.colorHex
+            customIconPath = draft.category.customIconPath
         }
     }
 }

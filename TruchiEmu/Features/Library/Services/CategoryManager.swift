@@ -133,10 +133,14 @@ class CategoryManager: ObservableObject {
         followsNewSystems: Bool,
         activeFilters: [String],
         genres: [String],
+        includedGameKeys: [String] = [],
+        excludedGameKeys: [String] = [],
         iconName: String = "bolt.fill",
-        colorHex: String = "FFCC00"
+        colorHex: String = "FFCC00",
+        id: String? = nil
     ) -> GameCategory {
         let category = GameCategory(
+            id: id ?? UUID().uuidString,
             name: name,
             iconName: iconName,
             colorHex: colorHex,
@@ -147,7 +151,9 @@ class CategoryManager: ObservableObject {
             smartEnabledSystemIDs: enabledSystemIDs,
             smartFollowsNewSystems: followsNewSystems,
             smartActiveFilters: activeFilters,
-            smartGenres: genres
+            smartGenres: genres,
+            smartIncludedGameKeys: includedGameKeys,
+            smartExcludedGameKeys: excludedGameKeys
         )
         categories.append(category)
         saveCategories()
@@ -210,11 +216,13 @@ class CategoryManager: ObservableObject {
         guard let index = categories.firstIndex(where: { $0.id == categoryID }) else { return }
         if categories[index].isSmart {
             for key in gameKeys {
-                if !categories[index].smartExcludedGameKeys.contains(key) {
+                if categories[index].smartIncludedGameKeys.contains(key) {
+                    // Explicitly added games go back to the automatic rules.
+                    categories[index].smartIncludedGameKeys.removeAll { $0 == key }
+                } else if !categories[index].smartExcludedGameKeys.contains(key) {
                     categories[index].smartExcludedGameKeys.append(key)
                 }
             }
-            categories[index].smartIncludedGameKeys.removeAll { gameKeys.contains($0) }
             saveCategories()
             return
         }
