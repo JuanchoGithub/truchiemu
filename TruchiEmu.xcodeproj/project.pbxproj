@@ -729,6 +729,7 @@
 		83FCF5A7A8180A9CF049C107 /* nestopia_libretro_default.json in Resources */ = {isa = PBXBuildFile; fileRef = E66F7CAF96BF8C952C315532 /* nestopia_libretro_default.json */; };
 		8431EB7420AD2C2B96598A43 /* fightdata_sfz2al.json in Resources */ = {isa = PBXBuildFile; fileRef = EBDC7603DAF0D037BCBD7EC3 /* fightdata_sfz2al.json */; };
 		844F4C4C5C4373CF4867CC1D /* controllerPreset_8bitdo-ultimate-3mode-xbox-8bitdo-ultimate-3mode-xbox.json in Resources */ = {isa = PBXBuildFile; fileRef = 24853C93B4165B0F75DA903A /* controllerPreset_8bitdo-ultimate-3mode-xbox-8bitdo-ultimate-3mode-xbox.json */; };
+		846D6803305C1ADB4A5382C1 /* MorphCRT.metal in Sources */ = {isa = PBXBuildFile; fileRef = 3C34BDAEDE14746BD3EF9E08 /* MorphCRT.metal */; };
 		8486017DB7D747C9E058F05D /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF4D3CED7C7C18FB8375C015 /* AppSettings.swift */; };
 		84C84CCBB98FA712DF8B6971 /* NGP.png in Resources */ = {isa = PBXBuildFile; fileRef = 40DA7086C981032D0B98C415 /* NGP.png */; };
 		84D8EF6AD4A33478C294BF06 /* CoreAndAchievements.swift in Sources */ = {isa = PBXBuildFile; fileRef = 154CCFA03FA2B0980BA39F0C /* CoreAndAchievements.swift */; };
@@ -1764,6 +1765,7 @@
 		3BD38C52C8520B46C36D80C0 /* input_systemLabels_atari_st.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_atari_st.json; sourceTree = "<group>"; };
 		3BE49C585633F028422B60E3 /* SFCMSU.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SFCMSU.png; sourceTree = "<group>"; };
 		3C06F45BB649BBE85B38D441 /* PadButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PadButton.swift; sourceTree = "<group>"; };
+		3C34BDAEDE14746BD3EF9E08 /* MorphCRT.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = MorphCRT.metal; sourceTree = "<group>"; };
 		3C81E516A57892669DA74C24 /* fightdata_ringdest.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_ringdest.json; sourceTree = "<group>"; };
 		3C9A0ED4F14D4BDE0F914812 /* input_systemLabels_ps2.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_ps2.json; sourceTree = "<group>"; };
 		3C9C7DF8B3C788A24004D789 /* GlassOrb.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = GlassOrb.metal; sourceTree = "<group>"; };
@@ -3354,6 +3356,7 @@
 				9B697EA2D197AF7DAFA8D2BE /* HoloBump.metal */,
 				EFD1D1521FD51B428CD6D464 /* LiteCRT.metal */,
 				3BD337DAF7B206DF941EB16D /* LottesCRT.metal */,
+				3C34BDAEDE14746BD3EF9E08 /* MorphCRT.metal */,
 				2181ADA6355FD20750F4E018 /* Passthrough.metal */,
 				9C5D64D2262E657B3F007C98 /* PSP.metal */,
 				A355544255BE468FAF663229 /* ReverseHoloMask.metal */,
@@ -6497,6 +6500,7 @@
 				139F5308F944EC66EAB548BE /* MetalCoordinator.swift in Sources */,
 				114F352AC9144A444E87A3FF /* ModernSaveStateSlotView.swift in Sources */,
 				5B5B9D5378C64F28E2896612 /* ModernSectionCard.swift in Sources */,
+				846D6803305C1ADB4A5382C1 /* MorphCRT.metal in Sources */,
 				BBE92CD324EF05C6FC3C7DE1 /* MotionDetector.swift in Sources */,
 				13267C7699DA0893F6EEC72E /* MoveDataCharactersView.swift in Sources */,
 				689BB993F6CD71261D227249 /* MoveDataGamesView.swift in Sources */,

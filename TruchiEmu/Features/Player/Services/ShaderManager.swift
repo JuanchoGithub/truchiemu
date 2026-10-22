@@ -491,6 +491,7 @@ class ShaderManager: ObservableObject {
         case "CRTShader": result = "fragmentCRTShaderOptics"
         case "FamicomRF": result = "fragmentFamicomRF"
         case "RfDecoder": result = "fragmentRfDisplay"
+        case "MorphCRT": result = "fragmentMorphCRT"
         default: result = "fragment" + shaderFile
         }
         

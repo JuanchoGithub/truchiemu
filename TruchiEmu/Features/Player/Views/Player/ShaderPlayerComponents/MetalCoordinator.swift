@@ -16,6 +16,9 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
     // 5-frame temporal buffer for CRT phosphor persistence (T-1, T-2, T-3, T-4, plus current frame passed directly to texture(0))
     private var temporalTextures: [MTLTexture?] = [nil, nil, nil, nil, nil]
     private var temporalIndex: Int = 0 // Cycles 0-4, points to "current" frame
+    /// Number of valid frames stored in the temporal ring (0...4). Shaders that
+    /// read the ring must not use uninitialised slots on the first frames.
+    private var temporalHistoryCount: Int = 0
     private var frameCounter: UInt32 = 0
     /// Timestamp of the previous slang frame, used to feed `FrametimeDelta`.
     private var lastSlangFrameTime: CFTimeInterval = 0
@@ -56,6 +59,7 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
         "fragmentGBAShader",
         "fragmentPSPShader",
         "fragmentCRTMultipass",
+        "fragmentMorphCRT",
     ]
 
     // Cached "is runner.rom?.systemID a known system in SystemDatabase" —
@@ -221,6 +225,7 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
             }
         }
         temporalIndex = 0
+        temporalHistoryCount = 0
         #if LOG_DEBUG
         LoggerService.debug(category: "Shaders", "Created 5-frame temporal buffer: \(width)x\(height) format:\(sourceFormat)")
         #endif
@@ -1301,7 +1306,7 @@ outputHeight: Float(viewport.height)
                         let colorB = getUniform("colorBoost", fallback: 1.1)
                         var u = LottesUniforms(
                             scanlineStrength: getUniform("scanlineStrength", fallback: 0.5),
-                            maskStrength: getUniform("maskStrength", fallback: 0.3),
+                            maskStrength: getUniform("maskStrength", fallback: 0.4),
                             bloomAmount: getUniform("bloomAmount", fallback: 0.15),
                             curvatureAmount: getUniform("curvatureAmount", fallback: 0.02),
                             colorBoost: colorB,
@@ -1310,6 +1315,89 @@ outputHeight: Float(viewport.height)
                             outputSize: SIMD4<Float>(vpW, vpH, 0.0, 0.0)
                         )
                         enc.setFragmentBytes(&u, length: MemoryLayout<LottesUniforms>.stride, index: 0)
+                    case "fragmentMorphCRT":
+                        ensureTemporalTextures(width: frameTex.width, height: frameTex.height, device: device, sourceFormat: frameTex.pixelFormat)
+                        let colorB = getUniform("colorBoost", fallback: 1.1)
+                        var u = MorphCRTUniforms(
+                            time: time,
+                            sourceSize: SIMD4<Float>(fw, fh, 1.0/fw, 1.0/fh),
+                            outputSize: SIMD4<Float>(vpW, vpH, 1.0/vpW, 1.0/vpH),
+
+                            compositeAmount: getUniform("compositeAmount", fallback: 1.0),
+                            subcarrierPhase: getUniform("subcarrierPhase", fallback: 1.875),
+                            dotCrawl: getUniform("dotCrawl", fallback: 0.4),
+                            blendOnly: getUniform("blendOnly", fallback: 0.0),
+
+                            amplifierBlur: getUniform("amplifierBlur", fallback: 0.5),
+
+                            scanlineStrength: getUniform("scanlineStrength", fallback: 0.75),
+                            scanDarkWidth: getUniform("scanDarkWidth", fallback: 0.25),
+                            scanBrightWidth: getUniform("scanBrightWidth", fallback: 1.0),
+
+                            maskStrength: getUniform("maskStrength", fallback: 0.4),
+                            maskPitch: getUniform("maskPitch", fallback: 4.0),
+                            maskType: getUniform("maskType", fallback: 0.0),
+
+                            glowStrength: getUniform("glowStrength", fallback: 0.5),
+                            glowSize: getUniform("glowSize", fallback: 3.0),
+                            glowTint: getUniform("glowTint", fallback: 0.5),
+
+                            edgeDimming: getUniform("edgeDimming", fallback: 0.4),
+
+                            curvature: getUniform("curvature", fallback: 0.06),
+                            cornerRadius: getUniform("cornerRadius", fallback: 0.02),
+                            useCurvature: getUniform("useCurvature", fallback: 1.0),
+
+                            convH: getUniform("convH", fallback: 1.0),
+                            convV: getUniform("convV", fallback: 0.5),
+                            cornerConv: getUniform("cornerConv", fallback: 0.6),
+                            useConv: getUniform("useConv", fallback: 1.0),
+
+                            whiteTemp: getUniform("whiteTemp", fallback: 0.0),
+                            colorBoost: colorB,
+
+                            tubeSag: getUniform("tubeSag", fallback: 0.2),
+
+                            rfAmount: getUniform("rfAmount", fallback: 0.0),
+                            snowAmount: getUniform("snowAmount", fallback: 0.5),
+                            ghosting: getUniform("ghosting", fallback: 0.3),
+                            interference: getUniform("interference", fallback: 0.3),
+                            tuningDrift: getUniform("tuningDrift", fallback: 0.3),
+
+                            combMode: getUniform("combMode", fallback: 0.0),
+
+                            beamScanMode: getUniform("beamScanMode", fallback: 0.0),
+                            persistence: getUniform("persistence", fallback: 0.5),
+                            strobeLength: getUniform("strobeLength", fallback: 0.5),
+
+                            bezelReflection: getUniform("bezelReflection", fallback: 0.5),
+
+                            gamutMode: getUniform("gamutMode", fallback: 0.0),
+
+                            overshoot: getUniform("overshoot", fallback: 0.3),
+
+                            palMode: getUniform("palMode", fallback: 0.0),
+                            hanoverBars: getUniform("hanoverBars", fallback: 0.0),
+                            bezelFrame: getUniform("bezelFrame", fallback: 0.5),
+
+                            useComposite: getUniform("useComposite", fallback: 0.0),
+                            useBlur: getUniform("useBlur", fallback: 1.0),
+                            useScanlines: getUniform("useScanlines", fallback: 1.0),
+                            useMask: getUniform("useMask", fallback: 1.0),
+                            useGlow: getUniform("useGlow", fallback: 1.0),
+
+                            _pad: temporalHistoryCount >= 4 ? 1.0 : 0.0
+                        )
+                        enc.setFragmentBytes(&u, length: MemoryLayout<MorphCRTUniforms>.stride, index: 0)
+                        enc.setFragmentTexture(frameTex, index: 0)
+                        // temporalIndex holds the most recently stored frame,
+                        // so it is T-1 for this draw.
+                        for i in 1...4 {
+                            if let tex = getTemporalTexture(at: (temporalIndex - (i - 1) + 5) % 5) {
+                                enc.setFragmentTexture(tex, index: i)
+                            }
+                        }
+                        frameCounter += 1
                     case "fragmentSharpBilinear":
                         let colorB = getUniform("colorBoost", fallback: 1.0)
                         var u = SharpBilinearUniforms(
@@ -1614,6 +1702,7 @@ outputHeight: Float(viewport.height)
                             blit?.copy(from: frameTex, to: tex)
                         }
                         blit?.endEncoding()
+                        temporalHistoryCount = min(temporalHistoryCount + 1, 4)
                     }
 
                     // Recording: capture emulator frame for streaming/recording

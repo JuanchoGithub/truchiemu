@@ -121,7 +121,78 @@ struct SharpBilinearUniforms {
     var outputSize: SIMD4<Float>
 }
 
-// Glyph Text uniforms - matches GlyphTextUniforms in GlyphText.metal
+// MorphCRT uniforms - matches MorphCRTUniforms in MorphCRT.metal
+struct MorphCRTUniforms {
+    var time: Float
+    var sourceSize: SIMD4<Float>
+    var outputSize: SIMD4<Float>
+
+    var compositeAmount: Float
+    var subcarrierPhase: Float
+    var dotCrawl: Float
+    var blendOnly: Float
+
+    var amplifierBlur: Float
+
+    var scanlineStrength: Float
+    var scanDarkWidth: Float
+    var scanBrightWidth: Float
+
+    var maskStrength: Float
+    var maskPitch: Float
+    var maskType: Float
+
+    var glowStrength: Float
+    var glowSize: Float
+    var glowTint: Float
+
+    var edgeDimming: Float
+
+    var curvature: Float
+    var cornerRadius: Float
+    var useCurvature: Float
+
+    var convH: Float
+    var convV: Float
+    var cornerConv: Float
+    var useConv: Float
+
+    var whiteTemp: Float
+    var colorBoost: Float
+
+    var tubeSag: Float
+
+    var rfAmount: Float
+    var snowAmount: Float
+    var ghosting: Float
+    var interference: Float
+    var tuningDrift: Float
+
+    var combMode: Float
+
+    var beamScanMode: Float
+    var persistence: Float
+    var strobeLength: Float
+
+    var bezelReflection: Float
+
+    var gamutMode: Float
+
+    var overshoot: Float
+
+    var palMode: Float
+    var hanoverBars: Float
+
+    var bezelFrame: Float
+
+    var useComposite: Float
+    var useBlur: Float
+    var useScanlines: Float
+    var useMask: Float
+    var useGlow: Float
+    var _pad: Float
+}
+
 struct GlyphTextUniforms {
     var cellSize: Float
     var contrast: Float
