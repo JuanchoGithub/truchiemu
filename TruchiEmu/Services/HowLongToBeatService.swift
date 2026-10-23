@@ -51,7 +51,7 @@ final class DirectHLTBProvider: HLTBDataProvider {
 
     // Caches for the lifetime of the process.
     private var cachedSearchPath: String?
-    private var cachedAuth: (token: String, hpKey: String, hpVal: String)?
+    private var cachedAuth: Auth?
 
     init() {
         let cfg = URLSessionConfiguration.ephemeral
@@ -80,7 +80,9 @@ final class DirectHLTBProvider: HLTBDataProvider {
         let auth = try await resolveAuth(for: path)
 
         var body = Self.basePayload(query: query, platform: platform ?? "")
-        body[auth.hpKey] = auth.hpVal
+        if let hpKey = auth.hpKey, let hpVal = auth.hpVal {
+            body[hpKey] = hpVal
+        }
 
         let (data, resp) = try await postJSON(path: path, body: body, auth: auth)
         let status = (resp as? HTTPURLResponse)?.statusCode ?? 0
@@ -90,15 +92,18 @@ final class DirectHLTBProvider: HLTBDataProvider {
             LoggerService.debug(category: "HowLongToBeat", "search 403; refreshing auth and retrying")
             cachedAuth = nil
             let fresh = try await resolveAuth(for: path)
-            cachedAuth = (token: fresh.token, hpKey: fresh.hpKey, hpVal: fresh.hpVal)
             var retryBody = Self.basePayload(query: query, platform: platform ?? "")
-            retryBody[fresh.hpKey] = fresh.hpVal
+            if let hpKey = fresh.hpKey, let hpVal = fresh.hpVal {
+                retryBody[hpKey] = hpVal
+            }
             let (data2, resp2) = try await postJSON(path: path, body: retryBody, auth: fresh)
-            guard let http2 = resp2 as? HTTPURLResponse, http2.statusCode == 200,
+            let retryStatus = (resp2 as? HTTPURLResponse)?.statusCode ?? 0
+            guard retryStatus == 200,
                   let json = try? JSONSerialization.jsonObject(with: data2) as? [String: Any],
                   let arr = json["data"] as? [[String: Any]] else {
-                LoggerService.debug(category: "HowLongToBeat", "search retry failed (status=\((resp2 as? HTTPURLResponse)?.statusCode ?? 0))")
-                throw HLTBError.noMatch
+                LoggerService.debug(category: "HowLongToBeat", "search retry failed (status=\(retryStatus))")
+                // A non-200 retry is a transport/auth failure, not an empty result set.
+                throw retryStatus == 200 ? HLTBError.noMatch : HLTBError.unavailable
             }
             LoggerService.debug(category: "HowLongToBeat", "search retry OK: \(arr.count) results")
             return Self.parseMatches(arr)
@@ -199,13 +204,14 @@ final class DirectHLTBProvider: HLTBDataProvider {
 
     private struct Auth {
         let token: String
-        let hpKey: String
-        let hpVal: String
+        // HLTB used to return these alongside the token. They are optional now.
+        let hpKey: String?
+        let hpVal: String?
     }
 
     private func resolveAuth(for path: String) async throws -> Auth {
         if let cached = cachedAuth {
-            return Auth(token: cached.token, hpKey: cached.hpKey, hpVal: cached.hpVal)
+            return cached
         }
         var comps = URLComponents(url: URL(string: "\(base)\(path)/init")!, resolvingAgainstBaseURL: false)!
         comps.queryItems = [URLQueryItem(name: "t", value: String(Int(Date().timeIntervalSince1970 * 1000)))]
@@ -220,14 +226,24 @@ final class DirectHLTBProvider: HLTBDataProvider {
             throw HLTBError.unavailable
         }
 
-        // Init JSON: {"token": "...", "hpKey": "ign_...", "hpVal": "..."}.
-        guard let token = json["token"] as? String else { throw HLTBError.unavailable }
+        // Init JSON: {"token": "..."}. Older responses also carried an
+        // "hpKey"/"hpVal" pair; only the token is required now.
+        guard let token = json["token"] as? String else {
+            #if LOG_DEBUG
+            LoggerService.debug(category: "HowLongToBeat", "init missing token: keys=\(json.keys.sorted())")
+            #endif
+            throw HLTBError.unavailable
+        }
         let hpKey = json.first { $0.key.lowercased().contains("key") && $0.key.lowercased() != "token" }?.value as? String
         let hpVal = json.first { $0.key.lowercased().contains("val") && $0.key.lowercased() != "token" }?.value as? String
-        guard let hpKey, let hpVal else { throw HLTBError.unavailable }
+        #if LOG_DEBUG
+        if hpKey == nil || hpVal == nil {
+            LoggerService.debug(category: "HowLongToBeat", "init has no hpKey/hpVal (keys=\(json.keys.sorted())); using token-only auth")
+        }
+        #endif
 
         let auth = Auth(token: token, hpKey: hpKey, hpVal: hpVal)
-        cachedAuth = (token: token, hpKey: hpKey, hpVal: hpVal)
+        cachedAuth = auth
         return auth
     }
 
@@ -240,8 +256,10 @@ final class DirectHLTBProvider: HLTBDataProvider {
         req.setValue("no-cache", forHTTPHeaderField: "Cache-Control")
         req.setValue("no-cache", forHTTPHeaderField: "Pragma")
         req.setValue(auth.token, forHTTPHeaderField: "x-auth-token")
-        req.setValue(auth.hpKey, forHTTPHeaderField: "x-hp-key")
-        req.setValue(auth.hpVal, forHTTPHeaderField: "x-hp-val")
+        if let hpKey = auth.hpKey, let hpVal = auth.hpVal {
+            req.setValue(hpKey, forHTTPHeaderField: "x-hp-key")
+            req.setValue(hpVal, forHTTPHeaderField: "x-hp-val")
+        }
         req.httpBody = try JSONSerialization.data(withJSONObject: body)
         return try await session.data(for: req)
     }
