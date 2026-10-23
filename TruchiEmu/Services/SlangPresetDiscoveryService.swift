@@ -88,6 +88,21 @@ class SlangPresetDiscoveryService: ObservableObject {
         presets.filter { $0.category == category }
     }
 
+    /// Resolves a stored slang preset reference to a discovered preset.
+    /// Selections are stored as absolute paths, which stop resolving when
+    /// the app bundle moves or the bundled slang-shaders tree changes
+    /// between app updates. Fall back to matching the path after the
+    /// `slang-shaders` root component so the selection survives (issue #41).
+    func preset(forStoredPath storedPath: String) -> SlangPreset? {
+        if let exact = presets.first(where: { $0.path.path == storedPath }) {
+            return exact
+        }
+        guard let storedRelative = relativePath(for: URL(fileURLWithPath: storedPath)) else {
+            return nil
+        }
+        return presets.first { relativePath(for: $0.path) == storedRelative }
+    }
+
     private func scanBundledSlangShaders() -> [SlangPreset]? {
         guard let resourcePath = Bundle.main.resourcePath else {
             LoggerService.error(category: "Slang", "scanBundledSlangShaders: Bundle.main.resourcePath is nil")

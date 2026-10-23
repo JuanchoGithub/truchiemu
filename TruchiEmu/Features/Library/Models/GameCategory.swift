@@ -53,7 +53,14 @@ struct GameCategory: Identifiable, Codable, Hashable, Equatable {
 
     // True when every internal ID of one display system is enabled in the
     // stored rules. Falls back to the disabled list for older categories.
+    // Mirrors smartMember: when smartFollowsNewSystems is true, systems
+    // activated after the category was saved are members even though they
+    // are absent from smartEnabledSystemIDs, so only the disabled list
+    // rules their state.
     func smartSystemEnabled(internalIDs: [String]) -> Bool {
+        if smartFollowsNewSystems {
+            return !internalIDs.allSatisfy { smartDisabledSystemIDs.contains($0) }
+        }
         if !smartEnabledSystemIDs.isEmpty {
             return internalIDs.allSatisfy { smartEnabledSystemIDs.contains($0) }
         }

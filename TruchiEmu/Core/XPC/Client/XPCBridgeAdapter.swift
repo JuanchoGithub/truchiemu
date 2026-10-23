@@ -355,6 +355,12 @@ final class XPCBridgeAdapter {
         for player in 0..<4 {
             for id in 0..<32 {
                 XPCConnectionManager.shared.remoteProxy?.setKeyState(Int32(id), player: Int32(player), pressed: false) {}
+                XPCConnectionManager.shared.remoteProxy?.setAnalogButtonState(Int32(id), player: Int32(player), value: 0) {}
+            }
+            for stick in 0..<2 {
+                for axis in 0..<2 {
+                    XPCConnectionManager.shared.remoteProxy?.setAnalogState(player: Int32(player), stick: Int32(stick), axis: Int32(axis), value: 0) {}
+                }
             }
         }
     }

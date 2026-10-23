@@ -258,6 +258,13 @@ class ShaderManager: ObservableObject {
     }
 
     func resetToDefault() {
+        // Invalidate any in-flight picker/sidebar slang prepare. Its
+        // completion guards on slangLatestRequestPath; leaving a path set
+        // here would let a stale prepare install its chain over this reset.
+        slangLatestRequestPath = nil
+        slangLatestOnReflect = nil
+        slangLatestOnError = nil
+
         // Reset to the default preset
         if let defaultPreset = ShaderPreset.preset(id: ShaderPreset.defaultPreset.id) {
             activatePreset(defaultPreset)
@@ -411,7 +418,7 @@ class ShaderManager: ObservableObject {
     // chain stays active in that case).
     @discardableResult
     func activateSavedPreset(_ saved: SavedShaderPreset) -> Bool {
-        if let slangPreset = SlangPresetDiscoveryService.shared.presets.first(where: { $0.path.path == saved.basePresetID }) {
+        if let slangPreset = SlangPresetDiscoveryService.shared.preset(forStoredPath: saved.basePresetID) {
             return activateSlangPreset(slangPreset, overrides: saved.uniformValues)
         } else {
             // If the saved base looks like a slang path but the lookup missed,
@@ -529,7 +536,7 @@ preset.recommendedSystems.contains(systemID)
     // Get a human-readable display name for a preset
     static func displayName(for presetID: String) -> String {
         if let p = ShaderPreset.preset(id: presetID) { return p.name }
-        if SlangPresetDiscoveryService.shared.presets.contains(where: { $0.path.path == presetID }) {
+        if SlangPresetDiscoveryService.shared.preset(forStoredPath: presetID) != nil {
             return URL(fileURLWithPath: presetID).deletingPathExtension().lastPathComponent
         }
         if let saved = ShaderPresetStorageService.shared.savedPresets.first(where: { $0.id.uuidString == presetID }) {

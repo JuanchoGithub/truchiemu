@@ -429,15 +429,20 @@ class SystemDatabase {
             UserDefaults.standard.set(bundleFingerprint, forKey: Self.bundleFingerprintKey)
         }
 
-        // 2. Load the CACHED systems (Libretro discoveries, user preferences)
-        var cachedSystems: [String: SystemInfo] = [:]
+        // 2. Load the CACHED systems (Libretro discoveries, user preferences).
+        //    Always merge, even right after a bundle update: the merge below
+        //    takes bundled data as the foundation and keeps only user choices
+        //    (per-system shader/core defaults, display state, custom names)
+        //    from the cache. Deleting the cache on a bundle change reverted
+        //    those choices on every app update (issue #41).
         if bundleChanged {
             #if LOG_DEBUG
-            LoggerService.debug(category: "SystemDatabase", "Bundle fingerprint changed — discarding stale cache")
+            LoggerService.debug(category: "SystemDatabase", "Bundle fingerprint changed — merging cache with updated bundle")
             #endif
-            try? FileManager.default.removeItem(at: cacheURL)
-        } else if let data = try? Data(contentsOf: cacheURL),
-                  let parsedCache = try? JSONDecoder().decode([SystemInfo].self, from: data) {
+        }
+        var cachedSystems: [String: SystemInfo] = [:]
+        if let data = try? Data(contentsOf: cacheURL),
+           let parsedCache = try? JSONDecoder().decode([SystemInfo].self, from: data) {
             for sys in parsedCache {
                 cachedSystems[sys.id] = sys
             }
