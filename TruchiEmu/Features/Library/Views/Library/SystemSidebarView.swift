@@ -25,6 +25,11 @@ struct SystemSidebarView: View {
     // "Modifying state during view update, this will cause undefined behavior."
     @State private var cachedCombinedSystems: [(system: SystemInfo, combinedCount: Int)] = []
 
+    // Smart-category counts are expensive (one pass over the library plus
+    // genre resolution). Keep them in a cache that is rebuilt only on explicit
+    // invalidation, never inside `body`.
+    @State private var smartCategoryCounts: [String: Int] = [:]
+
     var onRefresh: ((SystemInfo) -> Void)? = nil
     var onSettings: ((String) -> Void)? = nil
     var onSystemAction: ((SystemInfo, SystemAction, String?) -> Void)? = nil
@@ -142,20 +147,13 @@ struct SystemSidebarView: View {
         !searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 
-    private func smartCategoryCount(_ category: GameCategory) -> Int {
-        let members = library.roms.filter { rom in
-            guard !rom.isHidden else { return false }
-            return category.smartMember(rom) { rom in
-                let displayGenres = GenreManager.shared.effectiveDisplayNames(for: rom.metadata?.genre)
-                return displayGenres.contains { category.smartGenres.contains($0) }
-            }
-        }
-        guard !searchText.isEmpty else { return members.count }
+    private func computeSmartCategoryCounts() -> [String: Int] {
         let terms = searchText.lowercased().split(separator: " ").map(String.init)
-        guard !terms.isEmpty else { return members.count }
-        return members.filter { rom in
-            terms.allSatisfy { rom.displayName.localizedCaseInsensitiveContains($0) }
-        }.count
+        return SmartCategoryCounter.counts(
+            categories: categoryManager.categories,
+            roms: library.roms,
+            searchTerms: terms
+        )
     }
 
     var body: some View {
@@ -349,17 +347,33 @@ struct SystemSidebarView: View {
         }
         .onChange(of: library.romCounts) { _, _ in
             cachedCombinedSystems = computeCombinedSystems()
+            smartCategoryCounts = computeSmartCategoryCounts()
         }
         .onChange(of: library.lastChangeDate) { _, _ in
             cachedCombinedSystems = computeCombinedSystems()
+            smartCategoryCounts = computeSmartCategoryCounts()
+        }
+        .onChange(of: categoryManager.categories) { _, _ in
+            smartCategoryCounts = computeSmartCategoryCounts()
+        }
+        .onChange(of: searchText) { _, _ in
+            smartCategoryCounts = computeSmartCategoryCounts()
+        }
+        .onReceive(GenreManager.shared.objectWillChange) { _ in
+            // Published properties fire their publisher before the value is
+            // committed; recompute on the next main-queue turn.
+            DispatchQueue.main.async {
+                smartCategoryCounts = computeSmartCategoryCounts()
+            }
         }
         .onChange(of: systemDatabase.systems) { _, _ in
             cachedCombinedSystems = computeCombinedSystems()
         }
         .onAppear {
-            // Seed the cache on first appearance; subsequent invalidations
+            // Seed the caches on first appearance; subsequent invalidations
             // arrive through the .onChange listeners above.
             cachedCombinedSystems = computeCombinedSystems()
+            smartCategoryCounts = computeSmartCategoryCounts()
             SidebarScrollMonitor.install()
         }
     }
@@ -525,7 +539,7 @@ onSystemAction: system != nil ? { sys, action, targetID in
     @ViewBuilder
     private func categoryRow(category: GameCategory) -> some View {
         let count = category.isSmart
-            ? smartCategoryCount(category)
+            ? (smartCategoryCounts[category.id] ?? 0)
             : (searchText.isEmpty
                 ? categoryManager.gamesInCategory(categoryID: category.id, fromROMs: library.roms).count
                 : searchMatchedROMs.filter { category.contains($0) && !$0.isHidden }.count)

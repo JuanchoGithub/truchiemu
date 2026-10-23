@@ -2093,6 +2093,7 @@ hostingView.widthAnchor.constraint(equalToConstant: 320)
 
         if let romPath = trackedROMPath {
             RunningGamesTracker.shared.unregisterRunning(romPath: romPath)
+            GameLauncher.shared.clearLaunchDebounce(forKey: romPath)
         }
 
 	if let rom = trackedROM {

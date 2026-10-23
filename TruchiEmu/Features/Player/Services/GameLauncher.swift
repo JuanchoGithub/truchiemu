@@ -51,7 +51,7 @@ class GameLauncher: ObservableObject {
     // already finished and cleared isLaunching. A flag alone cannot catch
     // that; a short time window does.
     private var lastLaunchDateByKey: [String: Date] = [:]
-    private let launchDebounceInterval: TimeInterval = 2.0
+    private let launchDebounceInterval: TimeInterval = 0.5
     
     private init() {}
     
@@ -162,6 +162,9 @@ func launchGame(
         // catches overlapping Tasks, but the fast path has no await, so a
         // double-click's Tasks run back-to-back after the flag is cleared.
         // This window catches both overlapping and back-to-back duplicates.
+        // The timestamp is written only after a successful hand-off and is
+        // cleared when the game ends, so failures and fast relaunches are not
+        // swallowed.
         let now = Date()
         // Prune stale entries so the table cannot grow without bound.
         lastLaunchDateByKey = lastLaunchDateByKey.filter {
@@ -174,7 +177,6 @@ func launchGame(
             completion?(nil)
             return
         }
-        lastLaunchDateByKey[rom.runningKey] = now
         guard !isLaunching else {
             #if LOG_EXTREME
             LoggerService.extreme(category: "GameLauncher", "Already launching, ignoring duplicate request")
@@ -545,6 +547,10 @@ func launchGame(
         // Launch the game (window will be shown by controller when ready)
         controller.launch(rom: rom, coreID: coreID, slotToLoad: slotToLoad, progressiveVersion: progressiveVersion, disableAutoLoadOnStart: disableAutoLoadOnStart, shaderUniformOverrides: config.shaderUniformOverrides)
 
+        // Record the debounce only after the hand-off succeeds. Failure and
+        // cancel paths above must not poison a fast retry.
+        lastLaunchDateByKey[rom.runningKey] = Date()
+
         // Cleanup
         isLaunching = false
         currentLaunchROM = nil
@@ -794,7 +800,13 @@ func launchGame(
     }
 
     // MARK: - Cleanup
-    
+
+    // Drop the duplicate-launch guard once the game is gone. A relaunch right
+    // after the player quits must not be swallowed by the debounce window.
+    func clearLaunchDebounce(forKey key: String) {
+        lastLaunchDateByKey.removeValue(forKey: key)
+    }
+
     // Remove a controller from tracking when its window closes
     func removeController(for romID: UUID) {
         if let controller = activeControllers[romID],

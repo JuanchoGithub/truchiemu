@@ -313,7 +313,7 @@ var body: some Scene {
         }
         .onReceive(NotificationCenter.default.publisher(for: .sortChanged)) { _ in
             if let catID = currentCategoryID,
-               let cfg = AppSettings.get("categoryViewConfig_\(catID)", type: CategoryViewConfig.self) {
+               let cfg = CategoryViewConfigStore.load(for: catID) {
                 sortOrder = LibrarySortOrder(rawValue: cfg.sortOrder) ?? .name
                 sortAscending = cfg.sortAscending
             } else {
@@ -436,11 +436,7 @@ var body: some Scene {
                             includeSystemSorts: !libraryFilterIsSystemView,
                             onCommit: { order, asc in
                                 if let catID = currentCategoryID {
-                                    var cfg = AppSettings.get("categoryViewConfig_\(catID)", type: CategoryViewConfig.self)
-                                        ?? CategoryViewConfig(sortOrder: LibrarySortOrder.name.rawValue, sortAscending: false, viewMode: "grid", zoom: 0.5, activeFilters: [], selectedGenres: [])
-                                    cfg.sortOrder = order.rawValue
-                                    cfg.sortAscending = asc
-                                    AppSettings.set("categoryViewConfig_\(catID)", value: cfg)
+                                    CategoryViewConfigStore.mergeSort(for: catID, order: order, ascending: asc)
                                 } else {
                                     AppSettings.setString(LibrarySortOrder.orderKey, value: order.rawValue)
                                     AppSettings.setBool(LibrarySortOrder.ascendingKey, value: asc)

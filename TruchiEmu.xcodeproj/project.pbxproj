@@ -98,6 +98,7 @@
 		0DDFBDCB92DA4D0DF256D6D9 /* input_coreOverrides_nxengine.json in Resources */ = {isa = PBXBuildFile; fileRef = 118C3C476FA18F110E167B39 /* input_coreOverrides_nxengine.json */; };
 		0EC966AB34C9316BEB777009 /* StandaloneGameWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F6FCC4037CB225E511FD3F5 /* StandaloneGameWindowController.swift */; };
 		0ED177247876F7E07452F775 /* holo_illusion2_alpha.png in Resources */ = {isa = PBXBuildFile; fileRef = 406CB0F3D830B409093D072F /* holo_illusion2_alpha.png */; };
+		0ED658C83500CA92E704DBBD /* SmartCategoryCounter.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC225D0EEE794A685ABE4E96 /* SmartCategoryCounter.swift */; };
 		0F7D9FF0D51CF611A7BC83B1 /* ATARI800.png in Resources */ = {isa = PBXBuildFile; fileRef = 028968D965BBF8007BE1DC73 /* ATARI800.png */; };
 		0F89504CF8C7F21B1BD67C9F /* zelda_oot_europe_hero.png in Resources */ = {isa = PBXBuildFile; fileRef = F670C04EC19DA343B4D0E920 /* zelda_oot_europe_hero.png */; };
 		0FBBD16D1BC4F6442F8ED6F8 /* input_systemLabels_cpc.json in Resources */ = {isa = PBXBuildFile; fileRef = 5803663F2F57F8B8212A8444 /* input_systemLabels_cpc.json */; };
@@ -1191,6 +1192,7 @@
 		D6737C5333699754970E51E8 /* input_systemLabels_pokemon_mini.json in Resources */ = {isa = PBXBuildFile; fileRef = 7ABD85DBD8EF91C89DA606BB /* input_systemLabels_pokemon_mini.json */; };
 		D682149969AAEF9B555AAFE4 /* GlyphText.metal in Sources */ = {isa = PBXBuildFile; fileRef = 27C6D43ABC544BF059F6AE40 /* GlyphText.metal */; };
 		D6AE742A1E61C54218E15183 /* holo_metal.png in Resources */ = {isa = PBXBuildFile; fileRef = 8EB2FA18857A750DDA8C676A /* holo_metal.png */; };
+		D6B50100A2E9CE249683D2BB /* CategoryViewConfigStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86E2F24F7E353B87DFEF2EDA /* CategoryViewConfigStore.swift */; };
 		D6F2FCD149D20173B079DB9E /* holo_crossover.png in Resources */ = {isa = PBXBuildFile; fileRef = CBE0822EF493F2A3F9EFA369 /* holo_crossover.png */; };
 		D6FF09E31ACA00FC7494B9E0 /* fightdata_soulclbr.json in Resources */ = {isa = PBXBuildFile; fileRef = F627444ABF1C6A5C798EC26F /* fightdata_soulclbr.json */; };
 		D720E5BECA4BAE2B078C1852 /* fightdata_ggxxac.json in Resources */ = {isa = PBXBuildFile; fileRef = CF35AE3379CB76C025162E52 /* fightdata_ggxxac.json */; };
@@ -2190,6 +2192,7 @@
 		866F7E9495192E7531109947 /* NEC - PC Engine - TurboGrafx 16.dat */ = {isa = PBXFileReference; path = "NEC - PC Engine - TurboGrafx 16.dat"; sourceTree = "<group>"; };
 		86C00E951DC0729BDE7FCDDA /* TVModeEntryTile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVModeEntryTile.swift; sourceTree = "<group>"; };
 		86D467EC70EF33E265BAF765 /* ResourceCacheModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResourceCacheModels.swift; sourceTree = "<group>"; };
+		86E2F24F7E353B87DFEF2EDA /* CategoryViewConfigStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryViewConfigStore.swift; sourceTree = "<group>"; };
 		8700FB3B470B3289AFACE878 /* ARCADE_FBNEO.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ARCADE_FBNEO.png; sourceTree = "<group>"; };
 		8730157D603A47AE913E31BF /* thomson-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "thomson-cheats.zip"; sourceTree = "<group>"; };
 		875C3871473865C0E8D6E88C /* msx-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "msx-cheats.zip"; sourceTree = "<group>"; };
@@ -2824,6 +2827,7 @@
 		FB4F7ED2498E23BD3734F7B6 /* input_coreOverrides_handy.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_handy.json; sourceTree = "<group>"; };
 		FB9B612171274CE268934F30 /* TVModeGameTile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVModeGameTile.swift; sourceTree = "<group>"; };
 		FBEE9FB7C0016928ADEAEBEA /* cosmos_middle.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cosmos_middle.png; sourceTree = "<group>"; };
+		FC225D0EEE794A685ABE4E96 /* SmartCategoryCounter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartCategoryCounter.swift; sourceTree = "<group>"; };
 		FC4A009791FC6C0F1975F092 /* amstrad-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "amstrad-cheats.zip"; sourceTree = "<group>"; };
 		FC4E8825B2405239AC1C5F70 /* ShareBehavior.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareBehavior.swift; sourceTree = "<group>"; };
 		FC6EC3902C665F57DFDD86E4 /* M3DMeshLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = M3DMeshLoader.swift; sourceTree = "<group>"; };
@@ -3073,6 +3077,7 @@
 			isa = PBXGroup;
 			children = (
 				A14A3003974DDDF09684961B /* CategoryManager.swift */,
+				86E2F24F7E353B87DFEF2EDA /* CategoryViewConfigStore.swift */,
 				065628712592EA28D2B70F4B /* DisplayCacheCodec.swift */,
 				DF68254BB5CE5328745136C2 /* GamepadNavCoordinator.swift */,
 				57EFF79E74D3893A0F90BABD /* GamingIconService.swift */,
@@ -3087,6 +3092,7 @@
 				B0B100CCB0D7D954E68F18C1 /* ScrollPerfAuditRunner.swift */,
 				C3CDB21811A3FC4E2F21F791 /* SFSymbolCatalog.swift */,
 				26C9A89A8C297915199F999A /* SidebarScrollPerfAuditRunner.swift */,
+				FC225D0EEE794A685ABE4E96 /* SmartCategoryCounter.swift */,
 				203A748B3ECD6676DEF1D804 /* StableIdentityMigration.swift */,
 				37A42CBC6B0B672D3C2230C9 /* SwitchContentIdentifier.swift */,
 			);
@@ -6305,6 +6311,7 @@
 				49D2EEDF34D3968A17D6E64E /* CategoryManager.swift in Sources */,
 				F478F42099085BD179E833A5 /* CategoryRowButton.swift in Sources */,
 				3C13847BC86014F2E3F9F680 /* CategoryViewConfig.swift in Sources */,
+				D6B50100A2E9CE249683D2BB /* CategoryViewConfigStore.swift in Sources */,
 				F33C60D08AB5B8F8FCD8A40F /* CategoryViews.swift in Sources */,
 				ADAAC616676FE9F7F52D297C /* CelebrationOverlay.swift in Sources */,
 				1D56B2305EF0DA5A06F98BE4 /* CelebrationPillOverlay.swift in Sources */,
@@ -6642,6 +6649,7 @@
 				620EBDB01769693E7CADB30C /* SlangPreset.swift in Sources */,
 				EA2E07E56F10C0F232DAC18E /* SlangPresetDiscoveryService.swift in Sources */,
 				AFC960C09B095CDF2DC293B6 /* SlotRenameControl.swift in Sources */,
+				0ED658C83500CA92E704DBBD /* SmartCategoryCounter.swift in Sources */,
 				62B8B8761BA2DEF8290FFF7B /* SmartCategoryEditors.swift in Sources */,
 				D3EFBEC5B01D33DC862A9D6A /* StableGameIdentity.swift in Sources */,
 				73F224A76B719807FD6E5A8A /* StableIdentityMigration.swift in Sources */,

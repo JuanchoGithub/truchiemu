@@ -2267,8 +2267,6 @@ struct LibraryGridView: View {
         )
     }
 
-    private func categoryConfigKey(_ id: String) -> String { "categoryViewConfig_\(id)" }
-
     private func saveCategoryConfig(for id: String) {
         let cfg = CategoryViewConfig(
             sortOrder: sortOrder.rawValue,
@@ -2278,11 +2276,11 @@ struct LibraryGridView: View {
             activeFilters: Array(activeFilters),
             selectedGenres: Array(selectedGenres)
         )
-        AppSettings.set(categoryConfigKey(id), value: cfg)
+        CategoryViewConfigStore.save(cfg, for: id)
     }
 
     private func loadCategoryConfig(for id: String) -> CategoryViewConfig? {
-        AppSettings.get(categoryConfigKey(id), type: CategoryViewConfig.self)
+        CategoryViewConfigStore.load(for: id)
     }
 
     private func applyGlobalConfig() {
