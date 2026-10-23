@@ -2005,6 +2005,7 @@ struct LibraryGridView: View {
                     onCommit: { order, asc in
                         if case .category(let id) = filter {
                             saveCategoryConfig(for: id)
+                            NotificationCenter.default.post(name: .sortChanged, object: nil)
                         } else {
                             AppSettings.setString(LibrarySortOrder.orderKey, value: order.rawValue)
                             AppSettings.setBool(LibrarySortOrder.ascendingKey, value: asc)
@@ -2056,6 +2057,7 @@ struct LibraryGridView: View {
                         onCommit: { order, asc in
                             if case .category(let id) = filter {
                                 saveCategoryConfig(for: id)
+                                NotificationCenter.default.post(name: .sortChanged, object: nil)
                             } else {
                                 AppSettings.setString(LibrarySortOrder.orderKey, value: order.rawValue)
                                 AppSettings.setBool(LibrarySortOrder.ascendingKey, value: asc)
