@@ -1760,7 +1760,7 @@ struct LibraryGridView: View {
                             }
                         } label: {
                             HStack {
-                                GameCategoryIconView(category: category, size: 18)
+                                GameCategoryMenuIcon(category: category)
                                     .foregroundColor(Color(hex: category.colorHex) ?? .blue)
                                 Text(category.name)
                                 Spacer()
@@ -1840,6 +1840,7 @@ struct LibraryGridView: View {
                     }
                 }
             }
+            .menuIconsAlwaysVisible()
         )
     }
 

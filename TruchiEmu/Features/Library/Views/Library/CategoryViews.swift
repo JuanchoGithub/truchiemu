@@ -51,6 +51,32 @@ struct GameCategoryIconView: View {
     }
 }
 
+/// Menu-safe category icon. macOS menus bridge only direct `Image` children
+/// into NSMenuItem.image; the wrapper views above are not bridged reliably.
+/// Emits the SF Symbol directly, or the template gaming-icon image for
+/// "gi:" names ("tag" fallback while the library unpacks).
+struct GameCategoryMenuIcon: View {
+    let category: GameCategory
+    var size: CGFloat = 16
+
+    var body: some View {
+        if GamingIconService.isGamingIconName(category.iconName) {
+            if let image = GamingIconService.shared.image(for: category.iconName) {
+                Image(nsImage: image)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: size, height: size)
+            } else {
+                Image(systemName: "tag")
+                    .font(.system(size: size))
+            }
+        } else {
+            Image(systemName: category.iconName)
+                .font(.system(size: size))
+        }
+    }
+}
+
 // MARK: - Category Badge
 
 struct CategoryBadgeView: View {

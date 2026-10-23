@@ -294,6 +294,7 @@ var body: some Scene {
     WindowGroup {
       ContentWithPrepopulationView()
         .tint(AppColors.brandAccentSecondary)
+        .menuIconsAlwaysVisible()
         .environmentObject(library)
         .environmentObject(categoryManager)
         .environmentObject(coreManager)
@@ -342,6 +343,7 @@ var body: some Scene {
             }
 
             CommandGroup(before: .appTermination) {
+                Group {
                 Divider()
 
                 Button(loc.localized("update.checkForUpdates"), systemImage: "arrow.down.circle") {
@@ -367,10 +369,13 @@ var body: some Scene {
                         NotificationCenter.default.post(name: .showChangelogFromMenu, object: nil)
                     }
                 }
+                }
+                .menuIconsAlwaysVisible()
             }
-                
+
                 // Add to the default View menu (macOS provides Zoom, Enter Full Screen)
                 CommandGroup(after: .toolbar) {
+                    Group {
                     Divider()
                     
                     // View Mode
@@ -472,9 +477,12 @@ var body: some Scene {
                     } label: {
                         Label(loc.localized("app.language"), systemImage: "globe")
                     }
+                    }
+                    .menuIconsAlwaysVisible()
                 }
-                
+
                 CommandGroup(replacing: .help) {
+                    Group {
         Button(loc.localized("help.menu.documentation"), systemImage: "book") {
           if let url = URL(string: HelpContent.docsBaseURL) { NSWorkspace.shared.open(url) }
         }
@@ -500,10 +508,13 @@ var body: some Scene {
         Button(loc.localized("help.menu.github"), systemImage: "chevron.left.forwardslash.chevron.right") {
           if let url = URL(string: "https://github.com/JuanchoGithub/truchiemu") { NSWorkspace.shared.open(url) }
         }
+        }
+        .menuIconsAlwaysVisible()
       }
 
       // Library Menu (rename to something unique to avoid conflict with macOS default)
                 CommandMenu(loc.localized("app.games")) {
+                    Group {
                     Button(loc.localized("app.addROMFolder"), systemImage: "folder.badge.plus") {
                         NotificationCenter.default.post(name: .addROMFolder, object: nil)
                     }
@@ -592,6 +603,8 @@ var body: some Scene {
             } label: {
                 Label(loc.localized("app.settings"), systemImage: "gearshape")
             }
+                    }
+                    .menuIconsAlwaysVisible()
                 }
             }
         }
@@ -599,6 +612,7 @@ var body: some Scene {
     WindowGroup(id: "game-info", for: UUID.self) { $romID in
         GameInfoWindow(romID: romID ?? UUID())
             .tint(AppColors.brandAccentSecondary)
+            .menuIconsAlwaysVisible()
             .environmentObject(library)
             .environmentObject(categoryManager)
             .environmentObject(coreManager)
@@ -628,6 +642,7 @@ var body: some Scene {
   Settings {
         SettingsView()
             .tint(AppColors.brandAccentSecondary)
+            .menuIconsAlwaysVisible()
             .environmentObject(library)
             .environmentObject(categoryManager)
             .environmentObject(coreManager)

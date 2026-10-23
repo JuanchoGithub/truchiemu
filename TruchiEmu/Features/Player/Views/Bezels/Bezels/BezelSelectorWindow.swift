@@ -9,6 +9,7 @@ class BezelSelectorWindowController: NSWindowController, NSWindowDelegate {
         let hostingView = NSHostingView(
             rootView: BezelSelectorSheet(rom: rom, systemID: systemID, onBezelSelected: onBezelSelected)
                 .environmentObject(library)
+                .menuIconsAlwaysVisible()
         )
 
         let contentRect = NSRect(x: 0, y: 0, width: 800, height: 550)

@@ -356,7 +356,7 @@ onValueCommitted: { [weak self] values in
 guard let self = self else { return }
 self.onPresetChanged?(self.settings.shaderPresetID, values, [])
 }
-))
+).menuIconsAlwaysVisible())
         hostingView.translatesAutoresizingMaskIntoConstraints = true
         hostingView.autoresizingMask = [.width, .height]
         window.contentView = hostingView

@@ -62,6 +62,7 @@
 		09A0CB6BBE4343272B4A0C09 /* sms-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = 36595021E981B9F32234B307 /* sms-cheats.zip */; };
 		09A4E91B96AD2C160CB5872B /* SavesSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5307A2424529A50C5E6BF26 /* SavesSettingsView.swift */; };
 		09C8C76E6CC8F2FC64272426 /* GameToolbarPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F629B4D1FFE7D922563DAFE /* GameToolbarPreferences.swift */; };
+		09D02E5285353BADAEEDD1AB /* MenuIconVisibility.swift in Sources */ = {isa = PBXBuildFile; fileRef = A84FFA7A2ABB24FD8BC64A51 /* MenuIconVisibility.swift */; };
 		09E4EEA593CB6502548B5B5B /* 8bGameBoyColor.metal in Sources */ = {isa = PBXBuildFile; fileRef = 2FF46494B22F41F5D1CD519B /* 8bGameBoyColor.metal */; };
 		09FD8E39FF58D9B6B33EFAE7 /* HoloPatternStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94B1536361C39252F23DE3C /* HoloPatternStore.swift */; };
 		0A1D04699ECD980B2EE765EA /* input_coreLabels_jaxe.json in Resources */ = {isa = PBXBuildFile; fileRef = 9720B57FECB78B265F5FAD8E /* input_coreLabels_jaxe.json */; };
@@ -2371,6 +2372,7 @@
 		A7DC866436BB8788D4ED66A9 /* GridCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridCollectionView.swift; sourceTree = "<group>"; };
 		A7FD7122DD17D9B818C4F6C9 /* dos-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "dos-cheats.zip"; sourceTree = "<group>"; };
 		A8357B6E321FAC6C95BED7B2 /* slang_shader_bridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = slang_shader_bridge.h; sourceTree = "<group>"; };
+		A84FFA7A2ABB24FD8BC64A51 /* MenuIconVisibility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuIconVisibility.swift; sourceTree = "<group>"; };
 		A8935D40F11BF986BE60A840 /* ThemeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeManager.swift; sourceTree = "<group>"; };
 		A8C6248356BAE1B1F7CC6401 /* NotificationCenterSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationCenterSheetView.swift; sourceTree = "<group>"; };
 		A9258394F027EC5364CFCE39 /* GameOverlayToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameOverlayToolbar.swift; sourceTree = "<group>"; };
@@ -4651,6 +4653,7 @@
 				C67F121E078838D4056A40D2 /* AppHaptics.swift */,
 				ABE60205F14183C120DDC8AA /* DesignSystem.swift */,
 				EB9860B861DA80D87C80768D /* MarqueeText.swift */,
+				A84FFA7A2ABB24FD8BC64A51 /* MenuIconVisibility.swift */,
 				4AF5738E0CA85CD54BC36AC0 /* NotificationPill.swift */,
 				A8935D40F11BF986BE60A840 /* ThemeManager.swift */,
 				377A59ABFA726CC1685B5E3E /* TitlebarNotificationTicker.swift */,
@@ -6505,6 +6508,7 @@
 				A317BA63CC3CAC398F149DDE /* MediaConfig.swift in Sources */,
 				0551607941CD9C007481EC63 /* MediaConfigHelpers.swift in Sources */,
 				89A20E7ABDC0B98424B9DDF2 /* MediaHotkeyBindingRow.swift in Sources */,
+				09D02E5285353BADAEEDD1AB /* MenuIconVisibility.swift in Sources */,
 				D0D14BB46406932F82A06897 /* MetadataRow.swift in Sources */,
 				739E1E9110A94DEA08756FA9 /* MetadataSyncCoordinator.swift in Sources */,
 				139F5308F944EC66EAB548BE /* MetalCoordinator.swift in Sources */,

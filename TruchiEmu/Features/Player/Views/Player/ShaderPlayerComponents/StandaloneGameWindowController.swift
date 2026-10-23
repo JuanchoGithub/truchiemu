@@ -423,7 +423,7 @@ super.init(window: window)
         let hostingView = SafeHostingView(rootView: AnyView(GameOverlayToolbar(
             runner: runner,
             windowController: self
-        ).environment(SystemDatabaseWrapper.shared)))
+        ).environment(SystemDatabaseWrapper.shared).menuIconsAlwaysVisible()))
         hostingView.translatesAutoresizingMaskIntoConstraints = false
         hostingView.wantsLayer = true
         hostingView.passesThroughEmptyAreas = true
@@ -1724,6 +1724,7 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
         let hostingView = SafeHostingView(rootView: AnyView(
             TrainingModeOverlay(viewModel: trainingModeViewModel)
                 .environment(SystemDatabaseWrapper.shared)
+                .menuIconsAlwaysVisible()
         ))
         hostingView.translatesAutoresizingMaskIntoConstraints = false
         hostingView.wantsLayer = true
