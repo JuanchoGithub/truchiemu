@@ -1,0 +1,64 @@
+---
+layout: default
+title: v1.16.0 - TruchiEmu Documentation
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/changelog.html' | relative_url }}">Changelog</a>
+        <span class="separator">/</span>
+        <span class="current">v1.16.0</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.16.0</h1>
+        <div class="release-meta">
+            <span class="release-date">October 22, 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>This release adds smart categories, a grouped library view, six new shader presets, a redesigned game toolbar, and a large performance overhaul across startup and library scrolling.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Highlights</h2>
+        <ul class="feature-list">
+            <li><strong>New shaders — with props where props are due:</strong> The built-in shader library grows to 23 presets with three new families.
+                <ul>
+                    <li><strong>Morph CRT</strong> — physical CRT simulation with a full analog signal path (composite encode/decode, NTSC/PAL carrier artifacts), dynamic scanlines, phosphor glow, curvature, and convergence. Inspired by <a href="https://pixelfx.co">PixelFX Morph 4K v4</a>.</li>
+                    <li><strong>CRT Shader pack</strong> (Reference, Clean, Soft, Photo Soft) — Metal port of <a href="https://github.com/OutThisLife/crt-shader">crt-shader by Brooklyn (OutThisLife)</a>, a multi-pass CRT reconstruction with horizontal beam spread, phosphor mask, and optics passes (<a href="https://crt-shader.vercel.app">live demo</a>). Credit lives in Settings → About.</li>
+                    <li><strong>Glyph Text</strong> — in-house shader that renders your game as a grid of monospaced glyphs (ASCII, Extended Latin/Greek/shading, or Blocks); density follows luminance, with source colors or a phosphor tint.</li>
+                </ul>
+            </li>
+            <li><strong>Smart categories:</strong> Save any library search as a dynamic category. Rules cover search terms, systems, filter chips, genres, and per-game include/exclude overrides, with a live match preview (game count, systems, sample names). Multi-system categories follow newly active systems; a bolt marks smart categories in the sidebar, and removing a game from a smart category reverts it to automatic membership.</li>
+            <li><strong>Grouped library:</strong> Two new sorts — System (A–Z) and System (by year) — render collapsible per-system section headers showing icon, launch year, and game count. Merged systems (GB+GBC, MAME+FBNeo) form one section, and each category remembers its own sort and view mode.</li>
+            <li><strong>Redesigned game toolbar:</strong> Configurable layout with a rebuilt save/load cluster — Save writes to the active slot in one click (badge shows the slot), and Load opens a compact 5×2 save-state browser with previews, an Auto row, and Save Here/Load actions. The active slot persists across launches.</li>
+            <li><strong>Performance overhaul:</strong> Warm startup on a 2000+ ROM library is roughly 4× faster (async launch pipeline, byte-packed display cache, network and disk work deferred past first paint). Scroll jank is eliminated across grid, holo, list, and row modes via cell recycling, zero synchronous image I/O, and hover gating; row mode now uses NSTableView-backed cells; slang shader chains compile off the main thread.</li>
+            <li><strong>Sharper screenshots:</strong> Screenshot capture crops to the centered game area, so black bars are no longer baked into the image. Bezel-style slang chains keep their full-frame layout for screenshots, recordings, and streams.</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Detailed Changes</h2>
+        <ul>
+            <li>Smart categories — smart rules on <code>GameCategory</code> (query, system scope, chips, genres, per-game include/exclude), sidebar save-search card, live preview, "Searching in" banner with quick exit, fields persisted, backed up, and localized in 4 languages</li>
+            <li>Grouped library — new sorts with section headers, merged-system sections, card subtitles hidden while grouped, launch years filled for 96 systems in <code>SystemDatabase.json</code></li>
+            <li>Shaders — Morph CRT (single-pass analog path, amplifier blur, composite YIQ, PAL support), CRT Shader pack (four presets, multi-pass), Glyph Text (three glyph sets), shader descriptions credited in all languages</li>
+            <li>Toolbar — two-button save/load, 5×2 save-state browser, unified <code>EmulatorRunner.selectSlot</code>, gamepad focus indices updated</li>
+            <li>Performance — display cache (~10 ms full-library round-trip), off-main library load with art-preserving publishes, deferred update check/core-info/controller mappings, NSCollectionView cell recycling, NSCache-only thumbnail fast paths, scroll-activity hover gates, O(1) category membership index</li>
+            <li>Slang — frame count, direction, FPS, aspect, and frametime uniforms; parameter detection in legacy structs and includes; ISO-8859-1 shader reading; bundled patched librashader runtime for final-pass feedback and scaling; shader history cleared on reset and save-state load</li>
+            <li>Input fixes — toolbar-close press swallowed, toolbar combo killed at the input so START never reaches the core, A+B soft reset fixed after gamepad toolbar use</li>
+            <li>Library fixes — single-system cores no longer lend extensions to other systems (NES no longer claims .gb), boxart no longer leaks between recycled cards, boxart shows after manual add, game titles keep their spaces, renames refresh the grid immediately, double-launch debounced per ROM</li>
+            <li>Holo fixes — hover freeze after scroll (artwork frame re-measured on hover), pinch-zoom no longer shuffles cards (layout invalidated instead of full reload)</li>
+            <li>macOS 27 — menu item icons restored via <code>titleAndIcon</code> labels</li>
+            <li>Bump marketing version to 1.16.0 and build number to 41 across <code>project.yml</code>, both <code>Info.plist</code>s, and <code>docs/_config.yml</code>.</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/changelog/v1.15.2.html' | relative_url }}" class="release-prev">&larr; v1.15.2</a>
+        <a href="{{ '/changelog.html' | relative_url }}" class="release-all">All Releases</a>
+    </nav>
+</div>

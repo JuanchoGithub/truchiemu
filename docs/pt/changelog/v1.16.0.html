@@ -1,0 +1,64 @@
+---
+layout: default
+title: v1.16.0 - Documentação do TruchiEmu
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/pt/changelog.html' | relative_url }}">Registro de mudanças</a>
+        <span class="separator">/</span>
+        <span class="current">v1.16.0</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.16.0</h1>
+        <div class="release-meta">
+            <span class="release-date">22 de outubro de 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>Esta versão adiciona categorias inteligentes, uma visualização de biblioteca agrupada, seis novos presets de shaders, uma barra de ferramentas do jogo redesenhada e uma grande revisão de desempenho na inicialização e na rolagem da biblioteca.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Destaques</h2>
+        <ul class="feature-list">
+            <li><strong>Novos shaders — com crédito a quem merece:</strong> A biblioteca de shaders integrada cresce para 23 presets com três novas famílias.
+                <ul>
+                    <li><strong>Morph CRT</strong> — simulação física de CRT com um caminho de sinal analógico completo (codificação/decodificação composta, artefatos de portadora NTSC/PAL), scanlines dinâmicas, brilho de fósforo, curvatura e convergência. Inspirado no <a href="https://pixelfx.co">PixelFX Morph 4K v4</a>.</li>
+                    <li><strong>Pacote CRT Shader</strong> (Reference, Clean, Soft, Photo Soft) — porte para Metal do <a href="https://github.com/OutThisLife/crt-shader">crt-shader de Brooklyn (OutThisLife)</a>, uma reconstrução CRT multi-pass com espalhamento horizontal de feixe, máscara de fósforo e passes de óptica (<a href="https://crt-shader.vercel.app">demo ao vivo</a>). O crédito consta em Ajustes → Sobre.</li>
+                    <li><strong>Glyph Text</strong> — shader próprio que renderiza seu jogo como uma grade de glifos monoespaçados (ASCII, Latim/Grego estendido/sombreado ou Blocos); a densidade segue a luminância, com cores de origem ou tinta de fósforo.</li>
+                </ul>
+            </li>
+            <li><strong>Categorias inteligentes:</strong> Salve qualquer busca da biblioteca como uma categoria dinâmica. As regras cobrem termos de busca, sistemas, chips de filtro, gêneros e exceções por jogo (incluir/excluir), com uma prévia ao vivo (contagem de jogos, sistemas, nomes de exemplo). Categorias multi-sistema acompanham sistemas recém-ativados; um raio marca as categorias inteligentes na barra lateral, e remover um jogo de uma categoria inteligente o retorna à associação automática.</li>
+            <li><strong>Biblioteca agrupada:</strong> Duas novas ordenações — Sistema (A–Z) e Sistema (por ano) — que exibem cabeçalhos de seção recolhíveis por sistema com ícone, ano de lançamento e contagem de jogos. Sistemas mesclados (GB+GBC, MAME+FBNeo) formam uma única seção, e cada categoria lembra sua própria ordenação e modo de visualização.</li>
+            <li><strong>Barra de ferramentas do jogo redesenhada:</strong> Layout configurável com um cluster de salvar/carregar renovado — Salvar grava no slot ativo com um clique (o selo mostra o slot) e Carregar abre um navegador compacto de 5×2 de save states com prévias, uma linha Auto e ações de Salvar aqui/Carregar. O slot ativo persiste entre sessões.</li>
+            <li><strong>Revisão de desempenho:</strong> A inicialização a quente com mais de 2000 ROMs fica cerca de 4× mais rápida (pipeline de inicialização assíncrono, cache de exibição empacotado em bytes, trabalho de rede e disco adiado após o primeiro quadro). O travamento na rolagem desaparece nos modos grade, holo, lista e linhas por meio de reciclagem de células, zero E/S de imagem síncrona e portões de hover; o modo linhas agora usa células NSTableView; as cadeias de shaders slang compilam fora da thread principal.</li>
+            <li><strong>Capturas mais nítidas:</strong> A captura de tela recorta para a área central do jogo, então barras negras não são mais gravadas na imagem. Cadeias slang estilo bezel mantêm seu quadro completo em capturas, gravações e streams.</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Mudanças detalhadas</h2>
+        <ul>
+            <li>Categorias inteligentes — regras inteligentes em <code>GameCategory</code> (consulta, escopo de sistemas, chips, gêneros, incluir/excluir por jogo), cartão de salvar busca na barra lateral, prévia ao vivo, banner "Pesquisando em" com saída rápida, campos persistidos, com backup e localizados em 4 idiomas</li>
+            <li>Biblioteca agrupada — novas ordenações com cabeçalhos de seção, seções de sistemas mesclados, subtítulos de cartão ocultos ao agrupar, anos de lançamento preenchidos para 96 sistemas em <code>SystemDatabase.json</code></li>
+            <li>Shaders — Morph CRT (caminho analógico de passe único, desfoque de amplificador, YIQ composto, suporte a PAL), pacote CRT Shader (quatro presets, multi-pass), Glyph Text (três conjuntos de glifos), descrições de shaders com crédito em todos os idiomas</li>
+            <li>Barra de ferramentas — salvar/carregar de dois botões, navegador de save states 5×2, <code>EmulatorRunner.selectSlot</code> unificado, índices de foco de gamepad atualizados</li>
+            <li>Desempenho — cache de exibição (~10 ms de ida e volta de toda a biblioteca), carregamento da biblioteca fora da thread principal com publicações que preservam a arte, verificação de atualizações/info de cores/controles adiados, reciclagem de células NSCollectionView, caminhos rápidos de miniaturas só-NSCache, portões de hover por atividade de scroll, índice de associação de categorias O(1)</li>
+            <li>Slang — uniforms de contagem de quadros, direção, FPS, aspecto e frametime; detecção de parâmetros em structs e includes antigos; leitura ISO-8859-1; runtime librashader com patch incluído para feedback de passe final e dimensionamento; histórico de shaders limpo ao reiniciar e ao carregar state</li>
+            <li>Correções de entrada — pressionamento de fechar da barra engolido, combo da barra eliminado na entrada para que START nunca chegue ao core, soft reset A+B corrigido após usar a barra com gamepad</li>
+            <li>Correções de biblioteca — cores de sistema único não emprestam mais extensões a outros sistemas (NES não reclama mais .gb), o boxart não vaza mais entre cartões reciclados, o boxart aparece após adicionar manualmente, os títulos mantêm seus espaços, renomeações atualizam a grade imediatamente, duplo lançamento com debounce por ROM</li>
+            <li>Correções holo — travamento de hover após rolagem (o quadro do artwork é re-medido no hover), pinça de zoom não embaralha mais cartões (o layout é invalidado em vez de recarregar)</li>
+            <li>macOS 27 — ícones de itens de menu restaurados com rótulos <code>titleAndIcon</code></li>
+            <li>Versão de marketing subida para 1.16.0 e número de compilação para 41 em <code>project.yml</code>, ambos <code>Info.plist</code> e <code>docs/_config.yml</code>.</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/pt/changelog/v1.15.2.html' | relative_url }}" class="release-prev">&larr; v1.15.2</a>
+        <a href="{{ '/pt/changelog.html' | relative_url }}" class="release-all">Todas as versões</a>
+    </nav>
+</div>
