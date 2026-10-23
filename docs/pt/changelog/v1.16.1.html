@@ -1,0 +1,51 @@
+---
+layout: default
+title: v1.16.1 - Documentação do TruchiEmu
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/pt/changelog.html' | relative_url }}">Registro de mudanças</a>
+        <span class="separator">/</span>
+        <span class="current">v1.16.1</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.16.1</h1>
+        <div class="release-meta">
+            <span class="release-date">23 de outubro de 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>Esta versão corrige as configurações de shader serem revertidas ao atualizar o aplicativo (issue #41), além de uma correção de entrada para núcleos hospedados em XPC e uma correção de exibição nas categorias inteligentes.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Destaques</h2>
+        <ul class="feature-list">
+            <li><strong>As configurações de shader agora sobrevivem às atualizações:</strong> A seleção de shader por sistema (e o núcleo padrão por sistema, a visibilidade e os nomes personalizados) não é mais apagada ao atualizar o aplicativo. Antes, qualquer versão que incluísse um banco de dados de sistemas atualizado exclua o cache local de configurações, e cada sistema voltava ao seu valor embutido — as seleções de shader eram revertidas silenciosamente para CRT Classic (<a href="https://github.com/JuanchoGithub/TruchiEmu/issues/41">issue #41</a>). Nota: se a v1.16.0 já redefiniu suas seleções, configure-as mais uma vez — de agora em diante elas persistem.</li>
+            <li><strong>As seleções de shaders slang são mais resilientes:</strong> Os presets slang são salvos como caminhos absolutos, que deixavam de resolver quando o pacote do aplicativo era movido ou a árvore slang-shaders embutida mudava entre versões. O inicializador agora resolve esses caminhos contra a instalação atual, então uma seleção slang salva continua funcionando após uma atualização ou ao mover o aplicativo.</li>
+            <li><strong>Correção de entrada para núcleos hospedados em XPC:</strong> Quando um núcleo roda no serviço XPC sem memória compartilhada, abrir a barra de ferramentas do jogo podia deixar os analógicos e botões analógicos presos no último valor (a mesma classe de entrada travada que a correção do combo da barra de ferramentas na v1.16.0 resolveu). Agora todas as entradas são liberadas por completo nessa configuração também.</li>
+            <li><strong>Categorias inteligentes — a folha de Sistemas corresponde à associação real:</strong> Em uma categoria inteligente multi-sistema que acompanha sistemas recém-ativados, um sistema ativado depois que a categoria foi salva aparecia como desativado na folha de Sistemas embora seus jogos fossem membros. A folha agora mostra seu estado real.</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Mudanças detalhadas</h2>
+        <ul>
+            <li>Banco de dados de sistemas — o cache local <code>SystemDatabase.json</code> é combinado com o banco de dados embutido a cada inicialização em vez de ser excluído quando a cópia embutida muda; a combinação mantém os dados embutidos como fonte da verdade e preserva as escolhas do usuário (shader por sistema, núcleo padrão, visibilidade, nome e ícone personalizados)</li>
+            <li>Slang — adicionado um resolvedor de caminhos salvos que recorre a corresponder o caminho sob a raiz <code>slang-shaders</code> quando o caminho exato salvo não existe mais; aplicado à inicialização de jogos, aos presets personalizados salvos e aos nomes exibidos</li>
+            <li>ShaderManager — redefinir o shader padrão agora invalida qualquer preparação de cadeia slang em andamento, de modo que uma compilação em segundo plano obsoleta não possa ser instalada sobre o shader de um jogo recém-iniciado</li>
+            <li>Entrada XPC — <code>clearAllJoypadInputs</code> agora também zera os analógicos e os botões analógicos por meio do proxy XPC, igualando os caminhos de memória compartilhada e em processo</li>
+            <li>Categorias inteligentes — <code>smartSystemEnabled</code> espelha <code>smartMember</code> para categorias com <code>smartFollowsNewSystems</code>: apenas a lista de desativados rege o estado de um sistema</li>
+            <li>Subida da versão de marketing para 1.16.1 e do número de build para 42 em <code>project.yml</code>, ambos <code>Info.plist</code> e <code>docs/_config.yml</code>.</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/pt/changelog/v1.16.0.html' | relative_url }}" class="release-prev">&larr; v1.16.0</a>
+        <a href="{{ '/pt/changelog.html' | relative_url }}" class="release-all">Todas as versões</a>
+    </nav>
+</div>

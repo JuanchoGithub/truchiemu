@@ -1,0 +1,51 @@
+---
+layout: default
+title: v1.16.1 - TruchiEmu Documentation
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/changelog.html' | relative_url }}">Changelog</a>
+        <span class="separator">/</span>
+        <span class="current">v1.16.1</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.16.1</h1>
+        <div class="release-meta">
+            <span class="release-date">October 23, 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>This release fixes shader settings reverting across app updates (issue #41), plus an input fix for XPC-hosted cores and a smart-category display fix.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Highlights</h2>
+        <ul class="feature-list">
+            <li><strong>Shader settings now survive app updates:</strong> The per-system shader selection (and per-system core default, visibility, and custom names) is no longer wiped when the app updates. Previously, any release that shipped an updated system database deleted the local settings cache, and every system fell back to its bundled default — shader selections quietly reverted to CRT Classic (<a href="https://github.com/JuanchoGithub/TruchiEmu/issues/41">issue #41</a>). Note: if v1.16.0 already reset your selections, set them once more — from now on they persist.</li>
+            <li><strong>Slang shader selections are more resilient:</strong> Slang presets are stored as absolute paths, which stopped resolving when the app bundle moved or the bundled slang-shaders tree changed between versions. The launcher now re-resolves those paths against the current install, so a stored slang selection keeps working after an update or a move of the app.</li>
+            <li><strong>Input fix for XPC-hosted cores:</strong> When a core runs in the XPC service without shared memory, opening the game toolbar could leave analog sticks and analog buttons stuck at their last value (the same stuck-input class the toolbar combo fix in v1.16.0 addressed). All inputs are now fully released for that configuration too.</li>
+            <li><strong>Smart categories — Systems sheet matches real membership:</strong> In a multi-system smart category that follows newly activated systems, a system that became active after the category was saved showed as disabled in the Systems sheet even though its games were members. The sheet now shows its true state.</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Detailed Changes</h2>
+        <ul>
+            <li>Systems database — the local <code>SystemDatabase.json</code> cache is merged with the bundled database on every launch instead of being deleted when the bundled copy changes; the merge keeps bundled data as the source of truth and preserves user choices (per-system shader preset, default core, visibility, custom name and icon)</li>
+            <li>Slang — added a stored-path resolver that falls back to matching the path under the <code>slang-shaders</code> root when the exact stored path no longer exists; applied to game launch, saved custom presets, and display names</li>
+            <li>ShaderManager — resetting to the default shader now invalidates any in-flight slang chain prepare, so a stale background compile can no longer install over a freshly launched game's shader</li>
+            <li>XPC input — <code>clearAllJoypadInputs</code> now also zeroes analog sticks and analog buttons through the XPC proxy, matching the shared-memory and in-process paths</li>
+            <li>Smart categories — <code>smartSystemEnabled</code> mirrors <code>smartMember</code> for categories with <code>smartFollowsNewSystems</code>: only the disabled list rules a system's state</li>
+            <li>Bump marketing version to 1.16.1 and build number to 42 across <code>project.yml</code>, both <code>Info.plist</code>s, and <code>docs/_config.yml</code>.</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/changelog/v1.16.0.html' | relative_url }}" class="release-prev">&larr; v1.16.0</a>
+        <a href="{{ '/changelog.html' | relative_url }}" class="release-all">All Releases</a>
+    </nav>
+</div>
