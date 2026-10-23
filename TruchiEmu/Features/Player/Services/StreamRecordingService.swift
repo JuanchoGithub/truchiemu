@@ -743,7 +743,19 @@ class StreamRecordingService: ObservableObject {
         // resolution so the GPU render-convert pass fills the pool without
         // stretching (Twitch's player letterboxes non-16:9 streams itself).
         // For `.native` we fall back to a 640-wide liquidated size.
-        let coreAspect = Double(XPCBridgeAdapter.shared.aspectRatio())
+        var coreAspect = Double(XPCBridgeAdapter.shared.aspectRatio())
+        // Absolute-scale slang chains (Mega_Bezel etc.) own the full-drawable
+        // layout, so the streamed source is the whole drawable. Match the pool
+        // to the drawable aspect (captureSize) instead of the core aspect, or
+        // the render-convert pass would squash the bezel horizontally.
+        if recordWithShaders,
+           SlangCompilerService.shared.finalPassIsAbsolute,
+           let runner = RollingVideoBufferService.shared.activeRunner {
+            let cs = runner.captureSize
+            if cs.width > 0, cs.height > 0 {
+                coreAspect = Double(cs.width / cs.height)
+            }
+        }
         let poolSize: CGSize
         if let target = streamResolution.size {
             poolSize = Self.aspectPoolSize(target: target, coreAspect: coreAspect)

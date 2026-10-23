@@ -1800,14 +1800,46 @@ outputHeight: Float(viewport.height)
                                           displayURL: URL?,
                                           nativeURL: URL?) {
         if let displayURL = displayURL {
+            // Crop to the centered game sub-rect (same helper the recording
+            // path uses) so the letterbox bars are not baked into the PNG.
+            // Absolute-scale slang chains own the full-drawable layout, so
+            // there are no bars — copying the whole drawable keeps their
+            // bezel art intact.
+            let crop: MTLRegion?
+            if SlangCompilerService.shared.finalPassIsAbsolute {
+                crop = nil
+            } else {
+                crop = Self.computeCenteredGameSubRect(
+                    drawable: drawable,
+                    frameTex: sourceNative,
+                    isRotated: runner.currentFrameRotation == 1 || runner.currentFrameRotation == 3,
+                    coreAspect: Double(XPCBridgeAdapter.shared.aspectRatio()),
+                    systemID: runner.rom?.systemID
+                )
+            }
             ensureSharedTexture(
                 target: &screenshotDisplayTexture,
                 matching: drawable,
-                device: device
+                device: device,
+                size: MTLSize(width: crop?.size.width ?? drawable.width,
+                              height: crop?.size.height ?? drawable.height,
+                              depth: 1)
             )
             if let dest = screenshotDisplayTexture {
                 let blit = commandBuffer.makeBlitCommandEncoder()
-                blit?.copy(from: drawable, to: dest)
+                if let crop = crop {
+                    blit?.copy(
+                        from: drawable,
+                        sourceSlice: 0, sourceLevel: 0,
+                        sourceOrigin: crop.origin,
+                        sourceSize: crop.size,
+                        to: dest,
+                        destinationSlice: 0, destinationLevel: 0,
+                        destinationOrigin: MTLOrigin(x: 0, y: 0, z: 0)
+                    )
+                } else {
+                    blit?.copy(from: drawable, to: dest)
+                }
                 blit?.endEncoding()
                 let w = dest.width
                 let h = dest.height
@@ -1855,16 +1887,21 @@ outputHeight: Float(viewport.height)
 
     private func ensureSharedTexture(target: inout MTLTexture?,
                                      matching source: MTLTexture,
-                                     device: MTLDevice) {
+                                     device: MTLDevice,
+                                     size: MTLSize? = nil) {
+        // `size` lets the caller allocate a crop-sized destination (e.g. the
+        // screenshot sub-rect) smaller than the source drawable.
+        let width = max(1, size?.width ?? source.width)
+        let height = max(1, size?.height ?? source.height)
         if let existing = target,
-           existing.width == source.width,
-           existing.height == source.height,
+           existing.width == width,
+           existing.height == height,
            existing.pixelFormat == source.pixelFormat {
             return
         }
         let desc = MTLTextureDescriptor.texture2DDescriptor(
             pixelFormat: source.pixelFormat,
-            width: source.width, height: source.height, mipmapped: false
+            width: width, height: height, mipmapped: false
         )
         desc.usage = [.shaderRead, .shaderWrite]
         desc.storageMode = .shared
@@ -1985,8 +2022,11 @@ outputHeight: Float(viewport.height)
             useDisplayRes = isRecording ? StreamRecordingService.shared.recordWithShaders : RollingVideoBufferService.shared.recordDisplayResolution
         }
         let srcTex = useDisplayRes ? drawableTexture : frameTex
+        // Absolute-scale slang chains own the full-drawable layout (bezel
+        // presets): the whole drawable is the game image, so keep it whole.
+        // Cropping it would cut bezel art out of the encoded frame.
         let cropRect: MTLRegion?
-        if useDisplayRes {
+        if useDisplayRes, !SlangCompilerService.shared.finalPassIsAbsolute {
             cropRect = Self.computeCenteredGameSubRect(
                 drawable: srcTex,
                 frameTex: frameTex,

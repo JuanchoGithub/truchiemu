@@ -1605,6 +1605,15 @@ weak var metalCoordinator: MetalCoordinator?
             // and the renderer's `cropRect` must agree on dimensions, and
             // modern Apple Silicon records 4K H.264/HEVC in real time via
             // VideoToolbox without affecting the Metal render pipeline.
+            // Absolute-scale slang chains (Mega_Bezel etc.) own the
+            // full-drawable layout; the recorder copies the whole drawable
+            // (see MetalCoordinator.performFrameCapture, which skips the
+            // sub-rect crop for them), so the pool must be drawable-sized
+            // and not sub-rect-sized.
+            if SlangCompilerService.shared.finalPassIsAbsolute {
+                let ds = view.drawableSize
+                return CGSize(width: max(1, ds.width), height: max(1, ds.height))
+            }
             if let frameTex = currentFrameTexture, frameTex.width > 0, frameTex.height > 0 {
                 // MTKView.drawableSize is in pixels; build a scratch
                 // descriptor-less lookup by computing the sub-rect via the
