@@ -22,6 +22,12 @@ struct TVModeHoloBoxart: View {
     var showBackingFill: Bool = true
 
     @State private var holoMasks: HoloMaskSet?
+    /// Settings snapshot for this card, built once per `romID`. It used to be
+    /// rebuilt inside the `TimelineView` closure — 30+ times per second, which
+    /// threw away the `HoloFoilLayers` equality check below and re-evaluated
+    /// the whole foil stack on every tick.
+    @State private var snapshot: HoloSettingsSnapshot?
+    @Environment(\.tvModeAnimationActive) private var animationActive
     @Environment(\.colorScheme) private var colorScheme
 
     private let maxTiltAngle: Double = 9
@@ -44,18 +50,13 @@ struct TVModeHoloBoxart: View {
                         .fill(AppColors.cardBackground(colorScheme))
                 }
 
-                TimelineView(.periodic(from: .now, by: 0.03)) { ctx in
+                TimelineView(.animation(minimumInterval: 0.05, paused: !animationActive)) { ctx in
                     let t = ctx.date.timeIntervalSince1970
                     // Slow synthetic orbit — mirrors HoloPreviewCard's motion.
                     let px = 0.5 + 0.35 * sin(t * 0.9)
                     let py = 0.5 + 0.35 * cos(t * 0.6)
                     let tiltX = (py - 0.5) * 2 * maxTiltAngle
                     let tiltY = (0.5 - px) * 2 * maxTiltAngle
-
-                    let snapshot = HoloSettingsSnapshot(
-                        from: HoloSettingsStore.shared,
-                        romID: romID
-                    )
 
                     ZStack {
                         // Base art — drawn here (not by the host) so the card and
@@ -70,7 +71,10 @@ struct TVModeHoloBoxart: View {
                             tiltEnabled: false
                         )
 
-                        if let masks = holoMasks {
+                        if let masks = holoMasks, let snapshot {
+                            // `.equatable()`: only the pointer-driven values
+                            // change between ticks, so the (expensive) foil
+                            // subtree is skipped unless the settings change.
                             HoloFoilLayers(
                                 masks: masks,
                                 settings: snapshot,
@@ -83,6 +87,7 @@ struct TVModeHoloBoxart: View {
                                 isHovered: true,
                                 allowBump: false
                             )
+                            .equatable()
                             .frame(width: artSize.width, height: artSize.height)
                         }
 
@@ -108,6 +113,9 @@ struct TVModeHoloBoxart: View {
         }
         .task(id: romID) {
             guard !romID.isEmpty else { return }
+            if snapshot == nil {
+                snapshot = HoloSettingsSnapshot(from: HoloSettingsStore.shared, romID: romID)
+            }
             holoMasks = await HoloSaliencyService.shared.holoMasks(
                 romID: romID,
                 image: image

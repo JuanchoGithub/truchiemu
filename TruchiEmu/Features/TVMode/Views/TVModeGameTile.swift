@@ -159,14 +159,18 @@ struct TVModeGameTile: View {
 
     private func preloadImage() {
         let thumb = BoxArtThumbnailSize.medium
-        if rom.hasBoxArt {
-            image = ImageCache.shared.thumbnailSync(for: rom.boxArtLocalPath, preferredSize: thumb)
+        guard rom.hasBoxArt else { image = nil; return }
+        // Memory-only peek. `thumbnailSync` would decode the source image on
+        // the main thread on a cache miss (its last-resort branch), which shows
+        // up as a multi-hundred-millisecond UI stall per cold tile. A miss here
+        // shows the placeholder for one frame and is filled asynchronously.
+        if let cached = ImageCache.shared.thumbnailCachedOrPregen(for: rom.boxArtLocalPath, preferredSize: thumb) {
+            image = cached
+            return
         }
-        if image == nil {
-            Task {
-                if let nsImage = await ImageCache.shared.image(for: rom.boxArtLocalPath) {
-                    await MainActor.run { self.image = nsImage }
-                }
+        Task {
+            if let nsImage = await ImageCache.shared.thumbnail(for: rom.boxArtLocalPath, preferredSize: thumb) {
+                await MainActor.run { self.image = nsImage }
             }
         }
     }

@@ -48,3 +48,19 @@ extension EnvironmentValues {
         set { self[TVModeScaleKey.self] = newValue }
     }
 }
+
+/// True while TV Mode is allowed to animate. Set `false` by `TVModeView`
+/// while a game is running: the game window covers TV Mode completely, but
+/// its per-frame holo/backdrop animation keeps the main thread busy, and
+/// `MTKView` draws the game on that same main thread. The result is frozen
+/// game video (audio keeps playing on the core's audio thread).
+private struct TVModeAnimationActiveKey: EnvironmentKey {
+    static let defaultValue: Bool = true
+}
+
+extension EnvironmentValues {
+    var tvModeAnimationActive: Bool {
+        get { self[TVModeAnimationActiveKey.self] }
+        set { self[TVModeAnimationActiveKey.self] = newValue }
+    }
+}

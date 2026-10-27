@@ -164,6 +164,10 @@ struct TVModeView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(background.ignoresSafeArea())
         .environment(\.tvModeScale, scale)
+        // Stop every TV-mode animation while a game runs. `MTKView` draws the
+        // game on the main thread, so a busy TV-mode animation freezes game
+        // video while the audio thread keeps playing.
+        .environment(\.tvModeAnimationActive, runningGames.runningGames.isEmpty)
         .animation(.easeInOut(duration: 0.2), value: coreManager.pendingDownload)
         .onAppear {
             refreshScale()

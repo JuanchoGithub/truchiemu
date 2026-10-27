@@ -8,6 +8,7 @@ import AppKit
 struct TVModeAnimatedAccentBackground: View {
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.tvModeScale) private var scale
+    @Environment(\.tvModeAnimationActive) private var animationActive
     @State private var phase: Phase = .a
 
     enum Phase: CaseIterable {
@@ -39,9 +40,12 @@ struct TVModeAnimatedAccentBackground: View {
             .ignoresSafeArea()
             .animation(.easeInOut(duration: phaseDuration), value: phase)
         }
-        .task {
+        .task(id: animationActive) {
             // Drive a slow 4-phase loop. Phase advances every `phaseDuration`
             // seconds, so a full breath takes ~24 s. Cheap: just a state tick.
+            // Stopped while a game runs: the game window covers this view, and
+            // its animation would compete with the game's main-thread draw.
+            guard animationActive else { return }
             while !Task.isCancelled {
                 try? await Task.sleep(nanoseconds: UInt64(phaseDuration * 1_000_000_000))
                 guard !Task.isCancelled else { break }

@@ -278,55 +278,73 @@ struct TVModeGameDetailView: View {
 
     private func loadArt() {
         downloading = true
-        if rom.hasBoxArt {
-            boxart = ImageCache.shared.thumbnailSync(for: rom.boxArtLocalPath, preferredSize: .large)
-        }
-        if rom.hasTitleScreen {
-            titleImage = ImageCache.shared.thumbnailSync(for: rom.titleScreenLocalPath, preferredSize: .large)
-        }
-        for path in rom.screenshotPaths.prefix(4) {
-            if let img = ImageCache.shared.thumbnailSync(for: path, preferredSize: .medium) {
-                snaps.append(img)
-            } else {
-                Task {
-                    if let img = await ImageCache.shared.image(for: path) {
-                        await MainActor.run {
-                            snaps.append(img)
-                            if selectedSnapIndex >= snaps.count { selectedSnapIndex = 0 }
-                        }
-                    }
-                }
-            }
-        }
+        fillMissingArt(loadArtFromCache())
         Task {
             async let titleTask = BoxArtService.shared.downloadTitleScreen(for: rom)
             async let snapTask = BoxArtService.shared.downloadScreenshots(for: rom)
             _ = await (titleTask, snapTask)
             await MainActor.run {
-                if rom.hasBoxArt, boxart == nil {
-                    boxart = ImageCache.shared.thumbnailSync(for: rom.boxArtLocalPath, preferredSize: .large)
+                // Reload after the async fetch since the ROM's URL paths may now
+                // be populated on disk.
+                fillMissingArt(loadArtFromCache())
+                downloading = false
+            }
+        }
+    }
+
+    /// Synchronous pass over the in-memory cache only. `ImageCache.thumbnailSync`
+    /// is deliberately NOT used here: on a cache miss its last-resort branch
+    /// decodes the full source image on the main thread, which stalls the whole
+    /// UI (and the game's main-thread `MTKView` draw) for the duration of the
+    /// decode. Returns the screenshot paths that still need a decode.
+    private func loadArtFromCache() -> [URL] {
+        if rom.hasBoxArt {
+            boxart = ImageCache.shared.thumbnailCachedOrPregen(for: rom.boxArtLocalPath, preferredSize: .large)
+        }
+        if rom.hasTitleScreen {
+            titleImage = ImageCache.shared.thumbnailCachedOrPregen(for: rom.titleScreenLocalPath, preferredSize: .large)
+        }
+        var missingSnaps: [URL] = []
+        snaps.removeAll()
+        for path in rom.screenshotPaths.prefix(4) {
+            if let img = ImageCache.shared.thumbnailCachedOrPregen(for: path, preferredSize: .medium) {
+                snaps.append(img)
+            } else {
+                missingSnaps.append(path)
+            }
+        }
+        if selectedSnapIndex >= snaps.count {
+            selectedSnapIndex = max(0, snaps.count - 1)
+        }
+        return missingSnaps
+    }
+
+    /// Decodes whatever the memory cache did not have, off the main thread.
+    private func fillMissingArt(_ missingSnaps: [URL]) {
+        if rom.hasBoxArt, boxart == nil {
+            let path = rom.boxArtLocalPath
+            Task {
+                if let img = await ImageCache.shared.thumbnail(for: path, preferredSize: .large) {
+                    await MainActor.run { if boxart == nil { boxart = img } }
                 }
-                if rom.hasTitleScreen, titleImage == nil {
-                    titleImage = ImageCache.shared.thumbnailSync(for: rom.titleScreenLocalPath, preferredSize: .large)
+            }
+        }
+        if rom.hasTitleScreen, titleImage == nil {
+            let path = rom.titleScreenLocalPath
+            Task {
+                if let img = await ImageCache.shared.thumbnail(for: path, preferredSize: .large) {
+                    await MainActor.run { if titleImage == nil { titleImage = img } }
                 }
-                // Reload snaps after the async fetch since the ROM's URL paths
-                // may now be populated on disk.
-                snaps.removeAll()
-                for path in rom.screenshotPaths.prefix(4) {
-                    if let img = ImageCache.shared.thumbnailSync(for: path, preferredSize: .medium) {
-                        snaps.append(img)
-                    } else {
-                        Task {
-                            if let img = await ImageCache.shared.image(for: path) {
-                                await MainActor.run {
-                                    snaps.append(img)
-                                    if selectedSnapIndex >= snaps.count { selectedSnapIndex = max(0, snaps.count - 1) }
-                                }
-                            }
-                        }
+            }
+        }
+        for path in missingSnaps {
+            Task {
+                if let img = await ImageCache.shared.thumbnail(for: path, preferredSize: .medium) {
+                    await MainActor.run {
+                        if !snaps.contains(where: { $0 === img }) { snaps.append(img) }
+                        if selectedSnapIndex >= snaps.count { selectedSnapIndex = 0 }
                     }
                 }
-                downloading = false
             }
         }
     }
