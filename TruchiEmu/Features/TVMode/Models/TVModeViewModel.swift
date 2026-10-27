@@ -88,6 +88,19 @@ final class TVModeViewModel: ObservableObject {
     /// (roms, rom counts, RA state, systems).
     private var countCache: [String: Int] = [:]
 
+    /// Games-row position per row-1 entry, keyed by `TVModeEntry.id`. Each
+    /// system/category keeps its own selected game: leaving one entry and
+    /// coming back resumes where the user was, and an entry visited for the
+    /// first time starts at its first game instead of inheriting (or clamping
+    /// onto) the neighbour's index. Without this, moving the games row and then
+    /// switching entries dragged that offset into the new entry, which read as
+    /// the new category having "moved left" by itself.
+    private var rememberedGameByEntry: [String: UUID] = [:]
+    /// `TVModeEntry.id` the current `games` array belongs to. Deferred row-1
+    /// flights keep the old list in place, so this is what the outgoing entry's
+    /// position is saved under when the list is finally replaced.
+    private var gamesEntryID: String?
+
     /// True while the games row is fading in after a deferred refresh.
     /// Driven by `pulseGamesFade()`, read by `TVModeView` row 2.
     @Published var gamesDimmed = false
@@ -135,6 +148,7 @@ final class TVModeViewModel: ObservableObject {
 
     private let library: ROMLibrary
     private let systemDatabase: SystemDatabaseWrapper
+    private let categoryManager: CategoryManager
     private let saveStateManager = SaveStateManager()
     private let prefs = SystemPreferences.shared
     private let raService = RetroAchievementsService.shared
@@ -154,9 +168,10 @@ final class TVModeViewModel: ObservableObject {
     /// pending until the entries rebuild after the library loads.
     private var pendingColdStartRestore = false
 
-    init(library: ROMLibrary, systemDatabase: SystemDatabaseWrapper, initialEntryID: String? = nil) {
+    init(library: ROMLibrary, systemDatabase: SystemDatabaseWrapper, categoryManager: CategoryManager, initialEntryID: String? = nil) {
         self.library = library
         self.systemDatabase = systemDatabase
+        self.categoryManager = categoryManager
         self.initialEntryID = initialEntryID
         self.theme = TVModeSettings.theme
         rebuildEntries()
@@ -517,6 +532,14 @@ final class TVModeViewModel: ObservableObject {
             .receive(on: RunLoop.main)
             .sink { [weak self] _ in self?.rebuildEntries() }
             .store(in: &cancellables)
+
+        categoryManager.$categories
+            .receive(on: RunLoop.main)
+            .sink { [weak self] _ in
+                self?.rebuildEntries()
+                self?.recomputeGames()
+            }
+            .store(in: &cancellables)
     }
 
     /// Retries the persisted cold-start filter+ROM restore once the library
@@ -553,6 +576,20 @@ final class TVModeViewModel: ObservableObject {
                 entries.append(TVModeEntry(filter: smart.filter))
             }
         }
+        // User-created categories sit between the smart collections and the
+        // systems, matching the main sidebar's order. Empty categories are
+        // skipped for the same reason empty systems are: TV mode has no
+        // sidebar to browse, and an entry with no games leads nowhere.
+        for category in categoryManager.categories {
+            let filter = LibraryFilter.category(category.id)
+            guard count(for: filter) > 0 else { continue }
+            entries.append(
+                TVModeEntry(
+                    filter: filter,
+                    category: category
+                )
+            )
+        }
         if TVModeSettings.showSystems {
             let displayIDs = Set(library.romCounts.keys)
             let display: [(SystemInfo, [String])] = systemDatabase.systemsForDisplay.compactMap { sys in
@@ -583,9 +620,15 @@ final class TVModeViewModel: ObservableObject {
     }
 
     private func recomputeGames() {
+        // Save the outgoing entry's position under its own id before the list
+        // is replaced.
+        if let gamesEntryID, games.indices.contains(selectedGameIndex) {
+            rememberedGameByEntry[gamesEntryID] = games[selectedGameIndex].id
+        }
         guard let entry = selectedEntry else {
             games = []
             selectedGameIndex = 0
+            gamesEntryID = nil
             return
         }
         let roms: [ROM]
@@ -615,11 +658,31 @@ final class TVModeViewModel: ObservableObject {
             roms = library.roms.filter { $0.isHidden }
         case .mameNonGames:
             roms = library.roms.filter { $0.systemID == "mame" && $0.mameRomType != "game" }
-        case .category:
-            roms = []
+        case .category(let id):
+            roms = categoryManager
+                .gamesInCategory(categoryID: id, fromROMs: library.roms)
+                .filter { !$0.isHidden }
         }
         games = applySort(roms)
-        if selectedGameIndex >= roms.count { selectedGameIndex = max(0, roms.count - 1) }
+        if entry.id != gamesEntryID {
+            // Different entry: resume that entry's own position. A clamped
+            // carry-over index is never used here, so a new entry starts at its
+            // first game instead of somewhere in the middle.
+            if let savedID = rememberedGameByEntry[entry.id],
+               let idx = games.firstIndex(where: { $0.id == savedID }) {
+                selectedGameIndex = idx
+            } else {
+                selectedGameIndex = 0
+            }
+        } else if selectedGameIndex >= roms.count {
+            selectedGameIndex = max(0, roms.count - 1)
+        }
+        // Keep the saved game in step with in-place refreshes (library
+        // publishes, sort changes, clamps) for the entry currently shown.
+        if games.indices.contains(selectedGameIndex) {
+            rememberedGameByEntry[entry.id] = games[selectedGameIndex].id
+        }
+        gamesEntryID = entry.id
     }
 
     /// Sorts `roms` per the current `sortMode`. The `.recent` entry always
@@ -762,7 +825,11 @@ final class TVModeViewModel: ObservableObject {
             case .system(let sys):
                 let internalIDs = Set(systemDatabase.allInternalIDs(forDisplayID: sys.id))
                 return library.roms.filter { internalIDs.contains($0.systemID ?? "") && !$0.isHidden }.count
-            case .category: return 0
+            case .category(let id):
+                return categoryManager
+                    .gamesInCategory(categoryID: id, fromROMs: library.roms)
+                    .filter { !$0.isHidden }
+                    .count
             }
         }
         countCache[key] = value

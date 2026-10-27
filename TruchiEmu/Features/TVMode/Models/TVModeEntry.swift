@@ -5,6 +5,10 @@ import SwiftUI
 /// (`LibraryFilter` cases other than `.system`) and systems.
 struct TVModeEntry: Identifiable, Hashable {
     let filter: LibraryFilter
+    /// Snapshot of a user category for `.category` entries. Keeps the TV-mode
+    /// tile on the exact icon and color the main sidebar renders (custom
+    /// uploaded icon, game-icons.net icon, or SF Symbol plus `colorHex`).
+    var category: GameCategory? = nil
 
     var id: String { filter.id }
 
@@ -18,7 +22,7 @@ struct TVModeEntry: Identifiable, Hashable {
         case .hidden: return LocalizationManager.shared.localized("app.hidden")
         case .mameNonGames: return LocalizationManager.shared.localized("app.hiddenMAMEFiles")
         case .system(let sys): return sys.sidebarDisplayName
-        case .category: return ""
+        case .category: return category?.name ?? LocalizationManager.shared.localized("app.category")
         }
     }
 
@@ -32,7 +36,7 @@ struct TVModeEntry: Identifiable, Hashable {
         case .hidden: return "eye.slash.fill"
         case .mameNonGames: return "gearshape.2.fill"
         case .system: return nil
-        case .category: return "folder.fill"
+        case .category: return category?.iconName ?? "folder.fill"
         }
     }
 

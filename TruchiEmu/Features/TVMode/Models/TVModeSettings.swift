@@ -93,8 +93,9 @@ enum TVModeSettings {
     }
 
     /// Entries shown in row 1, in display order. Defaults are conservative and
-    /// match the existing sidebar's smart collection set, excluding categories
-    /// (those are not part of TV mode v1).
+    /// match the existing sidebar's smart collection set. User-created
+    /// categories are not listed here — they are always shown (when non-empty)
+    /// between the smart collections and the systems.
     static var shownSmartEntries: [SmartEntry] {
         if let raws = AppSettings.get(shownSmartEntriesKey, type: [String].self) {
             let preserved = SmartEntry.allCases.filter { raws.contains($0.rawValue) }

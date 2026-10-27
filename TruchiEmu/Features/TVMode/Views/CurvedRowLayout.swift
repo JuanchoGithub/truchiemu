@@ -6,7 +6,9 @@ import SwiftUI
 struct RowMove: Equatable {
     /// True signed step (e.g. `1`, `-1`). Fast moves run as chained unit
     /// steps (see `TVModeViewModel`), so this is always `1` or `-1` in
-    /// practice, `0` before the first move.
+    /// practice, `0` before the first move. Informational: the layout slides
+    /// toward `centerIndex` itself rather than accumulating this delta, so a
+    /// coalesced or dropped step can never leave the row a slot out of sync.
     var delta: Int = 0
     /// Increments on every animated move. Tells an intentional slide apart
     /// from an external index change (list rebuild, restore, clamp), which
@@ -105,12 +107,19 @@ struct CurvedRowLayout<Item: Identifiable & Hashable, Content: View>: View {
         }
         .onChange(of: centerIndex) { _, newValue in
             if move.seq != lastHandledSeq {
-                // Intentional move. Slide the animated center by the move's
-                // signed delta. Adding (instead of setting the wrapped index)
-                // keeps the direction across wrap edges. The renderers use
-                // modulo math, so unwrapped values stay correct.
+                // Intentional move. Slide toward the new index, but derive the
+                // target from `centerIndex` itself (nearest unwrapped
+                // representative) instead of adding `move.delta` to the
+                // animated value one step at a time. When two steps coalesce
+                // into a single body update — the main thread stalled past a
+                // repeat interval — the delta only covers one of them, and the
+                // row then sits one slot away from the selection forever: the
+                // center tile shows one game while the detail page opens
+                // another. The renderers use modulo math, so any unwrapped
+                // representative of `centerIndex` is correct (and keeps the
+                // slide direction across wrap edges).
                 lastHandledSeq = move.seq
-                let target = animatedCenter + CGFloat(move.delta)
+                let target = unwrappedNearest(newValue, to: animatedCenter)
                 let stepAnimation: Animation = move.linear
                     ? .linear(duration: move.duration)
                     : .easeOut(duration: move.duration)
@@ -131,10 +140,30 @@ struct CurvedRowLayout<Item: Identifiable & Hashable, Content: View>: View {
         }
         .onChange(of: items.count) { _, count in
             guard count > 0 else { return }
-            let wrapped = (Int(animatedCenter.rounded()) % count + count) % count
-            animatedCenter = CGFloat(wrapped)
-            expandedCenter = CGFloat(wrapped)
+            // Items were replaced (entry switch, sort change, library refresh).
+            // Snap onto the caller's index — never re-wrap the old animated
+            // value, which is only congruent modulo the *previous* count and
+            // would land on a different slot than the selection.
+            animatedCenter = CGFloat(centerIndex)
+            expandedCenter = CGFloat(centerIndex)
         }
+    }
+
+    /// Unwrapped representative of `index` that is congruent to it modulo
+    /// `items.count` and closest to `current`. Keeps slides moving in the
+    /// requested direction across the wrap edge while always landing exactly on
+    /// the caller's `centerIndex` — no reliance on accumulated deltas, so a
+    /// dropped/merged step cannot leave the row off by a slot.
+    private func unwrappedNearest(_ index: Int, to current: CGFloat) -> CGFloat {
+        let count = items.count
+        guard count > 0 else { return CGFloat(index) }
+        let c = CGFloat(count)
+        let wrappedCurrent = ((current.truncatingRemainder(dividingBy: c)) + c)
+            .truncatingRemainder(dividingBy: c)
+        var diff = (CGFloat(index) - wrappedCurrent).truncatingRemainder(dividingBy: c)
+        if diff < 0 { diff += c }
+        if diff > c / 2 { diff -= c }
+        return current + diff
     }
 
     /// True when the source list is too small to cover the visible window on

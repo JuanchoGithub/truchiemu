@@ -59,6 +59,7 @@ struct ContentView: View {
                 TVModeView(
                     library: library,
                     systemDatabase: systemDatabase,
+                    categoryManager: categoryManager,
                     // On a cold-start resume the main window never rendered,
                     // so `selectedFilter` is still its default (`.recent`) and
                     // must not be handed to TV-mode as the initial entry — that

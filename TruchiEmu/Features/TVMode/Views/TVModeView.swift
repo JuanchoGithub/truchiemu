@@ -114,10 +114,11 @@ struct TVModeView: View {
     /// `\.tvModeScale` and re-render when it changes.
     @State private var scale: CGFloat = TVModeMetrics.scale
 
-    init(library: ROMLibrary, systemDatabase: SystemDatabaseWrapper, initialEntryID: String? = nil) {
+    init(library: ROMLibrary, systemDatabase: SystemDatabaseWrapper, categoryManager: CategoryManager, initialEntryID: String? = nil) {
         _viewModel = StateObject(wrappedValue: TVModeViewModel(
             library: library,
             systemDatabase: systemDatabase,
+            categoryManager: categoryManager,
             initialEntryID: initialEntryID
         ))
         _navContext = StateObject(wrappedValue: TVModeNavContext())

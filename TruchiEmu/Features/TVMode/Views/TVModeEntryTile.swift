@@ -16,8 +16,12 @@ struct TVModeEntryTile: View {
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.tvModeScale) private var scale
     @ObservedObject private var loc = LocalizationManager.shared
+    /// Observed so a category tile re-renders with its real game-icons.net
+    /// image once the icon library finishes unpacking on first launch.
+    @ObservedObject private var gamingIcons = GamingIconService.shared
     @State private var systemImage: NSImage?
     @State private var controllerImage: NSImage?
+    @State private var customCategoryIcon: NSImage?
 
     private var size: CGFloat { 168 * scale }
 
@@ -80,6 +84,7 @@ struct TVModeEntryTile: View {
         .accessibilityLabel(accessibilityLabel)
         .onAppear { loadSystemImage() }
         .onChange(of: entry.id) { _, _ in loadSystemImage() }
+        .onChange(of: entry.category?.customIconPath) { _, _ in loadSystemImage() }
     }
 
     private var accessibilityLabel: String {
@@ -100,6 +105,13 @@ struct TVModeEntryTile: View {
                 .interpolation(.high)
                 .aspectRatio(contentMode: .fit)
                 .padding(8 * scale)
+        } else if let category = entry.category {
+            // Mirror the main sidebar's `GameCategoryIconView`: custom uploaded
+            // icon, game-icons.net template image, or SF Symbol — tinted with
+            // the category's own color.
+            categoryIcon(category)
+                .padding(20 * scale)
+                .foregroundStyle(categoryColor(category))
         } else if let symbol = entry.sfSymbol {
             Image(systemName: symbol)
                 .resizable()
@@ -113,6 +125,30 @@ struct TVModeEntryTile: View {
                 .padding(20 * scale)
                 .foregroundStyle(iconColor)
         }
+    }
+
+    @ViewBuilder
+    private func categoryIcon(_ category: GameCategory) -> some View {
+        if let img = customCategoryIcon {
+            Image(nsImage: img)
+                .resizable()
+                .interpolation(.high)
+                .aspectRatio(contentMode: .fit)
+        } else if GamingIconService.isGamingIconName(category.iconName),
+                  let img = gamingIcons.image(for: category.iconName) {
+            Image(nsImage: img)
+                .resizable()
+                .interpolation(.high)
+                .aspectRatio(contentMode: .fit)
+        } else {
+            Image(systemName: category.iconName.isEmpty ? "tag" : category.iconName)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+        }
+    }
+
+    private func categoryColor(_ category: GameCategory) -> Color {
+        Color(hex: category.colorHex) ?? .blue
     }
 
     private var usesControllerIcons: Bool {
@@ -136,6 +172,9 @@ struct TVModeEntryTile: View {
     }
 
     private var shadowColor: Color {
+        if let category = entry.category {
+            return categoryColor(category).opacity(0.65 * focus)
+        }
         if theme == .bold {
             return AppColors.accentForScheme(colorScheme).opacity(0.55 * focus)
         } else {
@@ -145,6 +184,11 @@ struct TVModeEntryTile: View {
 
     private func loadSystemImage() {
         TVPerfTrace.time("loadIcon", thresholdMs: 3) {
+            if let path = entry.category?.customIconPath {
+                customCategoryIcon = NSImage(contentsOf: URL(fileURLWithPath: path))
+            } else {
+                customCategoryIcon = nil
+            }
             guard let system = entry.system else { systemImage = nil; controllerImage = nil; return }
             systemImage = system.emuImage(size: Int(132 * scale))
             // Fall back to a slightly larger render if no 132-sized asset is cached.
