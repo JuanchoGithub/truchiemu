@@ -4,19 +4,26 @@ import AppKit
 /// Soft, full-window blurred boxart used as the backdrop in `.boxart` TV mode
 /// theme.
 ///
-/// Loading is debounced — the blur is expensive on full-screen images, so we
-/// wait for a brief quiet period (no new focused ROM) before kicking off a
-/// fresh load. Holding a d-pad direction would otherwise churn through
-/// decoded, blurred full-screen frames on every tick of the repeat schedule.
+/// The blur is pre-rendered with CoreImage once per cover and cached in
+/// `ImageCache` (see `blurredBackdropImage`) — the view displays an
+/// already-blurred bitmap with no live `.blur` filter. A live full-screen
+/// gaussian blur is re-evaluated by the window server whenever the image
+/// swaps, and under load the first frame(s) composite the RAW image before
+/// the filtered result is ready: a full-strength boxart flash over the old
+/// UI. Baking the blur removes both that flash and the per-frame filter cost.
 ///
-/// The view must be installed as a `.background(...)` content (or otherwise
-/// rendered behind the layout) so it cannot influence sibling geometry during
-/// transitions of the image state.
+/// Loading is debounced — we wait for a brief quiet period (no new focused
+/// ROM) before kicking off a fresh load, so holding a d-pad direction doesn't
+/// churn through loads on every tick of the repeat schedule.
+///
+/// The image lives inside an `.overlay` on the scrim Color: an overlay can
+/// never influence the base's layout, so the crossfade `.transition` cannot
+/// shift sibling geometry when the image identity changes (the problem the
+/// old ZStack + `.transition(.identity)` arrangement worked around).
 struct TVModeBoxartBackdrop: View {
     let rom: ROM?
     let scrimColor: Color
 
-    @Environment(\.tvModeScale) private var scale
     @State private var displayedImage: NSImage?
     @State private var displayedRomID: UUID?
     @State private var pendingDebounce: Task<Void, Never>?
@@ -24,50 +31,34 @@ struct TVModeBoxartBackdrop: View {
     private static let debounceNanos: UInt64 = 200_000_000 // 200 ms
 
     var body: some View {
-        ZStack {
-            // Always-on background color so the surface stays opaque even
-            // before the blurred image loads.
-            scrimColor
-
-            if let img = displayedImage {
-                Image(nsImage: img)
-                    .resizable()
-                    .scaledToFill()
-                    .blur(radius: 58 * scale)
-                    .saturation(1.4)
-                    .opacity(0.55)
-                    // Fade in via opacity binding instead of using SwiftUI's
-                    // identity-based `.transition` — those tend to register an
-                    // insertion frame that participates in ZStack alignment.
-                    .transition(.identity)
+        scrimColor
+            .overlay {
+                if let img = displayedImage {
+                    Image(nsImage: img)
+                        .resizable()
+                        .scaledToFill()
+                        .opacity(0.55)
+                        // Identity per ROM: swapping the NSImage in place is a
+                        // same-identity update that `.transition` ignores, so
+                        // key the view on the ROM to get a real crossfade.
+                        .id(displayedRomID)
+                        .transition(.opacity)
+                }
             }
-        }
-        .animation(.easeInOut(duration: 0.35), value: displayedImage)
-        .onChange(of: rom?.id) { _, newID in
-            scheduleLoad(for: newID)
-        }
-        .onAppear {
-            if let id = rom?.id, id != displayedRomID {
-                loadSync(romID: id, rom: rom)
+            .clipped()
+            .animation(.easeInOut(duration: 0.35), value: displayedImage)
+            .onChange(of: rom?.id) { _, newID in
+                scheduleLoad(for: newID)
             }
-        }
-        .onDisappear {
-            pendingDebounce?.cancel()
-            pendingDebounce = nil
-        }
-    }
-
-    /// Convenience modifier for callers: pre-frame the view, force it onto a
-    /// single CALayer (so the blur doesn't enter SwiftUI's compositing tree),
-    /// and pass it through `.background(...)` so it can't displace siblings.
-    func installedAsBackground<V: View>(on container: V) -> some View {
-        container.background(
-            self
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .drawingGroup()
-                .allowsHitTesting(false),
-            alignment: .center
-        )
+            .onAppear {
+                if let id = rom?.id, id != displayedRomID {
+                    loadBackdrop(romID: id, rom: rom)
+                }
+            }
+            .onDisappear {
+                pendingDebounce?.cancel()
+                pendingDebounce = nil
+            }
     }
 
     private func scheduleLoad(for newID: UUID?) {
@@ -84,11 +75,11 @@ struct TVModeBoxartBackdrop: View {
             try? await Task.sleep(nanoseconds: Self.debounceNanos)
             guard !Task.isCancelled else { return }
             guard rom?.id == targetID else { return }
-            loadSync(romID: targetID, rom: targetROM)
+            loadBackdrop(romID: targetID, rom: targetROM)
         }
     }
 
-    private func loadSync(romID: UUID, rom: ROM?) {
+    private func loadBackdrop(romID: UUID, rom: ROM?) {
         guard let rom, rom.hasBoxArt else {
             displayedImage = nil
             displayedRomID = nil
@@ -96,7 +87,7 @@ struct TVModeBoxartBackdrop: View {
         }
         let path = rom.boxArtLocalPath
         Task.detached(priority: .userInitiated) {
-            let img = ImageCache.shared.thumbnailSync(for: path, preferredSize: .large)
+            let img = await ImageCache.shared.blurredBackdropImage(for: path)
             await MainActor.run {
                 guard !Task.isCancelled else { return }
                 if romID == rom.id, let img {

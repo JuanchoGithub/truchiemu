@@ -212,6 +212,9 @@ actor ImageCache {
             thumbnailCache.removeObject(forKey: blurKey as NSString)
             inFlight.removeValue(forKey: blurKey)
         }
+        let backdropKey = blurredBackdropKey(url)
+        thumbnailCache.removeObject(forKey: backdropKey as NSString)
+        inFlight.removeValue(forKey: backdropKey)
     }
 
     // MARK: - Blurred Fill (BoxArtDisplayMode.fillBlurred)
@@ -302,6 +305,89 @@ actor ImageCache {
     nonisolated func blurredFillImageSync(for url: URL, size: BoxArtThumbnailSize) -> NSImage? {
         let key = blurredFillKey(url, size: size) as NSString
         return thumbnailCache.object(forKey: key)
+    }
+
+    // MARK: - TV Backdrop Blur
+
+    // Pre-rasterized full-window backdrop for TV mode's `.boxart` theme. Same
+    // rationale as `blurredFillImage`: a live `.blur` on a full-screen image
+    // is re-evaluated by the window server every time the image swaps, and
+    // under load the first frame(s) composite the RAW image before the
+    // filtered result is ready — a full-strength boxart flash over the UI.
+    // Here the gaussian blur and saturation boost are baked in once per cover
+    // and cached, so the view displays a plain bitmap with zero live filters.
+    //
+    // Radius sizing: the bitmap is stretched to fill the window, and the old
+    // live blur was `58 × TVModeMetrics.scale` screen-points with
+    // `scale = screenHeight / 982`, which works out to ~0.059 × the bitmap's
+    // fill dimension. Nudged down to 0.05 because CoreImage's blur is
+    // perceptually denser than the CALayer blur at the same numeric radius
+    // (same correction as `blurredFillImage`'s 18-vs-22 note).
+    func blurredBackdropImage(for url: URL) async -> NSImage? {
+        let key = blurredBackdropKey(url)
+
+        if let cached = thumbnailCache.object(forKey: key as NSString) {
+            return cached
+        }
+
+        if let existing = inFlight[key] {
+            return await existing.value
+        }
+
+        let task = Task<NSImage?, Never> {
+            // Reuse the already-decoded .large thumbnail as the blur source —
+            // no second disk read. Same fallback as `blurredFillImage`.
+            let base: NSImage?
+            if let cached = thumbnailCache.object(forKey: thumbKey(url, size: .large) as NSString) {
+                base = cached
+            } else {
+                base = await self.thumbnail(for: url, preferredSize: .large)
+            }
+            guard let source = base, let cg = source.cgImage(forProposedRect: nil, context: nil, hints: nil) else {
+                self.inFlight.removeValue(forKey: key)
+                return nil
+            }
+
+            let blurred = await Task.detached(priority: .userInitiated) { [thumbnailCache] () -> NSImage? in
+                let ciSource = CIImage(cgImage: cg)
+                let filter = CIFilter.gaussianBlur()
+                filter.inputImage = ciSource
+                let maxDim = max(ciSource.extent.width, ciSource.extent.height)
+                filter.radius = Float(maxDim * 0.05)
+
+                guard let output = filter.outputImage else { return nil }
+                // Bake in the saturation boost the backdrop used to apply as a
+                // live `.saturation(1.4)` filter.
+                let saturate = CIFilter.colorControls()
+                saturate.inputImage = output
+                saturate.saturation = 1.4
+                guard let saturated = saturate.outputImage else { return nil }
+
+                // Composite over black to avoid the white edge fringing
+                // CIFilter produces when the source has alpha; the TV backdrop
+                // sits over a dark scrim, so this matches the on-screen
+                // treatment too.
+                let blackBackground = CIImage(color: CIColor.black).cropped(to: ciSource.extent)
+                let composited = saturated.composited(over: blackBackground)
+
+                let context = CIContext(options: [.useSoftwareRenderer: false])
+                guard let cgOut = context.createCGImage(composited, from: ciSource.extent) else { return nil }
+                let img = NSImage(cgImage: cgOut, size: .zero)
+
+                let rep = img.representations.first
+                let w = CGFloat(rep?.pixelsWide ?? Int(img.size.width))
+                let h = CGFloat(rep?.pixelsHigh ?? Int(img.size.height))
+                let c = Int(w * h * 4)
+                thumbnailCache.setObject(img, forKey: key as NSString, cost: c)
+                return img
+            }.value
+
+            self.inFlight.removeValue(forKey: key)
+            return blurred
+        }
+
+        inFlight[key] = task
+        return await task.value
     }
 
     // MARK: - Full Image API (detail views)
@@ -471,6 +557,10 @@ actor ImageCache {
 
     nonisolated private func blurredFillKey(_ url: URL, size: BoxArtThumbnailSize) -> String {
         "blurfill:\(size.rawValue):\(url.path)"
+    }
+
+    private func blurredBackdropKey(_ url: URL) -> String {
+        "blurbg:\(url.path)"
     }
 
     private func imageKey(_ url: URL) -> String {

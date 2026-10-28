@@ -109,6 +109,15 @@ struct TVModeView: View {
     @ObservedObject private var screenCatalog = ScreenCatalog.shared
     @State private var showTVSettingsOverlay: Bool = false
 
+    /// Gates the detail view's insertion (the enter-detail stagger). The rows'
+    /// blur/dim runs first (0.10 s); `detailVisible` flips true only after that
+    /// finishes, so the large hero boxart fades in over already-dimmed rows
+    /// instead of over still-bright, unblurred UI. Stays `true` while shifting
+    /// between games on the detail page, so those crossfades keep running over
+    /// the already-blurred rows.
+    @State private var detailVisible: Bool = false
+    @State private var detailRevealTask: Task<Void, Never>?
+
     /// Refreshed on appear / screen change so the scale tracks the current
     /// display. Held in `@State` so children read a stable value via
     /// `\.tvModeScale` and re-render when it changes.
@@ -127,6 +136,34 @@ struct TVModeView: View {
     var body: some View {
         ZStack {
             contentLayer
+                // Rows blur/dim quickly on a page change (0.10 s) so the
+                // enter-detail stagger only has to wait that long before the
+                // detail view is revealed. The detail-ROM animation covers
+                // `shiftDetailGame`, where `page` doesn't change but
+                // `.id(rom.id)` recreates the detail view; it crossfades over
+                // the already-blurred rows.
+                .animation(.easeInOut(duration: 0.10), value: viewModel.page)
+                .animation(.easeInOut(duration: 0.20), value: viewModel.downloadedDetailROM?.id)
+                // Enter-detail stagger: hold the detail view back until the
+                // rows have finished their fast blur/dim, then reveal it. On
+                // exit, drop the gate immediately so the detail view fades
+                // out while the rows unblur.
+                .onChange(of: viewModel.page) { _, newPage in
+                    detailRevealTask?.cancel()
+                    detailRevealTask = nil
+                    guard newPage == .detail else {
+                        detailVisible = false
+                        return
+                    }
+                    detailVisible = false
+                    detailRevealTask = Task { @MainActor in
+                        try? await Task.sleep(nanoseconds: 100_000_000)
+                        guard !Task.isCancelled else { return }
+                        withAnimation(.easeInOut(duration: 0.20)) {
+                            detailVisible = true
+                        }
+                    }
+                }
             topBar
             bottomHint
             if let hudLabel = viewModel.sortHudLabel {
@@ -207,6 +244,8 @@ struct TVModeView: View {
         }
         .onDisappear {
             GamepadNavContextStack.shared.remove(navContext)
+            detailRevealTask?.cancel()
+            detailRevealTask = nil
             // Fullscreen exit is handled by `ContentView` after it's observed
             // `tvModeSettings.isActive` flip false — that timing is after
             // SwiftUI has mounted `mainInterface`, so the unified toolbar
@@ -261,7 +300,6 @@ struct TVModeView: View {
                 scrimColor: Color.black.opacity(0.45)
             )
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .drawingGroup()
             .allowsHitTesting(false)
         } else if viewModel.theme == .bold {
             TVModeAnimatedAccentBackground()
@@ -311,9 +349,8 @@ struct TVModeView: View {
         }
         .blur(radius: viewModel.page == .detail ? 18 * scale : 0)
         .opacity(viewModel.page == .detail ? 0.25 : 1)
-        .animation(.easeInOut(duration: 0.25), value: viewModel.page)
 
-        if viewModel.page == .detail, let rom = viewModel.downloadedDetailROM {
+        if viewModel.page == .detail, detailVisible, let rom = viewModel.downloadedDetailROM {
             TVModeGameDetailView(
                 rom: rom,
                 theme: viewModel.theme,
