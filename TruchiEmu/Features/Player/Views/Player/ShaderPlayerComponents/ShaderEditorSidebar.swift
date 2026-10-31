@@ -53,6 +53,32 @@ struct ShaderEditorSidebar: View {
         return !settings.uniformValues.isEmpty
     }
 
+    private var uniformsDifferFromDefaults: Bool {
+        guard !settings.shaderPresetID.isEmpty else { return false }
+        // Built-in preset
+        if let preset = ShaderPreset.preset(id: settings.shaderPresetID) {
+            var defaults: [String: Float] = [:]
+            for u in preset.globalUniforms { defaults[u.name] = u.defaultValue }
+            return settings.uniformValues != defaults
+        }
+        // Saved preset – defaults are base preset defaults overridden by saved values
+        if let saved = savedPresets.first(where: { $0.id.uuidString == settings.shaderPresetID }) {
+            if let base = ShaderPreset.preset(id: saved.basePresetID) {
+                var defaults: [String: Float] = [:]
+                for u in base.globalUniforms { defaults[u.name] = u.defaultValue }
+                for (k, v) in saved.uniformValues { defaults[k] = v }
+                return settings.uniformValues != defaults
+            }
+            return !settings.uniformValues.isEmpty
+        }
+        // Slang preset
+        if isSlangPresetSelected {
+            let defaults = slangService.activePreset?.parameterDefaults ?? reflectedSlangParams.reduce(into: [:]) { $0[$1.name] = $1.defaultValue }
+            return settings.uniformValues != defaults
+        }
+        return false
+    }
+
     var body: some View {
         ZStack {
             VStack(spacing: 0) {
@@ -101,6 +127,8 @@ struct ShaderEditorSidebar: View {
                         )
                         ShaderPresetStorageService.shared.save(preset: saved)
                         savedPresets = ShaderPresetStorageService.shared.savedPresets
+                        settings.shaderPresetID = saved.id.uuidString
+                        settings.markApplied()
                         savePresetName = ""
                         showSaveDialog = false
                     }
@@ -125,7 +153,11 @@ struct ShaderEditorSidebar: View {
     }
 
     private var statusBar: some View {
-        HStack(spacing: 8) {
+        let shaderChanged = settings.shaderPresetID != settings.originalPresetID
+        let paramsChanged = uniformsDifferFromDefaults
+        let hasChanges = shaderChanged || paramsChanged
+        let leftTitle = hasChanges ? loc.localized("shader.cancel") : loc.localized("app.close")
+        return HStack(spacing: 8) {
             VStack(alignment: .leading, spacing: 1) {
                 Text("Shader")
                     .font(.caption2)
@@ -137,19 +169,36 @@ struct ShaderEditorSidebar: View {
 
             Spacer()
 
-            Button(loc.localized("shader.cancel")) {
+            Button(leftTitle) {
                 requestDismiss()
             }
             .buttonStyle(.bordered)
             .controlSize(.small)
 
-            Button(action: applyAndSave) {
-                Label(loc.localized("shader.applyAndSave"), systemImage: "checkmark")
-                    .font(.caption.weight(.semibold))
+            Button {
+                if paramsChanged {
+                    savePresetName = "\(shaderName) Custom"
+                    showSaveDialog = true
+                } else if shaderChanged {
+                    onApply(settings.shaderPresetID, settings.uniformValues)
+                    settings.markApplied()
+                } else {
+                    applyAndSave()
+                }
+            } label: {
+                Label(
+                    paramsChanged ? loc.localized("shader.saveAs") :
+                    shaderChanged ? loc.localized("shader.apply") :
+                    loc.localized("shader.applyAndSave"),
+                    systemImage: paramsChanged ? "square.and.arrow.up" :
+                                 shaderChanged ? "checkmark" : "checkmark"
+                )
+                .font(.caption.weight(.semibold))
             }
             .buttonStyle(.borderedProminent)
             .controlSize(.small)
             .tint(AppColors.brandAccentSecondary)
+            .disabled(!hasChanges)
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
