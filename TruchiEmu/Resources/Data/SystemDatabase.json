@@ -52,7 +52,7 @@
       "Nintendo - Nintendo Entertainment System",
       "Nintendo - Family Computer Disk System"
     ],
-    "defaultShaderPresetID": "builtin-crt-classic"
+    "defaultShaderPresetID": "builtin-rf-decoder"
   },
   {
     "year": "1990",
@@ -368,7 +368,7 @@
       "master system",
       "sega master system"
     ],
-    "defaultShaderPresetID": "builtin-crt-classic"
+    "defaultShaderPresetID": "builtin-rf-decoder"
   },
   {
     "year": "1990",
@@ -794,7 +794,7 @@
     "database": [
       "Atari - 2600"
     ],
-    "defaultShaderPresetID": "builtin-crt-classic"
+    "defaultShaderPresetID": "builtin-rf-decoder"
   },
   {
     "year": "1982",
@@ -841,7 +841,7 @@
     "database": [
       "Atari - 7800"
     ],
-    "defaultShaderPresetID": "builtin-crt-classic"
+    "defaultShaderPresetID": "builtin-rf-decoder"
   },
   {
     "year": "1989",
@@ -1139,7 +1139,7 @@
     "database": [
       "Mattel - Intellivision"
     ],
-    "defaultShaderPresetID": "builtin-crt-classic"
+    "defaultShaderPresetID": "builtin-rf-decoder"
   },
   {
     "year": "2001",
@@ -1202,7 +1202,7 @@
     "database": [
       "Mattel - Intellivision"
     ],
-    "defaultShaderPresetID": "builtin-crt-classic"
+    "defaultShaderPresetID": "builtin-rf-decoder"
   },
   {
     "year": "1984",
@@ -3188,7 +3188,7 @@
     "database": [
       "Coleco - ColecoVision"
     ],
-    "defaultShaderPresetID": "builtin-crt-classic"
+    "defaultShaderPresetID": "builtin-rf-decoder"
   },
   {
     "year": "1983",
@@ -3706,7 +3706,7 @@
     "database": [
       "Sega - SG-1000"
     ],
-    "defaultShaderPresetID": "builtin-crt-classic"
+    "defaultShaderPresetID": "builtin-rf-decoder"
   },
   {
     "year": "1983",
@@ -3732,7 +3732,7 @@
     "database": [
       "Sega - SC-3000"
     ],
-    "defaultShaderPresetID": "builtin-crt-classic"
+    "defaultShaderPresetID": "builtin-rf-decoder"
   },
   {
     "year": "1986",

@@ -306,10 +306,10 @@ extension ShaderPreset {
             globalUniforms: [
                 ShaderUniform(name: "useComposite", defaultValue: 0.0, minValue: 0.0, maxValue: 1.0, displayName: "Use Composite", category: "Analog Signal", type: .toggle),
                 ShaderUniform(name: "compositeAmount", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, displayName: "Composite Amount", category: "Analog Signal"),
-                ShaderUniform(name: "subcarrierPhase", defaultValue: 1.875, minValue: 1.15, maxValue: 3.0, displayName: "Subcarrier Pitch", category: "Analog Signal"),
-                ShaderUniform(name: "dotCrawl", defaultValue: 0.4, minValue: 0.0, maxValue: 1.0, displayName: "Dot Crawl", category: "Analog Signal"),
+                ShaderUniform(name: "subcarrierPhase", defaultValue: 1.19, minValue: 1.15, maxValue: 3.0, displayName: "Subcarrier Pitch", category: "Analog Signal"),
+                ShaderUniform(name: "dotCrawl", defaultValue: 0.11, minValue: 0.0, maxValue: 1.0, displayName: "Dot Crawl", category: "Analog Signal"),
                 ShaderUniform(name: "blendOnly", defaultValue: 0.0, minValue: 0.0, maxValue: 1.0, displayName: "Blend Only", category: "Analog Signal", type: .toggle),
-                ShaderUniform(name: "combMode", defaultValue: 0.0, minValue: 0.0, maxValue: 4.0, displayName: "Comb Filter", category: "Analog Signal", type: .dropdown, options: [ShaderUniformOption(value: 0, label: "Off"), ShaderUniformOption(value: 1, label: "Notch"), ShaderUniformOption(value: 2, label: "2-Line"), ShaderUniformOption(value: 3, label: "3-Line"), ShaderUniformOption(value: 4, label: "Adaptive")]),
+                ShaderUniform(name: "combMode", defaultValue: 4.0, minValue: 0.0, maxValue: 4.0, displayName: "Comb Filter", category: "Analog Signal", type: .dropdown, options: [ShaderUniformOption(value: 0, label: "Off"), ShaderUniformOption(value: 1, label: "Notch"), ShaderUniformOption(value: 2, label: "2-Line"), ShaderUniformOption(value: 3, label: "3-Line"), ShaderUniformOption(value: 4, label: "Adaptive")]),
                 ShaderUniform(name: "palMode", defaultValue: 0.0, minValue: 0.0, maxValue: 1.0, displayName: "PAL Mode", category: "Analog Signal", type: .toggle),
                 ShaderUniform(name: "hanoverBars", defaultValue: 0.0, minValue: 0.0, maxValue: 1.0, displayName: "Hanover Bars", category: "Analog Signal"),
 
@@ -320,12 +320,12 @@ extension ShaderPreset {
                 ShaderUniform(name: "tuningDrift", defaultValue: 0.3, minValue: 0.0, maxValue: 1.0, displayName: "Tuning Drift", category: "RF Signal"),
 
                 ShaderUniform(name: "useBlur", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, displayName: "Use Amplifier Blur", category: "CRT Amplifier", type: .toggle),
-                ShaderUniform(name: "amplifierBlur", defaultValue: 0.5, minValue: 0.0, maxValue: 1.0, displayName: "Amplifier Blur", category: "CRT Amplifier"),
-                ShaderUniform(name: "overshoot", defaultValue: 0.3, minValue: 0.0, maxValue: 1.0, displayName: "Overshoot", category: "CRT Amplifier"),
+                ShaderUniform(name: "amplifierBlur", defaultValue: 0.21, minValue: 0.0, maxValue: 1.0, displayName: "Amplifier Blur", category: "CRT Amplifier"),
+                ShaderUniform(name: "overshoot", defaultValue: 0.81, minValue: 0.0, maxValue: 1.0, displayName: "Overshoot", category: "CRT Amplifier"),
                 ShaderUniform(name: "useConv", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, displayName: "Use Convergence", category: "CRT Amplifier", type: .toggle),
-                ShaderUniform(name: "convH", defaultValue: 1.0, minValue: 0.0, maxValue: 3.0, displayName: "Convergence H", category: "CRT Amplifier"),
-                ShaderUniform(name: "convV", defaultValue: 0.5, minValue: 0.0, maxValue: 3.0, displayName: "Convergence V", category: "CRT Amplifier"),
-                ShaderUniform(name: "cornerConv", defaultValue: 0.6, minValue: 0.0, maxValue: 1.0, displayName: "Corner Convergence", category: "CRT Amplifier"),
+                ShaderUniform(name: "convH", defaultValue: 0.23, minValue: 0.0, maxValue: 3.0, displayName: "Convergence H", category: "CRT Amplifier"),
+                ShaderUniform(name: "convV", defaultValue: 0.14, minValue: 0.0, maxValue: 3.0, displayName: "Convergence V", category: "CRT Amplifier"),
+                ShaderUniform(name: "cornerConv", defaultValue: 0.31, minValue: 0.0, maxValue: 1.0, displayName: "Corner Convergence", category: "CRT Amplifier"),
 
                 ShaderUniform(name: "useScanlines", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, displayName: "Use Scanlines", category: "Scanlines", type: .toggle),
                 ShaderUniform(name: "scanlineStrength", defaultValue: 0.75, minValue: 0.0, maxValue: 1.0, displayName: "Scanline Strength", category: "Scanlines"),
@@ -333,9 +333,9 @@ extension ShaderPreset {
                 ShaderUniform(name: "scanBrightWidth", defaultValue: 1.0, minValue: 0.5, maxValue: 1.0, displayName: "Scan Bright Width", category: "Scanlines"),
 
                 ShaderUniform(name: "useMask", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, displayName: "Use Mask", category: "Shadow Mask", type: .toggle),
-                ShaderUniform(name: "maskType", defaultValue: 0.0, minValue: 0.0, maxValue: 2.0, displayName: "Mask Type", category: "Shadow Mask", type: .dropdown, options: [ShaderUniformOption(value: 0, label: "Aperture"), ShaderUniformOption(value: 1, label: "Slot"), ShaderUniformOption(value: 2, label: "Dot")]),
-                ShaderUniform(name: "maskStrength", defaultValue: 0.4, minValue: 0.0, maxValue: 1.0, displayName: "Mask Strength", category: "Shadow Mask"),
-                ShaderUniform(name: "maskPitch", defaultValue: 4.0, minValue: 3.0, maxValue: 8.0, displayName: "Mask Pitch", category: "Shadow Mask"),
+                ShaderUniform(name: "maskType", defaultValue: 1.0, minValue: 0.0, maxValue: 2.0, displayName: "Mask Type", category: "Shadow Mask", type: .dropdown, options: [ShaderUniformOption(value: 0, label: "Aperture"), ShaderUniformOption(value: 1, label: "Slot"), ShaderUniformOption(value: 2, label: "Dot")]),
+                ShaderUniform(name: "maskStrength", defaultValue: 0.06, minValue: 0.0, maxValue: 1.0, displayName: "Mask Strength", category: "Shadow Mask"),
+                ShaderUniform(name: "maskPitch", defaultValue: 3.49, minValue: 3.0, maxValue: 8.0, displayName: "Mask Pitch", category: "Shadow Mask"),
 
                 ShaderUniform(name: "useGlow", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, displayName: "Use Glow", category: "Phosphor", type: .toggle),
                 ShaderUniform(name: "glowStrength", defaultValue: 0.5, minValue: 0.0, maxValue: 1.0, displayName: "Phosphor Glow", category: "Phosphor"),
@@ -343,12 +343,12 @@ extension ShaderPreset {
                 ShaderUniform(name: "glowTint", defaultValue: 0.5, minValue: 0.0, maxValue: 1.0, displayName: "Glow Tint", category: "Phosphor"),
 
                 ShaderUniform(name: "beamScanMode", defaultValue: 0.0, minValue: 0.0, maxValue: 3.0, displayName: "Beam Scan", category: "Beam Scan", type: .dropdown, options: [ShaderUniformOption(value: 0, label: "Off"), ShaderUniformOption(value: 1, label: "Rolling Scan"), ShaderUniformOption(value: 2, label: "Bright Strobe"), ShaderUniformOption(value: 3, label: "Classic BFI")]),
-                ShaderUniform(name: "persistence", defaultValue: 0.5, minValue: 0.0, maxValue: 1.0, displayName: "Persistence", category: "Beam Scan"),
-                ShaderUniform(name: "strobeLength", defaultValue: 0.5, minValue: 0.0, maxValue: 1.0, displayName: "Strobe Length", category: "Beam Scan"),
+                ShaderUniform(name: "persistence", defaultValue: 0.22, minValue: 0.0, maxValue: 1.0, displayName: "Persistence", category: "Beam Scan"),
+                ShaderUniform(name: "strobeLength", defaultValue: 0.73, minValue: 0.0, maxValue: 1.0, displayName: "Strobe Length", category: "Beam Scan"),
 
                 ShaderUniform(name: "useCurvature", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, displayName: "Use Curvature", category: "Geometry", type: .toggle),
                 ShaderUniform(name: "curvature", defaultValue: 0.06, minValue: 0.0, maxValue: 0.15, displayName: "Curvature", category: "Geometry"),
-                ShaderUniform(name: "cornerRadius", defaultValue: 0.02, minValue: 0.0, maxValue: 0.1, displayName: "Corner Radius", category: "Geometry"),
+                ShaderUniform(name: "cornerRadius", defaultValue: 0.04, minValue: 0.0, maxValue: 0.1, displayName: "Corner Radius", category: "Geometry"),
                 ShaderUniform(name: "tubeSag", defaultValue: 0.2, minValue: 0.0, maxValue: 1.0, displayName: "Tube Sag", category: "Geometry"),
 
                 ShaderUniform(name: "bezelReflection", defaultValue: 0.5, minValue: 0.0, maxValue: 1.0, displayName: "Bezel Reflection", category: "Bezel"),
@@ -488,11 +488,11 @@ globalUniforms: [
             ],
             globalUniforms: [
                 // Decode-stage RF knobs (digital -> RF -> decoder)
-                ShaderUniform(name: "signalStrength", defaultValue: 1.0, minValue: 0.2, maxValue: 1.0, step: 0.01, displayName: "Signal Strength"),
-                ShaderUniform(name: "snowAmount", defaultValue: 0.0, minValue: 0.0, maxValue: 1.0, displayName: "Snow / Noise"),
+                ShaderUniform(name: "signalStrength", defaultValue: 0.9, minValue: 0.2, maxValue: 1.0, step: 0.01, displayName: "Signal Strength"),
+                ShaderUniform(name: "snowAmount", defaultValue: 0.2, minValue: 0.0, maxValue: 1.0, displayName: "Snow / Noise"),
                 ShaderUniform(name: "tuningHz", defaultValue: 0.0, minValue: -200000.0, maxValue: 200000.0, step: 1000.0, displayName: "Carrier Offset (Hz)"),
-                ShaderUniform(name: "ghosting", defaultValue: 0.25, minValue: 0.0, maxValue: 1.0, displayName: "Multipath Ghosting"),
-                ShaderUniform(name: "instability", defaultValue: 0.1, minValue: 0.0, maxValue: 1.0, displayName: "Reception Instability"),
+                ShaderUniform(name: "ghosting", defaultValue: 0.3, minValue: 0.0, maxValue: 1.0, displayName: "Multipath Ghosting"),
+                ShaderUniform(name: "instability", defaultValue: 0.3, minValue: 0.0, maxValue: 1.0, displayName: "Reception Instability"),
                 ShaderUniform(name: "saturation", defaultValue: 1.0, minValue: 0.0, maxValue: 2.0, displayName: "Saturation"),
                 ShaderUniform(name: "hue", defaultValue: 0.0, minValue: -180.0, maxValue: 180.0, displayName: "Hue Trim"),
                 ShaderUniform(name: "colorMode", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, displayName: "Color Mode", type: .toggle),
