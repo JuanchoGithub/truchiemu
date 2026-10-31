@@ -706,6 +706,7 @@
   {
     "year": "2011",
     "id": "psvita",
+    "emuIconName": "PSVITA",
     "name": "PlayStation Vita",
     "pathKeywords": [
       "psvita",
@@ -919,6 +920,7 @@
   {
     "year": "1999",
     "id": "ngpc",
+    "emuIconName": "NGP",
     "name": "Neo Geo Pocket Color",
     "pathKeywords": [
       "ngpc",
@@ -1084,6 +1086,7 @@
     "year": "1985",
     "displayInUI": true,
     "id": "amiga",
+    "emuIconName": "AMIGA",
     "name": "Commodore Amiga",
     "extensions": [
       "7z",
@@ -1123,6 +1126,7 @@
     "year": "1979",
     "displayInUI": true,
     "id": "intellivision",
+    "emuIconName": "INTELLIVISION",
     "name": "Intellivision",
     "extensions": [
       "bin",
@@ -1145,6 +1149,7 @@
     "year": "2001",
     "displayInUI": true,
     "id": "pokemon_mini",
+    "emuIconName": "POKEMINI",
     "name": "Pokemon Mini",
     "extensions": [
       "min"
@@ -1163,6 +1168,7 @@
     "year": "1992",
     "displayInUI": true,
     "id": "wolfenstein3d",
+    "emuIconName": "WOLF",
     "name": "Wolfenstein 3D Game Engine",
     "extensions": [
       "exe",
@@ -1186,6 +1192,7 @@
     "year": "1979",
     "displayInUI": true,
     "id": "intv",
+    "emuIconName": "INTELLIVISION",
     "name": "Intellivision",
     "extensions": [
       "bin",
@@ -1208,6 +1215,7 @@
     "year": "1984",
     "displayInUI": true,
     "id": "mac68k",
+    "emuIconName": "VMAC",
     "name": "Mac68k",
     "extensions": [
       "cmd",
@@ -1230,6 +1238,7 @@
     "year": "1981",
     "displayInUI": true,
     "id": "epochcv",
+    "emuIconName": "EPOCHCV",
     "name": "Epoch Cassette Vision",
     "extensions": [
       "bin777",
@@ -1250,6 +1259,7 @@
     "year": "2008",
     "displayInUI": true,
     "id": "uzebox",
+    "emuIconName": "UZEBOX",
     "name": "Uzebox",
     "extensions": [
       "uze"
@@ -1267,6 +1277,7 @@
     "year": "1993",
     "displayInUI": true,
     "id": "doom",
+    "emuIconName": "DOOM",
     "name": "DOOM Game Engine",
     "extensions": [
       "iwad",
@@ -1287,6 +1298,7 @@
     "year": "1972",
     "displayInUI": true,
     "id": "dice",
+    "emuIconName": "ARCADE",
     "name": "Arcade (various)",
     "extensions": [
       "7z",
@@ -1314,6 +1326,7 @@
     "year": "1985",
     "displayInUI": true,
     "id": "commodore_amiga",
+    "emuIconName": "AMIGA",
     "name": "Amiga",
     "extensions": [
       "/",
@@ -1355,6 +1368,7 @@
     "year": "1995",
     "displayInUI": true,
     "id": "sdlpal",
+    "emuIconName": "SDLPAL",
     "name": "SDLPAL",
     "extensions": [
       "cfg"
@@ -1372,6 +1386,7 @@
     "year": "1999",
     "displayInUI": true,
     "id": "wonderswan",
+    "emuIconName": "WS",
     "name": "WonderSwan/Color",
     "extensions": [
       "pc2",
@@ -1392,6 +1407,7 @@
     "year": "2000",
     "displayInUI": true,
     "id": "wonderswancolor",
+    "emuIconName": "WSC",
     "name": "WonderSwan Color",
     "extensions": [
       "pc2",
@@ -1412,6 +1428,7 @@
     "year": "2014",
     "displayInUI": true,
     "id": "2048",
+    "emuIconName": "GAME2048",
     "name": "2048 Game Clone",
     "extensions": [
       ""
@@ -1429,6 +1446,7 @@
     "year": "1993",
     "displayInUI": true,
     "id": "atari_jaguar",
+    "emuIconName": "JAGUAR",
     "name": "Jaguar",
     "extensions": [
       "abs",
@@ -1453,6 +1471,7 @@
     "year": "1985",
     "displayInUI": true,
     "id": "atari_st",
+    "emuIconName": "ATARIST",
     "name": "Atari ST/STE/TT/Falcon",
     "extensions": [
       "dim",
@@ -1481,6 +1500,7 @@
     "year": "1999",
     "displayInUI": true,
     "id": "quake_3",
+    "emuIconName": "TYRQUAKE",
     "name": "Quake 3 Game Engine",
     "extensions": [
       "pk3"
@@ -1499,6 +1519,7 @@
     "year": "1982",
     "displayInUI": true,
     "id": "commodore_64",
+    "emuIconName": "C64",
     "name": "C64",
     "extensions": [
       "bin",
@@ -1547,6 +1568,7 @@
     "year": "1982",
     "displayInUI": true,
     "id": "pc_98",
+    "emuIconName": "PC98",
     "name": "PC-98",
     "extensions": [
       "2hd",
@@ -1582,6 +1604,7 @@
   {
     "displayInUI": true,
     "id": "mess",
+    "emuIconName": "MESS",
     "name": "Multi (various)",
     "extensions": [
       "7z",
@@ -1603,6 +1626,7 @@
     "year": "2013",
     "displayInUI": true,
     "id": "puzzlescript",
+    "emuIconName": "PUZZLESCRIPT",
     "name": "PuzzleScript",
     "extensions": [
       "pz",
@@ -1621,6 +1645,7 @@
     "year": "1996",
     "displayInUI": true,
     "id": "ti_83",
+    "emuIconName": "TI83",
     "name": "TI83",
     "extensions": [
       "8xg",
@@ -1640,6 +1665,7 @@
     "year": "1972",
     "displayInUI": true,
     "id": "hbmame",
+    "emuIconName": "MAME",
     "name": "Arcade (various)",
     "extensions": [
       "7z",
@@ -1667,6 +1693,7 @@
     "year": "2017",
     "displayInUI": true,
     "id": "chailove",
+    "emuIconName": "CHAILOVE",
     "name": "ChaiLove",
     "extensions": [
       "chai",
@@ -1685,6 +1712,7 @@
     "year": "1995",
     "displayInUI": true,
     "id": "virtual_boy",
+    "emuIconName": "VB",
     "name": "Virtual Boy",
     "extensions": [
       "bin",
@@ -1704,6 +1732,7 @@
     "year": "2016",
     "displayInUI": true,
     "id": "arduboy",
+    "emuIconName": "ARDUBOY",
     "name": "Arduboy",
     "extensions": [
       "arduboy",
@@ -1723,6 +1752,7 @@
     "year": "1977",
     "displayInUI": true,
     "id": "commodore_pet",
+    "emuIconName": "CPET",
     "name": "PET",
     "extensions": [
       "/",
@@ -1772,6 +1802,7 @@
     "year": "2021",
     "displayInUI": true,
     "id": "uw8",
+    "emuIconName": "UW8",
     "name": "MicroW8",
     "extensions": [
       "uw8",
@@ -1789,6 +1820,7 @@
   {
     "displayInUI": true,
     "id": "cruzes",
+    "emuIconName": "CRUZES",
     "name": "Cruzes",
     "extensions": [
       "game"
@@ -1805,6 +1837,7 @@
   {
     "displayInUI": true,
     "id": "game_music",
+    "emuIconName": "GAME_MUSIC",
     "name": "Music",
     "extensions": [
       "ay",
@@ -1835,6 +1868,7 @@
     "year": "1983",
     "displayInUI": true,
     "id": "laserdisc",
+    "emuIconName": "DAPHNE",
     "name": "Laserdisc arcade game",
     "extensions": [
       "dirksimple",
@@ -1853,6 +1887,7 @@
     "year": "1996",
     "displayInUI": true,
     "id": "tamagotchi",
+    "emuIconName": "TAMAGOTCHI",
     "name": "Tamagotchi P1",
     "extensions": [
       "b",
@@ -1872,6 +1907,7 @@
     "year": "1997",
     "displayInUI": true,
     "id": "commodore_c64_supercpu",
+    "emuIconName": "C64",
     "name": "C64 SuperCPU",
     "extensions": [
       "",
@@ -1923,6 +1959,7 @@
 {
   "year": "1977",
   "id": "apple_ii",
+  "emuIconName": "APPLE_II",
     "name": "II",
     "extensions": [
       "2img",
@@ -1954,6 +1991,7 @@
   {
     "displayInUI": true,
     "id": "music",
+    "emuIconName": "MUSIC",
     "name": "Music",
     "extensions": [
       "ay",
@@ -1983,6 +2021,7 @@
   {
     "displayInUI": true,
     "id": "gam4980",
+    "emuIconName": "GAM4980",
     "name": "Longman 4980",
     "extensions": [
       "gam"
@@ -2000,6 +2039,7 @@
     "year": "1981",
     "displayInUI": true,
     "id": "bbcmicro",
+    "emuIconName": "BBCMICRO",
     "name": "BBC Micro",
     "extensions": [
       "dsd",
@@ -2018,6 +2058,7 @@
     "year": "1999",
     "displayInUI": true,
     "id": "onscripter",
+    "emuIconName": "ONSCRIPTER",
     "name": "ONScripter",
     "extensions": [
       "/",
@@ -2037,6 +2078,7 @@
     "year": "2007",
     "displayInUI": true,
     "id": "syobonaction",
+    "emuIconName": "SYOBONACTION",
     "name": "SyobonAction",
     "extensions": [],
     "defaultBoxType": "Landscape",
@@ -2052,6 +2094,7 @@
     "year": "1985",
     "displayInUI": true,
     "id": "commodore_c128",
+    "emuIconName": "C64",
     "name": "C128",
     "extensions": [
       "/",
@@ -2100,6 +2143,7 @@
     "year": "1984",
     "displayInUI": true,
     "id": "cpc",
+    "emuIconName": "CPC",
     "name": "CPC/GX4000",
     "extensions": [
       "cdt",
@@ -2127,6 +2171,7 @@
     "year": "1977",
     "displayInUI": true,
     "id": "chip_8",
+    "emuIconName": "CHIP8",
     "name": "CHIP-8",
     "extensions": [
       "bin",
@@ -2148,6 +2193,7 @@
     "year": "1982",
     "displayInUI": true,
     "id": "commodore_cbm2",
+    "emuIconName": "CBM2",
     "name": "CBM-II",
     "extensions": [
       "2img",
@@ -2208,6 +2254,7 @@
     "year": "1985",
     "displayInUI": true,
     "id": "ep128",
+    "emuIconName": "ENTERPRISE",
     "name": "128",
     "extensions": [
       "/",
@@ -2255,6 +2302,7 @@
   {
     "displayInUI": true,
     "id": "rvvm",
+    "emuIconName": "RVVM",
     "name": "RVVM",
     "extensions": [
       "rvvm"
@@ -2272,6 +2320,7 @@
     "year": "1998",
     "displayInUI": true,
     "id": "bomberman",
+    "emuIconName": "BOMBERMAN",
     "name": "Mr.Boom",
     "extensions": [
       "desktop"
@@ -2290,6 +2339,7 @@
     "year": "1982",
     "displayInUI": true,
     "id": "jollycv",
+    "emuIconName": "COLECO",
     "name": "ColecoVision/CreatiVision/My Vision",
     "extensions": [
       "bin",
@@ -2311,6 +2361,7 @@
     "year": "2004",
     "displayInUI": true,
     "id": "nxengine",
+    "emuIconName": "CAVESTORY",
     "name": "Cave Story Game Engine",
     "extensions": [
       "dll",
@@ -2331,6 +2382,7 @@
     "year": "2017",
     "displayInUI": true,
     "id": "tic80",
+    "emuIconName": "TIC",
     "name": "TIC-80",
     "extensions": [
       "tic"
@@ -2348,6 +2400,7 @@
     "year": "1983",
     "displayInUI": true,
     "id": "msx",
+    "emuIconName": "MSX",
     "name": "MSX",
     "extensions": [
       "cas",
@@ -2376,6 +2429,7 @@
     "year": "2007",
     "displayInUI": true,
     "id": "bgdi",
+    "emuIconName": "BGDI",
     "name": "Bennu Game Development",
     "extensions": [
       "dcb",
@@ -2394,6 +2448,7 @@
     "year": "2004",
     "displayInUI": true,
     "id": "commodore_c64dtv",
+    "emuIconName": "C64",
     "name": "C64DTV",
     "extensions": [
       "/",
@@ -2442,6 +2497,7 @@
     "year": "1982",
     "displayInUI": true,
     "id": "commodore_c64",
+    "emuIconName": "C64",
     "name": "C64",
     "extensions": [
       "/",
@@ -2491,6 +2547,7 @@
     "year": "1999",
     "displayInUI": true,
     "id": "J2ME",
+    "emuIconName": "J2ME",
     "name": "Java ME",
     "extensions": [
       "adf",
@@ -2526,6 +2583,7 @@
     "year": "2001",
     "displayInUI": true,
     "id": "xbox",
+    "emuIconName": "XBOX",
     "name": "Xbox",
     "extensions": [
       "iso"
@@ -2548,6 +2606,7 @@
   {
     "displayInUI": true,
     "id": "redbook",
+    "emuIconName": "REDBOOK",
     "name": "Redbook",
     "extensions": [
       "bin",
@@ -2566,6 +2625,7 @@
     "year": "1991",
     "displayInUI": true,
     "id": "cdi",
+    "emuIconName": "CDI",
     "name": "CD-i",
     "extensions": [
       "chd",
@@ -2591,6 +2651,7 @@
     "year": "1996",
     "displayInUI": true,
     "id": "quake_1",
+    "emuIconName": "QUAKE",
     "name": "Quake Game Engine",
     "extensions": [
       "pak"
@@ -2609,6 +2670,7 @@
     "year": "2015",
     "displayInUI": true,
     "id": "pico8",
+    "emuIconName": "PICO",
     "name": "PICO-8",
     "extensions": [
       "p8",
@@ -2627,6 +2689,7 @@
     "year": "1996",
     "displayInUI": true,
     "id": "openlara",
+    "emuIconName": "OPENLARA",
     "name": "Classic Tomb Raider engine",
     "extensions": [
       "phd",
@@ -2647,6 +2710,7 @@
     "year": "2004",
     "displayInUI": true,
     "id": "doom_3",
+    "emuIconName": "DOOM3",
     "name": "Doom 3 XP Game Engine",
     "extensions": [
       "pk4"
@@ -2664,6 +2728,7 @@
     "year": "1982",
     "displayInUI": true,
     "id": "arcadia",
+    "emuIconName": "ARCADIA",
     "name": "Arcadia 2001",
     "extensions": [
       "bin",
@@ -2683,6 +2748,7 @@
     "year": "2021",
     "displayInUI": true,
     "id": "uxn",
+    "emuIconName": "UXN",
     "name": "Uxn / Varvara",
     "extensions": [
       "rom"
@@ -2745,6 +2811,7 @@
     "year": "1972",
     "displayInUI": true,
     "id": "gong",
+    "emuIconName": "GONG",
     "name": "Pong Game Clone",
     "extensions": [
       ""
@@ -2762,6 +2829,7 @@
     "year": "1979",
     "displayInUI": true,
     "id": "pc_88",
+    "emuIconName": "PC88",
     "name": "PC-8000 / PC-8800 series",
     "extensions": [
       "bat",
@@ -2783,6 +2851,7 @@
     "year": "1991",
     "displayInUI": true,
     "id": "cdi2015",
+    "emuIconName": "CDI",
     "name": "CDi",
     "extensions": [
       "chd"
@@ -2800,6 +2869,7 @@
     "year": "1984",
     "displayInUI": true,
     "id": "commodore_plus4",
+    "emuIconName": "CPLUS4",
     "name": "PLUS/4",
     "extensions": [
       "/",
@@ -2848,6 +2918,7 @@
     "year": "1998",
     "displayInUI": true,
     "id": "jumpnbump",
+    "emuIconName": "JUMPNBUMP",
     "name": "Jumpnbump",
     "extensions": [],
     "defaultBoxType": "Landscape",
@@ -2863,6 +2934,7 @@
     "year": "1980",
     "displayInUI": true,
     "id": "commodore_vic20",
+    "emuIconName": "VIC20",
     "name": "VIC-20",
     "extensions": [
       "/",
@@ -2917,6 +2989,7 @@
     "year": "1982",
     "displayInUI": true,
     "id": "sharp_x1",
+    "emuIconName": "X1",
     "name": "Sharp X1",
     "extensions": [
       "2d",
@@ -2946,6 +3019,7 @@
     "year": "1993",
     "displayInUI": true,
     "id": "mega_duck",
+    "emuIconName": "MEGADUCK",
     "name": "Mega Duck",
     "extensions": [
       "bin",
@@ -2964,6 +3038,7 @@
     "year": "1997",
     "displayInUI": true,
     "id": "quake_2",
+    "emuIconName": "TYRQUAKE",
     "name": "Quake II Game Engine",
     "extensions": [
       "2img",
@@ -2997,6 +3072,7 @@
     "year": "2001",
     "displayInUI": true,
     "id": "gamecube",
+    "emuIconName": "NGC",
     "pathKeywords": [
       "gamecube",
       "gc",
@@ -3038,6 +3114,7 @@
     "year": "2006",
     "displayInUI": true,
     "id": "wii",
+    "emuIconName": "WII",
     "pathKeywords": [
       "wii",
       "nintendo wii"
@@ -3077,6 +3154,7 @@
   {
     "displayInUI": true,
     "id": "switch",
+    "emuIconName": "SWITCH",
     "year": "2017",
     "pathKeywords": [
       "switch",
@@ -3106,6 +3184,7 @@
     "year": "2024",
     "displayInUI": true,
     "id": "taylor",
+    "emuIconName": "TAYLOR",
     "name": "C713",
     "extensions": [],
     "defaultBoxType": "Landscape",
@@ -3121,6 +3200,7 @@
     "year": "1987",
     "displayInUI": true,
     "id": "sharp_x68000",
+    "emuIconName": "X68000",
     "name": "Sharp X68000",
     "extensions": [
       "2hd",
@@ -3148,6 +3228,7 @@
     "year": "1983",
     "displayInUI": true,
     "id": "pcxt",
+    "emuIconName": "PCXT",
     "name": "PC/XT",
     "extensions": [
       "img",
@@ -3167,6 +3248,7 @@
     "year": "1982",
     "displayInUI": true,
     "id": "colecovision",
+    "emuIconName": "COLECO",
     "name": "ColecoVision",
     "extensions": [
       "cas",
@@ -3194,6 +3276,7 @@
     "year": "1983",
     "displayInUI": true,
     "id": "daphne",
+    "emuIconName": "DAPHNE",
     "name": "Arcade (various)",
     "extensions": [
       "7z",
@@ -3221,6 +3304,7 @@
     "year": "1978",
     "displayInUI": true,
     "id": "odyssey2",
+    "emuIconName": "VIDEOPAC",
     "name": "Magnavox Odyssey2 / Philips Videopac+",
     "extensions": [
       "bin"
@@ -3239,6 +3323,7 @@
     "year": "1980",
     "displayInUI": true,
     "id": "p2000t",
+    "emuIconName": "P2000T",
     "name": "P2000T",
     "extensions": [
       "cas"
@@ -3256,6 +3341,7 @@
     "year": "2018",
     "displayInUI": true,
     "id": "lowresnx",
+    "emuIconName": "LOWRESNX",
     "name": "LowRes NX",
     "extensions": [
       "nx"
@@ -3273,6 +3359,7 @@
     "year": "1982",
     "displayInUI": true,
     "id": "zx_spectrum",
+    "emuIconName": "ZXS",
     "name": "ZX Spectrum (various)",
     "extensions": [
       "dck",
@@ -3302,6 +3389,7 @@
     "year": "2004",
     "displayInUI": true,
     "id": "doukutsu-rs",
+    "emuIconName": "CAVESTORY",
     "name": "Cave Story Game Engine",
     "extensions": [
       "dll",
@@ -3322,6 +3410,7 @@
     "year": "2019",
     "displayInUI": true,
     "id": "anarch",
+    "emuIconName": "ANARCH",
     "name": "Anarch",
     "extensions": [],
     "defaultBoxType": "Landscape",
@@ -3337,6 +3426,7 @@
     "year": "2021",
     "displayInUI": true,
     "id": "wasm4",
+    "emuIconName": "WASM4",
     "name": "WASM-4",
     "extensions": [
       "wasm"
@@ -3354,6 +3444,7 @@
     "year": "2011",
     "displayInUI": true,
     "id": "craft",
+    "emuIconName": "CRAFT",
     "name": "Minecraft Game Clone",
     "extensions": [
       ""
@@ -3371,6 +3462,7 @@
     "year": "1982",
     "displayInUI": true,
     "id": "commodore_cbm5x0",
+    "emuIconName": "CBM2",
     "name": "CBM-5x0",
     "extensions": [
       "/",
@@ -3418,6 +3510,7 @@
   {
     "displayInUI": true,
     "id": "adv_test_core",
+    "emuIconName": "ADVTESTCORE",
     "name": "Advanced Test Core",
     "extensions": [],
     "defaultBoxType": "Landscape",
@@ -3433,6 +3526,7 @@
     "year": "1992",
     "displayInUI": true,
     "id": "supervision",
+    "emuIconName": "SUPERVISION",
     "name": "Supervision",
     "extensions": [
       "bin",
@@ -3450,6 +3544,7 @@
   {
     "displayInUI": true,
     "id": "superbroswar",
+    "emuIconName": "SUPERBROSWAR",
     "name": "Superbroswar",
     "extensions": [],
     "defaultBoxType": "Landscape",
@@ -3465,6 +3560,7 @@
     "year": "1989",
     "displayInUI": true,
     "id": "xrick",
+    "emuIconName": "XRICK",
     "name": "Rick Dangerous Game Engine",
     "extensions": [
       "zip",
@@ -3483,6 +3579,7 @@
     "year": "1981",
     "displayInUI": true,
     "id": "zx81",
+    "emuIconName": "ZX81",
     "name": "ZX81",
     "extensions": [
       "p",
@@ -3503,6 +3600,7 @@
     "year": "2013",
     "displayInUI": true,
     "id": "dinothawr",
+    "emuIconName": "DINOTHAWR",
     "name": "Dinothawr Game Engine",
     "extensions": [
       "game"
@@ -3519,6 +3617,7 @@
   {
     "displayInUI": true,
     "id": "vaporspec",
+    "emuIconName": "VAPORSPEC",
     "name": "VaporSpec",
     "extensions": [
       "vaporbin"
@@ -3536,6 +3635,7 @@
     "year": "1979",
     "displayInUI": true,
     "id": "zmachine",
+    "emuIconName": "ZMACHINE",
     "name": "Z-Machine",
     "extensions": [
       "z1",
@@ -3554,6 +3654,7 @@
     "year": "2021",
     "displayInUI": true,
     "id": "vircon32",
+    "emuIconName": "VIRCON32",
     "name": "Vircon32",
     "extensions": [
       "v32"
@@ -3571,6 +3672,7 @@
     "year": "1999",
     "displayInUI": true,
     "id": "onsyuri",
+    "emuIconName": "ONSYURI",
     "name": "ONScripter Yuri",
     "extensions": [
       "/",
@@ -3590,6 +3692,7 @@
     "year": "1994",
     "displayInUI": true,
     "id": "pc_fx",
+    "emuIconName": "PCFX",
     "name": "PC-FX",
     "extensions": [
       "bat",
@@ -3611,6 +3714,7 @@
     "year": "1982",
     "displayInUI": true,
     "id": "vectrex",
+    "emuIconName": "VECTREX",
     "name": "Vectrex",
     "extensions": [
       "bin",
@@ -3628,6 +3732,7 @@
   {
     "displayInUI": true,
     "id": "unknown",
+    "emuIconName": "UNKNOWN",
     "name": "Unknown System",
     "extensions": [
       "*"
@@ -3644,6 +3749,7 @@
   {
     "year": "1991",
     "id": "segacd",
+    "emuIconName": "SEGACD",
     "name": "Sega CD",
     "pathKeywords": [],
     "magicHeaders": [],
@@ -3653,7 +3759,6 @@
     "extensions": [],
     "defaultCoreID": null,
     "iconName": "gamecontroller",
-    "emuIconName": null,
     "sortOrder": 80,
     "defaultBoxType": "Landscape",
     "displayInUI": true,
@@ -3665,6 +3770,7 @@
   {
     "year": "1993",
     "id": "segapico",
+    "emuIconName": "SEGAPICO",
     "name": "Sega Pico",
     "pathKeywords": [],
     "magicHeaders": [],
@@ -3673,7 +3779,6 @@
     "extensions": [],
     "defaultCoreID": null,
     "iconName": "gamecontroller",
-    "emuIconName": null,
     "sortOrder": 80,
     "defaultBoxType": "Landscape",
     "displayInUI": true,
@@ -3685,6 +3790,7 @@
   {
     "year": "1983",
     "id": "sg1000",
+    "emuIconName": "SG1000",
     "name": "SG-1000",
     "pathKeywords": [
       "sg1000",
@@ -3711,6 +3817,7 @@
   {
     "year": "1983",
     "id": "sc3000",
+    "emuIconName": "SG1000",
     "name": "SC-3000",
     "pathKeywords": [
       "sc3000",
@@ -3737,6 +3844,7 @@
   {
     "year": "1986",
     "id": "sgx",
+    "emuIconName": "SFX",
     "name": "PC Engine SuperGrafx",
     "pathKeywords": [
       "sgx",
@@ -3762,6 +3870,7 @@
   {
     "year": "1988",
     "id": "pcecd",
+    "emuIconName": "PCECD",
     "name": "PC Engine CD",
     "pathKeywords": [
       "pcecd",

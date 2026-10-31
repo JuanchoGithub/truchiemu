@@ -343,6 +343,13 @@ struct AboutView: View {
                             licenseURL: "https://creativecommons.org/licenses/by/3.0/",
                             description: "Category and system icon library by Lorc, Delapouite and contributors: 4180 game-themed vector icons (vampires, castles, weapons, arcade, and more), bundled with the app."
                         )
+                        DependencyGroup(
+                            name: "RetroArch dot-art",
+                            url: "https://github.com/libretro/retroarch-assets",
+                            license: "CC BY 4.0",
+                            licenseURL: "https://creativecommons.org/licenses/by/4.0/",
+                            description: "Monochrome system icons from the RetroArch assets project, bundled as fallbacks for systems without a full-colour icon."
+                        )
                     }
 
                     // --- RetroAchievements ---
