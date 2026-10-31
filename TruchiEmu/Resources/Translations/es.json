@@ -2868,5 +2868,8 @@
   "toolbar.bezel": "Marco",
   "toolbar.unavailable": "No disponible",
   "toolbar.connecting": "Conectando",
-  "toolbar.streamError": "Error de transmisión"
+  "toolbar.streamError": "Error de transmisión",
+  "library.editPills": "Editar…",
+  "library.pillEditor.title": "Editar pills de filtro",
+  "library.pillEditor.description": "Arrastra para reordenar. Las pills que no quepan en la barra se agrupan en Otros automáticamente."
 }

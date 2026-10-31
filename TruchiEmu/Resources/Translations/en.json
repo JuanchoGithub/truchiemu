@@ -2876,5 +2876,8 @@
   "toolbar.bezel": "Bezel",
   "toolbar.unavailable": "Unavailable",
   "toolbar.connecting": "Connecting",
-  "toolbar.streamError": "Stream Error"
+  "toolbar.streamError": "Stream Error",
+  "library.editPills": "Edit…",
+  "library.pillEditor.title": "Edit Filter Pills",
+  "library.pillEditor.description": "Drag to reorder. Pills that don't fit the bar are grouped under Other automatically."
 }

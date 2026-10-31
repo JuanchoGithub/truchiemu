@@ -128,7 +128,7 @@ struct LibrarySortPicker: View {
 
 // MARK: - Sort Row
 
-private struct SortRow: View {
+struct SortRow: View {
     let order: LibrarySortOrder
     @Binding var currentOrder: LibrarySortOrder
     @Binding var ascending: Bool

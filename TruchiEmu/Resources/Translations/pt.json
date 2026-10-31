@@ -2874,5 +2874,8 @@
   "toolbar.bezel": "Moldura",
   "toolbar.unavailable": "Indisponível",
   "toolbar.connecting": "A ligar",
-  "toolbar.streamError": "Erro de transmissão"
+  "toolbar.streamError": "Erro de transmissão",
+  "library.editPills": "Editar…",
+  "library.pillEditor.title": "Editar pills de filtro",
+  "library.pillEditor.description": "Arraste para reordenar. As pills que não couberem na barra são agrupadas em Outros automaticamente."
 }

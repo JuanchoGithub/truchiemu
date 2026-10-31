@@ -1,11 +1,10 @@
 import SwiftUI
 
-// "Other" popover for the filter-chip bar. Contains the non-primary filter
-// chips plus the non-primary sort order (Last Added). Triggered by the
-// chip-bar "Other" button. The combined content is intentional: both
-// filters and sort orders that aren't promoted to the chip-bar "main list".
-
+// "Other" popover for the filter-chip bar. Contains the pills that don't fit
+// inline plus the Last Added sort row. Triggered by the chip-bar "Other"
+// button.
 struct OtherFiltersPopover: View {
+    let pills: [FilterPill]
     @Binding var activeFilters: Set<String>
     let onToggle: (GameFilterOption) -> Void
     @Binding var sortOrder: LibrarySortOrder
@@ -25,21 +24,33 @@ struct OtherFiltersPopover: View {
                 .padding(.bottom, 6)
 
             VStack(alignment: .leading, spacing: 6) {
-                ForEach(GameFilterOption.otherFilters) { option in
-                    FilterChipView(
-                        option: option,
-                        isActive: activeFilters.contains(option.rawValue),
-                        fillsWidth: true,
-                        action: { onToggle(option) }
-                    )
-                    .help(option.tooltip)
+                ForEach(pills) { pill in
+                    switch pill {
+                    case .filter(let option):
+                        FilterChipView(
+                            option: option,
+                            isActive: activeFilters.contains(option.rawValue),
+                            fillsWidth: true,
+                            action: { onToggle(option) }
+                        )
+                        .help(option.tooltip)
+                    case .sort(let order):
+                        SortRow(
+                            order: order,
+                            currentOrder: $sortOrder,
+                            ascending: $sortAscending,
+                            style: .popover,
+                            keyboardShortcut: nil,
+                            onCommit: onCommit
+                        )
+                    }
                 }
             }
             .padding(.horizontal, 10)
             .padding(.bottom, 6)
 
-            // Last Added sort row — reuses the same popover so the chip bar
-            // only carries one "Other" entry.
+            // Last Added sort row — always lives here so the bar carries a
+            // single "Other" entry.
             LibrarySortPicker(
                 currentOrder: $sortOrder,
                 ascending: $sortAscending,

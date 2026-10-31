@@ -2876,5 +2876,8 @@
   "toolbar.bezel": "ベゼル",
   "toolbar.unavailable": "使用不可",
   "toolbar.connecting": "接続中",
-  "toolbar.streamError": "ストリームエラー"
+  "toolbar.streamError": "ストリームエラー",
+  "library.editPills": "編集…",
+  "library.pillEditor.title": "フィルター pills を編集",
+  "library.pillEditor.description": "ドラッグして並べ替え。バーに収まらない pills は自動的に「その他」にまとめられます。"
 }

@@ -245,6 +245,9 @@ struct LibraryGridView: View {
     @State private var otherChipHovered = false
     @State private var genreChipHovered = false
     @State private var clearChipHovered = false
+    @State private var showPillEditor: Bool = false
+    @State private var pillWidths: [String: CGFloat] = [:]
+    @ObservedObject private var filterPillPrefs = FilterPillPreferences.shared
     @State private var r3CycleIndex: Int = 0
     @ObservedObject private var notificationHistory = NotificationHistoryManager.shared
     @State private var showNotificationPopover: Bool = false
@@ -1994,132 +1997,136 @@ struct LibraryGridView: View {
 
     // MARK: - Search & Filters
 
+    // Width-aware chip bar. Sort chips lead, then the user-configured filter
+    // pills. When the bar is too narrow, the tail of the list is pushed into
+    // the "Other" popover automatically — no horizontal scroll.
     private var filterChips: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 6) {
-                LibrarySortPicker(
-                    currentOrder: $sortOrder,
-                    ascending: $sortAscending,
-                    style: .chips,
-                    includeSystemSorts: !filter.isSystemView,
-                    onCommit: { order, asc in
-                        if case .category(let id) = filter {
-                            saveCategoryConfig(for: id)
-                            NotificationCenter.default.post(name: .sortChanged, object: nil)
-                        } else {
-                            AppSettings.setString(LibrarySortOrder.orderKey, value: order.rawValue)
-                            AppSettings.setBool(LibrarySortOrder.ascendingKey, value: asc)
-                            NotificationCenter.default.post(name: .sortChanged, object: nil)
-                        }
-                    }
+        GeometryReader { geo in
+            filterChipsContent(barWidth: geo.size.width)
+        }
+        .frame(height: 38)
+    }
+
+    private func filterChipsContent(barWidth: CGFloat) -> some View {
+        let prefs = filterPillPrefs
+        // Candidate pill list in the user's configured order, skipping
+        // disabled pills and sort pills that make no sense in a system view.
+        // The active sort is always shown so its state stays visible.
+        let candidates: [FilterPill] = prefs.order.filter { pill in
+            if let order = pill.sortOrder {
+                if order == sortOrder { return true }
+                if filter.isSystemView && order.isSystemSort { return false }
+            }
+            return !prefs.disabled.contains(pill)
+        }
+        let visibleCount = computeVisibleCount(candidates: candidates, barWidth: barWidth)
+        let overflowed = Array(candidates.dropFirst(visibleCount))
+        // "Other" only hosts pills that don't fit. Disabled pills are removed
+        // from the bar entirely (user choice, editable via Edit…).
+        let hiddenPills: [FilterPill] = overflowed
+
+        let otherActiveFilterCount = hiddenPills.reduce(0) { acc, pill in
+            guard case .filter(let opt) = pill else { return acc }
+            return acc + (activeFilters.contains(opt.rawValue) ? 1 : 0)
+        }
+        let otherActiveSortCount = hiddenPills.reduce(0) { acc, pill in
+            guard case .sort(let ord) = pill else { return acc }
+            return acc + (sortOrder == ord ? 1 : 0)
+        }
+        let otherSortActive = sortOrder == .lastAdded
+        let otherBadgeCount = otherActiveFilterCount + otherActiveSortCount
+            + (otherSortActive ? 1 : 0)
+
+        let commitSort: (LibrarySortOrder, Bool) -> Void = { order, asc in
+            if case .category(let id) = filter {
+                saveCategoryConfig(for: id)
+                NotificationCenter.default.post(name: .sortChanged, object: nil)
+            } else {
+                AppSettings.setString(LibrarySortOrder.orderKey, value: order.rawValue)
+                AppSettings.setBool(LibrarySortOrder.ascendingKey, value: asc)
+                NotificationCenter.default.post(name: .sortChanged, object: nil)
+            }
+        }
+
+        // Hidden measurement row: laid out at ideal size inside a background
+        // so it can never affect the bar's (or window's) width. Every pill in
+        // the configured order is measured, even if currently hidden.
+        let measurementRow = HStack(spacing: 6) {
+            ForEach(prefs.order) { pill in
+                pillView(pill, commitSort: commitSort)
+                    .background(widthReporter(id: pill.rawValue))
+            }
+            // Fixed (always-visible) elements measured as a group. Measure
+            // "Other" with a representative badge so its width is stable and
+            // never feeds back into the visible-count calc.
+            Button { showOtherFilters.toggle() } label: {
+                otherButtonLabel(badgeCount: 99)
+            }
+            .background(widthReporter(id: "other"))
+            Button { showGenrePicker.toggle() } label: {
+                genreButtonLabel
+            }
+            .background(widthReporter(id: "genre"))
+            if !activeFilters.isEmpty || !selectedGenres.isEmpty {
+                Button {
+                    activeFilters.removeAll()
+                    selectedGenres.removeAll()
+                    viewModel.updateFilters(
+                        filter: effectiveFilter,
+                        searchText: searchText,
+                        activeFilters: activeFilters,
+                        sortOrder: sortOrder,
+                        sortAscending: sortAscending,
+                        selectedGenres: selectedGenres
+                    )
+                } label: {
+                    clearButtonLabel
+                }
+                .background(widthReporter(id: "clear"))
+            }
+        }
+        .fixedSize()
+        .opacity(0)
+        .allowsHitTesting(false)
+        .accessibilityHidden(true)
+
+        return HStack(spacing: 6) {
+            ForEach(Array(candidates.prefix(visibleCount))) { pill in
+                pillView(pill, commitSort: commitSort)
+                    .contextMenu { editPillsMenu }
+            }
+
+            // Other button.
+            Button { showOtherFilters.toggle() } label: {
+                otherButtonLabel(badgeCount: otherBadgeCount)
+            }
+            .buttonStyle(.plain)
+            .onHover { otherChipHovered = $0 }
+            .popover(isPresented: $showOtherFilters) {
+                OtherFiltersPopover(
+                    pills: hiddenPills,
+                    activeFilters: $activeFilters,
+                    onToggle: { toggleFilter($0) },
+                    sortOrder: $sortOrder,
+                    sortAscending: $sortAscending,
+                    onCommit: commitSort
                 )
+                .gamepadDismissable { showOtherFilters = false }
+            }
+            .contextMenu { editPillsMenu }
 
-                ForEach(GameFilterOption.primaryFilters) { option in
-                    FilterChipView(
-                        option: option,
-                        isActive: activeFilters.contains(option.rawValue),
-                        action: { toggleFilter(option) }
-                    )
-                }
-
-                // Single "Other" popover trigger — non-primary filter chips
-                // and the Last Added sort row both live inside.
-                let otherActiveCount = GameFilterOption.otherFilters.filter { activeFilters.contains($0.rawValue) }.count
-                let otherSortActive = LibrarySortOrder.other.contains(sortOrder)
-                let otherBadgeCount = otherActiveCount + (otherSortActive ? 1 : 0)
-                Button {
-                    showOtherFilters.toggle()
-                } label: {
-                    HStack(spacing: 4) {
-                        Image(systemName: otherBadgeCount > 0 ? "line.3.horizontal.decrease.circle.fill" : "line.3.horizontal.decrease.circle")
-                            .font(.system(size: 10, weight: .medium))
-                        Text(loc.localized("library.otherFilters"))
-                            .font(.system(size: 11, weight: .medium))
-                        if otherBadgeCount > 0 {
-                            Text("(\(otherBadgeCount))")
-                                .font(.system(size: 10))
-                        }
-                    }
-                    .foregroundColor(otherBadgeCount > 0 ? AppColors.textOnAccent(for: AppColors.selectedFill(for: AppColors.brandAccent), colorScheme: colorScheme) : (otherChipHovered ? AppColors.brandAccent : AppColors.textPrimary(colorScheme)))
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 6)
-                    .frame(minHeight: 30)
-                    .background(Capsule().fill(otherBadgeCount > 0 ? AppColors.selectedFill(for: AppColors.brandAccent) : (otherChipHovered ? AppColors.accentBackground(colorScheme) : AppColors.cardBackgroundSubtle(colorScheme))))
-                }
-                .buttonStyle(.plain)
-                .onHover { otherChipHovered = $0 }
-                .popover(isPresented: $showOtherFilters) {
-                    OtherFiltersPopover(
-                        activeFilters: $activeFilters,
-                        onToggle: { toggleFilter($0) },
-                        sortOrder: $sortOrder,
-                        sortAscending: $sortAscending,
-                        onCommit: { order, asc in
-                            if case .category(let id) = filter {
-                                saveCategoryConfig(for: id)
-                                NotificationCenter.default.post(name: .sortChanged, object: nil)
-                            } else {
-                                AppSettings.setString(LibrarySortOrder.orderKey, value: order.rawValue)
-                                AppSettings.setBool(LibrarySortOrder.ascendingKey, value: asc)
-                                NotificationCenter.default.post(name: .sortChanged, object: nil)
-                            }
-                        }
-                    )
-                    .gamepadDismissable { showOtherFilters = false }
-                }
-
-                // Genre filter chip
-                Button {
-                    showGenrePicker.toggle()
-                } label: {
-                    HStack(spacing: 4) {
-                        Image(systemName: selectedGenres.isEmpty ? "tag" : "tag.fill")
-                            .font(.system(size: 10, weight: .medium))
-                        if selectedGenres.count == 1, let genre = selectedGenres.first {
-                            Text(genre)
-                                .font(.system(size: 11, weight: .medium))
-                                .lineLimit(1)
-                        } else {
-                            Text(loc.localized("library.genre"))
-                                .font(.system(size: 11, weight: .medium))
-                            if selectedGenres.count > 1 {
-                                Text("(\(selectedGenres.count))")
-                                    .font(.system(size: 10))
-                            }
-                        }
-                    }
-                    .foregroundColor(selectedGenres.isEmpty ? (genreChipHovered ? AppColors.brandAccent : AppColors.textPrimary(colorScheme)) : AppColors.textOnAccent(for: AppColors.selectedFill(for: AppColors.brandAccent), colorScheme: colorScheme))
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 6)
-                    .frame(minHeight: 30)
-                    .background(Capsule().fill(selectedGenres.isEmpty ? (genreChipHovered ? AppColors.accentBackground(colorScheme) : AppColors.cardBackgroundSubtle(colorScheme)) : AppColors.selectedFill(for: AppColors.brandAccent)))
-                }
-                .buttonStyle(.plain)
-                .onHover { genreChipHovered = $0 }
-                .popover(isPresented: $showGenrePicker) {
-                    GenrePickerView(
-                        selectedGenres: $selectedGenres,
-                        allGenres: GenreManager.shared.getAllDisplayGenres(from: library.roms),
-                        genreCounts: GenreManager.shared.countPerGenre(from: filterScopedROMs),
-                        onChange: {
-                            viewModel.updateFilters(
-                                filter: effectiveFilter,
-                                searchText: searchText,
-                                activeFilters: activeFilters,
-                                sortOrder: sortOrder,
-                                sortAscending: sortAscending,
-                                selectedGenres: selectedGenres
-                            )
-                        },
-                        onClose: { showGenrePicker = false }
-                    )
-                    .gamepadDismissable { showGenrePicker = false }
-                }
-
-                if !activeFilters.isEmpty || !selectedGenres.isEmpty {
-                    Button {
-                        activeFilters.removeAll()
-                        selectedGenres.removeAll()
+            // Genre filter chip.
+            Button { showGenrePicker.toggle() } label: {
+                genreButtonLabel
+            }
+            .buttonStyle(.plain)
+            .onHover { genreChipHovered = $0 }
+            .popover(isPresented: $showGenrePicker) {
+                GenrePickerView(
+                    selectedGenres: $selectedGenres,
+                    allGenres: GenreManager.shared.getAllDisplayGenres(from: library.roms),
+                    genreCounts: GenreManager.shared.countPerGenre(from: filterScopedROMs),
+                    onChange: {
                         viewModel.updateFilters(
                             filter: effectiveFilter,
                             searchText: searchText,
@@ -2128,33 +2135,174 @@ struct LibraryGridView: View {
                             sortAscending: sortAscending,
                             selectedGenres: selectedGenres
                         )
-                    } label: {
-                        HStack(spacing: 3) {
-                            Image(systemName: "xmark")
-                                .font(.system(size: 9, weight: .medium))
-                            Text(loc.localized("library.clearFilters"))
-                                .font(.system(size: 10, weight: .medium))
-                        }
-		.foregroundColor(AppColors.textOnAccent(colorScheme))
-		.padding(.horizontal, 10)
-		.padding(.vertical, 6)
-		.frame(minHeight: 30)
-		.background(AppColors.brandAccent)
-		.clipShape(Capsule())
-		.shadow(color: AppColors.brandAccent.opacity(clearChipHovered ? 0.35 : 0), radius: clearChipHovered ? 5 : 0, y: 1)
-		.scaleEffect(clearChipHovered ? 1.05 : 1.0)
-                    }
-                    .buttonStyle(.plain)
-                    .onHover { clearChipHovered = $0 }
-                    .animation(.interpolatingSpring(stiffness: 320, damping: 20), value: clearChipHovered)
-                    .padding(.leading, 2)
-                }
+                    },
+                    onClose: { showGenrePicker = false }
+                )
+                .gamepadDismissable { showGenrePicker = false }
             }
-            .padding(.horizontal, 16)
-            .padding(.bottom, 8)
+
+            if !activeFilters.isEmpty || !selectedGenres.isEmpty {
+                Button {
+                    activeFilters.removeAll()
+                    selectedGenres.removeAll()
+                    viewModel.updateFilters(
+                        filter: effectiveFilter,
+                        searchText: searchText,
+                        activeFilters: activeFilters,
+                        sortOrder: sortOrder,
+                        sortAscending: sortAscending,
+                        selectedGenres: selectedGenres
+                    )
+                } label: {
+                    clearButtonLabel
+                }
+                .buttonStyle(.plain)
+                .onHover { clearChipHovered = $0 }
+                .animation(.interpolatingSpring(stiffness: 320, damping: 20), value: clearChipHovered)
+                .padding(.leading, 2)
+            }
+        }
+        .padding(.horizontal, 16)
+        .padding(.bottom, 8)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(alignment: .leading) { measurementRow }
+        .onPreferenceChange(PillWidthKey.self) { pillWidths = $0 }
+        .sheet(isPresented: $showPillEditor) {
+            FilterPillSettingsSheet()
         }
     }
-    
+
+    // MARK: - Filter chips helpers
+
+    private func computeVisibleCount(candidates: [FilterPill], barWidth: CGFloat) -> Int {
+        guard barWidth > 0, !pillWidths.isEmpty else { return 0 }
+        let otherW = pillWidths["other"] ?? 0
+        let genreW = pillWidths["genre"] ?? 0
+        let clearShown = !(activeFilters.isEmpty && selectedGenres.isEmpty)
+        let clearW = clearShown ? (pillWidths["clear"] ?? 0) : 0
+        let spacing: CGFloat = 6
+        // Gaps inside the always-visible group + the gap joining it to the
+        // candidate group.
+        var fixedGaps: CGFloat = 0
+        if clearShown { fixedGaps += spacing } // genre -> clear
+        fixedGaps += spacing // other -> genre
+        let fixedCost = otherW + genreW + clearW + fixedGaps
+        let horizontalPadding: CGFloat = 32
+        let joinGap: CGFloat = (candidates.count > 0) ? spacing : 0
+        let available = barWidth - fixedCost - horizontalPadding - joinGap
+        guard available > 0 else { return 0 }
+        var cumulative: CGFloat = 0
+        var count = 0
+        for pill in candidates {
+            let w = pillWidths[pill.rawValue] ?? 0
+            let gap: CGFloat = count == 0 ? 0 : spacing
+            if cumulative + gap + w <= available {
+                cumulative += gap + w
+                count += 1
+            } else {
+                break
+            }
+        }
+        return count
+    }
+
+    @ViewBuilder
+    private func pillView(_ pill: FilterPill, commitSort: @escaping (LibrarySortOrder, Bool) -> Void) -> some View {
+        switch pill {
+        case .sort(let order):
+            SortRow(
+                order: order,
+                currentOrder: $sortOrder,
+                ascending: $sortAscending,
+                style: .chips,
+                keyboardShortcut: nil,
+                onCommit: commitSort
+            )
+        case .filter(let option):
+            FilterChipView(
+                option: option,
+                isActive: activeFilters.contains(option.rawValue),
+                action: { toggleFilter(option) }
+            )
+        }
+    }
+
+    @ViewBuilder
+    private var editPillsMenu: some View {
+        Button {
+            showPillEditor = true
+        } label: {
+            Label(loc.localized("library.editPills"), systemImage: "pencil")
+        }
+    }
+
+    private func widthReporter(id: String) -> some View {
+        GeometryReader { geo in
+            Color.clear
+                .preference(key: PillWidthKey.self, value: [id: geo.size.width])
+        }
+    }
+
+    // Label builders shared between the measurement row and the visible row.
+    private func otherButtonLabel(badgeCount: Int) -> some View {
+        HStack(spacing: 4) {
+            Image(systemName: badgeCount > 0 ? "line.3.horizontal.decrease.circle.fill" : "line.3.horizontal.decrease.circle")
+                .font(.system(size: 10, weight: .medium))
+            Text(loc.localized("library.otherFilters"))
+                .font(.system(size: 11, weight: .medium))
+            if badgeCount > 0 {
+                Text("(\(badgeCount))")
+                    .font(.system(size: 10))
+            }
+        }
+        .foregroundColor(badgeCount > 0 ? AppColors.textOnAccent(for: AppColors.selectedFill(for: AppColors.brandAccent), colorScheme: colorScheme) : (otherChipHovered ? AppColors.brandAccent : AppColors.textPrimary(colorScheme)))
+        .padding(.horizontal, 10)
+        .padding(.vertical, 6)
+        .frame(minHeight: 30)
+        .background(Capsule().fill(badgeCount > 0 ? AppColors.selectedFill(for: AppColors.brandAccent) : (otherChipHovered ? AppColors.accentBackground(colorScheme) : AppColors.cardBackgroundSubtle(colorScheme))))
+    }
+
+    private var genreButtonLabel: some View {
+        HStack(spacing: 4) {
+            Image(systemName: selectedGenres.isEmpty ? "tag" : "tag.fill")
+                .font(.system(size: 10, weight: .medium))
+            if selectedGenres.count == 1, let genre = selectedGenres.first {
+                Text(genre)
+                    .font(.system(size: 11, weight: .medium))
+                    .lineLimit(1)
+            } else {
+                Text(loc.localized("library.genre"))
+                    .font(.system(size: 11, weight: .medium))
+                if selectedGenres.count > 1 {
+                    Text("(\(selectedGenres.count))")
+                        .font(.system(size: 10))
+                }
+            }
+        }
+        .foregroundColor(selectedGenres.isEmpty ? (genreChipHovered ? AppColors.brandAccent : AppColors.textPrimary(colorScheme)) : AppColors.textOnAccent(for: AppColors.selectedFill(for: AppColors.brandAccent), colorScheme: colorScheme))
+        .padding(.horizontal, 10)
+        .padding(.vertical, 6)
+        .frame(minHeight: 30)
+        .background(Capsule().fill(selectedGenres.isEmpty ? (genreChipHovered ? AppColors.accentBackground(colorScheme) : AppColors.cardBackgroundSubtle(colorScheme)) : AppColors.selectedFill(for: AppColors.brandAccent)))
+    }
+
+    private var clearButtonLabel: some View {
+        HStack(spacing: 3) {
+            Image(systemName: "xmark")
+                .font(.system(size: 9, weight: .medium))
+            Text(loc.localized("library.clearFilters"))
+                .font(.system(size: 10, weight: .medium))
+        }
+        .foregroundColor(AppColors.textOnAccent(colorScheme))
+        .padding(.horizontal, 10)
+        .padding(.vertical, 6)
+        .frame(minHeight: 30)
+        .background(AppColors.brandAccent)
+        .clipShape(Capsule())
+        .shadow(color: AppColors.brandAccent.opacity(clearChipHovered ? 0.35 : 0), radius: clearChipHovered ? 5 : 0, y: 1)
+        .scaleEffect(clearChipHovered ? 1.05 : 1.0)
+    }
+
     private var filterStatusStrip: some View {
         HStack(spacing: 6) {
             Image(systemName: "line.3.horizontal.decrease.circle.fill")
@@ -2754,4 +2902,13 @@ private struct GamepadNavReceiver: ViewModifier {
               .onReceive(NotificationCenter.default.publisher(for: .gamepadShowContextMenu)) { _ in onShowContextMenu?() }
               .onReceive(NotificationCenter.default.publisher(for: .gamepadShowNotifications)) { _ in onShowNotifications?() }
       }
+}
+
+// MARK: - Filter chip bar preference keys
+
+private struct PillWidthKey: PreferenceKey {
+    static var defaultValue: [String: CGFloat] = [:]
+    static func reduce(value: inout [String: CGFloat], nextValue: () -> [String: CGFloat]) {
+        value.merge(nextValue()) { _, new in new }
+    }
 }
