@@ -243,7 +243,16 @@ struct SettingsView: View {
     @State private var searchText: String = ""
     @State private var focusedSectionID: String? = nil
     @State private var scopedSectionID: String? = nil
-    @State private var pendingSystemSelection: String? = nil
+
+    // Per-System navigation state. `selectedSystemID` and `selectedPerSystemCategory`
+    // are remembered for the session and persisted, so the tree restores its position.
+    @State private var selectedSystemID: String? = nil
+    @State private var selectedPerSystemCategory: PerSystemCategory? = nil
+    @State private var perSystemShowsSystemList: Bool = false
+    @State private var systemsColumnCollapsed: Bool = true
+    @State private var perSystemForceActive: Bool = false
+    @State private var pendingSystemIDForPage: String? = nil
+
     @State private var settingsGamepadContext: GamepadNavContext?
     @State private var hasPendingThemeChanges: Bool = false
     @State private var revertRequest: Int = 0
@@ -264,20 +273,48 @@ struct SettingsView: View {
         } else if let page = Page(rawValue: AppSettings.getString("settings_selectedTab", defaultValue: "general") ?? "general") {
             selectedPage = page
         }
+
+        // Restore the remembered Per-System position, whatever page is shown.
+        if selectedSystemID == nil,
+           let stored = AppSettings.getString("settings_perSystem_system") {
+            selectedSystemID = stored
+        }
+        if let storedCategory = AppSettings.getString("settings_perSystem_category"),
+           let category = PerSystemCategory(rawValue: storedCategory) {
+            selectedPerSystemCategory = category
+        }
+
+        if let pending = AppSettings.getString("pending_settings_system_id") {
+            AppSettings.remove("pending_settings_system_id")
+            pendingSystemIDForPage = pending
+            if selectedPage == .perSystem {
+                selectedSystemID = pending
+                perSystemForceActive = false
+            }
+        }
+
+        if selectedPage == .perSystem {
+            perSystemShowsSystemList = false
+            // Resume on the detail: the system list stays a rail until the user
+            // clicks a system again.
+            systemsColumnCollapsed = true
+        }
     }
 
     private var effectiveSystemID: String? {
         if let sid = system?.id { return sid }
-        if let pending = AppSettings.getString("pending_settings_system_id") {
-            AppSettings.remove("pending_settings_system_id")
-            return pending
-        }
-        return nil
+        return pendingSystemIDForPage
     }
 
     // Update storage when selection changes
     private func updateStorage() {
         AppSettings.set("settings_selectedTab", value: selectedPage.rawValue)
+        if let sid = selectedSystemID {
+            AppSettings.set("settings_perSystem_system", value: sid)
+        }
+        if let category = selectedPerSystemCategory {
+            AppSettings.set("settings_perSystem_category", value: category.rawValue)
+        }
     }
 
     init(system: SystemInfo? = nil, initialPage: SettingsView.Page? = nil) {
@@ -290,77 +327,9 @@ struct SettingsView: View {
 
     var body: some View {
         HStack(spacing: 0) {
-            // Sidebar
-            ScrollView {
-                VStack(alignment: .leading, spacing: 2) {
-                    // Search field
-                    HStack(spacing: 6) {
-                        Image(systemName: "magnifyingglass")
-                            .font(.system(size: 12, weight: .medium))
-                            .foregroundStyle(AppColors.textSecondary(colorScheme))
-                        TextField(loc.localized("settings.search"), text: $searchText)
-                            .textFieldStyle(.plain)
-                            .font(.system(size: 13))
-                        if !searchText.isEmpty {
-                            Button(action: { searchText = "" }) {
-                                Image(systemName: "xmark.circle.fill")
-                                    .font(.system(size: 14))
-                                    .foregroundStyle(AppColors.textTertiary(colorScheme))
-                            }
-                            .buttonStyle(.plain)
-                        }
-                    }
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 8)
+            navigationStack
 
-                    Divider()
-                        .padding(.horizontal, 8)
-
-                    if searchText.isEmpty {
-                        ForEach(SidebarSection.allCases) { section in
-                            let pages = sidebarPages[section] ?? []
-                            if !pages.isEmpty {
-                                Text(section.label.uppercased())
-                                    .font(AppTypography.sectionHeader)
-                                    .foregroundStyle(AppColors.textSecondary(colorScheme))
-                                    .padding(.top, 8)
-                                    .padding(.bottom, 4)
-
-                                ForEach(pages) { page in
-                                    sidebarItem(for: page)
-                                }
-                            }
-                        }
-                    } else {
-                        let hits = searchResults
-                        if hits.isEmpty {
-                            ForEach(filteredPages) { page in
-                                sidebarItem(for: page)
-                            }
-                        } else {
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text(loc.localized("settings.searchMatches"))
-                                    .font(AppTypography.sectionHeader)
-                                    .foregroundStyle(AppColors.textSecondary(colorScheme))
-                                    .padding(.top, 8)
-                                    .padding(.bottom, 4)
-                                ForEach(hits.prefix(60)) { hit in
-                                    searchHitItem(for: hit)
-                                }
-                            }
-                        }
-                    }
-
-                    Spacer()
-                }
-                .padding(.horizontal, 8)
-                .padding(.vertical, 12)
-            }
-            .scrollContentBackground(.hidden)
-            .background(AppColors.sidebarBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
-            .frame(width: 220)
-
-            // Divider between sidebar and detail
+            // Divider between navigation stack and detail
             Rectangle()
                 .fill(AppColors.divider(colorScheme))
                 .frame(width: 1)
@@ -434,6 +403,233 @@ struct SettingsView: View {
         ))
     }
 
+    // MARK: - Sliding Navigation Stack
+
+    private let navColumnFullWidth: CGFloat = 220
+    private let navRailWidth: CGFloat = 44
+
+    private var isPerSystemPage: Bool { selectedPage == .perSystem }
+
+    /// The options column appears once a system is chosen and the system list is
+    /// not in browse mode.
+    private var showsOptionsColumn: Bool {
+        isPerSystemPage && !perSystemShowsSystemList && systemForSelectedID != nil
+    }
+
+    private var systemsColumnWidth: CGFloat {
+        systemsColumnCollapsed ? navRailWidth : navColumnFullWidth
+    }
+
+    private var activeSystemIDs: Set<String> {
+        let systemIDsWithGames = Set(library.roms.compactMap { $0.systemID })
+        let systemIDsWithCores = Set(coreManager.installedCores.flatMap { core in
+            core.systemIDs.map { SystemDatabase.normalizeSystemID($0) }
+        })
+        let db = SystemDatabaseWrapper.shared
+        var result = Set<String>()
+        for system in db.systemsForDisplay {
+            let internalIDs = db.allInternalIDs(forDisplayID: system.id)
+            if internalIDs.contains(where: { systemIDsWithGames.contains($0) || systemIDsWithCores.contains($0) }) {
+                result.insert(system.id)
+            }
+        }
+        return result
+    }
+
+    private var systemForSelectedID: SystemInfo? {
+        guard let id = selectedSystemID else { return nil }
+        return SystemDatabaseWrapper.shared.system(forID: id)
+    }
+
+    /// `nil` means the inactive-system "Setup" placeholder.
+    private var effectivePerSystemCategory: PerSystemCategory? {
+        guard let system = systemForSelectedID else { return nil }
+        if activeSystemIDs.contains(system.id) || perSystemForceActive {
+            return selectedPerSystemCategory ?? .shader
+        }
+        return nil
+    }
+
+    private var navigationStack: some View {
+        HStack(spacing: 0) {
+            mainSidebar(compact: isPerSystemPage)
+                .frame(width: isPerSystemPage ? navRailWidth : navColumnFullWidth)
+                .clipped()
+
+            if isPerSystemPage {
+                Rectangle()
+                    .fill(AppColors.divider(colorScheme))
+                    .frame(width: 1)
+
+                PerSystemSystemsColumn(
+                    activeSystemIDs: activeSystemIDs,
+                    selectedSystemID: selectedSystemID,
+                    isCompact: systemsColumnCollapsed,
+                    searchText: $searchText,
+                    onSelect: handleSystemSelection
+                )
+                .frame(width: systemsColumnWidth)
+                .clipped()
+                .transition(.opacity)
+
+                if showsOptionsColumn, let system = systemForSelectedID {
+                    Rectangle()
+                        .fill(AppColors.divider(colorScheme))
+                        .frame(width: 1)
+
+                    PerSystemOptionsColumn(
+                        isActive: activeSystemIDs.contains(system.id) || perSystemForceActive,
+                        selectedCategory: effectivePerSystemCategory,
+                        onSelect: handleCategorySelection
+                    )
+                    .frame(width: navColumnFullWidth)
+                    .clipped()
+                    .transition(.opacity)
+                }
+            }
+        }
+        .animation(.easeInOut(duration: 0.22), value: isPerSystemPage)
+        .animation(.easeInOut(duration: 0.22), value: systemsColumnCollapsed)
+        .animation(.easeInOut(duration: 0.22), value: showsOptionsColumn)
+    }
+
+    private func mainSidebar(compact: Bool) -> some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 2) {
+                // The search field and the section headers stay in the layout when
+                // the sidebar is a rail. They are invisible, so the row positions
+                // do not move and the width change reads as a horizontal slide.
+                HStack(spacing: 6) {
+                    Image(systemName: "magnifyingglass")
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundStyle(AppColors.textSecondary(colorScheme))
+                    TextField(loc.localized("settings.search"), text: $searchText)
+                        .textFieldStyle(.plain)
+                        .font(.system(size: 13))
+                    if !searchText.isEmpty {
+                        Button(action: { searchText = "" }) {
+                            Image(systemName: "xmark.circle.fill")
+                                .font(.system(size: 14))
+                                .foregroundStyle(AppColors.textTertiary(colorScheme))
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+                .padding(.horizontal, 10)
+                .padding(.vertical, 8)
+                .opacity(compact ? 0 : 1)
+                .allowsHitTesting(!compact)
+                .disabled(compact)
+
+                Divider()
+                    .padding(.horizontal, 8)
+                    .opacity(compact ? 0 : 1)
+
+                if compact || searchText.isEmpty {
+                    ForEach(SidebarSection.allCases) { section in
+                        let pages = sidebarPages[section] ?? []
+                        if !pages.isEmpty {
+                            Text(section.label.uppercased())
+                                .font(AppTypography.sectionHeader)
+                                .foregroundStyle(AppColors.textSecondary(colorScheme))
+                                .lineLimit(1)
+                                .padding(.top, 8)
+                                .padding(.bottom, 4)
+                                .opacity(compact ? 0 : 1)
+
+                            ForEach(pages) { page in
+                                sidebarItem(for: page, compact: compact)
+                            }
+                        }
+                    }
+                } else {
+                    let hits = searchResults
+                    if hits.isEmpty {
+                        ForEach(filteredPages) { page in
+                            sidebarItem(for: page)
+                        }
+                    } else {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(loc.localized("settings.searchMatches"))
+                                .font(AppTypography.sectionHeader)
+                                .foregroundStyle(AppColors.textSecondary(colorScheme))
+                                .padding(.top, 8)
+                                .padding(.bottom, 4)
+                            ForEach(hits.prefix(60)) { hit in
+                                searchHitItem(for: hit)
+                            }
+                        }
+                    }
+                }
+
+                Spacer()
+            }
+            .padding(.horizontal, compact ? 4 : 8)
+            .padding(.vertical, 12)
+        }
+        .scrollContentBackground(.hidden)
+        .background(AppColors.sidebarBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+    }
+
+    private func handleSystemSelection(_ system: SystemInfo) {
+        // Works from both the full list and the collapsed rail: select the
+        // system, slide the full system list back in, and show its options.
+        selectedSystemID = system.id
+        perSystemShowsSystemList = false
+        systemsColumnCollapsed = false
+        perSystemForceActive = false
+        updateStorage()
+    }
+
+    private func handleCategorySelection(_ category: PerSystemCategory?) {
+        guard let category else { return }
+        selectedPerSystemCategory = category
+        // Picking an option gives the detail the space of the system list.
+        systemsColumnCollapsed = true
+        updateStorage()
+    }
+
+    private func browseCoresForSelectedSystem() {
+        perSystemForceActive = true
+        selectedPerSystemCategory = .core
+        systemsColumnCollapsed = true
+        updateStorage()
+    }
+
+    /// Opens the Per-System tree at the level implied by a search hit.
+    private func openPerSystemHit(sectionID: String, label: String? = nil) {
+        if let matched = tryMatchSystem(searchText) {
+            selectedSystemID = matched
+        }
+        perSystemShowsSystemList = false
+        systemsColumnCollapsed = true
+
+        if let category = Self.perSystemCategory(label: label) {
+            selectedPerSystemCategory = category
+        }
+
+        if tryMatchSystem(searchText) == nil && (sectionID == "systems" || sectionID == "systemList") {
+            perSystemShowsSystemList = true
+            systemsColumnCollapsed = false
+        }
+        updateStorage()
+    }
+
+    private static func perSystemCategory(label: String?) -> PerSystemCategory? {
+        // Match the option title only: section IDs such as "tabBoxes" would
+        // otherwise match unrelated keywords.
+        guard let haystack = label?.lowercased(), !haystack.isEmpty else { return nil }
+        if haystack.contains("shader") { return .shader }
+        if haystack.contains("control") { return .controls }
+        if haystack.contains("cheat") { return .cheats }
+        if haystack.contains("box") { return .boxArt }
+        // "hardcore" contains "core", so test it first.
+        if haystack.contains("hardcore") || haystack.contains("achievement") { return .achievements }
+        if haystack.contains("core") { return .core }
+        if haystack.contains("bezel") { return .bezel }
+        return nil
+    }
+
     private var filteredPages: [Page] {
         if searchText.isEmpty {
             return Self.allPages
@@ -486,7 +682,7 @@ struct SettingsView: View {
         return (tokenMatch ?? substringMatch ?? fuzzyMatch)?.id
     }
 
-    private func sidebarItem(for page: Page) -> some View {
+    private func sidebarItem(for page: Page, compact: Bool = false) -> some View {
         let isSelected = selectedPage == page
         let isHovered = hoveredPage == page
         return Button {
@@ -500,8 +696,19 @@ struct SettingsView: View {
                 return
             }
             withAnimation(.easeInOut(duration: 0.15)) {
+                if page == .perSystem {
+                    // Clicking Per-System while already there reopens the system list.
+                    perSystemShowsSystemList = selectedPage == .perSystem
+                    // Show the full system list when entering the section.
+                    systemsColumnCollapsed = false
+                } else {
+                    perSystemShowsSystemList = false
+                }
                 selectedPage = page
             }
+            // A system scope requested from the library context menu applies only
+            // to the page it landed on.
+            pendingSystemIDForPage = nil
             updateStorage()
         } label: {
             HStack(spacing: 8) {
@@ -511,20 +718,25 @@ struct SettingsView: View {
                     .frame(width: 20)
                     .fixedSize()
                     .foregroundColor(isSelected ? AppColors.brandAccent : (isHovered ? AppColors.brandAccent : AppColors.textSecondary(colorScheme)))
-                Text(page.label)
-                    .font(AppTypography.callout)
-                    .foregroundColor(AppColors.textPrimary(colorScheme))
-                    .fontWeight(isSelected ? .medium : .regular)
+                if !compact {
+                    Text(page.label)
+                        .font(AppTypography.callout)
+                        .foregroundColor(AppColors.textPrimary(colorScheme))
+                        .fontWeight(isSelected ? .medium : .regular)
+                }
 
-                if coreManager.isDownloadingCore && page == .perSystem {
+                if !compact && coreManager.isDownloadingCore && page == .perSystem {
                     Spacer()
                     ProgressView()
                         .controlSize(.small)
                 }
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
+            // Fixed height keeps the row pitch identical in both widths, so the
+            // collapse reads as a horizontal slide with no vertical drift.
+            .frame(height: 18)
+            .frame(maxWidth: .infinity, alignment: compact ? .center : .leading)
             .padding(.vertical, 7)
-            .padding(.horizontal, 10)
+            .padding(.horizontal, compact ? 4 : 10)
             .background(
                 RoundedRectangle(cornerRadius: AppRadius.md)
                     .fill(isSelected ? AppColors.accentBackground(colorScheme) :
@@ -542,6 +754,7 @@ struct SettingsView: View {
         }
         .buttonStyle(.plain)
         .onHover { hoveredPage = $0 ? page : nil }
+        .help(page.label)
     }
 
     private func searchHitItem(for hit: SettingsSearchHit) -> some View {
@@ -555,20 +768,22 @@ struct SettingsView: View {
                 selectedPage = page
                 scopedSectionID = nil
                 deepLinkID = UUID()
-                pendingSystemSelection = tryMatchSystem(searchText)
+                if page == .perSystem {
+                    openPerSystemHit(sectionID: sectionID)
+                }
                 DispatchQueue.main.async {
                     focusedSectionID = sectionID
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
                         if focusedSectionID == sectionID { focusedSectionID = nil }
                     }
                 }
-            case .option(let page, let parentSection, _, let subID), .description(let page, let parentSection, _, let subID):
+            case .option(let page, let parentSection, let label, let subID), .description(let page, let parentSection, let label, let subID):
                 let targetID = subID ?? parentSection
                 selectedPage = page
-                scopedSectionID = targetID
+                scopedSectionID = page == .perSystem ? nil : targetID
                 deepLinkID = UUID()
                 if page == .perSystem {
-                    pendingSystemSelection = tryMatchSystem(searchText)
+                    openPerSystemHit(sectionID: targetID, label: label)
                 }
                 DispatchQueue.main.async {
                     focusedSectionID = targetID
@@ -642,7 +857,24 @@ struct SettingsView: View {
             case .moveList: MoveListSettingsView(searchText: $searchText, focusedSectionID: $focusedSectionID, scopedSectionID: $scopedSectionID)
             case .hotkeys: HotkeyConfigSettingsView(searchText: $searchText, focusedSectionID: $focusedSectionID, scopedSectionID: $scopedSectionID)
             case .timeMachine: TimeMachineSettingsView(searchText: $searchText, focusedSectionID: $focusedSectionID, scopedSectionID: $scopedSectionID, selectedPage: selectedPageBinding)
-            case .perSystem: PerSystemSettingsView(searchText: $searchText, focusedSectionID: $focusedSectionID, scopedSectionID: $scopedSectionID, pendingSystemID: $pendingSystemSelection)
+            case .perSystem:
+                if let system = systemForSelectedID, showsOptionsColumn {
+                    PerSystemDetailView(
+                        system: system,
+                        category: effectivePerSystemCategory,
+                        isActive: activeSystemIDs.contains(system.id) || perSystemForceActive,
+                        onBrowseCores: browseCoresForSelectedSystem,
+                        searchText: $searchText
+                    )
+                    .id(system.id)
+                } else {
+                    AppEmptyState(
+                        icon: "square.grid.2x2",
+                        title: loc.localized("perSystem.selectSystem"),
+                        description: loc.localized("perSystem.selectSystemDescription")
+                    )
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                }
             case .streaming: StreamingMediaSettingsView(searchText: $searchText, focusedSectionID: $focusedSectionID, scopedSectionID: $scopedSectionID)
             case .tvMode: TVModeMainSettingsView(searchText: $searchText, focusedSectionID: $focusedSectionID, scopedSectionID: $scopedSectionID)
             case .help: HelpSettingsView(searchText: $searchText, focusedSectionID: $focusedSectionID, scopedSectionID: $scopedSectionID)
