@@ -296,10 +296,11 @@ struct SettingsView: View {
         }
 
         if selectedPage == .perSystem {
-            // Resume on the detail: the page list and the system list are rails
-            // until the user clicks again.
-            mainSidebarCollapsed = true
-            systemsColumnCollapsed = true
+            // Resume with the page list and the system list fully expanded, so
+            // the tree is visible on open. Each click then collapses the column
+            // the user drills past, as it does during a normal session.
+            mainSidebarCollapsed = false
+            systemsColumnCollapsed = false
         }
     }
 
