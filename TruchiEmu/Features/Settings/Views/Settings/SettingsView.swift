@@ -337,10 +337,17 @@ struct SettingsView: View {
                 .frame(width: 1)
 
             // Detail
+            // The page keeps a readable minimum width. When the navigation
+            // columns leave less room than that, the page extends past the right
+            // edge and is clipped there — it never squeezes the navigation
+            // columns. The outer frame can shrink to zero, so the HStack gives
+            // the sidebars their fixed widths first.
             detailContent
                 .id("\(selectedPage.rawValue)-\(deepLinkID)")
                 .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .frame(minWidth: 630, maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                .frame(minWidth: 0, maxHeight: .infinity, alignment: .topLeading)
+                .clipped()
         }
         .environment(SystemDatabaseWrapper.shared)
         .frame(minWidth: 940, minHeight: 552)

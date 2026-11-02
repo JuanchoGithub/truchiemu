@@ -219,6 +219,10 @@ struct ControllerSettingsView: View {
                 Text(loc.localized("controllers.wiiControllerTypeHelp"))
                     .font(.caption)
                     .foregroundColor(AppColors.textSecondary(colorScheme))
+                    // Capped so this help line does not set the minimum width of
+                    // the whole page when the navigation rails are open.
+                    .fixedSize(horizontal: false, vertical: true)
+                    .frame(maxWidth: 400, alignment: .leading)
             }
 
             if isWiiSystem {
@@ -256,6 +260,8 @@ struct ControllerSettingsView: View {
                     Text(loc.localized("controllers.wiiIR.help"))
                         .font(.caption)
                         .foregroundColor(AppColors.textSecondary(colorScheme))
+                        .fixedSize(horizontal: false, vertical: true)
+                        .frame(maxWidth: 400, alignment: .leading)
                 }
             }
 
@@ -364,12 +370,16 @@ struct ControllerSettingsView: View {
                     get: { controllerService.replaceKeyboardWithController },
                     set: { controllerService.replaceKeyboardWithController = $0 }
                 )) {
-                    HStack(spacing: 6) {
+                    // Title above the detail line: side by side, the two labels
+                    // made this row wider than the detail pane in the Per-System
+                    // tree.
+                    VStack(alignment: .leading, spacing: 2) {
                         Text(loc.localized("controllers.replaceKeyboard"))
                             .font(.body)
                         Text(loc.localized("controllers.replaceKeyboardDetail"))
                             .font(.caption)
                             .foregroundColor(AppColors.textTertiary(colorScheme))
+                            .fixedSize(horizontal: false, vertical: true)
                     }
                 }
                 .toggleStyle(.switch)
@@ -726,7 +736,9 @@ struct ControllerSettingsView: View {
                 LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
                     ForEach(buttons, id: \.self) { btn in
                         HStack {
-                            Text(btn.displayName(for: selectedSystemID)).frame(width: 120, alignment: .leading)
+                            Text(btn.displayName(for: selectedSystemID))
+                                .lineLimit(1)
+                                .frame(minWidth: 70, maxWidth: .infinity, alignment: .leading)
                             Spacer()
                             KeyCaptureButton(
                                 keyCode: currentMapping.buttons[btn],
@@ -1839,7 +1851,9 @@ struct KeyboardContentView: View {
                 LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
                     ForEach(buttons, id: \.self) { btn in
                         HStack {
-                            Text(btn.displayName(for: systemID)).frame(width: 120, alignment: .leading)
+                            Text(btn.displayName(for: systemID))
+                                .lineLimit(1)
+                                .frame(minWidth: 70, maxWidth: .infinity, alignment: .leading)
                             Spacer()
                             KeyCaptureButton(
                                 keyCode: currentMapping.buttons[btn],
