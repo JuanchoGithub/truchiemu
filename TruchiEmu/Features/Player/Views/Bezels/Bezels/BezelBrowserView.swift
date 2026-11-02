@@ -184,6 +184,7 @@ struct BezelBrowserView: View {
                         previewImage = nil
                     }
                     .contextMenu {
+                        Group {
                         Button {
                             applyBezel(entry)
                         } label: {
@@ -200,6 +201,8 @@ struct BezelBrowserView: View {
                         } label: {
                             Label(loc.localized("bezel.showInFinder"), systemImage: "folder")
                         }
+                        }
+                        .menuIconsAlwaysVisible()
                     }
                 }
             }

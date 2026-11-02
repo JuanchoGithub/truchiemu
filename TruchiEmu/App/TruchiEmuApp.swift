@@ -402,6 +402,7 @@ var body: some Scene {
                     
                     // Box Art
                     Menu {
+                        Group {
                         Button(loc.localized(AppSettings.getBool("showBoxArt", defaultValue: true) ? "app.hideBoxArt" : "app.showBoxArt"), systemImage: AppSettings.getBool("showBoxArt", defaultValue: true) ? "eye" : "eye.slash") {
                             let current = AppSettings.getBool("showBoxArt", defaultValue: true)
                             AppSettings.setBool("showBoxArt", value: !current)
@@ -417,6 +418,8 @@ var body: some Scene {
                                 NotificationCenter.default.post(name: .boxArtStyleChanged, object: nil)
                             }
                         }
+                        }
+                        .menuIconsAlwaysVisible()
                     } label: {
                         Label(loc.localized("app.boxArt"), systemImage: "photo.stack")
                     }
@@ -425,6 +428,7 @@ var body: some Scene {
                     
                     // Sort
                     Menu {
+                        Group {
                         LibrarySortPicker(
                             currentOrder: $sortOrder,
                             ascending: $sortAscending,
@@ -444,6 +448,8 @@ var body: some Scene {
                                 NotificationCenter.default.post(name: .sortChanged, object: nil)
                             }
                         )
+                        }
+                        .menuIconsAlwaysVisible()
                     } label: {
                         Label(loc.localized("app.sortBy"), systemImage: "arrow.up.arrow.down")
                     }
@@ -452,11 +458,14 @@ var body: some Scene {
                     
                     // Filters
                     Menu {
+                        Group {
                         ForEach(GameFilterOption.allCases) { option in
                             Button(option.label, systemImage: option.icon) {
                                 NotificationCenter.default.post(name: .filterToggled, object: option.rawValue)
                             }
                         }
+                        }
+                        .menuIconsAlwaysVisible()
                     } label: {
                         Label(loc.localized("app.filters"), systemImage: "line.3.horizontal.decrease.circle")
                     }
@@ -464,12 +473,15 @@ var body: some Scene {
                     Divider()
                     
                     Menu {
+                        Group {
                         ForEach(loc.availableLanguages, id: \.self) { lang in
                             Button(languageDisplayName(for: lang), systemImage: "globe") {
                                 loc.setLanguage(lang)
                                 NotificationCenter.default.post(name: .languageChanged, object: nil)
                             }
                         }
+                        }
+                        .menuIconsAlwaysVisible()
                     } label: {
                         Label(loc.localized("app.language"), systemImage: "globe")
                     }
@@ -550,6 +562,7 @@ var body: some Scene {
 
                     // Systems submenu - only show systems that have games
                     Menu {
+                        Group {
                         let ids = Set(library.roms.compactMap { $0.systemID })
                         let displaySystems = SystemDatabase.systemsForDisplay.filter { system in
                             let internalIDs = SystemDatabase.allInternalIDs(forDisplayID: system.id)
@@ -561,6 +574,8 @@ var body: some Scene {
                                 NotificationCenter.default.post(name: .navigateToFilter, object: "system-\(system.id)")
                             }
                         }
+                        }
+                        .menuIconsAlwaysVisible()
                     } label: {
                         Label(loc.localized("app.systems"), systemImage: "gamecontroller")
                     }
@@ -569,6 +584,7 @@ var body: some Scene {
 
                     // Settings submenu
                     Menu {
+        Group {
         Button(loc.localized("app.controllers"), systemImage: "gamecontroller") {
                 AppSettings.set("settings_selectedTab", value: "controllers")
                 NotificationCenter.default.post(name: .openAppSettings, object: nil)
@@ -596,6 +612,8 @@ var body: some Scene {
                 NotificationCenter.default.post(name: .openAppSettings, object: nil)
             }
 
+        }
+        .menuIconsAlwaysVisible()
             } label: {
                 Label(loc.localized("app.settings"), systemImage: "gearshape")
             }

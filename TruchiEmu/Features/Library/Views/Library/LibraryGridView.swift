@@ -545,6 +545,7 @@ struct LibraryGridView: View {
             }
             ToolbarItem(placement: .primaryAction) {
                 Menu {
+                    Group {
                     if isSystemView {
                         Section(loc.localized("toolbar.boxArtStyle")) {
                             ForEach(BoxType.allCases) { type in
@@ -588,6 +589,8 @@ struct LibraryGridView: View {
                         }
                         .disabled(isDownloading)
                     }
+                    }
+                    .menuIconsAlwaysVisible()
          } label: {
                 Image(systemName: "photo.stack")
             }
@@ -599,6 +602,7 @@ struct LibraryGridView: View {
                     Section(loc.localized("toolbar.inputDevice")) {
                         inputDeviceButtons
                     }
+                    .menuIconsAlwaysVisible()
             } label: {
  HStack(spacing: 4) {
  let hasControllers = controllerService.connectedControllers.contains(where: { !$0.isKeyboard })
@@ -1743,6 +1747,7 @@ struct LibraryGridView: View {
                 Divider()
 
                 Menu {
+                    Group {
                     Button {
                         showCreateCategorySheet = true
                     } label: {
@@ -1789,6 +1794,8 @@ struct LibraryGridView: View {
                             Label(loc.localized("contextMenu.removeFromAllCategories"), systemImage: "folder.badge.minus")
                         }
                     }
+                    }
+                    .menuIconsAlwaysVisible()
                 } label: {
                     Label(loc.localized("contextMenu.categories"), systemImage: "folder.badge.plus")
                 }
@@ -2093,7 +2100,7 @@ struct LibraryGridView: View {
         return HStack(spacing: 6) {
             ForEach(Array(candidates.prefix(visibleCount))) { pill in
                 pillView(pill, commitSort: commitSort)
-                    .contextMenu { editPillsMenu }
+                    .contextMenu { editPillsMenu.menuIconsAlwaysVisible() }
             }
 
             // Other button.
@@ -2113,7 +2120,7 @@ struct LibraryGridView: View {
                 )
                 .gamepadDismissable { showOtherFilters = false }
             }
-            .contextMenu { editPillsMenu }
+            .contextMenu { editPillsMenu.menuIconsAlwaysVisible() }
 
             // Genre filter chip.
             Button { showGenrePicker.toggle() } label: {

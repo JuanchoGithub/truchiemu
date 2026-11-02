@@ -58,6 +58,7 @@ struct SidebarRowButton: View {
             if (isHovered || isSelected), system != nil {
                 Menu {
                     sidebarContextMenuContent(for: system)
+                        .menuIconsAlwaysVisible()
                 } label: {
                     Image(systemName: "ellipsis")
                         .font(.system(size: 12, weight: .bold))
@@ -72,6 +73,7 @@ struct SidebarRowButton: View {
         }
         .contextMenu {
             sidebarContextMenuContent(for: system)
+                .menuIconsAlwaysVisible()
         }
         .offset(y: isHovered ? -1 : 0)
         .background(
@@ -129,11 +131,14 @@ struct SidebarRowButton: View {
                 if installedCores?.isEmpty == false || system.defaultCoreID != nil {
                     if let internalIDs = SystemDatabase.multiSystemGroups()[system.id], internalIDs.count > 1 {
                         Menu {
+                            Group {
                             ForEach(internalIDs, id: \.self) { id in
                                 Button { onSystemAction(system, .settings(nil), id) } label: {
                                     Label(SystemDatabase.system(forID: id)?.name ?? id, systemImage: "gearshape")
                                 }
                             }
+                            }
+                            .menuIconsAlwaysVisible()
                         } label: {
                             Label(loc.localized("contextMenu.coreOptions"), systemImage: "gearshape")
                         }
@@ -153,6 +158,7 @@ struct SidebarRowButton: View {
                     // ─── Shaders ───
                     if let internalIDs = SystemDatabase.multiSystemGroups()[system.id] {
                         Menu {
+                            Group {
                             ForEach(internalIDs, id: \.self) { id in
                                 Button {
                                     onSystemAction(system, .shaders, id)
@@ -160,6 +166,8 @@ struct SidebarRowButton: View {
                                     Label(SystemDatabase.system(forID: id)?.name ?? id, systemImage: "wand.and.stars")
                                 }
                             }
+                            }
+                            .menuIconsAlwaysVisible()
                         } label: {
                             Label(loc.localized("contextMenu.shaders"), systemImage: "wand.and.stars")
                         }
@@ -174,6 +182,7 @@ struct SidebarRowButton: View {
                     // ─── Bezels ───
                     if let internalIDs = SystemDatabase.multiSystemGroups()[system.id] {
                         Menu {
+                            Group {
                             ForEach(internalIDs, id: \.self) { id in
                                 Button {
                                     onSystemAction(system, .bezels, id)
@@ -181,6 +190,8 @@ struct SidebarRowButton: View {
                                     Label(SystemDatabase.system(forID: id)?.name ?? id, systemImage: "rectangle.on.rectangle")
                                 }
                             }
+                            }
+                            .menuIconsAlwaysVisible()
                         } label: {
                             Label(loc.localized("contextMenu.bezels"), systemImage: "rectangle.on.rectangle")
                         }
@@ -195,6 +206,7 @@ struct SidebarRowButton: View {
                     // ─── Cheats ───
                     if let internalIDs = SystemDatabase.multiSystemGroups()[system.id] {
                         Menu {
+                            Group {
                             ForEach(internalIDs, id: \.self) { id in
                                 Button {
                                     onSystemAction(system, .cheats, id)
@@ -202,6 +214,8 @@ struct SidebarRowButton: View {
                                     Label(SystemDatabase.system(forID: id)?.name ?? id, systemImage: "gamecontroller")
                                 }
                             }
+                            }
+                            .menuIconsAlwaysVisible()
                         } label: {
                             Label(loc.localized("contextMenu.cheats"), systemImage: "gamecontroller")
                         }
@@ -216,6 +230,7 @@ struct SidebarRowButton: View {
                     // ─── Controllers ───
                     if let internalIDs = SystemDatabase.multiSystemGroups()[system.id] {
                         Menu {
+                            Group {
                             ForEach(internalIDs, id: \.self) { id in
                                 Button {
                                     onSystemAction(system, .controllers, id)
@@ -223,6 +238,8 @@ struct SidebarRowButton: View {
                                     Label(SystemDatabase.system(forID: id)?.name ?? id, systemImage: "gamecontroller.fill")
                                 }
                             }
+                            }
+                            .menuIconsAlwaysVisible()
                         } label: {
                             Label(loc.localized("contextMenu.controllers"), systemImage: "gamecontroller.fill")
                         }

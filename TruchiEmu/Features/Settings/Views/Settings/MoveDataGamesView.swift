@@ -149,11 +149,14 @@ struct MoveDataGamesView: View {
                             .buttonStyle(.plain)
 
                             Menu {
+                                Group {
                                 Button(role: .destructive) {
                                     storageService.deleteCustomGame(name: game.gameName)
                                 } label: {
                                     Label(loc.localized("settings.moveList.deleteGame"), systemImage: "trash")
                                 }
+                                }
+                                .menuIconsAlwaysVisible()
                             } label: {
                                 Image(systemName: "ellipsis.circle")
                                     .font(.title3)

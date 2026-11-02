@@ -193,6 +193,7 @@ private struct ProgressiveSlotStackView: View {
             }
         }
         .contextMenu {
+            Group {
             if slot.id >= 0 {
                 Button {
                     requestRename = true
@@ -200,6 +201,8 @@ private struct ProgressiveSlotStackView: View {
                     Label(loc.localized("savedStates.rename"), systemImage: "pencil")
                 }
             }
+            }
+            .menuIconsAlwaysVisible()
         }
         .onTapGesture {
             withAnimation(.easeInOut(duration: 0.2)) {
@@ -264,6 +267,7 @@ private struct ProgressiveSaveStateExpandedView: View {
             }
         }
         .contextMenu {
+            Group {
             if slot.id >= 0 {
                 Button {
                     requestRename = true
@@ -271,6 +275,8 @@ private struct ProgressiveSaveStateExpandedView: View {
                     Label(loc.localized("savedStates.rename"), systemImage: "pencil")
                 }
             }
+            }
+            .menuIconsAlwaysVisible()
         }
     }
 
@@ -371,6 +377,7 @@ private struct ProgressiveThumbnailView: View {
             alignment: .topLeading
         )
         .contextMenu {
+            Group {
             if slotID >= 0 {
                 Button {
                     onRequestRename()
@@ -385,6 +392,8 @@ private struct ProgressiveThumbnailView: View {
             }) {
                 Label(loc.localized("saveState.delete"), systemImage: "trash")
             }
+            }
+            .menuIconsAlwaysVisible()
         }
     }
 }

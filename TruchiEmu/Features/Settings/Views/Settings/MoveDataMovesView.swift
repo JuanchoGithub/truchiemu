@@ -191,6 +191,7 @@ struct MoveDataMovesView: View {
         .buttonStyle(.plain)
         .contextMenu {
             moveContextMenu(entry: entry, isFav: isFav, isHid: isHid, isCustom: true)
+                .menuIconsAlwaysVisible()
         }
     }
 
@@ -242,6 +243,7 @@ struct MoveDataMovesView: View {
         .buttonStyle(.plain)
         .contextMenu {
             moveContextMenu(entry: nil, move: move, isFav: isFav, isHid: isHid, hasOverride: overrideEntry != nil, isCustom: false)
+                .menuIconsAlwaysVisible()
         }
     }
 
@@ -286,6 +288,7 @@ struct MoveDataMovesView: View {
 
     private func moveMenu(entry: MoveListEntry?, move: FightDataMove? = nil, isFav: Bool, isHid: Bool, hasOverride: Bool = false, isCustom: Bool) -> some View {
         Menu {
+            Group {
             if isCustom, let entry {
                 Button {
                     storageService.toggleFavorite(gameName: gameName, characterName: characterName, moveId: entry.moveId)
@@ -325,6 +328,8 @@ struct MoveDataMovesView: View {
                     }
                 }
             }
+            }
+            .menuIconsAlwaysVisible()
         } label: {
             Image(systemName: "ellipsis.circle")
                 .font(.title3)

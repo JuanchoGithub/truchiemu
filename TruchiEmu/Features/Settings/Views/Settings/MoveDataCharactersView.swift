@@ -119,6 +119,7 @@ struct MoveDataCharactersView: View {
                             .buttonStyle(.plain)
 
                             Menu {
+                                Group {
                                 Button {
                                     onSelectCharacter(character.name)
                                 } label: {
@@ -137,6 +138,8 @@ struct MoveDataCharactersView: View {
                                 } label: {
                                     Label(loc.localized("settings.moveList.deleteCharacter"), systemImage: "trash")
                                 }
+                                }
+                                .menuIconsAlwaysVisible()
                             } label: {
                                 Image(systemName: "ellipsis.circle")
                                     .font(.title3)

@@ -77,6 +77,7 @@ struct CategoryRowButton: View {
         .overlay(alignment: .trailing) {
             if isHovered || isSelected {
                 Menu {
+                    Group {
                     Button {
                         showEditCategorySheet(category)
                     } label: {
@@ -87,6 +88,8 @@ struct CategoryRowButton: View {
                     } label: {
                         Label(loc.localized("contextMenu.deleteCategory"), systemImage: "trash")
                     }
+                    }
+                    .menuIconsAlwaysVisible()
                 } label: {
                     Image(systemName: "ellipsis")
                         .font(.system(size: 12, weight: .bold))
@@ -116,6 +119,7 @@ struct CategoryRowButton: View {
       handleDropOnCategory(items, category.id)
     }
         .contextMenu {
+            Group {
             Button {
                 showEditCategorySheet(category)
             } label: {
@@ -126,6 +130,8 @@ struct CategoryRowButton: View {
 			} label: {
                 Label(loc.localized("contextMenu.deleteCategory"), systemImage: "trash")
             }
+            }
+            .menuIconsAlwaysVisible()
         }
         .alert(
             loc.localized("contextMenu.deleteCategory"),

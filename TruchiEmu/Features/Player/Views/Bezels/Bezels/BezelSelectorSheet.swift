@@ -133,6 +133,7 @@ struct BezelSelectorSheet: View {
                 
                 ToolbarItem(placement: .primaryAction) {
                     Menu {
+                        Group {
                         Button(action: { showFilePicker = true }) {
                             Label(loc.localized("bezel.importCustomBezel"), systemImage: "plus")
                         }
@@ -148,6 +149,8 @@ struct BezelSelectorSheet: View {
                         } label: {
                             Label(loc.localized("bezel.disableBezels"), systemImage: "eye.slash")
                         }
+                        }
+                        .menuIconsAlwaysVisible()
                     } label: {
                         Image(systemName: "ellipsis.circle")
                     }

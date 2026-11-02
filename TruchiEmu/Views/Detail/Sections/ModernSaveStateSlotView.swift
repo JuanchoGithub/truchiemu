@@ -124,6 +124,7 @@ struct ModernSaveStateSlotView: View {
             }
         }
         .contextMenu {
+            Group {
             if slot.exists && slot.id >= 0 {
                 Button {
                     requestRename = true
@@ -145,6 +146,8 @@ struct ModernSaveStateSlotView: View {
                     Label(loc.localized("saveState.delete"), systemImage: "trash")
                 }
             }
+            }
+            .menuIconsAlwaysVisible()
         }
         .task {
             if slot.exists {

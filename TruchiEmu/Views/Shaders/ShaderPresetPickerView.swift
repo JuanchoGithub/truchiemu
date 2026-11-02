@@ -573,10 +573,13 @@ struct SavedPresetRowView: View {
         }
         .onTapGesture { onSelect() }
         .contextMenu {
+            Group {
             Button(loc.localized("shader.renamePreset"), systemImage: "pencil") { onRename() }
             Button(loc.localized("shader.exportEllipsis"), systemImage: "square.and.arrow.up") { onExport() }
             Divider()
             Button(loc.localized("core.delete"), systemImage: "trash", role: .destructive) { onDelete() }
+            }
+            .menuIconsAlwaysVisible()
         }
     }
 }

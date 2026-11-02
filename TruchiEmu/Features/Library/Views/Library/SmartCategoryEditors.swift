@@ -273,6 +273,7 @@ struct SmartCategoryGamesSheet: View {
                             Spacer()
 
                             Menu {
+                                Group {
                                 Button {
                                     setRule(.automatic, for: rom)
                                 } label: {
@@ -288,6 +289,8 @@ struct SmartCategoryGamesSheet: View {
                                 } label: {
                                     Label(loc.localized("category.ruleExcluded"), systemImage: "minus.circle")
                                 }
+                                }
+                                .menuIconsAlwaysVisible()
                             } label: {
                                 HStack(spacing: 4) {
                                     Image(systemName: ruleIcon(currentRule))

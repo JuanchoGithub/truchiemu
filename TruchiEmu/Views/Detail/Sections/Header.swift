@@ -17,11 +17,14 @@ extension GameDetailView {
                 .clipShape(RoundedRectangle(cornerRadius: 8))
                 .shadow(color: Color.black.opacity(0.3), radius: 8, y: 3)
                 .contextMenu {
+                    Group {
                     Button {
                         showBoxArtPicker = true
                     } label: {
                         Label(loc.localized("boxArt.changeBoxArt"), systemImage: "photo")
                     }
+                    }
+                    .menuIconsAlwaysVisible()
                 }
 
                 VStack(alignment: .leading, spacing: 8) {

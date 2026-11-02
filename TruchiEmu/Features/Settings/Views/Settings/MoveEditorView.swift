@@ -700,6 +700,7 @@ struct MoveEditorView: View {
             }
             .buttonStyle(.plain)
             .contextMenu {
+                Group {
                 Button {
                     if index < steps.count { steps[index].isCharge.toggle() }
                 } label: {
@@ -723,6 +724,8 @@ struct MoveEditorView: View {
                 } label: {
                     Label(loc.localized("settings.moveList.editor.deleteStep"), systemImage: "trash")
                 }
+                }
+                .menuIconsAlwaysVisible()
             }
         )
     }
