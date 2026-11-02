@@ -157,9 +157,7 @@ private struct PerSystemSystemRow: View, Equatable {
     var body: some View {
         Button(action: action) {
             HStack(spacing: 8) {
-                Image(systemName: system.iconName)
-                    .font(.system(size: 16, weight: .medium))
-                    .foregroundColor(isSelected ? AppColors.brandAccent : (isHovered ? AppColors.brandAccent : AppColors.textSecondary(colorScheme)))
+                systemIcon
                     .frame(width: 24)
 
                 if !isCompact {
@@ -194,6 +192,22 @@ private struct PerSystemSystemRow: View, Equatable {
         .onHover { isHovered = $0 }
         .help(system.name)
     }
+
+    /// The system icon from the library, so the list and its rail are quick to
+    /// scan. Systems without a bundled icon keep their SF Symbol.
+    @ViewBuilder
+    private var systemIcon: some View {
+        if let image = system.emuImage(size: 132) {
+            Image(nsImage: image)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(height: 18)
+        } else {
+            Image(systemName: system.iconName)
+                .font(.system(size: 16, weight: .medium))
+                .foregroundColor(isSelected ? AppColors.brandAccent : (isHovered ? AppColors.brandAccent : AppColors.textSecondary(colorScheme)))
+        }
+    }
 }
 
 // MARK: - Options Column
@@ -206,6 +220,7 @@ struct PerSystemOptionsColumn: View {
     @Environment(\.colorScheme) private var colorScheme
     @ObservedObject private var loc = LocalizationManager.shared
 
+    let system: SystemInfo
     let isActive: Bool
     let selectedCategory: PerSystemCategory?
     let onSelect: (PerSystemCategory?) -> Void
@@ -213,6 +228,19 @@ struct PerSystemOptionsColumn: View {
     var body: some View {
         ScrollView {
             LazyVStack(spacing: 2) {
+                // The system name, in the same style as the main sidebar titles,
+                // so the options panel says which system it belongs to.
+                HStack {
+                    Text(system.name.uppercased())
+                        .font(AppTypography.sectionHeader)
+                        .foregroundColor(AppColors.textSecondary(colorScheme))
+                        .lineLimit(1)
+                    Spacer()
+                }
+                .padding(.horizontal, 10)
+                .padding(.top, 12)
+                .padding(.bottom, 4)
+
                 if isActive {
                     ForEach(PerSystemCategory.allCases) { category in
                         row(
@@ -339,10 +367,8 @@ struct PerSystemDetailView: View {
 
     private var systemHeader: some View {
         HStack(spacing: AppSpacing.md) {
-            Image(systemName: system.iconName)
-                .font(.title)
-                .foregroundColor(AppColors.brandAccent)
-                .frame(width: 32)
+            systemHeaderIcon
+                .frame(width: 32, height: 32)
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(system.name)
@@ -353,6 +379,21 @@ struct PerSystemDetailView: View {
             }
 
             Spacer()
+        }
+    }
+
+    /// Title icon: the system icon from the library, with the SF Symbol as a
+    /// fallback for systems that have no bundled image.
+    @ViewBuilder
+    private var systemHeaderIcon: some View {
+        if let image = system.emuImage(size: 132) {
+            Image(nsImage: image)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+        } else {
+            Image(systemName: system.iconName)
+                .font(.title)
+                .foregroundColor(AppColors.brandAccent)
         }
     }
 

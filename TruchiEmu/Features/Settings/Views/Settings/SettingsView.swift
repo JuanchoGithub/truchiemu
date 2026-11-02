@@ -248,7 +248,9 @@ struct SettingsView: View {
     // are remembered for the session and persisted, so the tree restores its position.
     @State private var selectedSystemID: String? = nil
     @State private var selectedPerSystemCategory: PerSystemCategory? = nil
-    @State private var perSystemShowsSystemList: Bool = false
+    /// The page list is a rail only after the user picks a system, so the slide
+    /// itself is the feedback for that click.
+    @State private var mainSidebarCollapsed: Bool = true
     @State private var systemsColumnCollapsed: Bool = true
     @State private var perSystemForceActive: Bool = false
     @State private var pendingSystemIDForPage: String? = nil
@@ -294,9 +296,9 @@ struct SettingsView: View {
         }
 
         if selectedPage == .perSystem {
-            perSystemShowsSystemList = false
-            // Resume on the detail: the system list stays a rail until the user
-            // clicks a system again.
+            // Resume on the detail: the page list and the system list are rails
+            // until the user clicks again.
+            mainSidebarCollapsed = true
             systemsColumnCollapsed = true
         }
     }
@@ -410,10 +412,19 @@ struct SettingsView: View {
 
     private var isPerSystemPage: Bool { selectedPage == .perSystem }
 
-    /// The options column appears once a system is chosen and the system list is
-    /// not in browse mode.
+    /// The page list is a rail only in the Per-System tree, and only after the
+    /// user picks a system.
+    private var isMainSidebarCompact: Bool {
+        isPerSystemPage && mainSidebarCollapsed
+    }
+
+    private var mainSidebarWidth: CGFloat {
+        isMainSidebarCompact ? navRailWidth : navColumnFullWidth
+    }
+
+    /// The options column waits for the system click that collapses the page list.
     private var showsOptionsColumn: Bool {
-        isPerSystemPage && !perSystemShowsSystemList && systemForSelectedID != nil
+        isMainSidebarCompact && systemForSelectedID != nil
     }
 
     private var systemsColumnWidth: CGFloat {
@@ -452,8 +463,8 @@ struct SettingsView: View {
 
     private var navigationStack: some View {
         HStack(spacing: 0) {
-            mainSidebar(compact: isPerSystemPage)
-                .frame(width: isPerSystemPage ? navRailWidth : navColumnFullWidth)
+            mainSidebar(compact: isMainSidebarCompact)
+                .frame(width: mainSidebarWidth)
                 .clipped()
 
             if isPerSystemPage {
@@ -478,6 +489,7 @@ struct SettingsView: View {
                         .frame(width: 1)
 
                     PerSystemOptionsColumn(
+                        system: system,
                         isActive: activeSystemIDs.contains(system.id) || perSystemForceActive,
                         selectedCategory: effectivePerSystemCategory,
                         onSelect: handleCategorySelection
@@ -489,6 +501,7 @@ struct SettingsView: View {
             }
         }
         .animation(.easeInOut(duration: 0.22), value: isPerSystemPage)
+        .animation(.easeInOut(duration: 0.22), value: isMainSidebarCompact)
         .animation(.easeInOut(duration: 0.22), value: systemsColumnCollapsed)
         .animation(.easeInOut(duration: 0.22), value: showsOptionsColumn)
     }
@@ -572,10 +585,11 @@ struct SettingsView: View {
     }
 
     private func handleSystemSelection(_ system: SystemInfo) {
-        // Works from both the full list and the collapsed rail: select the
-        // system, slide the full system list back in, and show its options.
+        // Works from both the full list and the collapsed rail. Picking a system
+        // is what slides the page list into a rail, and it opens the options
+        // column beside the full system list.
         selectedSystemID = system.id
-        perSystemShowsSystemList = false
+        mainSidebarCollapsed = true
         systemsColumnCollapsed = false
         perSystemForceActive = false
         updateStorage()
@@ -601,7 +615,7 @@ struct SettingsView: View {
         if let matched = tryMatchSystem(searchText) {
             selectedSystemID = matched
         }
-        perSystemShowsSystemList = false
+        mainSidebarCollapsed = true
         systemsColumnCollapsed = true
 
         if let category = Self.perSystemCategory(label: label) {
@@ -609,7 +623,9 @@ struct SettingsView: View {
         }
 
         if tryMatchSystem(searchText) == nil && (sectionID == "systems" || sectionID == "systemList") {
-            perSystemShowsSystemList = true
+            // The hit is the system list itself: show the page list and the
+            // system list in full.
+            mainSidebarCollapsed = false
             systemsColumnCollapsed = false
         }
         updateStorage()
@@ -687,7 +703,11 @@ struct SettingsView: View {
         let isHovered = hoveredPage == page
         return Button {
             if coreManager.isDownloadingCore && page != .perSystem {
+                // Show the download progress on the Per-System row, so the page
+                // list must be open.
                 selectedPage = .perSystem
+                mainSidebarCollapsed = false
+                systemsColumnCollapsed = false
                 return
             }
             if page != .general && hasPendingThemeChanges {
@@ -696,13 +716,11 @@ struct SettingsView: View {
                 return
             }
             withAnimation(.easeInOut(duration: 0.15)) {
+                // Any page click opens the page list. Per-System also opens the
+                // full system list, instead of jumping into a detail.
+                mainSidebarCollapsed = false
                 if page == .perSystem {
-                    // Clicking Per-System while already there reopens the system list.
-                    perSystemShowsSystemList = selectedPage == .perSystem
-                    // Show the full system list when entering the section.
                     systemsColumnCollapsed = false
-                } else {
-                    perSystemShowsSystemList = false
                 }
                 selectedPage = page
             }

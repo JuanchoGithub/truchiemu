@@ -787,6 +787,7 @@
 		835A71026E50361FBADE397C /* cosmos_top.png in Resources */ = {isa = PBXBuildFile; fileRef = CE2341C1AACA53EF9433DF9E /* cosmos_top.png */; };
 		839DBFA900CAA286A77C2870 /* ngpc@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 69D7196681D9227CC0BA3B45 /* ngpc@132w.png */; };
 		83BB4AAA4CF1F498EC7AA9B9 /* fightdata_survarts.json in Resources */ = {isa = PBXBuildFile; fileRef = 36D54E4EEE23966CA6695EDF /* fightdata_survarts.json */; };
+		83E864AE7DCEB42823FA6868 /* PerSystemCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = E698B3F880A96524981B987D /* PerSystemCategory.swift */; };
 		83F24062C334DA32CC27C7A8 /* input_coreLabels_higan_accuracy.json in Resources */ = {isa = PBXBuildFile; fileRef = 622F8211E719F06C7DBF42EE /* input_coreLabels_higan_accuracy.json */; };
 		83FCF5A7A8180A9CF049C107 /* nestopia_libretro_default.json in Resources */ = {isa = PBXBuildFile; fileRef = E66F7CAF96BF8C952C315532 /* nestopia_libretro_default.json */; };
 		8422E07EC3D40A87693EC8DC /* 3DO.png in Resources */ = {isa = PBXBuildFile; fileRef = 6AB58CEEDE0320EEB510A999 /* 3DO.png */; };
@@ -2980,6 +2981,7 @@
 		E66F7CAF96BF8C952C315532 /* nestopia_libretro_default.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = nestopia_libretro_default.json; sourceTree = "<group>"; };
 		E66FEE978CF4F89C1E166EEA /* fightdata_mk.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_mk.json; sourceTree = "<group>"; };
 		E681371EC4DAB0353DC26FFF /* AccentColorTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccentColorTheme.swift; sourceTree = "<group>"; };
+		E698B3F880A96524981B987D /* PerSystemCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PerSystemCategory.swift; sourceTree = "<group>"; };
 		E6D1223A82D9977C5E92EEE2 /* input_coreLabels_yabause.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_yabause.json; sourceTree = "<group>"; };
 		E6E60C302C9773D699C09794 /* input_coreLabels_gam4980.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_gam4980.json; sourceTree = "<group>"; };
 		E6E9451452ECA3885D80AE70 /* fightdata_tekken3.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_tekken3.json; sourceTree = "<group>"; };
@@ -5163,6 +5165,7 @@
 				66AFB541FCD568D3320D18CD /* KeyboardMapping.swift */,
 				3C06F45BB649BBE85B38D441 /* PadButton.swift */,
 				E058729A2C303A6C324C02A5 /* PendingThemeSettings.swift */,
+				E698B3F880A96524981B987D /* PerSystemCategory.swift */,
 				8B1DB6C719F5587E47EB2D0D /* PlayerController.swift */,
 				30A8C369BBDB954516046501 /* RetroButton.swift */,
 				8E6AF76D7552E90F0C9FEAD1 /* SDLControllerMapping.swift */,
@@ -7126,6 +7129,7 @@
 				B25E681A0B47E92B3569D2F9 /* PadButton.swift in Sources */,
 				0731BAFCEC49AC5E62BA3474 /* Passthrough.metal in Sources */,
 				1B0693165646E2AC19CDB194 /* PendingThemeSettings.swift in Sources */,
+				83E864AE7DCEB42823FA6868 /* PerSystemCategory.swift in Sources */,
 				1329ED4A19ECDCC2F04F9EA5 /* PerSystemSettingsView.swift in Sources */,
 				97532B79D1C03B1230BDB004 /* PersistenceMigrationFlag.swift in Sources */,
 				0CD244372E8158A9E2559772 /* PlayerController.swift in Sources */,
