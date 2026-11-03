@@ -2673,8 +2673,7 @@
     "emuIconName": "PICO",
     "name": "PICO-8",
     "extensions": [
-      "p8",
-      "png"
+      "p8"
     ],
     "defaultBoxType": "Landscape",
     "iconName": "gamecontroller",
