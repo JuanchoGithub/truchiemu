@@ -136,6 +136,21 @@ struct MarkdownBodyView: View {
             VStack(alignment: .leading, spacing: AppSpacing.lg) {
                 ForEach(Array(blocks.enumerated()), id: \.offset) { _, block in
                     switch block {
+                    case .heading(let text, let level):
+                        Text(renderMarkdown(text))
+                            .font(headingFont(level: level))
+                            .foregroundStyle(AppColors.textPrimary(colorScheme))
+                            .textSelection(.enabled)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    case .bullet(let text):
+                        HStack(alignment: .firstTextBaseline, spacing: AppSpacing.sm) {
+                            Text("•")
+                            Text(renderMarkdown(text))
+                                .textSelection(.enabled)
+                        }
+                        .font(.callout)
+                        .foregroundStyle(AppColors.textSecondary(colorScheme))
+                        .frame(maxWidth: .infinity, alignment: .leading)
                     case .text(let text):
                         Text(renderMarkdown(text))
                             .font(.callout)
@@ -163,15 +178,47 @@ struct MarkdownBodyView: View {
         }
 
         for line in markdown.replacingOccurrences(of: "\r\n", with: "\n").components(separatedBy: "\n") {
+            let trimmed = line.trimmingCharacters(in: .whitespaces)
             if let image = parseImageLine(line) {
                 flushText()
                 result.append(.image(alt: image.alt, url: image.url))
+            } else if trimmed.isEmpty {
+                flushText()
+            } else if let heading = parseHeading(trimmed) {
+                flushText()
+                result.append(heading)
+            } else if let bullet = parseBullet(trimmed) {
+                flushText()
+                result.append(.bullet(bullet))
             } else {
                 textBuffer.append(line)
             }
         }
         flushText()
         return result
+    }
+
+    private func parseHeading(_ line: String) -> MarkdownBlock? {
+        let markerCount = line.prefix(while: { $0 == "#" }).count
+        guard (1...6).contains(markerCount) else { return nil }
+        let text = line.dropFirst(markerCount).trimmingCharacters(in: .whitespaces)
+        guard line.dropFirst(markerCount).hasPrefix(" "), !text.isEmpty else { return nil }
+        return .heading(text, level: markerCount)
+    }
+
+    private func parseBullet(_ line: String) -> String? {
+        for marker in ["- ", "* ", "+ "] where line.hasPrefix(marker) {
+            return String(line.dropFirst(marker.count))
+        }
+        return nil
+    }
+
+    private func headingFont(level: Int) -> Font {
+        switch level {
+        case 1: return .title3.bold()
+        case 2: return .headline
+        default: return .subheadline.bold()
+        }
     }
 
     private func parseImageLine(_ line: String) -> (alt: String, url: String)? {
@@ -205,6 +252,8 @@ struct MarkdownBodyView: View {
 }
 
 private enum MarkdownBlock {
+    case heading(String, level: Int)
+    case bullet(String)
     case text(String)
     case image(alt: String, url: String)
 }
