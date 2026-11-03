@@ -1,0 +1,56 @@
+---
+layout: default
+title: v1.17.0 - Documentação do TruchiEmu
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/pt/changelog.html' | relative_url }}">Registro de mudanças</a>
+        <span class="separator">/</span>
+        <span class="current">v1.17.0</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.17.0</h1>
+        <div class="release-meta">
+            <span class="release-date">3 de novembro de 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>Esta versão reconstrói a página de configurações Por Sistema como uma árvore de três colunas, adiciona pílulas de filtro e ordenação personalizáveis, completa os conjuntos de ícones de sistemas e corrige vários problemas do modo TV e da biblioteca.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Destaques</h2>
+        <ul class="feature-list">
+            <li><strong>Configurações Por Sistema como árvore de três colunas:</strong> A página agora mostra uma lista de páginas, uma lista de sistemas e uma coluna de opções. Ao entrar, ambas as colunas abrem expandidas; cada clique recolhe a coluna que você deixa para trás, e clicar no ícone de um sistema no trilho traz sua lista de volta. O sistema e a opção selecionados são lembrados na sessão e persistidos entre inicializações.</li>
+            <li><strong>Pílulas de filtro e ordenação personalizáveis:</strong> Clique com o botão direito em qualquer pílula e escolha <em>Editar...</em> para alternar a visibilidade e arrastá-las para a sua própria ordem. A barra de pílulas mede sua largura real, move as que não cabem para o popover <em>Outros</em> em vez de rolar, e nunca empurra nem comprime o layout da biblioteca.</li>
+            <li><strong>Todos os sistemas agora têm um ícone:</strong> Ambos os conjuntos de ícones de sistemas cobrem os 142 sistemas, incluindo variantes de alta resolução, ícones de arte de pontos e emblemas com monograma para sistemas sem arte colorida. Os ícones de controle de GameCube e Virtual Boy não falham mais em corresponder.</li>
+            <li><strong>Estabilidade e correção do modo TV:</strong> O plano de fundo da boxart não exibe mais a imagem nítida antes de o desfoque ficar pronto, a entrada no detalhe é escalonada sobre as linhas atenuadas, e a seleção de linha, as posições por entrada e os ladrilhos de categoria ficam sincronizados. A animação e as decodificações de imagem síncronas não bloqueiam mais a thread principal, então o vídeo do jogo não congela durante o jogo.</li>
+            <li><strong>Ícones de menu restaurados no macOS 27:</strong> Os ícones de item voltam a aparecer na barra lateral, nos menus de contexto e nos menus pop-up.</li>
+            <li><strong>Editor de shaders e Morph CRT:</strong> <em>Salvar como</em> agora aparece apenas quando os parâmetros mudaram, e <em>Cancelar</em> fecha o editor quando nada mudou. Os padrões internos do Morph CRT agora correspondem ao preset salvo <em>Morph CRT Custom</em>.</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Mudanças detalhadas</h2>
+        <ul>
+            <li>Configurações — Por Sistema é uma árvore de três colunas (lista de páginas, lista de sistemas, coluna de opções) com trilhos laterais deslizantes; a lista de sistemas, o trilho e o cabeçalho do detalhe usam os ícones de sistema da biblioteca com fallback de SF Symbol; a coluna de opções leva o nome do sistema como título; a substituição do RetroAchievements usa um seletor segmentado de tamanho ajustado ao conteúdo</li>
+            <li>Configurações — as colunas de navegação mantêm larguras fixas para que uma página larga (como Controles) não roube espaço da coluna de opções nem quebre a barra de ferramentas da janela; a página Controles também usa menos largura</li>
+            <li>Biblioteca — adicionado um modelo unificado <code>FilterPill</code> e <code>FilterPillPreferences</code> em <code>AppSettings</code> para a ordem e a visibilidade das pílulas; a barra mede as pílulas em uma linha oculta e move o excesso para o popover Outros; o editor de pílulas permite reordenação por arraste no local com posição de inserção visível</li>
+            <li>Biblioteca — conectados ícones para todos os sistemas com arte em <code>EmulatorIcons</code> e <code>ControllerIcons</code>, geradas as variantes 132/600 ausentes, adicionados fallbacks de arte de pontos e monograma, corrigidas as incompatibilidades de id <code>gc.ico</code>/<code>virtualboy.ico</code>, creditada a arte de pontos do RetroArch em Sobre e adicionado <code>scripts/build_emulator_icons.py</code></li>
+            <li>Modo TV — o desfoque e a saturação do plano de fundo da boxart são pré-calculados com CoreImage uma vez por capa (<code>ImageCache.blurredBackdropImage</code>) e fundidos como um bitmap simples, removendo o flash da imagem nítida; a entrada no detalhe é escalonada para que as linhas desfoquem primeiro e o detalhe apareça sobre linhas atenuadas</li>
+            <li>Modo TV — a animação pausa enquanto um jogo roda; o instantâneo de configurações do holo é construído uma vez por ROM e a subárvore de folha é equatable; a linha do tempo do holo roda a 20 fps em vez de 33 fps; as decodificações de miniaturas na thread principal foram substituídas por consulta em cache/pregen e preenchimento assíncrono</li>
+            <li>Modo TV — <code>CurvedRowLayout</code> deriva o centro animado de <code>centerIndex</code> e se ajusta quando o número de itens muda, então passos de entrada combinados não abrem mais o jogo vizinho; o jogo selecionado é lembrado por entrada da linha 1; as entradas de categoria usam o nome, ícone e cor reais da categoria</li>
+            <li>Correções — contagens de categorias inteligentes, gravações de configuração de ordenação, debounce de inicialização, busca do HowLongToBeat após handshake de autenticação somente com token, ordenação de categoria pela barra de pílulas que não reordenava a lista de jogos, e a extensão de arquivo redundante do PICO-8 em <code>SystemDatabase.json</code></li>
+            <li>Subida da versão de marketing para 1.17.0 e do número de build para 43 em <code>project.yml</code>, ambos <code>Info.plist</code> e <code>docs/_config.yml</code>.</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/pt/changelog/v1.16.1.html' | relative_url }}" class="release-prev">&larr; v1.16.1</a>
+        <a href="{{ '/pt/changelog.html' | relative_url }}" class="release-all">Todas as versões</a>
+    </nav>
+</div>

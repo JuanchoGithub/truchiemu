@@ -1,0 +1,56 @@
+---
+layout: default
+title: v1.17.0 - TruchiEmu Documentation
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/changelog.html' | relative_url }}">Changelog</a>
+        <span class="separator">/</span>
+        <span class="current">v1.17.0</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.17.0</h1>
+        <div class="release-meta">
+            <span class="release-date">November 3, 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>This release rebuilds the Per-System settings page as a three-column tree, adds user-ordered filter and sort pills, completes the system icon sets, and fixes several TV mode and library issues.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Highlights</h2>
+        <ul class="feature-list">
+            <li><strong>Per-System settings as a three-column tree:</strong> The page now shows a page list, a system list, and an options column. Entering the section opens both columns expanded; each click collapses the column you drill past, and clicking a system icon in the rail slides its list back out. The selected system and option are remembered for the session and persisted across launches.</li>
+            <li><strong>User-ordered filter and sort pills:</strong> Right-click any pill and choose <em>Edit...</em> to toggle visibility and drag pills into your own order. The chip bar measures its real width, moves pills that do not fit into the <em>Other</em> popover instead of scrolling, and never pushes or compresses the library layout.</li>
+            <li><strong>Every system now has an icon:</strong> Both system-icon sets cover all 142 systems, including high-resolution variants, dot-art fallbacks, and monogram badges for systems without colored art. GameCube and Virtual Boy controller icons no longer fail to match.</li>
+            <li><strong>TV mode stability and correctness:</strong> The boxart backdrop no longer flashes the raw image before the blur is ready, detail entry is staggered over the dimmed rows, and row selection, per-entry positions, and category tiles stay in sync. Animation and synchronous image decodes no longer stall the main thread, so game video no longer freezes while a game runs.</li>
+            <li><strong>Menu icons restored on macOS 27:</strong> Item icons appear again in the sidebar, context menus, and popup menus.</li>
+            <li><strong>Shader editor and Morph CRT:</strong> <em>Save As</em> now appears only when parameters changed, and <em>Cancel</em> closes the editor when nothing changed. Morph CRT built-in defaults now match the <em>Morph CRT Custom</em> saved preset.</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Detailed Changes</h2>
+        <ul>
+            <li>Settings — Per System is a three-column tree (page list, system list, options column) with sliding sidebar rails; the system list, rail, and detail header use the library system icons with an SF Symbol fallback; the options column carries the system name as its title; the RetroAchievements override uses a content-sized segmented picker</li>
+            <li>Settings — the navigation columns keep fixed widths so a wide page (such as Controls) no longer steals space from the options column or breaks the window toolbar; the Controls page also uses less width</li>
+            <li>Library — added a unified <code>FilterPill</code> model and <code>FilterPillPreferences</code> in <code>AppSettings</code> for pill order and visibility; the width-aware chip bar measures pills in a hidden background row and moves overflow into the Other popover; the pill editor supports in-place drag reordering with a visible drop position</li>
+            <li>Library — wired icons for every system that has art in both <code>EmulatorIcons</code> and <code>ControllerIcons</code>, generated the missing 132/600 variants, added dot-art and monogram fallbacks, fixed the <code>gc.ico</code>/<code>virtualboy.ico</code> id mismatches, credited RetroArch dot-art in About, and added <code>scripts/build_emulator_icons.py</code></li>
+            <li>TV mode — the boxart backdrop blur and saturation are baked with CoreImage once per cover (<code>ImageCache.blurredBackdropImage</code>) and crossfade as a plain bitmap, removing the full-strength sharp-image flash; detail entry is staggered so rows blur first and the detail fades in over dimmed rows</li>
+            <li>TV mode — animation pauses while a game runs; the holo settings snapshot is built once per ROM and the foil subtree is equatable; the holo timeline runs at 20 fps instead of 33 fps; main-thread thumbnail decodes were replaced with cache/pregen lookup plus async fill</li>
+            <li>TV mode — <code>CurvedRowLayout</code> derives the animated center from <code>centerIndex</code> and snaps when the item count changes, so coalesced input steps no longer open the neighbouring game; the selected game is remembered per row-1 entry; category entries use the category's real name, icon, and colour</li>
+            <li>Fixes — smart category counts, sort configuration writes, launch debounce, HowLongToBeat search after a token-only auth handshake, category sort via the chip bar not re-sorting the game list, and the redundant PICO-8 file extension in <code>SystemDatabase.json</code></li>
+            <li>Bump marketing version to 1.17.0 and build number to 43 across <code>project.yml</code>, both <code>Info.plist</code>s, and <code>docs/_config.yml</code>.</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/changelog/v1.16.1.html' | relative_url }}" class="release-prev">&larr; v1.16.1</a>
+        <a href="{{ '/changelog.html' | relative_url }}" class="release-all">All Releases</a>
+    </nav>
+</div>
