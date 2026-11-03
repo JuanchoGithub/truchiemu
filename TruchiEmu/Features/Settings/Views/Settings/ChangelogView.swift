@@ -133,24 +133,116 @@ struct MarkdownBodyView: View {
         if markdown.isEmpty {
             EmptyView()
         } else {
-            Text(renderMarkdown(markdown))
-                .font(.callout)
-                .foregroundStyle(AppColors.textSecondary(colorScheme))
-                .textSelection(.enabled)
-                .frame(maxWidth: .infinity, alignment: .leading)
+            VStack(alignment: .leading, spacing: AppSpacing.lg) {
+                ForEach(Array(blocks.enumerated()), id: \.offset) { _, block in
+                    switch block {
+                    case .text(let text):
+                        Text(renderMarkdown(text))
+                            .font(.callout)
+                            .foregroundStyle(AppColors.textSecondary(colorScheme))
+                            .textSelection(.enabled)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    case .image(let alt, let url):
+                        MarkdownImageView(alt: alt, url: url)
+                    }
+                }
+            }
         }
     }
 
-    private func renderMarkdown(_ source: String) -> AttributedString {
-        let processed = source
-            .replacingOccurrences(of: "\r\n", with: "\n")
+    private var blocks: [MarkdownBlock] {
+        var result: [MarkdownBlock] = []
+        var textBuffer: [String] = []
 
+        func flushText() {
+            let text = textBuffer.joined(separator: "\n")
+            if !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                result.append(.text(text))
+            }
+            textBuffer.removeAll()
+        }
+
+        for line in markdown.replacingOccurrences(of: "\r\n", with: "\n").components(separatedBy: "\n") {
+            if let image = parseImageLine(line) {
+                flushText()
+                result.append(.image(alt: image.alt, url: image.url))
+            } else {
+                textBuffer.append(line)
+            }
+        }
+        flushText()
+        return result
+    }
+
+    private func parseImageLine(_ line: String) -> (alt: String, url: String)? {
+        let trimmed = line.trimmingCharacters(in: .whitespaces)
+        guard trimmed.hasPrefix("!["), trimmed.hasSuffix(")"),
+              let closeBracket = trimmed.firstIndex(of: "]") else { return nil }
+        let afterBracket = trimmed.index(after: closeBracket)
+        guard afterBracket < trimmed.endIndex, trimmed[afterBracket] == "(" else { return nil }
+
+        let alt = String(trimmed[trimmed.index(trimmed.startIndex, offsetBy: 2)..<closeBracket])
+        let urlStart = trimmed.index(after: afterBracket)
+        let urlEnd = trimmed.index(before: trimmed.endIndex)
+        guard urlStart < urlEnd else { return nil }
+
+        var url = String(trimmed[urlStart..<urlEnd])
+        if let space = url.firstIndex(of: " ") {
+            url = String(url[..<space])
+        }
+        return (alt, url)
+    }
+
+    private func renderMarkdown(_ source: String) -> AttributedString {
         if let attributed = try? AttributedString(
-            markdown: processed,
+            markdown: source,
             options: .init(interpretedSyntax: .inlineOnlyPreservingWhitespace)
         ) {
             return attributed
         }
-        return AttributedString(processed)
+        return AttributedString(source)
+    }
+}
+
+private enum MarkdownBlock {
+    case text(String)
+    case image(alt: String, url: String)
+}
+
+private struct MarkdownImageView: View {
+    let alt: String
+    let url: String
+    @Environment(\.colorScheme) private var colorScheme
+
+    var body: some View {
+        if let url = URL(string: url) {
+            AsyncImage(url: url) { phase in
+                switch phase {
+                case .success(let image):
+                    image
+                        .resizable()
+                        .scaledToFit()
+                        .clipShape(RoundedRectangle(cornerRadius: AppRadius.md))
+                case .failure:
+                    placeholder(icon: "photo.badge.exclamationmark")
+                case .empty:
+                    ProgressView()
+                        .controlSize(.small)
+                        .frame(maxWidth: .infinity)
+                        .padding(AppSpacing.lg)
+                @unknown default:
+                    placeholder(icon: "photo")
+                }
+            }
+            .frame(maxWidth: .infinity)
+        }
+    }
+
+    private func placeholder(icon: String) -> some View {
+        Label(alt.isEmpty ? "Image" : alt, systemImage: icon)
+            .font(.caption)
+            .foregroundStyle(AppColors.textTertiary(colorScheme))
+            .frame(maxWidth: .infinity)
+            .padding(AppSpacing.lg)
     }
 }
