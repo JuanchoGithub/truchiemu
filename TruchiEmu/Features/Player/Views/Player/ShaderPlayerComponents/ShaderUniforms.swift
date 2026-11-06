@@ -242,6 +242,7 @@ struct GBCUniforms {
     var lightPositionIndex: Float
     var lightStrength: Float
     var shellColorIndex: Float
+    var shellView: Float
     var gridThicknessDark: Float
     var gridThicknessLight: Float
     var sourceSize: SIMD4<Float>

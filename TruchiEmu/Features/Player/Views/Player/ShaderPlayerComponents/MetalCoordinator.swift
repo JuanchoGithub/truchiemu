@@ -1483,10 +1483,12 @@ outputHeight: Float(viewport.height)
                                 let val = getUniform("shellColorIndex", fallback: 0.0)
                                 return val
                             }(),
+                            shellView: getUniform("shellView", fallback: 0.0),
                             gridThicknessDark: getUniform("gridThicknessDark", fallback: 0.2),
                             gridThicknessLight: getUniform("gridThicknessLight", fallback: 0.1),
                             sourceSize: SIMD4<Float>(fw, fh, 0, 0),
-                            outputSize: SIMD4<Float>(vpW, vpH, 0, 0)
+                            outputSize: SIMD4<Float>(vpW, vpH,
+                                                     Float(viewport.width), Float(viewport.height))
                         )
                         enc.setFragmentBytes(&u, length: MemoryLayout<GBCUniforms>.stride, index: 0)
                         // Set all 5 textures: frame0=current, frame1=T-1, frame2=T-2, frame3=T-3, frame4=T-4

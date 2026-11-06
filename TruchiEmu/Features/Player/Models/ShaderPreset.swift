@@ -593,6 +593,11 @@ ShaderUniform(name: "lightStrength", defaultValue: 1.0, minValue: 0.0, maxValue:
 ],
 globalUniforms: [
     ShaderUniform(name: "showShell", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, displayName: "Main Shell", type: .toggle),
+ShaderUniform(name: "shellView", defaultValue: 0.0, minValue: 0.0, maxValue: 1.0, displayName: "Shell View", type: .dropdown,
+options: [
+ShaderUniformOption(value: 0.0, label: "Screen Close-up"),
+ShaderUniformOption(value: 1.0, label: "Whole Device"),
+]),
 ShaderUniform(name: "shellColorIndex", defaultValue: 0.0, minValue: 0.0, maxValue: 7.0, displayName: "Shell Color", type: .dropdown,
 options: [
 ShaderUniformOption(value: 0.0, label: "Berry"),
