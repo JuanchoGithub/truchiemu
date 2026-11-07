@@ -140,7 +140,8 @@ float3 applyMetallicReflector(float3 color, float2 p, float2 res, constant GBCUn
 //
 // Space: origin at the centre of the body, +x right, +y down (framebuffer).
 
-constant float2 BODY_HALF      = float2(140.5, 240.5);
+constant float2 BODY_HALF      = float2(140.5, 230.0);
+constant float  BODY_CHIN      = 17.0;
 constant float2 SCREEN_CENTER  = float2(0.0, -121.0);
 constant float2 SCREEN_HALF    = float2(80.0, 72.0);
 constant float2 LENS_CENTER    = float2(0.0, -110.5);
@@ -170,62 +171,74 @@ float3 getShellColor(float idx) {
  return float3(0.74, 0.11, 0.34);
 }
 
-// --- 3x5 font (3 px wide glyphs, 1 px gap) ---
-uint getCharBlockGBC(int c) {
+// --- 7x9 rounded bold font ---
+// One bit per pixel, row major: bit 62 is the top-left pixel, bit 0 the
+// bottom-right one. The shapes follow the printed GAME BOY COLOR mark.
+// Ids: 0 G, 1 A, 2 M, 3 E, 4 B, 5 O, 6 Y, 7 C, 8 L, 9 R,
+//     10 P, 11 W, 12 N, 13 T, 14 I, 15 D, 16 S.
+ulong fontGlyph(int c) {
     switch(c) {
-        case 0:  return 11245; // A
-        case 1:  return 27566; // B
-        case 2:  return 31015; // C
-        case 3:  return 27502; // D
-        case 4:  return 31143; // E
-        case 5:  return 31087; // G
-        case 6:  return 29847; // I
-        case 7:  return 18727; // L
-        case 8:  return 24429; // M
-        case 9:  return 23917; // N
-        case 10: return 15211; // O
-        case 11: return 31716; // P
-        case 12: return 27565; // R
-        case 13: return 31183; // S
-        case 14: return 29842; // T
-        case 15: return 23403; // U
-        case 16: return 23421; // W
-        case 17: return 23186; // Y
-        default: return 0;
+        case 0:  return 0x3ec783067c78f1beul; // G
+        case 1:  return 0x0838db1e3ff8f1e3ul; // A
+        case 2:  return 0x63efff5e3c78f1e3ul; // M
+        case 3:  return 0x7fc18307ec18307ful; // E
+        case 4:  return 0x7ec78f1fec78f1feul; // B
+        case 5:  return 0x3ec78f1e3c78f1beul; // O
+        case 6:  return 0x63c78db1c1020408ul; // Y
+        case 7:  return 0x3ec783060c1831beul; // C
+        case 8:  return 0x60c183060c18307ful; // L
+        case 9:  return 0x7ec78f1fed99b1e3ul; // R
+        case 10: return 0x7ec78f1fec183060ul; // P
+        case 11: return 0x63c78f1ebffdf1e3ul; // W
+        case 12: return 0x63e7cf5ebcf9f1e3ul; // N
+        case 13: return 0x7f3870e1c3870e1cul; // T
+        case 14: return 0x1c3870e1c3870e1cul; // I
+        case 15: return 0x7ec78f1e3c78f1feul; // D
+        case 16: return 0x3ec78303e060f1beul; // S
+        default: return 0ul;
     }
 }
 
-constant int TEXT_GAMEBOY[8]  = {5, 0, 8, 4, -1, 1, 10, 17};  // GAME BOY
-constant int TEXT_COLOR[5]    = {2, 10, 7, 10, 12};          // COLOR
-constant int TEXT_POWER[5]    = {11, 10, 16, 4, 12};         // POWER
-constant int TEXT_NINTENDO[8] = {9, 6, 9, 14, 4, 9, 3, 10};  // NINTENDO
-constant int TEXT_SELECT[6]   = {13, 4, 7, 4, 2, 14};        // SELECT
-constant int TEXT_START[5]    = {13, 14, 0, 12, 14};         // START
-
-// `p` is the local coordinate, origin at the top-left of the string.
-// `px` is the size of one font pixel in shader units.
-float drawStringGBC(float2 p, constant int* textArray, int len, float px) {
+// Coverage of one glyph. `p` has its origin at the glyph's top-left corner and
+// `px` is the size of one font pixel. A bilinear read of the bitmap plus a
+// narrow smoothstep gives the rounded, anti-aliased letterforms of the logo.
+float fontMask(float2 p, int c, float px) {
     float2 q = p / px;
-    if (q.y < 0.0 || q.y >= 5.0) return 0.0;
-    int charIndex = int(floor(q.x / 4.0));
-    if (charIndex < 0 || charIndex >= len) return 0.0;
-    float2 charP = float2(fmod(q.x, 4.0), q.y);
-    if (charP.x < 0.0 || charP.x >= 3.0) return 0.0;
-    int c = textArray[charIndex];
-    if (c < 0) return 0.0;
-    uint glyph = getCharBlockGBC(c);
-    int bit = 14 - (int(floor(charP.y)) * 3 + int(floor(charP.x)));
-    return (glyph & (1u << bit)) != 0 ? 1.0 : 0.0;
+    if (q.x < 0.0 || q.x >= 7.0 || q.y < 0.0 || q.y >= 9.0) return 0.0;
+    ulong g = fontGlyph(c);
+    float2 f = floor(q);
+    float2 t = q - f;
+    float m = 0.0;
+    for (int j = 0; j < 2; j++) {
+        for (int i = 0; i < 2; i++) {
+            float2 cell = f + float2(float(i), float(j));
+            int bit = 62 - (int(cell.y) * 7 + int(cell.x));
+            float on = 0.0;
+            if (cell.x < 7.0 && cell.y < 9.0 && bit >= 0 && bit <= 62)
+                on = float((g >> uint(bit)) & 1ul);
+            m += on * (i == 1 ? t.x : 1.0 - t.x) * (j == 1 ? t.y : 1.0 - t.y);
+        }
+    }
+    return smoothstep(0.35, 0.65, m);
 }
 
-// Single glyph, origin at the top-left.
-float glyphMaskGBC(float2 p, int c, float px) {
-    float2 q = p / px;
-    if (q.x < 0.0 || q.x >= 3.0 || q.y < 0.0 || q.y >= 5.0) return 0.0;
-    uint glyph = getCharBlockGBC(c);
-    int bit = 14 - (int(floor(q.y)) * 3 + int(floor(q.x)));
-    return (glyph & (1u << bit)) != 0 ? 1.0 : 0.0;
+// Horizontal run of glyphs. `p` has its origin at the top-left of the first
+// glyph; `slant` shears the run so it leans to the right like the wordmark.
+float fontRun(float2 p, constant int* chars, int len, float px, float slant) {
+    float2 q = float2(p.x - p.y * slant, p.y);
+    float m = 0.0;
+    for (int i = 0; i < len; i++) {
+        if (chars[i] < 0) continue;
+        m = max(m, fontMask(q - float2(float(i) * 8.0 * px, 0.0), chars[i], px));
+    }
+    return m;
 }
+
+constant int TEXT_WORDMARK[14] = {0, 1, 2, 3, -1, 4, 5, 6, -1, 7, 5, 8, 5, 9};
+constant int TEXT_POWER[5]     = {10, 5, 11, 3, 9};          // POWER
+constant int TEXT_NINTENDO[8]  = {12, 14, 12, 13, 3, 12, 15, 5}; // NINTENDO
+constant int TEXT_SELECT[6]    = {16, 3, 8, 3, 7, 13};       // SELECT
+constant int TEXT_START[5]     = {16, 13, 1, 9, 13};         // START
 
 // --- SDF PRIMITIVES ---
 float sdRoundRectGBC(float2 p, float2 b, float r) {
@@ -259,11 +272,14 @@ float sdArrow(float2 p, float2 dir) {
     return sdTriangle(p, dir * 6.0, -dir * 3.5 + t * 5.0, -dir * 3.5 - t * 5.0);
 }
 
-// Body outline: rounded box with a gently domed bottom edge (the GBC "chin").
+// Body outline: straight top edge, large bottom corners and a gently domed
+// "chin" that only curves the lower half. The vertical warp is smooth, so the
+// normal field has no seam across the middle of the shell.
 float sdGBCBody(float2 p) {
     float t = saturate(abs(p.x) / BODY_HALF.x);
-    float2 q = p - float2(0.0, 13.0 * (1.0 - t * t));
-    return sdRoundBox4(q, BODY_HALF, float4(20.0, 20.0, 34.0, 34.0));
+    float chin = BODY_CHIN * (1.0 - t * t) * smoothstep(-BODY_HALF.y, BODY_HALF.y, p.y);
+    float2 q = p - float2(0.0, chin - BODY_CHIN * 0.5);
+    return sdRoundBox4(q, BODY_HALF, float4(21.0, 21.0, 46.0, 46.0));
 }
 
 float2 bodyNormal(float2 p, float e) {
@@ -373,7 +389,7 @@ float3 drawABButton(float3 col, float2 p, float2 center, int letter,
     c += float3(0.05) * saturate(1.0 - length(nq) * 1.15);     // dome centre
     c *= mix(0.55, 1.0, smoothstep(0.0, 1.5, -d));             // rim line
 
-    float glyph = glyphMaskGBC(q - float2(-3.6, -6.0), letter, 2.4);
+    float glyph = fontMask(q - float2(-5.4, -7.0), letter, 1.55);
     c = mix(c, float3(0.52, 0.53, 0.55), glyph * 0.9);
 
     return mix(col, c, smoothstep(px, -px, d));
@@ -416,15 +432,15 @@ float4 renderGBCShell(float2 p, constant GBCUniforms &u, float px) {
     // --- controls ---
     col = drawSpeaker(col, p);
     col = drawDPad(col, p, light, px);
-    col = drawABButton(col, p, BTN_B_CENTER, 1, light, px);
-    col = drawABButton(col, p, BTN_A_CENTER, 0, light, px);
+    col = drawABButton(col, p, BTN_B_CENTER, 4, light, px);
+    col = drawABButton(col, p, BTN_A_CENTER, 1, light, px);
     col = drawPill(col, p, SELECT_CENTER, px);
     col = drawPill(col, p, START_CENTER, px);
 
     // printed labels
-    col = mix(col, col * 0.60, drawStringGBC(p - float2(-41.5, 166.5), TEXT_SELECT, 6, 1.5));
-    col = mix(col, col * 0.60, drawStringGBC(p - float2(2.5, 166.5), TEXT_START, 5, 1.5));
-    col = mix(col, col * 0.90 + 0.045, drawStringGBC(p - float2(-35.2, 4.0), TEXT_NINTENDO, 8, 2.2));
+    col = mix(col, col * 0.60, fontRun(p - float2(-41.5, 163.0), TEXT_SELECT, 6, 0.75, 0.0));
+    col = mix(col, col * 0.60, fontRun(p - float2(2.5, 163.0), TEXT_START, 5, 0.75, 0.0));
+    col = mix(col, col * 0.90 + 0.045, fontRun(p - float2(-35.2, 4.0), TEXT_NINTENDO, 8, 1.10, 0.0));
 
     // --- lens ---
     float sdLens = sdRoundRectGBC(p - LENS_CENTER, LENS_HALF, 16.0);
@@ -455,26 +471,31 @@ float4 renderGBCShell(float2 p, constant GBCUniforms &u, float px) {
     for (int i = 0; i < 3; i++) {
         float r = 9.0 + float(i) * 6.0;
         float ring = smoothstep(1.1, 0.4, abs(ledR - r));
-        float span = smoothstep(0.75, 0.55, abs(atan2(led.y, led.x)));
+        // The arcs fan up and to the right of the LED, as on the device, so
+        // they stay clear of the POWER print below.
+        float span = smoothstep(0.40, 0.24, abs(atan2(led.y, led.x) + 0.35));
         arcs = max(arcs, ring * span);
     }
     col = mix(col, float3(0.60, 0.64, 0.68), arcs * 0.85);
 
     col = mix(col, float3(0.55, 0.58, 0.62),
-              drawStringGBC(p - float2(-125.5, -145.5), TEXT_POWER, 5, 1.9));
+              fontRun(p - float2(-116.3, -146.0), TEXT_POWER, 5, 0.68, 0.0));
 
     // --- GAME BOY COLOR wordmark ---
-    float2 logoP = p - float2(-77.0, -38.0);
-    col = mix(col, float3(0.78, 0.80, 0.83),
-              drawStringGBC(logoP, TEXT_GAMEBOY, 8, 2.75));
-    float2 colorP = logoP - float2(99.0, 0.0);
-    float cm = drawStringGBC(colorP, TEXT_COLOR, 5, 2.75);
-    if (cm > 0.0) {
-        float3 cCols[5] = {float3(0.86, 0.12, 0.42), float3(0.55, 0.36, 0.86),
-                           float3(0.36, 0.80, 0.28), float3(0.96, 0.80, 0.16),
-                           float3(0.16, 0.74, 0.86)};
-        int ci = clamp(int(floor(colorP.x / 11.0)), 0, 4);
-        col = mix(col, cCols[ci], cm);
+    // The mark is set in the rounded bold face, leaning to the right, and the
+    // word COLOR is printed in five colours.
+    float2 logoP = p - float2(-72.8, -46.2);
+    float3 cCols[5] = {float3(0.86, 0.12, 0.42), float3(0.55, 0.36, 0.86),
+                       float3(0.36, 0.80, 0.28), float3(0.96, 0.80, 0.16),
+                       float3(0.16, 0.74, 0.86)};
+    for (int i = 0; i < 14; i++) {
+        int g = TEXT_WORDMARK[i];
+        if (g < 0) continue;
+        float m = fontMask(float2(logoP.x - logoP.y * 0.10 - float(i) * 10.4, logoP.y),
+                           g, 1.30);
+        if (m <= 0.0) continue;
+        float3 c = (i < 9) ? float3(0.80, 0.82, 0.85) : cCols[clamp(i - 9, 0, 4)];
+        col = mix(col, c, m);
     }
 
     // --- LCD surround (the game image is composited on top by the caller) ---
