@@ -166,7 +166,9 @@ class SlangPresetDiscoveryService: ObservableObject {
                 : []
 
             raw.append((url: fileURL, basename: basename, category: category, group: group, relPath: relPath, recommendedSystems: recommendedSystems))
-            enumerator.skipDescendants()
+            // Do NOT call `enumerator.skipDescendants()` here. On a file it
+            // makes the enumerator skip later entries, which hid ~840 presets
+            // (for example all of `presets/pixel_transparency/`) from the picker.
         }
 
         // Detect bare-name collisions so we can disambiguate display names.

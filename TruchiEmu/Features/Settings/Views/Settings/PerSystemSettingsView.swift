@@ -627,7 +627,7 @@ struct PerSystemShaderView: View {
     @State private var selectedCategory: CategoryFilter = .all
     @State private var chipHover: CategoryFilter? = nil
     @State private var localSearchText: String = ""
-    @State private var expandedSlangGroups: Set<String> = []
+    @State private var expandedSlangGroups: Set<String> = ["curated"]
     @State private var savedPresets: [SavedShaderPreset] = []
 
     enum CategoryFilter: Hashable {
@@ -980,13 +980,7 @@ struct PerSystemShaderView: View {
             source = slangDiscovery.presets
         }
         if localSearchText.isEmpty { return source }
-        let search = localSearchText.lowercased()
-        return source.filter { preset in
-            preset.displayName.lowercased().contains(search) ||
-            preset.category.lowercased().contains(search) ||
-            preset.group.lowercased().contains(search) ||
-            preset.recommendedSystems.contains { $0.lowercased().contains(search) }
-        }
+        return source.filter { $0.matchesSearchQuery(localSearchText) }
     }
 
     private func filteredBuiltinPresets(for type: ShaderType) -> [ShaderPreset] {
@@ -1049,7 +1043,7 @@ struct PerSystemShaderView: View {
                         .font(.subheadline.weight(preset.path.path == currentPresetID ? .semibold : .regular))
                         .lineLimit(1)
                         .foregroundColor(preset.path.path == currentPresetID ? AppColors.brandAccent : .primary)
-                    Text(preset.category)
+                    Text(preset.rawFileName)
                         .font(.caption2)
                         .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
                         .lineLimit(1)
@@ -1082,6 +1076,7 @@ struct PerSystemShaderView: View {
                 }
             }
             .contentShape(Rectangle())
+            .help(preset.rawFileName)
             .onTapGesture {
                 systemDB.updateSystemShaderPreset(systemID: systemID, presetID: preset.path.path)
                 shaderManager.activateSlangPreset(preset)

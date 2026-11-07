@@ -64,6 +64,33 @@ struct SlangPreset: Identifiable, Hashable {
         return name
     }
 
+    /// File stem on disk before prettification, e.g. `sunlight_shimmer-lcd-grid-v2`.
+    /// The picker shows `friendlyName`, so a search for the on-disk name must
+    /// match this instead.
+    var rawFileName: String {
+        path.deletingPathExtension().lastPathComponent
+    }
+
+    /// Case-insensitive free-text match against the display name, on-disk file
+    /// name, category, and group. Separators (`_`, `-`, `.`) count as spaces on
+    /// both sides, so typing `sunlight_shimmer-lcd-grid-v2` also matches the
+    /// prettified row "Sunlight Shimmer Lcd Grid".
+    func matchesSearchQuery(_ query: String) -> Bool {
+        let needle = Self.searchNormalized(query)
+        if needle.isEmpty { return true }
+        let fields = [displayName, rawFileName, category, group]
+        if fields.contains(where: { Self.searchNormalized($0).contains(needle) }) { return true }
+        return recommendedSystems.contains { $0.lowercased().contains(needle) }
+    }
+
+    private static func searchNormalized(_ raw: String) -> String {
+        let separators = CharacterSet(charactersIn: "_-. \t")
+        return raw.lowercased()
+            .components(separatedBy: separators)
+            .filter { !$0.isEmpty }
+            .joined(separator: " ")
+    }
+
     /// Returns true if the preset's chain expects a full-canvas viewport
     /// rather than a pre-letterboxed one. The signal: the chain references
     /// at least one shader with `border`, `bezel`, or `imgborder` in its

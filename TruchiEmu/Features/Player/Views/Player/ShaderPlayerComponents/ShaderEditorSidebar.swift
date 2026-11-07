@@ -31,7 +31,7 @@ struct ShaderEditorSidebar: View {
     @State private var step: Step = .pick
     @State private var selectedCategory: CategoryFilter = .all
     @State private var searchText = ""
-    @State private var expandedSlangGroups: Set<String> = []
+    @State private var expandedSlangGroups: Set<String> = ["curated"]
     @State private var savedPresets: [SavedShaderPreset] = []
     @State private var reflectedSlangParams: [ShaderUniform] = []
     @State private var isReflectingParameters: Bool = false
@@ -613,7 +613,7 @@ struct ShaderEditorSidebar: View {
                         .font(.subheadline.weight(preset.path.path == settings.shaderPresetID ? .semibold : .regular))
                         .lineLimit(1)
                         .foregroundColor(preset.path.path == settings.shaderPresetID ? AppColors.brandAccent : .primary)
-                    Text(preset.category)
+                    Text(preset.rawFileName)
                         .font(.caption2)
                         .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
                         .lineLimit(1)
@@ -638,6 +638,7 @@ struct ShaderEditorSidebar: View {
                 }
             }
             .contentShape(Rectangle())
+            .help(preset.rawFileName)
             .onTapGesture { selectSlang(preset) }
 
             Divider()
@@ -823,14 +824,8 @@ struct ShaderEditorSidebar: View {
 
     private var visibleSlangPresets: [SlangPreset] {
         let source = (selectedCategory == .all && searchText.isEmpty) ? slangDiscovery.curatedPresets : slangDiscovery.presets
-        let search = searchText.lowercased()
-        if search.isEmpty { return source }
-        return source.filter {
-            $0.displayName.lowercased().contains(search) ||
-            $0.category.lowercased().contains(search) ||
-            $0.group.lowercased().contains(search) ||
-            $0.recommendedSystems.contains { $0.lowercased().contains(search) }
-        }
+        if searchText.isEmpty { return source }
+        return source.filter { $0.matchesSearchQuery(searchText) }
     }
 
     // MARK: - Reflection backfill + dismiss

@@ -593,7 +593,7 @@ struct ShaderPresetPickerView: View {
 @State private var selectedCategory: CategoryFilter = .all
 @State private var chipHover: CategoryFilter? = nil
 @State private var searchText: String = ""
-@State private var expandedSlangGroups: Set<String> = []
+@State private var expandedSlangGroups: Set<String> = ["curated"]
 @State private var savedPresets: [SavedShaderPreset] = []
 @ObservedObject private var slangDiscovery = SlangPresetDiscoveryService.shared
 @ObservedObject private var slangService = SlangCompilerService.shared
@@ -1261,13 +1261,7 @@ controller.close()
         }
         if searchText.isEmpty { return source }
 
-        let search = searchText.lowercased()
-        return source.filter { preset in
-            preset.displayName.lowercased().contains(search) ||
-            preset.category.lowercased().contains(search) ||
-            preset.group.lowercased().contains(search) ||
-            preset.recommendedSystems.contains { $0.lowercased().contains(search) }
-        }
+        return source.filter { $0.matchesSearchQuery(searchText) }
     }
 
     private func filteredBuiltinPresets(for type: ShaderType) -> [ShaderPreset] {
@@ -1388,7 +1382,7 @@ controller.close()
                         .font(.subheadline.weight(preset.path.path == settings.shaderPresetID ? .semibold : .regular))
                         .lineLimit(1)
                         .foregroundColor(preset.path.path == settings.shaderPresetID ? AppColors.brandAccent : .primary)
-                    Text(preset.category)
+                    Text(preset.rawFileName)
                         .font(.caption2)
                         .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
                         .lineLimit(1)
@@ -1421,6 +1415,7 @@ controller.close()
                 }
             }
             .contentShape(Rectangle())
+            .help(preset.rawFileName)
             .onTapGesture {
                 settings.shaderPresetID = preset.path.path
                 // Clear immediately; the reflect-only callback repopulates
