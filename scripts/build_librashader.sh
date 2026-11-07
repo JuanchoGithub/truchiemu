@@ -8,6 +8,10 @@
 #      otherwise trips Metal "Set Scissor Rect Validation".
 #   2. An explicitly scaled final pass reports its declared size in the
 #      OutputSize semantic, matching RetroArch's composite-then-upscale path.
+#   3. A `clear_history` request on a chain with no `OriginalHistoryN`
+#      bindings skips the history-clear render pass instead of encoding an
+#      empty render pass descriptor, which aborts Metal validation
+#      (`_MTLDebugValidateRenderPassDescriptorAndTrackAttachments`).
 #
 # Usage:
 #   scripts/build_librashader.sh

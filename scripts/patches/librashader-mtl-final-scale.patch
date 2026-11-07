@@ -1,8 +1,22 @@
 diff --git a/librashader-runtime-mtl/src/filter_chain.rs b/librashader-runtime-mtl/src/filter_chain.rs
-index 6719faa..c302af3 100644
+index 6719faaa..c0f4defb 100644
 --- a/librashader-runtime-mtl/src/filter_chain.rs
 +++ b/librashader-runtime-mtl/src/filter_chain.rs
-@@ -529,9 +529,12 @@ impl FilterChainMetal {
+@@ -386,7 +386,12 @@ impl FilterChainMetal {
+         let max = std::cmp::min(self.passes.len(), self.common.config.passes_enabled());
+         if let Some(options) = &options {
+             let clear_desc = MTLRenderPassDescriptor::new();
+-            if options.clear_history {
++            // A chain with no `OriginalHistoryN` bindings has an empty history
++            // framebuffer list. Recording a render encoder from a descriptor
++            // with no attachments aborts Metal validation
++            // (`_MTLDebugValidateRenderPassDescriptorAndTrackAttachments`), so
++            // skip the clear entirely when there is no history to clear.
++            if options.clear_history && !self.history_framebuffers.is_empty() {
+                 for (index, history) in self.history_framebuffers.iter().enumerate() {
+                     unsafe {
+                         let ca = clear_desc
+@@ -529,9 +534,12 @@ impl FilterChainMetal {
                  // overridden to the FB scale.
                  //
                  // Shaders need to see the pass's declared scale rather than the viewport size,
@@ -17,7 +31,7 @@ index 6719faa..c302af3 100644
                      pass.draw(
                          &cmd,
                          index,
-@@ -543,9 +546,16 @@ impl FilterChainMetal {
+@@ -543,9 +551,16 @@ impl FilterChainMetal {
                          &source,
                          &out,
                          None,
