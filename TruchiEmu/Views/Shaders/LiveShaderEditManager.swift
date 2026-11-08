@@ -87,7 +87,7 @@ class LiveShaderEditManager: ObservableObject {
 
     func presentEditor(on controller: StandaloneGameWindowController, rom: ROM, closeGameOnDiscard: Bool = false) {
         let settings = ShaderWindowSettings(
-            shaderPresetID: rom.settings.shaderPresetID,
+            shaderPresetID: ShaderManager.effectivePresetID(for: rom),
             uniformValues: extractCurrentUniformValues(from: rom.settings),
             systemID: nil,
             contextDescription: rom.displayName,

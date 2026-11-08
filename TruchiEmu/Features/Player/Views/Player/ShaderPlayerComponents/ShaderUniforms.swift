@@ -233,7 +233,6 @@ struct GBCUniforms {
     var dotOpacity: Float
     var specularShininess: Float
     var colorBoost: Float
-    var physicalDepth: Float
     var ghostingWeight: Float
     var frameIndex: UInt32
     var flags: UInt32
@@ -247,6 +246,15 @@ struct GBCUniforms {
     var gridThicknessLight: Float
     var sourceSize: SIMD4<Float>
     var outputSize: SIMD4<Float>
+    // Sunlight Shimmer merge: reflective backing, drop shadow, grid bias.
+    var backingBrightness: Float
+    var polarizerTint: Float
+    var shadowOffsetX: Float
+    var shadowOffsetY: Float
+    var shadowOpacity: Float
+    var shadowBlur: Float
+    var transparency: Float
+    var gridBias: Float
 }
 
 // ScaleSmooth uniforms - matches ScaleSmoothUniforms in ScaleSmooth.metal

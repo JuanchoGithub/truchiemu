@@ -57,9 +57,12 @@ struct ShaderEditorSidebar: View {
         guard !settings.shaderPresetID.isEmpty else { return false }
         // Built-in preset
         if let preset = ShaderPreset.preset(id: settings.shaderPresetID) {
-            var defaults: [String: Float] = [:]
-            for u in preset.globalUniforms { defaults[u.name] = u.defaultValue }
-            return settings.uniformValues != defaults
+            // Only this preset's own parameters count; the live session also
+            // carries unrelated legacy keys, which must not read as edits.
+            return preset.globalUniforms.contains { uniform in
+                let current = settings.uniformValues[uniform.name] ?? uniform.defaultValue
+                return current != uniform.defaultValue
+            }
         }
         // Saved preset – defaults are base preset defaults overridden by saved values
         if let saved = savedPresets.first(where: { $0.id.uuidString == settings.shaderPresetID }) {

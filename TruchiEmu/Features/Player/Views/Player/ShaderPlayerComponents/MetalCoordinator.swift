@@ -20,6 +20,12 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
     /// read the ring must not use uninitialised slots on the first frames.
     private var temporalHistoryCount: Int = 0
     private var frameCounter: UInt32 = 0
+
+    /// `lightPositionIndex == 9` in a preset means "Random". The concrete
+    /// position is picked once per game window (so every launch looks a little
+    /// different) and re-rolled whenever the user switches to Random.
+    private var randomLightPosition: Float = Float(Int.random(in: 0...8))
+    private var lastLightPositionSetting: Float = .nan
     /// Timestamp of the previous slang frame, used to feed `FrametimeDelta`.
     private var lastSlangFrameTime: CFTimeInterval = 0
     // Intermediate targets for the Pittman CRTSim chain (MinorKeyGames CRTSim
@@ -1441,8 +1447,8 @@ outputHeight: Float(viewport.height)
                     case "fragment8BitGBC":
                         // Game Boy Color with 4-frame temporal feedback
                         ensureTemporalTextures(width: frameTex.width, height: frameTex.height, device: device, sourceFormat: frameTex.pixelFormat)
-                        let colorB = getUniform("colorBoost", fallback: 1.44)
-                        let gw = getUniform("ghostWeights", fallback: 0.45)
+                        let colorB = getUniform("colorBoost", fallback: 1.81)
+                        let gw = getUniform("ghostWeights", fallback: 0.39)
                         // Compute flags from enable toggles
                         var flags: UInt32 = 0
                         let ghostEnabled = getUniform("enableGhost", fallback: 1.0) > 0.5
@@ -1456,6 +1462,9 @@ outputHeight: Float(viewport.height)
                         let vignetteEnabled = getUniform("enableVignette", fallback: 1.0) > 0.5
                         let topographyEnabled = getUniform("enableTopography", fallback: 1.0) > 0.5
                         let colorMatrixEnabled = getUniform("enableColorMatrix", fallback: 1.0) > 0.5
+                        let shadowEnabled = getUniform("enableShadow", fallback: 1.0) > 0.5
+                        let transparencyEnabled = getUniform("enableTransparency", fallback: 1.0) > 0.5
+                        let polarizerEnabled = getUniform("enablePolarizer", fallback: 1.0) > 0.5
                         if ghostEnabled { flags |= 1 << 0 } // FLAG_GHOSTING
                         if gridEnabled { flags |= 1 << 1 } // FLAG_GRID
                         if aberrationEnabled { flags |= 1 << 2 } // FLAG_ABERRATION
@@ -1467,28 +1476,48 @@ outputHeight: Float(viewport.height)
                         if vignetteEnabled { flags |= 1 << 8 } // FLAG_VIGNETTE
                         if topographyEnabled { flags |= 1 << 9 } // FLAG_TOPOGRAPHY
                         if colorMatrixEnabled { flags |= 1 << 10 } // FLAG_COLOR_MATRIX
+                        if shadowEnabled { flags |= 1 << 11 } // FLAG_SHADOW
+                        if transparencyEnabled { flags |= 1 << 12 } // FLAG_TRANSPARENCY
+                        if polarizerEnabled { flags |= 1 << 13 } // FLAG_POLARIZER
+
+                        // "Random" light position (9) resolves to a concrete 0…8
+                        // index. Re-roll when the setting changes to Random.
+                        let lightSetting = getUniform("lightPositionIndex", fallback: 0.0)
+                        if lightSetting != lastLightPositionSetting {
+                            lastLightPositionSetting = lightSetting
+                            if lightSetting >= 9.0 { randomLightPosition = Float(Int.random(in: 0...8)) }
+                        }
+                        let lightIndex = lightSetting >= 9.0 ? randomLightPosition : lightSetting
+
                         var u = GBCUniforms(
-                            dotOpacity: getUniform("dotOpacity", fallback: 0.85),
-                            specularShininess: getUniform("specularShininess", fallback: 8.0),
+                            dotOpacity: getUniform("dotOpacity", fallback: 0.0),
+                            specularShininess: getUniform("specularShininess", fallback: 2.5),
                             colorBoost: colorB,
-                            physicalDepth: getUniform("physicalDepth", fallback: 0.22),
                             ghostingWeight: gw,
                             frameIndex: frameCounter,
                             flags: flags,
-                            brightnessBoost: getUniform("brightnessBoost", fallback: 1.0),
+                            brightnessBoost: getUniform("brightnessBoost", fallback: 1.21),
                             showShell: getUniform("showShell", fallback: 1.0),
-                            lightPositionIndex: getUniform("lightPositionIndex", fallback: 0.0),
+                            lightPositionIndex: lightIndex,
                             lightStrength: getUniform("lightStrength", fallback: 1.0),
                             shellColorIndex: {
                                 let val = getUniform("shellColorIndex", fallback: 0.0)
                                 return val
                             }(),
                             shellView: getUniform("shellView", fallback: 0.0),
-                            gridThicknessDark: getUniform("gridThicknessDark", fallback: 0.2),
+                            gridThicknessDark: getUniform("gridThicknessDark", fallback: 0.3),
                             gridThicknessLight: getUniform("gridThicknessLight", fallback: 0.1),
                             sourceSize: SIMD4<Float>(fw, fh, 0, 0),
                             outputSize: SIMD4<Float>(vpW, vpH,
-                                                     Float(viewport.width), Float(viewport.height))
+                                                     Float(viewport.width), Float(viewport.height)),
+                            backingBrightness: getUniform("backingBrightness", fallback: 0.84),
+                            polarizerTint: getUniform("polarizerTint", fallback: 1.0),
+                            shadowOffsetX: getUniform("shadowOffsetX", fallback: 11.0),
+                            shadowOffsetY: getUniform("shadowOffsetY", fallback: 12.0),
+                            shadowOpacity: getUniform("shadowOpacity", fallback: 0.3),
+                            shadowBlur: getUniform("shadowBlur", fallback: 1.0),
+                            transparency: getUniform("transparency", fallback: 0.29),
+                            gridBias: getUniform("gridBias", fallback: 0.49)
                         )
                         enc.setFragmentBytes(&u, length: MemoryLayout<GBCUniforms>.stride, index: 0)
                         // Set all 5 textures: frame0=current, frame1=T-1, frame2=T-2, frame3=T-3, frame4=T-4

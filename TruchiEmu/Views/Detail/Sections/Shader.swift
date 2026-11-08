@@ -14,7 +14,7 @@ Text(loc.localized("shader.currentShader"))
 .font(.subheadline)
 .fontWeight(.medium)
 .foregroundColor(AppColors.textPrimary(colorScheme))
-Text(ShaderManager.displayName(for: currentROM.settings.shaderPresetID))
+Text(ShaderManager.displayName(for: ShaderManager.effectivePresetID(for: currentROM)))
 .font(.caption)
 .foregroundColor(AppColors.textSecondary(colorScheme))
 }
@@ -95,14 +95,14 @@ HStack {
 
         if shaderWindowSettings == nil {
             shaderWindowSettings = ShaderWindowSettings(
-                shaderPresetID: currentROM.settings.shaderPresetID,
+                shaderPresetID: ShaderManager.effectivePresetID(for: currentROM),
                 uniformValues: extractUniformValues(from: currentROM.settings),
                 systemID: nil,  // Don't pass systemID to hide Application Mode picker in Game Info
                 contextDescription: context,
                 contextImageData: boxArtData
             )
         } else {
-            shaderWindowSettings?.shaderPresetID = currentROM.settings.shaderPresetID
+            shaderWindowSettings?.shaderPresetID = ShaderManager.effectivePresetID(for: currentROM)
             shaderWindowSettings?.systemID = nil
         }
 

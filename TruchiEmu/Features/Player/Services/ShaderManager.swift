@@ -544,6 +544,14 @@ preset.recommendedSystems.contains(systemID)
         }
         return "None"
     }
+
+    /// The shader that actually runs for a ROM: the per-game override when set,
+    /// otherwise the system default. Mirrors `LaunchConfig`'s resolution so the
+    /// shader picker opens with the running shader already selected.
+    static func effectivePresetID(for rom: ROM) -> String {
+        if !rom.settings.shaderPresetID.isEmpty { return rom.settings.shaderPresetID }
+        return SystemDatabase.system(forID: rom.systemID ?? "")?.defaultShaderPresetID ?? ""
+    }
 }
 
 // MARK: - Thread-Safe Parameter Storage

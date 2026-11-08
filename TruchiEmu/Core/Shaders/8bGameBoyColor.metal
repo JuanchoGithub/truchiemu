@@ -24,12 +24,14 @@ using namespace metal;
 #define FLAG_VIGNETTE     (1 << 8)
 #define FLAG_TOPOGRAPHY   (1 << 9)
 #define FLAG_COLOR_MATRIX (1 << 10)
+#define FLAG_SHADOW       (1 << 11)
+#define FLAG_TRANSPARENCY (1 << 12)
+#define FLAG_POLARIZER    (1 << 13)
 
 struct GBCUniforms {
     float dotOpacity;
     float specularShininess;
     float colorBoost;
-    float physicalDepth;
     float ghostingWeight;
     uint  frameIndex;
     uint  flags;
@@ -43,6 +45,15 @@ struct GBCUniforms {
     float gridThicknessLight;
     float4 sourceSize;
     float4 outputSize;
+    // Sunlight Shimmer merge: reflective backing, drop shadow, grid bias.
+    float backingBrightness;
+    float polarizerTint;
+    float shadowOffsetX;
+    float shadowOffsetY;
+    float shadowOpacity;
+    float shadowBlur;
+    float transparency;
+    float gridBias;
 };
 
 // --- SIMULATION MODULES ---
@@ -520,7 +531,7 @@ fragment float4 fragment8BitGBC(VertexOut in [[stage_in]],
    bool inShell = u.showShell > 0.5;
    float2 uv;
    float screenMask = 1.0;
-   float shellShade = 1.0;
+   float screenRim = 0.0;
    float3 shellColor = float3(0.0);
 
    if (inShell) {
@@ -541,7 +552,13 @@ fragment float4 fragment8BitGBC(VertexOut in [[stage_in]],
 
       uv = float2((p.x - SCREEN_CENTER.x + SCREEN_HALF.x) / (SCREEN_HALF.x * 2.0),
                   (p.y - SCREEN_CENTER.y + SCREEN_HALF.y) / (SCREEN_HALF.y * 2.0));
-      shellShade = mix(0.62, 1.0, smoothstep(-4.0, 0.0, sdScreen));
+      // Screen recess: the raised bezel casts a soft shadow on the rim that
+      // faces the light. The rest of the LCD keeps full brightness.
+      float2 rimQ = p - SCREEN_CENTER;
+      float2 light = shellLightDir(u.lightPositionIndex);
+      float rim = 1.0 - smoothstep(0.0, 10.0, -sdScreen);
+      float facing = saturate(dot(rimQ / max(length(rimQ), 1e-4), light));
+      screenRim = rim * facing;
 
       if (screenMask < 1.0) shellColor = renderGBCShell(p, u, px).rgb;
    } else {
@@ -595,17 +612,62 @@ fragment float4 fragment8BitGBC(VertexOut in [[stage_in]],
         sCol *= (0.97 + pcg_hash_gbc(pixelIndex * 3.3) * 0.06);
     }
 
-    float maskG = 1.0; float maskS = 1.0;
+    float maskG = 1.0;
     if (u.flags & FLAG_GRID) {
         float thick = mix(1.0 - (u.gridThicknessDark > 0.0 ? u.gridThicknessDark : 0.2), 1.0 - (u.gridThicknessLight > 0.0 ? u.gridThicknessLight : 0.1), dot(proc, float3(0.299, 0.587, 0.114)));
         maskG = smoothstep(thick, 0.0, abs(fract(pCoord) - 0.5).x) * smoothstep(thick, 0.0, abs(fract(pCoord) - 0.5).y);
-        float2 sOffset = normalize(centeredUV) * (u.physicalDepth > 0.0 ? u.physicalDepth : 0.22);
-        maskS = smoothstep(thick, 0.0, abs(fract(pCoord + sOffset) - 0.5).x) * smoothstep(thick, 0.0, abs(fract(pCoord + sOffset) - 0.5).y);
    }
 
-   // GBC screen background color for authentic pixel gaps
-   float3 bg = mix(float3(0.593, 0.622, 0.604), float3(0.20, 0.21, 0.18), maskS) + (sCol * 0.05);
-    float3 final = mix(bg, sCol, maskG * u.dotOpacity + (1.0 - u.dotOpacity)) * 0.65;
+   // --- Reflective backing (merged from Sunlight Shimmer) ---
+   // A neutral aluminium backing replaces the old green-grey pixel gaps.
+   float3 backing = float3(1.0, 0.953, 0.996) * u.backingBrightness;
+   backing += sCol * 0.05;
+
+   // Drop shadow: bright pixels cast a soft, offset shadow onto the backing.
+   if ((u.flags & FLAG_SHADOW) && u.shadowOpacity > 0.001) {
+       float2 texelOut = 1.0 / max(u.outputSize.xy, float2(1.0));
+       float2 shadowOff = -float2(u.shadowOffsetX, u.shadowOffsetY) * texelOut;
+       float shadowStrength = 0.0;
+       if (u.shadowBlur > 0.1) {
+           float2 bd = u.shadowBlur * texelOut;
+           float acc = 0.0;
+           acc += (1.0 - dot(frame0.sample(s, uv + shadowOff).rgb, float3(0.2126, 0.7152, 0.0722))) * 4.0;
+           acc += (1.0 - dot(frame0.sample(s, uv + shadowOff + float2(-bd.x, 0.0)).rgb, float3(0.2126, 0.7152, 0.0722))) * 2.0;
+           acc += (1.0 - dot(frame0.sample(s, uv + shadowOff + float2( bd.x, 0.0)).rgb, float3(0.2126, 0.7152, 0.0722))) * 2.0;
+           acc += (1.0 - dot(frame0.sample(s, uv + shadowOff + float2(0.0, -bd.y)).rgb, float3(0.2126, 0.7152, 0.0722))) * 2.0;
+           acc += (1.0 - dot(frame0.sample(s, uv + shadowOff + float2(0.0,  bd.y)).rgb, float3(0.2126, 0.7152, 0.0722))) * 2.0;
+           acc += (1.0 - dot(frame0.sample(s, uv + shadowOff + float2(-bd.x, -bd.y)).rgb, float3(0.2126, 0.7152, 0.0722))) * 1.0;
+           acc += (1.0 - dot(frame0.sample(s, uv + shadowOff + float2( bd.x, -bd.y)).rgb, float3(0.2126, 0.7152, 0.0722))) * 1.0;
+           acc += (1.0 - dot(frame0.sample(s, uv + shadowOff + float2(-bd.x,  bd.y)).rgb, float3(0.2126, 0.7152, 0.0722))) * 1.0;
+           acc += (1.0 - dot(frame0.sample(s, uv + shadowOff + float2( bd.x,  bd.y)).rgb, float3(0.2126, 0.7152, 0.0722))) * 1.0;
+           shadowStrength = (acc / 16.0) * u.shadowOpacity;
+       } else {
+           float3 smp = frame0.sample(s, uv + shadowOff).rgb;
+           shadowStrength = (1.0 - dot(smp, float3(0.2126, 0.7152, 0.0722))) * u.shadowOpacity;
+       }
+       backing *= mix(1.0, 0.2, saturate(shadowStrength));
+   }
+
+   // Grid coverage: 0 inside a pixel, 1 on the gap lines.
+   // Luma bias (simpletex_lcd GRID_BIAS) fades the grid out on dark pixels, so
+   // empty (black) pixels show no visible grid.
+   float lumaPixel = saturate(dot(sCol, float3(0.2126, 0.7152, 0.0722)));
+   float gridBias = mix(lumaPixel, 1.0, 1.0 - u.gridBias);
+   float cover = (1.0 - maskG) * u.dotOpacity * gridBias;
+
+   // Pixel transparency: bright pixels reveal the backing through the fill.
+   if (u.flags & FLAG_TRANSPARENCY) {
+       cover = clamp(cover + u.transparency * lumaPixel * 2.665, 0.0, 1.0);
+   }
+
+   float3 final = mix(sCol, backing, cover);
+
+   // Front polarizer tint (iodine-PVA, double-pass).
+   if (u.flags & FLAG_POLARIZER) {
+       final *= mix(float3(1.0), float3(0.94, 1.0, 0.865), u.polarizerTint);
+   }
+
+   final *= 0.65;
 
     if (u.flags & FLAG_NEWTON_RINGS) {
         float aggression = (u.lightStrength > 0.0) ? u.lightStrength : 1.0;
@@ -627,7 +689,7 @@ fragment float4 fragment8BitGBC(VertexOut in [[stage_in]],
     float3 outCol = final * vign * u.brightnessBoost;
 
     if (inShell) {
-        outCol *= shellShade;
+        outCol *= 1.0 - screenRim * 0.30;
         outCol = mix(shellColor, outCol, screenMask);
     }
 
