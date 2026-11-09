@@ -90,6 +90,8 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
     private var cheatManagerSheetWindow: NSWindow?
     // Whether the cheat sheet paused a running game (and should resume it on close).
     private var cheatManagerPausedGame = false
+    // Whether input capture was active before showing the cheat sheet (to restore on close).
+    private var cheatManagerWasCapturing = false
     // Whether cheats are enabled for this game launch.
     @MainActor @Published var cheatsEnabled: Bool = false
     // Track the ROM path for this window instance (for cleanup on close)
@@ -1513,6 +1515,12 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
             runner?.setPaused(true)
         }
 
+        // Temporarily stop input capture so keyboard events reach the sheet
+        cheatManagerWasCapturing = InputCaptureManager.shared.isCapturing
+        if cheatManagerWasCapturing {
+            InputCaptureManager.shared.stopCapture(reason: "Cheat manager opened")
+        }
+
         // Gamepad entry: ensure cheats are downloaded, then show a focused,
         // navigable list instead of the full mouse-oriented browser.
         if gamepad {
@@ -1554,6 +1562,7 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
                     self.runner?.setPaused(false)
                 }
                 self.cheatManagerPausedGame = false
+                self.cheatManagerWasCapturing = false
             }
         }
     }
@@ -1568,6 +1577,12 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
             runner?.setPaused(false)
         }
         cheatManagerPausedGame = false
+        // Restore input capture if it was active before opening
+        if cheatManagerWasCapturing {
+            cheatManagerWasCapturing = false
+            // Do not auto-restart capture; it is re-enabled on next mouse down.
+            // Capture state is intentionally left stopped to avoid capturing UI input.
+        }
     }
 
     @MainActor

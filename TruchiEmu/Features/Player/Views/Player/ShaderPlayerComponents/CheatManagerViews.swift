@@ -8,6 +8,7 @@ struct CheatManagerViewWrapper: View {
     @ObservedObject private var cheatManager = CheatManagerService.shared
     @ObservedObject private var loc = LocalizationManager.shared
     @Environment(\.colorScheme) private var colorScheme
+    @FocusState private var isFocused: Bool
 
     var body: some View {
         VStack(spacing: 0) {
@@ -45,6 +46,13 @@ struct CheatManagerViewWrapper: View {
                 )
         }
         .frame(minWidth: 500, minHeight: 600)
+        .focusable()
+        .focused($isFocused)
+        .onAppear { isFocused = true }
+        .onKeyPress(.escape) {
+            windowController?.dismissCheatManager()
+            return .handled
+        }
     }
 }
 
@@ -62,6 +70,7 @@ struct CheatPickerView: View {
     @State private var cheats: [Cheat] = []
     @State private var sheetFocusIndex: Int = 0
     @State private var isPresented: Bool = true
+    @FocusState private var isFocused: Bool
 
     private var orderedCheats: [Cheat] {
         cheats.sorted { $0.enabled && !$1.enabled }
@@ -168,18 +177,26 @@ struct CheatPickerView: View {
                 windowController?.dismissCheatManager()
             }
         )
-        .onChange(of: orderedCheats.count) { _, newCount in
-            if let ctx = GamepadNavContextStack.shared.topActive() as? GamepadSheetContext {
-                ctx.itemCount = newCount
-            }
-        }
+        .focusable()
+        .focused($isFocused)
         .onAppear {
+            isFocused = true
             loadCheats()
             if cheatManager.totalCount(for: rom) == 0,
                let systemID = rom.systemID {
                 Task {
                     _ = try? await cheatDownloadService.downloadCheatForROM(rom, systemID: systemID)
                 }
+            }
+        }
+        .onKeyPress(.escape) {
+            isPresented = false
+            windowController?.dismissCheatManager()
+            return .handled
+        }
+        .onChange(of: orderedCheats.count) { _, newCount in
+            if let ctx = GamepadNavContextStack.shared.topActive() as? GamepadSheetContext {
+                ctx.itemCount = newCount
             }
         }
     }
