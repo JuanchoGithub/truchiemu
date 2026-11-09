@@ -454,6 +454,8 @@ struct ControllerTestSheet: View {
         case .start: return .buttonMenu
         case .select: return .buttonOptions
         case .share: return .buttonShare
+        case .home: return .buttonHome
+        case .misc1, .paddle1, .paddle2, .paddle3, .paddle4, .touchpad: return .vendorSpecific
         case .dpadUp: return .dpadUp
         case .dpadDown: return .dpadDown
         case .dpadLeft: return .dpadLeft
@@ -493,6 +495,13 @@ struct ControllerTestSheet: View {
         case .start: return "Menu Button"
         case .select: return "View Button"
         case .share: return "Share Button"
+        case .home: return "Home Button"
+        case .misc1: return "Misc Button"
+        case .paddle1: return "Paddle 1"
+        case .paddle2: return "Paddle 2"
+        case .paddle3: return "Paddle 3"
+        case .paddle4: return "Paddle 4"
+        case .touchpad: return "Touchpad"
         case .dpadUp: return "D-pad (Up)"
         case .dpadDown: return "D-pad (Down)"
         case .dpadLeft: return "D-pad (Left)"
@@ -523,6 +532,13 @@ struct ControllerTestSheet: View {
         case .start: return Int(SDL_CONTROLLER_BUTTON_START.rawValue)
         case .select: return Int(SDL_CONTROLLER_BUTTON_BACK.rawValue)
         case .share: return Int(SDL_CONTROLLER_BUTTON_BACK.rawValue)
+        case .home: return Int(SDL_CONTROLLER_BUTTON_GUIDE.rawValue)
+        case .misc1: return Int(SDL_CONTROLLER_BUTTON_MISC1.rawValue)
+        case .paddle1: return Int(SDL_CONTROLLER_BUTTON_PADDLE1.rawValue)
+        case .paddle2: return Int(SDL_CONTROLLER_BUTTON_PADDLE2.rawValue)
+        case .paddle3: return Int(SDL_CONTROLLER_BUTTON_PADDLE3.rawValue)
+        case .paddle4: return Int(SDL_CONTROLLER_BUTTON_PADDLE4.rawValue)
+        case .touchpad: return Int(SDL_CONTROLLER_BUTTON_TOUCHPAD.rawValue)
         case .dpadUp: return Int(SDL_CONTROLLER_BUTTON_DPAD_UP.rawValue)
         case .dpadDown: return Int(SDL_CONTROLLER_BUTTON_DPAD_DOWN.rawValue)
         case .dpadLeft: return Int(SDL_CONTROLLER_BUTTON_DPAD_LEFT.rawValue)
@@ -708,7 +724,17 @@ private struct XboxPadView: View {
             let h = geo.size.height
             ZStack {
                 RoundedRectangle(cornerRadius: h * 0.18)
-                    .fill(AppColors.cardBackground(colorScheme))
+                    .fill(
+                        LinearGradient(
+                            gradient: Gradient(colors: [
+                                AppColors.cardBackground(colorScheme).opacity(0.95),
+                                AppColors.cardBackground(colorScheme).opacity(0.85)
+                            ]),
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .shadow(color: AppColors.textPrimary(colorScheme).opacity(0.08), radius: 12, x: 0, y: 4)
                     .overlay(
                         RoundedRectangle(cornerRadius: h * 0.18)
                             .stroke(AppColors.cardBorder(colorScheme), lineWidth: 1)
@@ -758,6 +784,15 @@ private struct XboxPadView: View {
                       x: leftStick.x, y: leftStick.y, label: "L")
             stickView(.r3, center: rStickCenter, radius: stickRadius, deadZone: deadzones.right,
                       x: rightStick.x, y: rightStick.y, label: "R")
+
+            // Extra buttons row (home, misc, paddles, touchpad) — placed below sticks
+            smallPill(.home, center: CGPoint(x: w * 0.50, y: h * 0.88))
+            padButton(.misc1, center: CGPoint(x: w * 0.38, y: h * 0.88), radius: w * 0.035)
+            padButton(.paddle1, center: CGPoint(x: w * 0.22, y: h * 0.88), radius: w * 0.035)
+            padButton(.paddle2, center: CGPoint(x: w * 0.28, y: h * 0.88), radius: w * 0.035)
+            padButton(.paddle3, center: CGPoint(x: w * 0.72, y: h * 0.88), radius: w * 0.035)
+            padButton(.paddle4, center: CGPoint(x: w * 0.78, y: h * 0.88), radius: w * 0.035)
+            smallPill(.touchpad, center: CGPoint(x: w * 0.62, y: h * 0.88))
         }
     }
 
@@ -776,13 +811,20 @@ private struct XboxPadView: View {
         let canonicalRetro = Self.canonicalRetro(for: button)
         let isTriggeredRetro = canonicalRetro.map { triggeredRetros.contains($0) } ?? false
         let isPressed = pressed.contains(button)
+        let baseFill: Color = {
+            if isTriggeredRetro { return AppColors.brandAccent }
+            switch button {
+            case .a: return Color(red: 0.15, green: 0.7, blue: 0.15).opacity(0.18)
+            case .b: return Color(red: 0.8, green: 0.15, blue: 0.15).opacity(0.18)
+            case .x: return Color(red: 0.2, green: 0.5, blue: 0.9).opacity(0.18)
+            case .y: return Color(red: 0.9, green: 0.7, blue: 0.1).opacity(0.18)
+            default: return AppColors.cardBackgroundSubtle(colorScheme)
+            }
+        }()
         return ZStack {
             Circle()
-                .fill(
-                    isTriggeredRetro
-                    ? AppColors.brandAccent
-                    : AppColors.cardBackgroundSubtle(colorScheme)
-                )
+                .fill(baseFill)
+                .shadow(color: AppColors.textPrimary(colorScheme).opacity(isTriggeredRetro ? 0.25 : 0.05), radius: isTriggeredRetro ? 6 : 3, x: 0, y: 2)
             Circle()
                 .stroke(
                     isTriggeredRetro
@@ -796,7 +838,7 @@ private struct XboxPadView: View {
                     isTriggeredRetro
                     ? .white
                     : (isPressed
-                        ? AppColors.brandAccent.opacity(0.1)
+                        ? AppColors.brandAccent
                         : AppColors.textPrimary(colorScheme))
                 )
         }
@@ -836,7 +878,7 @@ private struct XboxPadView: View {
         case .rStickDown: return .rStickDown
         case .rStickLeft: return .rStickLeft
         case .rStickRight: return .rStickRight
-        case .share: return nil
+        case .share, .home, .misc1, .paddle1, .paddle2, .paddle3, .paddle4, .touchpad: return nil
         }
     }
 

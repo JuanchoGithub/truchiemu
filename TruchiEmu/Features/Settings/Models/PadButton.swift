@@ -30,6 +30,13 @@ enum PadButton: String, CaseIterable, Hashable {
     case start
     case select
     case share
+    case home
+    case misc1
+    case paddle1
+    case paddle2
+    case paddle3
+    case paddle4
+    case touchpad
 
     // Stick directions — synthesised from analog axis events by
     // `ControllerInputObserver` when the axis crosses ±0.5. Each maps to
@@ -58,6 +65,13 @@ enum PadButton: String, CaseIterable, Hashable {
         case .start: return "Start"
         case .select: return "Select"
         case .share: return "Share"
+        case .home: return "Home"
+        case .misc1: return "Misc"
+        case .paddle1: return "P1"
+        case .paddle2: return "P2"
+        case .paddle3: return "P3"
+        case .paddle4: return "P4"
+        case .touchpad: return "TP"
         case .dpadUp, .dpadDown, .dpadLeft, .dpadRight,
              .lStickUp, .lStickDown, .lStickLeft, .lStickRight,
              .rStickUp, .rStickDown, .rStickLeft, .rStickRight: return ""

@@ -203,6 +203,13 @@ class SDLInputManager: ObservableObject {
         SDL_CONTROLLER_BUTTON_DPAD_RIGHT.rawValue: .dpadRight,
         SDL_CONTROLLER_BUTTON_LEFTSTICK.rawValue: .l3,
         SDL_CONTROLLER_BUTTON_RIGHTSTICK.rawValue: .r3,
+        SDL_CONTROLLER_BUTTON_GUIDE.rawValue: .home,
+        SDL_CONTROLLER_BUTTON_MISC1.rawValue: .misc1,
+        SDL_CONTROLLER_BUTTON_PADDLE1.rawValue: .paddle1,
+        SDL_CONTROLLER_BUTTON_PADDLE2.rawValue: .paddle2,
+        SDL_CONTROLLER_BUTTON_PADDLE3.rawValue: .paddle3,
+        SDL_CONTROLLER_BUTTON_PADDLE4.rawValue: .paddle4,
+        SDL_CONTROLLER_BUTTON_TOUCHPAD.rawValue: .touchpad,
     ]
 
     // Raw joystick button index → generic pad button (used for unrecognized
