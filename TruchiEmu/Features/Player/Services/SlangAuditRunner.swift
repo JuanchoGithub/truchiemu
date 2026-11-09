@@ -108,6 +108,12 @@ enum SlangAuditRunner {
             "border/gameboy-player/gameboy-player-tvout+interlacing.slangp",
             "border/gameboy-player/gameboy-player-tvout-gba-color.slangp",
             "border/gameboy-player/gameboy-player-tvout-gba-color+interlacing.slangp",
+            // Fixed-layout border chains that double the line count after
+            // the border pass (`scale_yN = source 2.0`). Guards
+            // `SlangPreset.borderLayout`'s pass simulation: the artwork is
+            // 256x224 / 320x240 but the chain's output is twice as tall.
+            "border/sgb/sgb-tvout+interlacing.slangp",
+            "border/sgba/sgba-tvout+interlacing.slangp",
             // Single-pass preset whose final pass samples its own
             // `PassFeedback0` output. Guards the librashader Metal
             // feedback-intermediate path: the intermediate must render
@@ -240,8 +246,15 @@ enum SlangAuditRunner {
                             pngPath: nil)
         }
 
-        // Allocate output texture.
-        guard let outputTex = makeOutputTexture(device: device, w: outW, h: outH) else {
+        // Allocate output texture. Fixed-layout border chains render into an
+        // artwork-sized offscreen texture in the app (see
+        // `MetalCoordinator.draw`), so mirror that size here: it makes the
+        // chain compose exactly as authored and keeps the PNG comparable to
+        // what the host presents.
+        let borderLayout = SlangCompilerService.shared.borderLayout
+        let renderW = borderLayout?.outputWidth ?? outW
+        let renderH = borderLayout?.outputHeight ?? outH
+        guard let outputTex = makeOutputTexture(device: device, w: renderW, h: renderH) else {
             SlangCompilerService.shared.destroyFilterChain()
             return AuditRow(category: entry.category, name: entry.name, relPath: relPath,
                             pathMissing: false, loadOK: true, loadError: nil,
@@ -275,9 +288,21 @@ enum SlangAuditRunner {
         // source-scaled final pass through a source-sized texture; that
         // route preserves the same aspect, so this check still applies.
         let inputAspect = Float(inputW) / Float(inputH)
-        let aspect = inputAspect
+        let aspect: Float
+        if let borderLayout {
+            // The chain composes at its declared output size; the host
+            // letterboxes that texture at the artwork aspect afterwards, so
+            // the raw output must fill the texture (no internal bars).
+            aspect = Float(borderLayout.outputWidth) / Float(borderLayout.outputHeight)
+        } else {
+            aspect = inputAspect
+        }
         let vp: MTLViewport
-        if SlangCompilerService.shared.finalPassIsAbsolute {
+        if borderLayout != nil {
+            vp = MTLViewport(originX: 0, originY: 0,
+                             width: Double(renderW), height: Double(renderH),
+                             znear: 0.0, zfar: 1.0)
+        } else if SlangCompilerService.shared.finalPassIsAbsolute {
             vp = MTLViewport(originX: 0, originY: 0,
                              width: Double(outW), height: Double(outH),
                              znear: 0.0, zfar: 1.0)
@@ -312,7 +337,7 @@ enum SlangAuditRunner {
         cmdBuffer.waitUntilCompleted()
 
         // Read back the output.
-        let outBytes = readTextureBytes(tex: outputTex, w: outW, h: outH)
+        let outBytes = readTextureBytes(tex: outputTex, w: renderW, h: renderH)
         let pngURL = pngDir.appendingPathComponent("\(entry.category)__\(safeFilename(entry.name)).png")
 
         var nonBlack = false
@@ -323,18 +348,23 @@ enum SlangAuditRunner {
         if outBytes.isEmpty {
             renderError = "empty readback"
         } else {
-            nonBlack = computeNonBlack(bytes: outBytes, w: outW, h: outH)
-            nonPassThrough = computeNonPassThrough(outBytes: outBytes, outW: outW, outH: outH,
+            nonBlack = computeNonBlack(bytes: outBytes, w: renderW, h: renderH)
+            nonPassThrough = computeNonPassThrough(outBytes: outBytes, outW: renderW, outH: renderH,
                                                   inputBytes: inputBytes, inW: inputW, inH: inputH)
-            aspectOK = SlangCompilerService.shared.finalPassIsAbsolute
-                ? true
-                : computeAspectOK(bytes: outBytes, w: outW, h: outH, expectedAspect: aspect)
+            if borderLayout != nil {
+                aspectOK = computeAspectOK(bytes: outBytes, w: renderW, h: renderH,
+                                           expectedAspect: aspect)
+            } else {
+                aspectOK = SlangCompilerService.shared.finalPassIsAbsolute
+                    ? true
+                    : computeAspectOK(bytes: outBytes, w: renderW, h: renderH, expectedAspect: aspect)
+            }
         }
 
         // Always write the PNG if we have bytes — even a black frame is useful
         // evidence.
         if !outBytes.isEmpty {
-            writePNG(bytes: outBytes, w: outW, h: outH, to: pngURL)
+            writePNG(bytes: outBytes, w: renderW, h: renderH, to: pngURL)
         }
 
         SlangCompilerService.shared.destroyFilterChain()

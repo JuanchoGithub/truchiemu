@@ -937,12 +937,14 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
             //   pre-letterbox the host viewport to the input's aspect.
             //   The chain scales its output to fill that letterbox.
             //
-            // - scale_type = "absolute" (bezel presets like
-            //   `gameboy-player-gba-color.slangp`, `Mega_Bezel` presets):
-            //   the chain outputs a fixed-size outer frame regardless of the
-            //   viewport. Pass the full drawable and the input's aspect; the
-            //   chain itself handles its outer-bezel layout and inner
-            //   aspect-correct picture placement.
+            // - scale_type = "absolute" (self-adapting bezel presets like
+            //   `Mega_Bezel`, koko-aio): the chain outputs a fixed-size
+            //   outer frame regardless of the viewport. Pass the full
+            //   drawable and the input's aspect; the chain itself handles
+            //   its outer-bezel layout and inner aspect-correct picture
+            //   placement. Fixed-layout border presets (`border/sgb`,
+            //   `border/gameboy-player`) take the artwork-sized offscreen
+            //   route below instead.
             let slangVP: MTLViewport
             if SlangCompilerService.shared.finalPassIsAbsolute {
                 slangVP = MTLViewport(originX: 0, originY: 0,
@@ -984,7 +986,49 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
             let intermediateScale = SlangCompilerService.shared.sourceSizedIntermediateScale
             let intermediateWidth = min(16384, max(1, Int((Double(frameTex.width) * Double(intermediateScale.x)).rounded())))
             let intermediateHeight = min(16384, max(1, Int((Double(frameTex.height) * Double(intermediateScale.y)).rounded())))
-            if SlangCompilerService.shared.needsSourceSizedIntermediate,
+
+            // Fixed-layout border chains (`border/sgb`,
+            // `border/gameboy-player`, `border/handheld-nebula`) draw their
+            // artwork at an absolute size and then scale later passes with
+            // `scale_type = viewport`. librashader resolves `viewport`
+            // against the **output texture**, so rendering straight into the
+            // window turns a 608x448 border into `windowWidth x 448` and
+            // stretches the artwork. Render the chain into an artwork-sized
+            // offscreen texture instead, so `viewport` resolves to the
+            // authored size, then present that texture letterboxed at the
+            // artwork's own aspect.
+            if let borderLayout = SlangCompilerService.shared.borderLayout,
+               let chainOutput = ensureSlangSourceSizedTexture(
+                width: borderLayout.outputWidth,
+                height: borderLayout.outputHeight,
+                format: .bgra8Unorm,
+                device: device
+               ) {
+                let chainVP = MTLViewport(originX: 0, originY: 0,
+                                          width: Double(borderLayout.outputWidth),
+                                          height: Double(borderLayout.outputHeight),
+                                          znear: 0.0, zfar: 1.0)
+                SlangCompilerService.shared.renderFrame(
+                    commandBuffer: cmdBuffer,
+                    inputTexture: frameTex,
+                    outputTexture: chainOutput,
+                    frameCount: UInt64(frameCounter),
+                    viewport: chainVP,
+                    aspectRatio: slangAspect,
+                    frameDirection: frameDirection,
+                    framesPerSecond: slangFPS,
+                    frametimeDelta: frametimeDeltaMs
+                )
+                blitSlangOutputToDrawable(
+                    device: device,
+                    commandBuffer: cmdBuffer,
+                    drawable: drawable,
+                    descriptor: descriptor,
+                    sourceTexture: chainOutput,
+                    drawableSize: view.drawableSize,
+                    targetAspect: CGFloat(borderLayout.width) / CGFloat(borderLayout.height)
+                )
+            } else if SlangCompilerService.shared.needsSourceSizedIntermediate,
                let chainOutput = ensureSlangSourceSizedTexture(
                 width: intermediateWidth,
                 height: intermediateHeight,

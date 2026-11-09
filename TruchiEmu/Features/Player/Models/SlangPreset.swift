@@ -163,6 +163,43 @@ struct SlangPreset: Identifiable, Hashable {
         return (info.outputScaleX, info.outputScaleY)
     }
 
+    /// Fixed-layout border artwork declared by a preset.
+    ///
+    /// A border preset (`border/gameboy-player`, `border/sgb`, `border/sgba`,
+    /// `border/handheld-nebula`) draws its own artwork at an absolute size
+    /// and then uses `scale_type = viewport` on later passes. librashader
+    /// resolves `viewport` against the **output texture** size, so rendering
+    /// such a chain straight into the window turns a 608x448 border into
+    /// `windowWidth x 448` and stretches the game image inside it.
+    ///
+    /// Rendering the chain into an offscreen texture of `outputWidth x
+    /// outputHeight` makes `viewport` resolve to the artwork size, so the
+    /// chain composes exactly as authored. The host then presents that
+    /// texture letterboxed at `width:height`.
+    struct BorderLayout: Hashable {
+        /// The border artwork's declared size; also the aspect to present.
+        let width: Int
+        let height: Int
+        /// Size of the chain's final pass when `viewport` resolves to the
+        /// artwork size. Larger than `width`/`height` for chains that double
+        /// the line count for interlacing (sgb/sgba `scale_yN = 2.0`).
+        let outputWidth: Int
+        let outputHeight: Int
+    }
+
+    /// The border artwork layout when this preset draws a fixed-size border,
+    /// `nil` for every other chain (plain CRT presets, Mega Bezel, koko-aio,
+    /// scanline-classic — those adapt their layout to the output size).
+    ///
+    /// The discriminator is the border-drawing pass itself: it must name a
+    /// `border`/`imgborder`/`bezel` shader **and** declare both axes as
+    /// `absolute`. That is exactly how the fixed-layout border presets pin
+    /// their artwork; self-adapting bezel chains scale their artwork with
+    /// `source`/`viewport` instead.
+    var borderLayout: BorderLayout? {
+        return Self.readBorderLayout(at: path, depth: 0)
+    }
+
     /// Walks the preset (and `#reference`-inherited chains up to 4 levels)
     /// looking for any shader whose path contains `border`, `bezel`, or
     /// `imgborder` AND any `scale_type* = "absolute"` directive.
@@ -193,6 +230,153 @@ struct SlangPreset: Identifiable, Hashable {
             if chainHasBezierStyle(at: refURL, depth: depth + 1) { return true }
         }
         return false
+    }
+
+    /// Reads the fixed-layout border artwork declared by a preset chain.
+    ///
+    /// Returns nil unless some pass both names a `border`/`imgborder`/`bezel`
+    /// shader and pins both axes with `scale_type = absolute` — the two
+    /// signals every fixed-layout border preset uses. Self-adapting bezel
+    /// chains (Mega Bezel, koko-aio) scale their artwork with `source` /
+    /// `viewport` instead and keep the full-drawable route.
+    ///
+    /// The output size is simulated over the passes that follow the border
+    /// pass, treating `viewport` as the artwork size (that is what the
+    /// offscreen route makes it resolve to). Passes that double the line
+    /// count for interlacing (`sgb`/`sgba` `scale_yN = 2.0`) therefore get
+    /// an output twice as tall as the artwork, which the host then squashes
+    /// back by presenting at the artwork aspect.
+    private static func readBorderLayout(at url: URL, depth: Int = 0) -> BorderLayout? {
+        guard depth < 4, let text = Self.readSourceText(at: url) else { return nil }
+        let baseDir = url.deletingLastPathComponent()
+
+        var shaderValues: [Int: [String]] = [:]
+        var scaleValues: [Int: [String: String]] = [:]
+        var factorValues: [Int: [String: String]] = [:]
+
+        for line in text.split(whereSeparator: \.isNewline) {
+            let trimmed = line.trimmingCharacters(in: .whitespaces)
+            guard let eq = trimmed.firstIndex(of: "=") else { continue }
+            let key = String(trimmed[..<eq]).trimmingCharacters(in: .whitespaces).lowercased()
+            var raw = String(trimmed[trimmed.index(after: eq)...])
+            // Presets trail values with comments (`scale_y6 = "0.0625" # ...`);
+            // an unstripped comment leaves the factor unparseable.
+            if let hash = raw.firstIndex(of: "#") { raw = String(raw[..<hash]) }
+            let val = raw.trimmingCharacters(in: .whitespaces)
+                .trimmingCharacters(in: CharacterSet(charactersIn: "\"'"))
+
+            if key.hasPrefix("shader") {
+                let digits = key.dropFirst("shader".count).prefix(while: { $0.isNumber })
+                guard !digits.isEmpty, let n = Int(digits) else { continue }
+                shaderValues[n, default: []].append(val)
+            } else if key.hasPrefix("scale_type") {
+                let digits = key.drop(while: { !$0.isNumber }).prefix(while: { $0.isNumber })
+                guard let n = Int(digits) else { continue }
+                let suffix = key.dropLast(digits.count).dropFirst("scale_type".count)
+                let axis = suffix == "_x" ? "x" : (suffix == "_y" ? "y" : "all")
+                scaleValues[n, default: [:]][axis] = val.lowercased()
+            } else if key.hasPrefix("scale") {
+                let digits = key.drop(while: { !$0.isNumber }).prefix(while: { $0.isNumber })
+                guard let n = Int(digits) else { continue }
+                let suffix = key.dropLast(digits.count).dropFirst("scale".count)
+                let axis = suffix == "_x" ? "x" : (suffix == "_y" ? "y" : "all")
+                factorValues[n, default: [:]][axis] = val
+            }
+        }
+
+        // A preset with no local passes inherits the referenced chain.
+        guard !shaderValues.isEmpty else {
+            if let refPath = parseFirstReference(text), refPath.hasSuffix(".slangp") {
+                let refURL = URL(fileURLWithPath: refPath, relativeTo: baseDir)
+                return readBorderLayout(at: refURL, depth: depth + 1)
+            }
+            return nil
+        }
+        guard let maxIndex = shaderValues.keys.max() else { return nil }
+
+        // The border-art pass: a border shader whose both axes are absolute.
+        var borderIndex: Int?
+        var artWidth = 0
+        var artHeight = 0
+        for index in shaderValues.keys.sorted() {
+            let names = shaderValues[index] ?? []
+            guard names.contains(where: { name in
+                let lower = name.lowercased()
+                return lower.contains("border") || lower.contains("bezel")
+            }) else { continue }
+            let types = scaleValues[index] ?? [:]
+            guard types["x"] ?? types["all"] == "absolute",
+                  types["y"] ?? types["all"] == "absolute" else { continue }
+            let factors = factorValues[index] ?? [:]
+            guard let w = integerScaleValue(factors["x"] ?? factors["all"]),
+                  let h = integerScaleValue(factors["y"] ?? factors["all"]) else { continue }
+            borderIndex = index
+            artWidth = w
+            artHeight = h
+            break
+        }
+        guard let borderIndex, artWidth > 0, artHeight > 0 else { return nil }
+
+        let artW = Float(artWidth)
+        let artH = Float(artHeight)
+        var width = artW
+        var height = artH
+        for index in stride(from: borderIndex + 1, through: maxIndex, by: 1) {
+            let types = scaleValues[index] ?? [:]
+            let factors = factorValues[index] ?? [:]
+            let fx = Float(factors["x"] ?? factors["all"] ?? "1") ?? 1
+            let fy = Float(factors["y"] ?? factors["all"] ?? "1") ?? 1
+            guard let nextWidth = resolveScaledSize(type: types["x"] ?? types["all"],
+                                                   factor: fx,
+                                                   current: width,
+                                                   viewport: artW),
+                  let nextHeight = resolveScaledSize(type: types["y"] ?? types["all"],
+                                                    factor: fy,
+                                                    current: height,
+                                                    viewport: artH) else {
+                return nil
+            }
+            width = nextWidth
+            height = nextHeight
+        }
+
+        let outputWidth = Int(width.rounded())
+        let outputHeight = Int(height.rounded())
+        guard outputWidth > 0, outputHeight > 0,
+              outputWidth <= 16384, outputHeight <= 16384 else { return nil }
+
+        return BorderLayout(width: artWidth,
+                            height: artHeight,
+                            outputWidth: outputWidth,
+                            outputHeight: outputHeight)
+    }
+
+    /// Resolves one axis of a pass size. An omitted scale type is `source`
+    /// (librashader's default for every pass but the final one, which fills
+    /// the output texture — the same arithmetic).
+    private static func resolveScaledSize(type: String?,
+                                          factor: Float,
+                                          current: Float,
+                                          viewport: Float) -> Float? {
+        switch type {
+        case nil, "source":
+            return current * factor
+        case "viewport":
+            return viewport * factor
+        case "absolute":
+            return factor
+        default:
+            // `original` depends on the emulator's input size, which this
+            // parser does not know.
+            return nil
+        }
+    }
+
+    /// Parses an absolute `scale` value (`"608"`, `"608.000000"`) as a
+    /// positive integer.
+    private static func integerScaleValue(_ raw: String?) -> Int? {
+        guard let raw, let value = Float(raw), value > 0 else { return nil }
+        return Int(value.rounded())
     }
 
     /// Parses the first `#reference "path"` directive, returning the relative

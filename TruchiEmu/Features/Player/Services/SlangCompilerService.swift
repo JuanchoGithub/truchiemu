@@ -34,6 +34,9 @@ class SlangCompilerService: ObservableObject {
     /// intermediate (usually 1x1; source-scaled passes can make it larger or
     /// smaller). Mirrors `SlangPreset.sourceSizedIntermediateScale`.
     nonisolated(unsafe) private var _sourceSizedIntermediateScale: (x: Float, y: Float) = (1, 1)
+    /// Fixed-layout border artwork of the active chain, if any. Mirrors
+    /// `SlangPreset.borderLayout`; drives the offscreen artwork-sized route.
+    nonisolated(unsafe) private var _borderLayout: SlangPreset.BorderLayout?
 
     /// Set by `requestHistoryClear()` and consumed by the next `renderFrame`.
     nonisolated(unsafe) private var _clearHistoryRequested: Bool = false
@@ -182,6 +185,7 @@ class SlangCompilerService: ObservableObject {
         _finalPassIsAbsolute = prepared.preset.usesAbsoluteFinalPass
         _needsSourceSizedIntermediate = prepared.preset.needsSourceSizedIntermediate
         _sourceSizedIntermediateScale = prepared.preset.sourceSizedIntermediateScale
+        _borderLayout = prepared.preset.borderLayout
         _clearHistoryRequested = clearHistory
         let oldPrepared = activePrepared
         activePrepared = prepared
@@ -204,7 +208,7 @@ class SlangCompilerService: ObservableObject {
             freePreparedChain(staleSameKey)
         }
 
-        LoggerService.info(category: "Slang", "Chain activated for preset: \(prepared.preset.name) (final_pass_absolute=\(prepared.preset.usesAbsoluteFinalPass), final_pass_feedback=\(prepared.preset.hasFinalPassFeedback), source_sized_intermediate=\(prepared.preset.needsSourceSizedIntermediate))")
+        LoggerService.info(category: "Slang", "Chain activated for preset: \(prepared.preset.name) (final_pass_absolute=\(prepared.preset.usesAbsoluteFinalPass), final_pass_feedback=\(prepared.preset.hasFinalPassFeedback), source_sized_intermediate=\(prepared.preset.needsSourceSizedIntermediate), border_layout=\(String(describing: prepared.preset.borderLayout)))")
         return prepared.preset
     }
 
@@ -315,6 +319,15 @@ class SlangCompilerService: ObservableObject {
         Self.shared.chainLock.withLock { Self.shared._sourceSizedIntermediateScale }
     }
 
+    /// Fixed-layout border artwork of the active chain. Non-nil only for
+    /// presets that draw their own absolute-sized border (`border/sgb`,
+    /// `border/gameboy-player`, ...); the host renders those into an
+    /// artwork-sized offscreen texture so `scale_type = viewport` resolves to
+    /// the authored size instead of the window size.
+    nonisolated var borderLayout: SlangPreset.BorderLayout? {
+        Self.shared.chainLock.withLock { Self.shared._borderLayout }
+    }
+
     nonisolated func renderFrame(commandBuffer: MTLCommandBuffer,
                                   inputTexture: MTLTexture,
                                   outputTexture: MTLTexture,
@@ -412,6 +425,7 @@ class SlangCompilerService: ObservableObject {
         _finalPassIsAbsolute = false
         _needsSourceSizedIntermediate = false
         _sourceSizedIntermediateScale = (1, 1)
+        _borderLayout = nil
         _clearHistoryRequested = false
         activePrepared = nil
         // Slang was deactivated outright: the prepared-chain cache is dead
