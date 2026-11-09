@@ -245,7 +245,6 @@ float fontRun(float2 p, constant int* chars, int len, float px, float slant) {
     return m;
 }
 
-constant int TEXT_WORDMARK[14] = {0, 1, 2, 3, -1, 4, 5, 6, -1, 7, 5, 8, 5, 9};
 constant int TEXT_POWER[5]     = {10, 5, 11, 3, 9};          // POWER
 constant int TEXT_NINTENDO[8]  = {12, 14, 12, 13, 3, 12, 15, 5}; // NINTENDO
 constant int TEXT_SELECT[6]    = {16, 3, 8, 3, 7, 13};       // SELECT
@@ -282,6 +281,143 @@ float sdArrow(float2 p, float2 dir) {
     float2 t = float2(-dir.y, dir.x);
     return sdTriangle(p, dir * 6.0, -dir * 3.5 + t * 5.0, -dir * 3.5 - t * 5.0);
 }
+
+// --- GAME BOY COLOR WORDMARK ---
+//
+// The printed mark mixes two faces: a heavy geometric italic sans for
+// "GAME BOY" and a round brush face for "COLOR". Both are drawn as signed
+// distance shapes in cap-height units (y = 0 at the cap line, y = 1 at the
+// baseline), so they stay crisp at any zoom.
+
+// Box centred on the origin.
+float sdBox(float2 p, float2 b) {
+    float2 d = abs(p) - b;
+    return length(max(d, 0.0)) + min(max(d.x, d.y), 0.0);
+}
+
+// Rectangular ring: rounded rect of half-size `b` and corner `rad`, with a
+// border of width `t`.
+float sdRingRect(float2 p, float2 b, float rad, float t) {
+    float2 inner = max(b - t, float2(0.002));
+    return max(sdRoundRectGBC(p, b, rad),
+               -sdRoundRectGBC(p, inner, max(rad - t, 0.0)));
+}
+
+// Straight stroke with square ends, half-width `hw`.
+float sdBar(float2 p, float2 a, float2 b, float hw) {
+    float2 d = b - a;
+    float len = max(length(d), 1e-5);
+    float2 dir = d / len;
+    float2 q = float2(dot(p - a, dir) - len * 0.5, dot(p - a, float2(-dir.y, dir.x)));
+    return sdBox(q, float2(len * 0.5, hw));
+}
+
+// Straight stroke with round caps, radius `r`.
+float sdBrush(float2 p, float2 a, float2 b, float r) {
+    float2 pa = p - a, ba = b - a;
+    float h = clamp(dot(pa, ba) / max(dot(ba, ba), 1e-6), 0.0, 1.0);
+    return length(pa - ba * h) - r;
+}
+
+// Round-capped stroke along an elliptical arc. Angles in radians, +y down.
+float sdBrushArc(float2 p, float2 c, float2 rad, float a0, float a1, float r) {
+    const int N = 20;
+    float2 prev = c + rad * float2(cos(a0), sin(a0));
+    float d = 1e9;
+    for (int i = 1; i <= N; i++) {
+        float a = mix(a0, a1, float(i) / float(N));
+        float2 cur = c + rad * float2(cos(a), sin(a));
+        d = min(d, sdBrush(p, prev, cur, r));
+        prev = cur;
+    }
+    return d;
+}
+
+// "GAME BOY" face: heavy geometric sans, stroke = 0.20 of the cap height.
+// Ids: 0 G, 1 A, 2 M, 3 E, 4 B, 5 O, 6 Y. Coordinates are the ink box
+// (x = 0…width, y = 0 cap line … 1 baseline); the strokes are centre lines,
+// so they start and end half a stroke inside the box.
+float gbGlyph(float2 p, int c) {
+    const float h = 0.10;
+    const float t = 0.20;
+    if (c == 0) { // G: round bowl open at upper right, bar at mid height
+        float d = sdRingRect(p - float2(0.409, 0.50), float2(0.409, 0.50), 0.30, t);
+        d = max(d, -sdBox(p - float2(0.66, 0.37), float2(0.37, 0.135)));
+        return min(d, sdBox(p - float2(0.6275, 0.61), float2(0.19, 0.11)));
+    }
+    if (c == 1) { // A: splayed legs, flat apex, low crossbar
+        float d = min(sdBar(p, float2(0.3775, 0.06), float2(0.1327, 0.94), h),
+                      sdBar(p, float2(0.454, 0.06), float2(0.705, 0.94), h));
+        d = min(d, sdBar(p, float2(0.16, 0.605), float2(0.68, 0.605), h));
+        float w = 0.780;
+        d = max(d, sdBox(p - float2(w*0.5, 0.5), float2(w*0.5, 0.5)));
+        return d;
+    }
+    if (c == 2) { // M: two stems, centre V down to baseline
+        float d = min(sdBar(p, float2(0.243, 0.10), float2(0.115, 0.90), h),
+                      sdBar(p, float2(0.852, 0.10), float2(1.033, 0.90), h));
+        d = min(d, sdBar(p, float2(0.243, 0.06), float2(0.569, 0.94), h));
+        d = min(d, sdBar(p, float2(0.852, 0.06), float2(0.569, 0.94), h));
+        float w = 1.129;
+        d = max(d, sdBox(p - float2(w*0.5, 0.5), float2(w*0.5, 0.5)));
+        return d;
+    }
+    if (c == 3) { // E: stem, three arms
+        float d = sdBar(p, float2(0.10, 0.10), float2(0.10, 0.90), h);
+        d = min(d, sdBar(p, float2(0.10, 0.10), float2(0.462, 0.10), h));
+        d = min(d, sdBar(p, float2(0.10, 0.50), float2(0.421, 0.50), h));
+        return min(d, sdBar(p, float2(0.10, 0.90), float2(0.467, 0.90), h));
+    }
+    if (c == 4) { // B: stem, two bowls
+        float d = sdBar(p, float2(0.102, 0.10), float2(0.102, 0.90), 0.102);
+        d = min(d, sdRingRect(p - float2(0.4355, 0.22), float2(0.2315, 0.22), 0.15, t));
+        return min(d, sdRingRect(p - float2(0.4625, 0.72), float2(0.2585, 0.28), 0.18, t));
+    }
+    if (c == 5) { // O: round ring
+        return sdRingRect(p - float2(0.425, 0.50), float2(0.425, 0.50), 0.38, t);
+    }
+    if (c == 6) { // Y: two arms into single stem
+        float d = min(sdBar(p, float2(0.123, 0.10), float2(0.423, 0.55), h),
+                      sdBar(p, float2(0.669, 0.10), float2(0.423, 0.55), h));
+        d = min(d, sdBar(p, float2(0.423, 0.06), float2(0.423, 0.94), 0.102));
+        float w = 0.796;
+        d = max(d, sdBox(p - float2(w*0.5, 0.5), float2(w*0.5, 0.5)));
+        return d;
+    }
+    return 1e9;
+}
+
+// "COLOR" face: round brush strokes of even weight with round caps.
+// Ids: 0 C, 1 O, 2 L, 3 R.
+float clGlyph(float2 p, int c) {
+    const float r = 0.105;
+    if (c == 0) { // C: open ring, gap on right
+        return sdBrushArc(p, float2(0.40, 0.50), float2(0.275, 0.33), 0.35, 5.60, 0.115);
+    }
+    if (c == 1) { // O: closed oval
+        return sdBrushArc(p, float2(0.51, 0.50), float2(0.375, 0.375), 0.0, 6.2831853, 0.135);
+    }
+    if (c == 2) { // L: stem with foot
+        float d = sdBrush(p, float2(0.155, 0.14), float2(0.19, 0.70), r);
+        d = min(d, sdBrush(p, float2(0.19, 0.70), float2(0.40, 0.85), r));
+        return min(d, sdBrush(p, float2(0.40, 0.85), float2(0.52, 0.83), r));
+    }
+    if (c == 3) { // R: stem, bowl, splayed leg
+        float d = sdBrush(p, float2(0.16, 0.15), float2(0.19, 0.85), r);
+        d = min(d, sdBrushArc(p, float2(0.36, 0.30), float2(0.17, 0.155), -1.45, 1.85, r));
+        return min(d, sdBrush(p, float2(0.345, 0.46), float2(0.62, 0.88), r));
+    }
+    return 1e9;
+}
+
+// Pen position of each slot in cap units, and its glyph id (-1 = space).
+// GAME BOY ids 0…6, COLOR ids 10…13.
+constant float WM_X[14]  = {0.000, 0.783, 1.554, 2.708, 3.300, 3.588,
+                            4.321, 4.979, 5.900, 6.290, 7.153, 8.275, 8.997, 10.079};
+constant int   WM_K[14]  = {0, 1, 2, 3, -1, 4, 5, 6, -1, 10, 11, 12, 11, 13};
+constant float WM_W[14]  = {0.821, 0.780, 1.129, 0.571, 0.729, 0.850, 0.796, 0.0,
+                            0.0, 0.0, 0.763, 1.022, 0.662, 0.795};
+constant float WM_SPAN   = 10.874;  // total width in cap units
 
 // Body outline: straight top edge, large bottom corners and a gently domed
 // "chin" that only curves the lower half. The vertical warp is smooth, so the
@@ -493,20 +629,35 @@ float4 renderGBCShell(float2 p, constant GBCUniforms &u, float px) {
               fontRun(p - float2(-116.3, -146.0), TEXT_POWER, 5, 0.68, 0.0));
 
     // --- GAME BOY COLOR wordmark ---
-    // The mark is set in the rounded bold face, leaning to the right, and the
-    // word COLOR is printed in five colours.
-    float2 logoP = p - float2(-72.8, -46.2);
-    float3 cCols[5] = {float3(0.86, 0.12, 0.42), float3(0.55, 0.36, 0.86),
-                       float3(0.36, 0.80, 0.28), float3(0.96, 0.80, 0.16),
-                       float3(0.16, 0.74, 0.86)};
-    for (int i = 0; i < 14; i++) {
-        int g = TEXT_WORDMARK[i];
-        if (g < 0) continue;
-        float m = fontMask(float2(logoP.x - logoP.y * 0.10 - float(i) * 10.4, logoP.y),
-                           g, 1.30);
-        if (m <= 0.0) continue;
-        float3 c = (i < 9) ? float3(0.80, 0.82, 0.85) : cCols[clamp(i - 9, 0, 4)];
-        col = mix(col, c, m);
+    // "GAME BOY" is set in the heavy italic sans, "COLOR" in the round brush
+    // face, both on one baseline as printed on the case. The word COLOR uses
+    // one colour per letter.
+    {
+        const float WM_CAP = 14.0;      // cap height in shell units
+        // Centre the mark on the case: the span is known, so the left edge is
+        // half a span to the left of centre.
+        float2 lp = (p - float2(-WM_SPAN * WM_CAP * 0.5, -46.2)) / WM_CAP;
+        float aa = px / WM_CAP;
+        float3 cCols[5] = {float3(0.86, 0.12, 0.42), float3(0.55, 0.36, 0.86),
+                           float3(0.36, 0.80, 0.28), float3(0.96, 0.80, 0.16),
+                           float3(0.16, 0.74, 0.86)};
+        for (int i = 0; i < 14; i++) {
+            int k = WM_K[i];
+            if (k < 0) continue;
+            float2 q = float2(lp.x - WM_X[i], lp.y);
+            if (q.x < -0.30 || q.x > WM_W[k] + 0.30 || q.y < -0.30 || q.y > 1.30) continue;
+            float d;
+            if (k >= 10) {
+                d = clGlyph(q, k - 10);
+            } else {
+                // The geometric face is italic: shear it about the baseline.
+                d = gbGlyph(float2(q.x + 0.16 * (q.y - 1.0), q.y), k);
+            }
+            float m = smoothstep(aa, -aa, d);
+            if (m <= 0.0) continue;
+            float3 c = (i < 9) ? float3(0.80, 0.82, 0.85) : cCols[clamp(i - 9, 0, 4)];
+            col = mix(col, c, m);
+        }
     }
 
     // --- LCD surround (the game image is composited on top by the caller) ---
