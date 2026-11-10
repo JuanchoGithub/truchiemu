@@ -2275,8 +2275,14 @@ weak var metalCoordinator: MetalCoordinator?
                         self.updateGamepadButton(dpad.left, in: mapping, extendedGamepad: extendedGamepad, player: port, calibration: calibration)
                         self.updateGamepadButton(dpad.right, in: mapping, extendedGamepad: extendedGamepad, player: port, calibration: calibration)
                         self.updateGamepadButton(dpad, in: mapping, extendedGamepad: extendedGamepad, player: port, calibration: calibration)
+                        if dpad === extendedGamepad.leftThumbstick {
+                            self.applyLeftStickAsDpad(dpad, mapping: mapping, player: port)
+                        }
                     } else {
                         self.updateGamepadButton(element, in: mapping, extendedGamepad: extendedGamepad, player: port, calibration: calibration)
+                        if self.isLeftThumbstickElement(element, extendedGamepad: extendedGamepad) {
+                            self.applyLeftStickAsDpad(extendedGamepad.leftThumbstick, mapping: mapping, player: port)
+                        }
                     }
                 }
     }
@@ -2418,6 +2424,57 @@ weak var metalCoordinator: MetalCoordinator?
             }
         }
     }
+
+    /// True when the element is the left thumbstick or one of its parts
+    /// (direction buttons or axes). GameController delivers stick movement as
+    /// the direction pad itself on most profiles, but some report a sub-element.
+    func isLeftThumbstickElement(_ element: GCControllerElement, extendedGamepad: GCExtendedGamepad) -> Bool {
+        let stick = extendedGamepad.leftThumbstick
+        return element === stick
+            || element === stick.up
+            || element === stick.down
+            || element === stick.left
+            || element === stick.right
+            || element === stick.xAxis
+            || element === stick.yAxis
+    }
+
+    /// Systems whose cores only read the digital joypad (NES, SNES, Genesis,
+    /// Game Boy, arcade, …) have no full analog-stick binding, so the left
+    /// stick would otherwise send nothing at all. Drive the digital directions
+    /// from the left stick too, so players can use either the D-pad or the
+    /// stick. Skipped when the mapping binds all four stick directions (analog
+    /// systems such as N64/PSX/Saturn) and for the systems that use the left
+    /// stick to move the pointer (DOS, ScummVM analog mouse).
+    @MainActor
+    func applyLeftStickAsDpad(_ stick: GCControllerDirectionPad,
+                              mapping: ControllerGamepadMapping,
+                              player: Int) {
+        let stickFullyBound = mapping.buttons[.lStickUp] != nil
+            && mapping.buttons[.lStickDown] != nil
+            && mapping.buttons[.lStickLeft] != nil
+            && mapping.buttons[.lStickRight] != nil
+        guard !stickFullyBound,
+              !Self.analogMouseSystemIDs.contains(systemID.lowercased()) else { return }
+
+        let x = stick.xAxis.value
+        let y = stick.yAxis.value
+        let threshold = Self.stickToDpadThreshold
+        setDigitalDirection(.up, pressed: y > threshold, player: player)
+        setDigitalDirection(.down, pressed: y < -threshold, player: player)
+        setDigitalDirection(.left, pressed: x < -threshold, player: player)
+        setDigitalDirection(.right, pressed: x > threshold, player: player)
+    }
+
+    private func setDigitalDirection(_ button: RetroButton, pressed: Bool, player: Int) {
+        let retroID = Int(button.retroID(for: systemID, coreID: activeCoreID))
+        guard retroID >= 0 else { return }
+        setKeyState(retroID: retroID, player: player, pressed: pressed)
+    }
+
+    /// Stick deflection that counts as a digital direction press.
+    private static let stickToDpadThreshold: Float = 0.5
+    private static let analogMouseSystemIDs: Set<String> = ["dos", "scummvm"]
 
     // Helper to handle buttons that aren't mapped to the libretro virtual controller
     private func handleSystemAction(for btn: RetroButton) {
