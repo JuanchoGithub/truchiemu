@@ -353,11 +353,19 @@ struct SettingsView: View {
         .environment(SystemDatabaseWrapper.shared)
         .frame(minWidth: 940, minHeight: 552)
         .navigationTitle(loc.localized("app.settings"))
+        // Own the Settings window from the window that hosts this view, not
+        // from `NSApp.keyWindow` in `onAppear`: SwiftUI shows the Settings
+        // window before it becomes key, so `keyWindow` is still the library
+        // window there. A context owned by the wrong window is skipped by
+        // `GamepadNavContextStack.topActive()`, which then falls back to the
+        // library context — so button presses meant for a mapping row also
+        // fired library navigation (e.g. entering TV Mode) in the window
+        // behind. The binder runs after `onAppear` and sets the real window.
+        .gamepadNavWindowOwner(settingsGamepadContext)
         .onAppear {
             if settingsGamepadContext == nil {
                 let ctx = GamepadSheetContext(itemCount: 0)
                 ctx.isDismissable = false
-                ctx.ownedWindow = NSApp.keyWindow
                 settingsGamepadContext = ctx
                 GamepadNavContextStack.shared.push(ctx)
             }

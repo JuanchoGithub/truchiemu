@@ -408,9 +408,67 @@ struct GamepadDismissableModifier: ViewModifier {
     }
 }
 
+// MARK: - Window ownership
+
+/// Binds a `GamepadNavContext.ownedWindow` to the window that actually hosts
+/// the view.
+///
+/// `NSApp.keyWindow` is not reliable when a context is created in `onAppear`:
+/// SwiftUI shows auxiliary windows (Settings, game info) *before* they become
+/// key, so the previously focused window is still key at that moment.
+/// Capturing it as `ownedWindow` leaves the context owned by a window that is
+/// not key, `topActive()` skips it, and the library context then receives
+/// every press — including presses meant for a button-mapping row in the
+/// window on top. This modifier reports the hosting window after the view is
+/// attached, so the context owns the window it is drawn in.
+struct GamepadNavWindowOwnerModifier: ViewModifier {
+    let context: GamepadNavContext?
+
+    func body(content: Content) -> some View {
+        content.background(GamepadNavWindowReader(context: context))
+    }
+}
+
+private struct GamepadNavWindowReader: NSViewRepresentable {
+    let context: GamepadNavContext?
+
+    func makeNSView(context: Context) -> GamepadNavWindowReaderView {
+        let view = GamepadNavWindowReaderView()
+        view.navContext = self.context
+        return view
+    }
+
+    func updateNSView(_ view: GamepadNavWindowReaderView, context: Context) {
+        view.navContext = self.context
+        view.reportWindow()
+    }
+}
+
+private final class GamepadNavWindowReaderView: NSView {
+    weak var navContext: GamepadNavContext?
+
+    override func viewDidMoveToWindow() {
+        super.viewDidMoveToWindow()
+        reportWindow()
+    }
+
+    /// Reports on the next runloop turn so the write never lands inside a
+    /// SwiftUI body evaluation.
+    func reportWindow() {
+        DispatchQueue.main.async { [weak self] in
+            guard let self, let context = self.navContext else { return }
+            context.ownedWindow = self.window
+        }
+    }
+}
+
 extension View {
     func gamepadNavContext(_ context: GamepadNavContext) -> some View {
         modifier(GamepadNavContextPushModifier(context: context))
+    }
+
+    func gamepadNavWindowOwner(_ context: GamepadNavContext?) -> some View {
+        modifier(GamepadNavWindowOwnerModifier(context: context))
     }
 
     func gamepadSheetNav(isPresented: Binding<Bool>, itemCount: Int, columnCount: Int = 1, onSelect: ((Int) -> Void)? = nil, onDismiss: (() -> Void)? = nil) -> some View {

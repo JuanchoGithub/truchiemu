@@ -237,6 +237,12 @@ struct GameDetailView: View {
   .onDisappear {
       teardownGamepadNavContext()
   }
+  // Own this window from the window that hosts the view. `NSApp.keyWindow`
+  // in `onAppear` can still be the library window, because SwiftUI shows the
+  // game-info window before it becomes key. A context owned by the wrong
+  // window is skipped by `topActive()`, and the library then receives A/B
+  // presses meant for the detail window.
+  .gamepadNavWindowOwner(gamepadTwoZoneContext)
     .onChange(of: currentROM.id) { _, _ in
         manualAction.clear()
         loadSlotInfo()
@@ -876,7 +882,6 @@ struct GameDetailView: View {
             }
         }
         ctx.onDismiss = { NSApp.keyWindow?.close() }
-        ctx.ownedWindow = NSApp.keyWindow
         gamepadTwoZoneContext = ctx
         GamepadNavContextStack.shared.push(ctx)
     }
