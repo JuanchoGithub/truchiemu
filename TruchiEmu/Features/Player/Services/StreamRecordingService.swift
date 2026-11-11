@@ -909,7 +909,7 @@ class StreamRecordingService: ObservableObject {
         if let writer = assetWriter {
             videoInput?.markAsFinished()
             audioInput?.markAsFinished()
-            let w = writer
+            nonisolated(unsafe) let w = writer
             assetWriter = nil
             videoInput = nil
             audioInput = nil
@@ -954,7 +954,7 @@ class StreamRecordingService: ObservableObject {
         videoInput?.markAsFinished()
         audioInput?.markAsFinished()
 
-        let writerRef = writer
+        nonisolated(unsafe) let writerRef = writer
         assetWriter = nil
         videoInput = nil
         audioInput = nil

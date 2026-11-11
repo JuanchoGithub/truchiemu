@@ -26,7 +26,7 @@ enum TVPerfTrace {
         let path = "/tmp/tvperf.log"
         if FileManager.default.fileExists(atPath: path),
            let handle = try? FileHandle(forWritingTo: URL(fileURLWithPath: path)) {
-            try? handle.seekToEnd()
+            _ = try? handle.seekToEnd()
             try? handle.write(contentsOf: data)
             try? handle.close()
         } else {

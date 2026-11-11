@@ -1,6 +1,5 @@
 import AppKit
 import CoreGraphics
-import CoreVideo
 import Foundation
 import QuartzCore
 
@@ -31,9 +30,10 @@ enum ScrollPerfCounters {
 /// callback (its own thread) compares it across ticks. Reads/writes are single
 /// aligned Doubles/Ints shared with one producer and one consumer thread pair,
 /// which is benign for an audit tool that exits after the run.
-final class ScrollDisplayLink {
+final class ScrollDisplayLink: NSObject {
     static let shared = ScrollDisplayLink()
-    private var link: CVDisplayLink?
+    private var link: CADisplayLink?
+    private nonisolated(unsafe) var callbackRunLoop: CFRunLoop?
 
     // Written by the audit loop (main thread), read by the callback thread.
     nonisolated(unsafe) var latestOriginY: Double = 0
@@ -45,37 +45,42 @@ final class ScrollDisplayLink {
     func record(originY: Double) { latestOriginY = originY }
 
     func start() {
-        var newLink: CVDisplayLink?
-        var createError = CVDisplayLinkCreateWithActiveCGDisplays(&newLink)
-        if createError != kCVReturnSuccess || newLink == nil {
-            // Fall back to the main display if the active-displays lookup fails.
-            createError = CVDisplayLinkCreateWithCGDisplay(CGMainDisplayID(), &newLink)
-        }
-        guard createError == kCVReturnSuccess, let newLink else {
-            print("[ScrollPerfAudit] CVDisplayLink create failed: \(createError)")
+        guard link == nil else { return }
+        guard let screen = NSScreen.main ?? NSScreen.screens.first else {
+            print("[ScrollPerfAudit] no screen for CADisplayLink")
             return
         }
-        let callback: CVDisplayLinkOutputCallback = { _, _, _, _, _, _ in
-            let counter = ScrollDisplayLink.shared
-            counter.totalTicks += 1
-            let y = counter.latestOriginY
-            if y != counter.lastSeenY {
-                counter.advancedTicks += 1
-                counter.lastSeenY = y
-            }
-            return kCVReturnSuccess
+        let newLink = screen.displayLink(target: self, selector: #selector(tick))
+        // A CADisplayLink fires on the run loop it belongs to. Run it on a
+        // dedicated thread so ticks keep arriving while the main run loop is
+        // blocked — those stalls are what the audit measures.
+        let ready = DispatchSemaphore(value: 0)
+        let thread = Thread { [weak self] in
+            newLink.add(to: .current, forMode: .common)
+            self?.callbackRunLoop = CFRunLoopGetCurrent()
+            ready.signal()
+            CFRunLoopRun()
+            newLink.invalidate()
         }
-        let setError = CVDisplayLinkSetOutputCallback(newLink, callback, nil)
-        guard setError == kCVReturnSuccess else {
-            print("[ScrollPerfAudit] CVDisplayLinkSetOutputCallback failed: \(setError)")
-            return
-        }
-        CVDisplayLinkStart(newLink)
+        thread.name = "ScrollPerfAudit.displayLink"
+        thread.qualityOfService = .userInteractive
+        thread.start()
+        ready.wait()
         link = newLink
     }
 
+    @objc private func tick() {
+        totalTicks += 1
+        let y = latestOriginY
+        if y != lastSeenY {
+            advancedTicks += 1
+            lastSeenY = y
+        }
+    }
+
     func stopAndCollect() -> (advanced: Int, total: Int) {
-        if let link { CVDisplayLinkStop(link) }
+        if let callbackRunLoop { CFRunLoopStop(callbackRunLoop) }
+        callbackRunLoop = nil
         link = nil
         let result = (advancedTicks, totalTicks)
         advancedTicks = 0

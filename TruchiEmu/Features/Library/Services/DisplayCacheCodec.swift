@@ -160,7 +160,8 @@ enum DisplayCacheCodec {
 
         let lastPlayed = try readDateOrNil(&bytes, &offset)
         let dateAdded = try readDate(&bytes, &offset)
-        let boxArtFetchedAt = try readDateOrNil(&bytes, &offset)
+        // Still consumed to keep the on-disk field order stable; not surfaced on the decoded ROM.
+        _ = try readDateOrNil(&bytes, &offset)
         let totalPlaytimeSeconds = try readDouble(&bytes, &offset)
         let timesPlayed = Int(try readInt64(&bytes, &offset))
         let switchVersion = try readIntOrNil(&bytes, &offset)

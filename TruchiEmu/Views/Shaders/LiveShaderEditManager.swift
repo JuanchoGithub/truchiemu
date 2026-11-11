@@ -50,7 +50,7 @@ class LiveShaderEditManager: ObservableObject {
         self.library = library
 
         // Launch the game
-        Task {
+        Task { [self] in
             await GameLauncher.shared.launchGame(
                 rom: rom,
                 coreID: coreID,

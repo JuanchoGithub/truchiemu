@@ -104,9 +104,9 @@ struct DetailZoomableFullScreenView: View {
     private var tiltCombinedAxis: (x: CGFloat, y: CGFloat, z: CGFloat) {
         let ax = tiltRotationX * .pi / 180
         let ay = tiltRotationY * .pi / 180
-        var x = cos(ay / 2) * sin(ax / 2)
-        var y = sin(ay / 2) * cos(ax / 2)
-        var z = -sin(ay / 2) * sin(ax / 2)
+        let x = cos(ay / 2) * sin(ax / 2)
+        let y = sin(ay / 2) * cos(ax / 2)
+        let z = -sin(ay / 2) * sin(ax / 2)
         let len = sqrt(x * x + y * y + z * z)
         if len < 1e-6 { return (1, 0, 0) }
         return (x / len, y / len, z / len)
@@ -128,9 +128,6 @@ struct DetailZoomableFullScreenView: View {
                 let availableHeight = geo.size.height * 0.98
                 let fittedWidth = min(availableWidth, availableHeight * aspect)
                 let fittedHeight = min(availableHeight, availableWidth / aspect)
-                // Stabilize to 0.5pt buckets to prevent cache fragmentation from floating-point variance
-                let holoW = (fittedWidth * 2).rounded() / 2
-                let holoH = (fittedHeight * 2).rounded() / 2
 
                 ZStack {
                     Image(nsImage: fullResImage ?? image)
@@ -207,8 +204,8 @@ if holoEnabled, let masks = holoMasks {
                              romID: romID,
                              seed: holoSeed
                          )
-                         let variant = snapshot.randomization?.variant ?? .regularHolo
                          // Always use SwiftUI holo layers (web engine removed)
+                         // Stabilize to 0.5pt buckets to prevent cache fragmentation from floating-point variance
                          let holoW = (fittedWidth * 2).rounded() / 2
                          let holoH = (fittedHeight * 2).rounded() / 2
 

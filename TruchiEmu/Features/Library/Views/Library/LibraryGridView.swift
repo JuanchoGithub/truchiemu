@@ -1278,7 +1278,9 @@ struct LibraryGridView: View {
                 ScrollActivity.isScrolling = true
                 scrollDebounceTimer?.invalidate()
                 scrollDebounceTimer = Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) { _ in
-                    ScrollActivity.isScrolling = false
+                    // The timer is scheduled on the main run loop, so this
+                    // closure always runs on the main actor.
+                    MainActor.assumeIsolated { ScrollActivity.isScrolling = false }
                 }
                 return event
             }

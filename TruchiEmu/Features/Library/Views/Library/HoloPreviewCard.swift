@@ -107,9 +107,9 @@ struct HoloPreviewCard: View {
     private func tiltCombinedAxis(px: Double, py: Double) -> (x: CGFloat, y: CGFloat, z: CGFloat) {
         let ax = tiltRotationX(px: px, py: py) * .pi / 180
         let ay = tiltRotationY(px: px, py: py) * .pi / 180
-        var x = cos(ay / 2) * sin(ax / 2)
-        var y = sin(ay / 2) * cos(ax / 2)
-        var z = -sin(ay / 2) * sin(ax / 2)
+        let x = cos(ay / 2) * sin(ax / 2)
+        let y = sin(ay / 2) * cos(ax / 2)
+        let z = -sin(ay / 2) * sin(ax / 2)
         let len = sqrt(x * x + y * y + z * z)
         if len < 1e-6 { return (1, 0, 0) }
         return (x / len, y / len, z / len)

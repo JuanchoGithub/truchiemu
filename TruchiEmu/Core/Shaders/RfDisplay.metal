@@ -19,8 +19,6 @@ using namespace metal;
  * Reuses the channel-OSD / barrel helpers from FamicomRF.metal.
  */
 
-static constant float PI = 3.14159265359;
-
 struct RfDisplayUniforms {
     float time;
     float texSizeX;

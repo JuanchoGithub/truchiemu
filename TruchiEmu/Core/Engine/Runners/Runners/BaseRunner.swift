@@ -542,7 +542,7 @@ case "scummvm": runner = ScummVMRunner()
         let dosPreset: DOSJoystickPreset = (rom?.settings.dosJoystickPreset) ?? AppSettings.getDOSJoystickPreset()
         let dosDeviceForLaunch: UInt32 = dosPreset.deviceValue
 
-        emulationQueue.async { [cachedAchievements, genesisControllerType] in
+        emulationQueue.async { [cachedAchievements, genesisControllerType, self] in
             XPCBridgeAdapter.shared.setLanguage(selectedLang)
             XPCBridgeAdapter.shared.setLogLevel(Int(selectedLogLevel))
 
@@ -1869,7 +1869,7 @@ weak var metalCoordinator: MetalCoordinator?
 
         // "Digital -> RF -> decoder" path: feed the raw core frame through the
         // famidec RF decoder and display its decoded 640x480 output instead.
-        if ShaderManager.shared.getCurrentFragmentFunctionName() == "fragmentRfDisplay" {
+        if ShaderManager.getCurrentFragmentFunctionName() == "fragmentRfDisplay" {
             processRfFrame(data: data, width: width, height: height, pitch: pitch,
                            bpp: useBPP, format: format)
             return
@@ -1966,7 +1966,7 @@ weak var metalCoordinator: MetalCoordinator?
         // has bumped generation since the last RF frame. During normal RF
         // gameplay the snapshot is fetched once after launch and never
         // copied again. Mirrors MetalCoordinator's pattern.
-        if let result = ShaderManager.shared.getUniformSnapshotIfChanged(cachedGeneration: rfCachedUniformGeneration),
+        if let result = ShaderManager.getUniformSnapshotIfChanged(cachedGeneration: rfCachedUniformGeneration),
            result.didChange {
             rfCachedUniformSnapshot = result.snapshot
             rfCachedUniformGeneration = result.generation
@@ -2139,7 +2139,7 @@ weak var metalCoordinator: MetalCoordinator?
                 // swallow the press. Solo presses forward instantly with zero
                 // added latency, so quick START taps keep working.
                 if let member = GamepadNavigationManager.toolbarMember(for: element, pad: extendedGamepad),
-                   GamepadNavigationManager.shared.toolbarComboMembers.contains(member),
+                   GamepadNavigationManager.toolbarComboMembers.contains(member),
                    let btn = element as? GCControllerButtonInput, btn.isPressed,
                    GamepadNavigationManager.isComboPartnerDown(member, pad: extendedGamepad) {
                     XPCBridgeAdapter.shared.clearAllJoypadInputs()

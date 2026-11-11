@@ -26,7 +26,7 @@
 
 // Convert `data` (libretro pixel layout) -> RGBA8 -> encode RF -> front-end
 // -> decode. `decodedRGBA` is valid until the next call.
-- (void)processFrame:(const void*)data
+- (void)processFrame:(const void* _Nullable)data
                width:(int)w
               height:(int)h
                pitch:(int)pitch

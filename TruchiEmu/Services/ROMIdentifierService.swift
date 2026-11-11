@@ -1043,7 +1043,10 @@ actor LibretroDatabaseLibrary {
         #if LOG_DEBUG
         LoggerService.debug(category: "LibretroDB", "Parsing DAT file: \(url.path)")
         #endif
-        guard let lines = try? String(contentsOf: url).components(separatedBy: .newlines) else {
+        // `usedEncoding:` keeps the encoding auto-detection of the deprecated
+        // `String(contentsOf:)` initializer.
+        var datEncoding = String.Encoding.utf8
+        guard let lines = try? String(contentsOf: url, usedEncoding: &datEncoding).components(separatedBy: .newlines) else {
             LoggerService.libretroDBWarn("Failed to read DAT file: \(url.path)"); return [:]
         }
         #if LOG_DEBUG
@@ -1410,7 +1413,8 @@ actor LibretroMetadataLibrary {
     }
 
     private func parseMetadataDat(contentsOf url: URL) -> [String: GameMetadataSupplement] {
-        guard let lines = try? String(contentsOf: url).components(separatedBy: .newlines) else { return [:] }
+        var datEncoding = String.Encoding.utf8
+        guard let lines = try? String(contentsOf: url, usedEncoding: &datEncoding).components(separatedBy: .newlines) else { return [:] }
         var database: [String: GameMetadataSupplement] = [:]
         var currentEntry: (crcs: [String], supplement: GameMetadataSupplement)?
         for line in lines {

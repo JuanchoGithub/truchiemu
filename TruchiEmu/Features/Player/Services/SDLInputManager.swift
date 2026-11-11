@@ -491,8 +491,11 @@ class SDLInputManager: ObservableObject {
         sdlDataLock.unlock()
 
         guard !toClose.isEmpty else { return }
+        // Raw SDL handles are passed to the SDL queue for closing; they are
+        // only touched there, so the Sendable check is opted out explicitly.
+        nonisolated(unsafe) let toCloseRef = toClose
         sdlQueue.async {
-            for item in toClose { SDL_GameControllerClose(item.controller) }
+            for item in toCloseRef { SDL_GameControllerClose(item.controller) }
         }
         let instances = toClose.map { "\($0.instanceID)" }.joined(separator: ", ")
         LoggerService.info(category: "SDL", "Reconciled with GCController: closed \(toClose.count) duplicate SDL game controller(s) — instance \(instances)")
@@ -537,7 +540,7 @@ class SDLInputManager: ObservableObject {
             }
 
             if let member = Self.sdlControllerNavMap[Int32(event.button)],
-               GamepadNavigationManager.shared.toolbarComboMembers.contains(member) {
+               GamepadNavigationManager.toolbarComboMembers.contains(member) {
                 // Toolbar-shortcut buttons are held briefly so the
                 // Start+Select (or L3+R3) combo never leaks to the core.
                 handleComboMember(button: Int(event.button), which: event.which, member: member, pressed: pressed, isRawJoystick: false)
@@ -687,7 +690,7 @@ class SDLInputManager: ObservableObject {
             }
 
             if let member = Self.joystickNavMap[Int(event.button)],
-               GamepadNavigationManager.shared.toolbarComboMembers.contains(member) {
+               GamepadNavigationManager.toolbarComboMembers.contains(member) {
                 // Toolbar-shortcut buttons are held briefly so the
                 // Start+Select (or L3+R3) combo never leaks to the core.
                 handleComboMember(button: Int(event.button), which: event.which, member: member, pressed: pressed, isRawJoystick: true)

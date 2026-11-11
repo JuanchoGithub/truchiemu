@@ -251,7 +251,6 @@ fragment float4 fragmentFamicomRF(VertexOut in [[stage_in]],
     float env = event * smoothstep(0.0, 0.04, phase) * (1.0 - smoothstep(0.15, 0.9, phase));
     // per-line / per-slot randomness so different lines glitch differently
     float lineR  = hash11(slot * 1.7 + floor(fragPx.y));
-    float lineR2 = hash11(slot * 2.3 + floor(fragPx.y * 0.5));
 
     // Weak signal -> vertical roll (antenna searching for sync).
     float roll = 0.0;

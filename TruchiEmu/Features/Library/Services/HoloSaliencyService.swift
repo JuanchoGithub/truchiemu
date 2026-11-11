@@ -157,7 +157,7 @@ final class HoloSaliencyService: @unchecked Sendable, ObservableObject {
             // Always clear the inFlight entry, even on cancellation, so a
             // late caller for the same romID doesn't pick up a dead task.
             defer {
-                self.inFlight.withLock { $0.removeValue(forKey: romID) }
+                _ = self.inFlight.withLock { $0.removeValue(forKey: romID) }
             }
             // Check cancellation before any I/O — when a system switch
             // cancels all the in-flight .tasks, the next thing the user sees

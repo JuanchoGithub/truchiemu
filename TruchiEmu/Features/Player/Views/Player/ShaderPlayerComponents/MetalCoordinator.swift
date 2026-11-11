@@ -390,7 +390,7 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
             return
         }
 
-        let snapshot = ShaderManager.shared.getUniformSnapshot()
+        let snapshot = ShaderManager.getUniformSnapshot()
         var u = crtShaderUniforms(snapshot: snapshot, frameTex: frameTex,
                                   outputOrigin: .zero,
                                   outputW: Float(outW), outputH: Float(outH))
@@ -630,7 +630,7 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
               let blurPipe = pipelineState(for: "fragmentPittmanBlur", device: device) else {
             return
         }
-        let snapshot = ShaderManager.shared.getUniformSnapshot()
+        let snapshot = ShaderManager.getUniformSnapshot()
         // TV cabinet toggle (new; the source always renders its meshes).
         // Off falls back to the flat screen pass: same picture, no cabinet.
         let useCabinet = (snapshot["useCabinet"] ?? 1.0) > 0.5
@@ -656,7 +656,7 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
             }
             flatScreenPipe = fsp
         }
-        var u = pittmanUniforms(snapshot: snapshot, frameTex: frameTex,
+        let u = pittmanUniforms(snapshot: snapshot, frameTex: frameTex,
                                 vpW: Float(viewSize.width), vpH: Float(viewSize.height))
         // First frames have no previous composite yet; the live frame means
         // "no trail" instead of garbage, matching a cleared RTT.
@@ -805,7 +805,7 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
     }
 
     private func getFragmentFunctionName() -> String {
-        return ShaderManager.shared.getCurrentFragmentFunctionName()
+        return ShaderManager.getCurrentFragmentFunctionName()
     }
 
     private func getPipelineState(device: MTLDevice) -> MTLRenderPipelineState? {
@@ -1191,7 +1191,7 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
                     // has not bumped it since the last frame, we keep the same
                     // cached dict and pay zero copy cost. Normal gameplay hits
                     // zero dict copies per frame after the first frame.
-                    if let result = ShaderManager.shared.getUniformSnapshotIfChanged(cachedGeneration: cachedUniformGeneration),
+                    if let result = ShaderManager.getUniformSnapshotIfChanged(cachedGeneration: cachedUniformGeneration),
                        result.didChange {
                         cachedUniformSnapshot = result.snapshot
                         cachedUniformGeneration = result.generation
@@ -2261,6 +2261,9 @@ outputHeight: Float(viewport.height)
         let cvTextureHandle = UInt(bitPattern: Unmanaged.passRetained(cvTex).toOpaque())
         let pixelBufferHandle = UInt(bitPattern: Unmanaged.passRetained(pixelBuffer).toOpaque())
         let needsRollingChunkCheck = RollingVideoBufferService.shared.isEnabled && isRecording
+        // Resolved outside the completion handler so the @Sendable closure does
+        // not touch the main-actor-isolated `shared` accessor.
+        let recordingService = StreamRecordingService.shared
         commandBuffer.addCompletedHandler { _ in
             // Release the cache-binding CVMetalTexture — the GPU is done with
             // the Metal texture by the time the completion handler fires, so
@@ -2268,14 +2271,14 @@ outputHeight: Float(viewport.height)
             // underlying IOSurface is still alive via `pb`.
             _ = Unmanaged<CVMetalTexture>.fromOpaque(UnsafeMutableRawPointer(bitPattern: cvTextureHandle)!).takeRetainedValue()
             let pb = Unmanaged<CVPixelBuffer>.fromOpaque(UnsafeMutableRawPointer(bitPattern: pixelBufferHandle)!).takeRetainedValue()
-            StreamRecordingService.shared.runOnRecordingQueue {
+            recordingService.runOnRecordingQueue {
                 if needsRollingChunkCheck {
                     DispatchQueue.main.async {
                         RollingVideoBufferService.shared.ensureRecordingMatches(width: poolW, height: poolH)
                     }
                 }
                 if !wasScrubFrame {
-                    StreamRecordingService.shared.appendVideoFrame(pb, at: capturePTS)
+                    recordingService.appendVideoFrame(pb, at: capturePTS)
                 } else {
                     // Captured during rewind — drop the buffer; do not
                     // append to any chunk. Even if the GPU completion fires

@@ -223,7 +223,6 @@ class ShaderManager: ObservableObject {
                         return
                     }
                     let latestOnReflect = Self.shared.slangLatestOnReflect
-                    let latestOnError = Self.shared.slangLatestOnError
                     Self.shared.slangLatestOnReflect = nil
                     Self.shared.slangLatestOnError = nil
                     let activated = SlangCompilerService.shared.installPreparedChain(prepared)
@@ -444,9 +443,11 @@ class ShaderManager: ObservableObject {
         uniformValues[name] ?? 0.0
     }
     
-    // Thread-safe way to get a snapshot of all uniforms for the renderer
-    nonisolated func getUniformSnapshot() -> [String: Float] {
-        return Self.parameterStore.getSnapshot()
+    // Thread-safe way to get a snapshot of all uniforms for the renderer.
+    // Static + nonisolated so off-main renderer code can read it without
+    // touching the main-actor-isolated `shared` instance.
+    nonisolated static func getUniformSnapshot() -> [String: Float] {
+        return parameterStore.getSnapshot()
     }
 
     // Optimized snapshot read for the renderer: returns a fresh dict copy only
@@ -456,14 +457,13 @@ class ShaderManager: ObservableObject {
     // copy when a real mutation has occurred (live shader edit slider tick or
     // preset activation). During normal gameplay this means the snapshot is
     // fetched once at the first frame after launch and never copied again.
-    nonisolated func getUniformSnapshotIfChanged(cachedGeneration: UInt64) -> (snapshot: [String: Float], generation: UInt64, didChange: Bool)? {
-        return Self.parameterStore.getSnapshotIfChanged(cachedGeneration: cachedGeneration)
+    nonisolated static func getUniformSnapshotIfChanged(cachedGeneration: UInt64) -> (snapshot: [String: Float], generation: UInt64, didChange: Bool)? {
+        return parameterStore.getSnapshotIfChanged(cachedGeneration: cachedGeneration)
     }
 
-    // Thread-safe way to get the current fragment function name for the renderer
-    nonisolated func getCurrentFragmentFunctionName() -> String {
-
-        return Self.parameterStore.getFragmentFunctionName()
+    // Thread-safe way to get the current fragment function name for the renderer.
+    nonisolated static func getCurrentFragmentFunctionName() -> String {
+        return parameterStore.getFragmentFunctionName()
     }
     
     // Internal method to sync snapshot after batch updates (like activatePreset)

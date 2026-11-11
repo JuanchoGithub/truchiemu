@@ -39,7 +39,7 @@ final class HoloGridCollectionViewItem: NSCollectionViewItem {
         ])
     }
 
-    override init(nibName nibName: NSNib.Name?, bundle nibBundle: Bundle?) {
+    override init(nibName: NSNib.Name?, bundle nibBundle: Bundle?) {
         super.init(nibName: nibName, bundle: nibBundle)
         ScrollPerfCounters.holoItemsCreated += 1
     }
@@ -62,7 +62,7 @@ final class HoloGridCollectionViewItem: NSCollectionViewItem {
                    selectedIDsProvider: @escaping () -> Set<UUID>,
                    library: ROMLibrary?,
                    categoryManager: CategoryManager?) {
-        if rom != nil { ScrollPerfCounters.holoItemsReused += 1 }
+        if self.rom != nil { ScrollPerfCounters.holoItemsReused += 1 }
         self.rom = rom
         self.isMultiSelectedCached = isMultiSelected
         self.zoomLevelCached = zoomLevel

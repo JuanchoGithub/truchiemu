@@ -9,7 +9,7 @@ extension StandaloneGameWindowController {
     /// rendering with the cabinet switched on. App bezels stay off so the
     /// two frames never stack; with the cabinet off, bezels behave normally.
     var isPittmanCabinetActive: Bool {
-        ShaderManager.shared.getCurrentFragmentFunctionName() == "fragmentPittmanPresent"
+        ShaderManager.getCurrentFragmentFunctionName() == "fragmentPittmanPresent"
             && ShaderManager.shared.getUniform("useCabinet") > 0.5
     }
 

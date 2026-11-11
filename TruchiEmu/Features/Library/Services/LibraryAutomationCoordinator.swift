@@ -473,7 +473,7 @@ final class LibraryAutomationCoordinator: ObservableObject {
             return
         }
 
-        Task.detached(priority: .utility) { [scope, automationStart] in
+        Task.detached(priority: .utility) { [scope, automationStart, self] in
             // Capture the @MainActor library reference for the box-art progress callback.
             let lib = library
 

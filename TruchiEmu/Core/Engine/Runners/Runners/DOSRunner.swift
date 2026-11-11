@@ -250,7 +250,7 @@ class DOSRunner: EmulatorRunner, @unchecked Sendable {
                 // Toolbar-shortcut buttons are held briefly so the
                 // Start+Select combo never leaks to the core.
                 if let member = GamepadNavigationManager.toolbarMember(for: element, pad: extendedGamepad),
-                   GamepadNavigationManager.shared.toolbarComboMembers.contains(member) {
+                   GamepadNavigationManager.toolbarComboMembers.contains(member) {
                     self.handleDOSComboMember(element, member: member, pad: extendedGamepad, mapping: mapping, ports: ports, dpad: dpad)
                     return
                 }

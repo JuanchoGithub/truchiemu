@@ -272,18 +272,25 @@ final class ExternalDisplayPromptManager: ObservableObject {
             TVModeSettings.setRememberedScreenID(screen.id)
             return
         }
-        var observer: NSObjectProtocol?
+        // Descriptor is a value snapshot; it is only read on the main thread
+        // inside the observer block, so the Sendable capture check is opted out.
+        nonisolated(unsafe) let screenRef = screen
+        nonisolated(unsafe) var observer: NSObjectProtocol?
         observer = NotificationCenter.default.addObserver(
             forName: NSWindow.didExitFullScreenNotification,
             object: window,
             queue: .main
         ) { _ in
-            if let observer {
-                NotificationCenter.default.removeObserver(observer)
+            // `queue: .main` delivers on the main run loop, so this block is
+            // always main-actor bound.
+            MainActor.assumeIsolated {
+                if let observer {
+                    NotificationCenter.default.removeObserver(observer)
+                }
+                TVModeSettingsManager.shared.moveWindow(window, onto: screenRef)
+                TVModeSettings.setRememberedScreenID(screenRef.id)
+                window.toggleFullScreen(nil)
             }
-            TVModeSettingsManager.shared.moveWindow(window, onto: screen)
-            TVModeSettings.setRememberedScreenID(screen.id)
-            window.toggleFullScreen(nil)
         }
         window.toggleFullScreen(nil)
     }

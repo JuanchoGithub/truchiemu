@@ -43,7 +43,9 @@ final class GamepadNavigationManager: ObservableObject {
     /// paths swallow the second half when it lands while the partner is down
     /// so the combo never leaks to the core. Refreshed every poll tick so
     /// settings changes apply. Plain (non-combo) bindings are not watched.
-    nonisolated(unsafe) var toolbarComboMembers = Set<GamepadNavButton>()
+    /// Type-level (not instance) so off-main input paths can read it without
+    /// touching the main-actor-isolated `shared` instance.
+    nonisolated(unsafe) static var toolbarComboMembers = Set<GamepadNavButton>()
 
     /// Physical GC element to nav-button identity for combo members only.
     /// Returns nil for sticks, dpad, triggers and all other elements.
@@ -348,12 +350,12 @@ final class GamepadNavigationManager: ObservableObject {
         // Refresh the combo-member set so input paths always match settings.
         if let bound = config[.showGameToolbar]?.binding.button {
             switch bound {
-            case .startPlusSelect: toolbarComboMembers = [.start, .select]
-            case .l3PlusR3: toolbarComboMembers = [.l3, .r3]
-            default: toolbarComboMembers = []
+            case .startPlusSelect: Self.toolbarComboMembers = [.start, .select]
+            case .l3PlusR3: Self.toolbarComboMembers = [.l3, .r3]
+            default: Self.toolbarComboMembers = []
             }
         } else {
-            toolbarComboMembers = []
+            Self.toolbarComboMembers = []
         }
 
         var newlyPressed = Set<GamepadNavButton>()

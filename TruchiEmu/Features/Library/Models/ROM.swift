@@ -165,7 +165,7 @@ struct ROM: Identifiable, Codable, Hashable, Sendable {
             // local resolver, which also matches art named after the display
             // name / inner-ROM name / sanitized variants. Only scans the /boxart
             // directory as a fallback, so the typical case stays a cheap stat.
-            if broadResolve, let resolved = BoxArtService.shared.resolveLocalBoxArt(for: self) {
+            if broadResolve, let resolved = BoxArtService.resolveLocalBoxArt(for: self) {
                 self.boxArtLocalPath = resolved
             } else {
                 self.boxArtLocalPath = pngPath

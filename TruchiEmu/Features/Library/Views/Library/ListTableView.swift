@@ -536,7 +536,7 @@ struct ListTableViewRepresentable: NSViewRepresentable {
         // whose selected state changed.
         if !needsReload {
             let visible = tableView.rows(in: tableView.visibleRect)
-            for row in visible.toRange() ?? 0..<0 {
+            for row in Range(visible) ?? 0..<0 {
                 guard row < c.displayList.entries.count,
                       let cell = tableView.view(atColumn: 0, row: row, makeIfNecessary: false) as? ListTableRowView,
                       case .game(let rom, _) = c.displayList.entries[row]

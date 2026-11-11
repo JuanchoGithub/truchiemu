@@ -1,3 +1,4 @@
+import Combine
 import SwiftUI
 
 enum BadgePosition: Int, Codable, CaseIterable {

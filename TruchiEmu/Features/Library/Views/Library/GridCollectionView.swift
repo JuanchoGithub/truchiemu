@@ -24,7 +24,7 @@ final class GridCollectionViewItem: NSCollectionViewItem {
         view.wantsLayer = true
     }
 
-    override init(nibName nibName: NSNib.Name?, bundle nibBundle: Bundle?) {
+    override init(nibName: NSNib.Name?, bundle nibBundle: Bundle?) {
         super.init(nibName: nibName, bundle: nibBundle)
         ScrollPerfCounters.gridItemsCreated += 1
     }
@@ -69,7 +69,7 @@ final class GridCollectionViewItem: NSCollectionViewItem {
     ) {
         // A configure on an item that already shows a ROM means AppKit reused
         // a prepared item; nil means this is a freshly created cell.
-        if rom != nil { ScrollPerfCounters.gridItemsReused += 1 }
+        if self.rom != nil { ScrollPerfCounters.gridItemsReused += 1 }
         self.rom = rom
         self.isMultiSelectedCached = isMultiSelected
         self.zoomLevelCached = zoomLevel

@@ -129,16 +129,23 @@ class BoxArtService: ObservableObject {
     // Returns the local file URL if found, nil otherwise. Does NOT download from CDN.
     // Results are memoized per-ROM until invalidateResolvedBoxArtCache is called —
     // this avoids repeating a directory listing every time a card scrolls into view.
-    nonisolated func resolveLocalBoxArt(for rom: ROM) -> URL? {
+    nonisolated static func resolveLocalBoxArt(for rom: ROM) -> URL? {
         // Per-ROM cache: stops art-less cards from re-listing their /boxart dir
         // on every scroll appear. NSLock-guarded because resolveLocalBoxArt can
         // be called from non-MainActor contexts (grid prefetch Tasks).
         if let cached = ResultCache.shared.get(rom.id) {
             return cached
         }
-        let result = self.resolveLocalBoxArtUncached(for: rom)
+        let result = resolveLocalBoxArtUncached(for: rom)
         ResultCache.shared.set(rom.id, result)
         return result
+    }
+
+    /// Instance entry point kept for existing callers; the resolver itself is
+    /// stateless, so it lives in a `nonisolated static` method that off-main
+    /// code can reach without touching the main-actor-isolated `shared`.
+    nonisolated func resolveLocalBoxArt(for rom: ROM) -> URL? {
+        Self.resolveLocalBoxArt(for: rom)
     }
 
     /// Clear any cached resolveLocalBoxArt() result for a given rom. Call after
@@ -148,7 +155,7 @@ class BoxArtService: ObservableObject {
         ResultCache.shared.remove(romID)
     }
 
-    private nonisolated func resolveLocalBoxArtUncached(for rom: ROM) -> URL? {
+    nonisolated private static func resolveLocalBoxArtUncached(for rom: ROM) -> URL? {
         let localBoxArtDir = rom.path.deletingLastPathComponent().appendingPathComponent("boxart", isDirectory: true)
         let imageExtensions: Set<String> = ["png", "jpg", "jpeg", "webp", "gif", "bmp"]
 
@@ -213,7 +220,7 @@ class BoxArtService: ObservableObject {
                 let targetLower = "\(stem).\(ext)".lowercased()
                 if dirNamesLowercase.contains(targetLower),
                    let match = dirContents.first(where: { $0.lastPathComponent.lowercased() == targetLower }),
-                   isValidImageFile(at: match) {
+                   Self.isValidImageFile(at: match) {
                     return match
                 }
             }
@@ -223,7 +230,7 @@ class BoxArtService: ObservableObject {
         // That path may live outside the /boxart directory (e.g. a flat sidecar
         // image next to the ROM), so check it explicitly with one stat + validate.
         let fallback = rom.boxArtLocalPath
-        if FileManager.default.fileExists(atPath: fallback.path), isValidImageFile(at: fallback) {
+        if FileManager.default.fileExists(atPath: fallback.path), Self.isValidImageFile(at: fallback) {
             return fallback
         }
 
@@ -350,7 +357,7 @@ class BoxArtService: ObservableObject {
         // (BoxArtPickerView) overrides this with forceReplace: true so a user
         // right-click on a fresh search result actually replaces the file.
         if !forceReplace,
-           FileManager.default.fileExists(atPath: localURL.path), isValidImageFile(at: localURL) {
+           FileManager.default.fileExists(atPath: localURL.path), Self.isValidImageFile(at: localURL) {
             if localURL == rom.boxArtLocalPath {
                 BoxArtThumbnailService.deleteThumbnails(for: localURL)
                 await ImageCache.shared.removeImage(for: localURL)
@@ -489,7 +496,7 @@ class BoxArtService: ObservableObject {
 
          for stem in [gameTitle, safeStem] where !stem.isEmpty {
              if let local = LibretroThumbnailResolver.resolveLocalThumbnail(named: stem, in: localBoxArtDir) {
-                 if isValidImageFile(at: local) { return (.success(local), nil) }
+                 if Self.isValidImageFile(at: local) { return (.success(local), nil) }
                  else { try? FileManager.default.removeItem(at: local) }
              }
          }
@@ -594,7 +601,7 @@ class BoxArtService: ObservableObject {
         // and is a valid image, return it immediately. This skips the per-ROM
         // CRC + network manifest lookup that otherwise burns ~66ms per ROM on
         // every re-scan even when the art is already on disk.
-        if FileManager.default.fileExists(atPath: localDestination.path), isValidImageFile(at: localDestination) {
+        if FileManager.default.fileExists(atPath: localDestination.path), Self.isValidImageFile(at: localDestination) {
             return .success(localDestination)
         }
 
@@ -670,7 +677,7 @@ class BoxArtService: ObservableObject {
         // (even when the art is already present).
         let existing = (0..<cap).compactMap { i -> URL? in
             let url = boxartDir.appendingPathComponent("\(stem)_\(i).png")
-            return FileManager.default.fileExists(atPath: url.path) && isValidImageFile(at: url) ? url : nil
+            return FileManager.default.fileExists(atPath: url.path) && Self.isValidImageFile(at: url) ? url : nil
         }
         if !existing.isEmpty { return (existing, .success(existing[0])) }
 
@@ -711,7 +718,7 @@ class BoxArtService: ObservableObject {
         return http.statusCode
     }
 
-    nonisolated private func isValidImageFile(at url: URL) -> Bool {
+    nonisolated private static func isValidImageFile(at url: URL) -> Bool {
         guard let data = try? Data(contentsOf: url), !data.isEmpty else { return false }
         if let firstBytes = String(data: data.prefix(512), encoding: .utf8)?.lowercased(),
            firstBytes.contains("<!doctype") || firstBytes.contains("<html") || firstBytes.contains("<!html") { return false }
@@ -728,7 +735,7 @@ class BoxArtService: ObservableObject {
     func isBoxArtBroken(rom: ROM) -> Bool {
         let path = rom.boxArtLocalPath
         guard FileManager.default.fileExists(atPath: path.path) else { return false }
-        return !isValidImageFile(at: path)
+        return !Self.isValidImageFile(at: path)
     }
 
     func findBrokenBoxArts(in roms: [ROM]) -> [ROM] { roms.filter { isBoxArtBroken(rom: $0) } }
@@ -738,7 +745,7 @@ class BoxArtService: ObservableObject {
         for rom in roms {
             let path = rom.boxArtLocalPath
             guard FileManager.default.fileExists(atPath: path.path) else { continue }
-            if !isValidImageFile(at: path) {
+            if !Self.isValidImageFile(at: path) {
                 try? FileManager.default.removeItem(at: path)
                 cleaned.append(rom)
             }
