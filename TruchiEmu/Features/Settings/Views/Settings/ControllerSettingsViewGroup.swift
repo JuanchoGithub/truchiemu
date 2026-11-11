@@ -425,7 +425,12 @@ struct ControllerSettingsView: View {
                     }
                 } else {
                     Section {
+                        // `ButtonMappingList` copies the mapping into @State, so
+                        // SwiftUI would keep the previous system's copy when only
+                        // the system picker changes. Give the view a new identity
+                        // per system/controller so its state reloads from storage.
                         ButtonMappingList(systemID: selectedSystemID, player: player, controllerService: controllerService)
+                            .id("\(selectedSystemID)|\(player.id.uuidString)")
                     }
                 }
             }
@@ -1390,7 +1395,17 @@ struct ButtonMappingList: View {
             initialMapping = controllerService.mapping(for: player.gcController?.vendorName ?? "Unknown", systemID: systemID)
         }
         _currentMapping = State(initialValue: initialMapping)
-        _currentSDKMapping = State(initialValue: player.sdlMapping ?? SDLControllerMapping.defaults(for: "default"))
+        // Read the mapping for *this* system. `player.sdlMapping` is the
+        // global default, which would show another scope's mapping when a
+        // per-system mapping exists.
+        let initialSDKMapping: SDLControllerMapping
+        if let identity = player.identityKey {
+            initialSDKMapping = controllerService.sdlMapping(forIdentity: identity, systemID: systemID)
+        } else {
+            let vendor = SDLInputManager.shared.sdlVendorName(for: player.sdlInstanceID ?? 0)
+            initialSDKMapping = controllerService.sdlMapping(for: vendor, systemID: systemID)
+        }
+        _currentSDKMapping = State(initialValue: initialSDKMapping)
     }
 
     var body: some View {
