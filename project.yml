@@ -2,7 +2,7 @@ name: TruchiEmu
 options:
   bundleIdPrefix: com.TruchiEmu
   deploymentTarget:
-    macOS: "14.0"
+    macOS: "26.0"
   createIntermediateGroups: true
   xcodeVersion: "16"
 schemes:
@@ -28,7 +28,7 @@ targets:
   TruchiEmu:
     type: application
     platform: macOS
-    deploymentTarget: "14.0"
+    deploymentTarget: "26.0"
 
     dependencies:
     - target: TruchiEmuCoreHost
@@ -76,7 +76,7 @@ targets:
         GCC_C_LANGUAGE_STANDARD: gnu17
         CLANG_CXX_LANGUAGE_STANDARD: gnu++17
         CLANG_CXX_LIBRARY: libc++
-        MACOSX_DEPLOYMENT_TARGET: "14.0"
+        MACOSX_DEPLOYMENT_TARGET: "26.0"
         ARCHS: "arm64"
         CODE_SIGN_ENTITLEMENTS: TruchiEmu/Resources/TruchiEmu.entitlements
         CODE_SIGN_STYLE: Automatic
@@ -125,13 +125,33 @@ targets:
         script: |
           mkdir -p "$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH"
           cp -f "$PROJECT_DIR/TruchiEmu/lib/librashader.dylib" "$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH/"
+          # Strip the upstream signature before rewriting the install name so
+          # install_name_tool does not warn that it invalidates it. The
+          # "Re-sign dylibs and app bundle" phase signs it again afterwards.
+          codesign --remove-signature "$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH/librashader.dylib" 2>/dev/null || true
           install_name_tool -id @rpath/librashader.dylib "$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH/librashader.dylib"
         basedOnDependencyAnalysis: false
       - name: Embed SDL2 dylib
         script: |
           mkdir -p "$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH"
           cp -f /opt/homebrew/lib/libSDL2-2.0.0.dylib "$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH/"
+          # Same ordering as librashader above: unsigned before install_name_tool,
+          # re-signed by the later phase.
+          codesign --remove-signature "$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH/libSDL2-2.0.0.dylib" 2>/dev/null || true
           install_name_tool -id @rpath/libSDL2-2.0.0.dylib "$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH/libSDL2-2.0.0.dylib"
+          # The linker recorded Homebrew's absolute install name
+          # (/opt/homebrew/opt/sdl2/lib/libSDL2-2.0.0.dylib) in the app binary.
+          # Rewrite it to @rpath so the bundled copy is loaded on Macs without
+          # Homebrew. Covers both the Release executable and the Debug
+          # stub + TruchiEmu.debug.dylib pair.
+          for bin in "$TARGET_BUILD_DIR/$EXECUTABLE_FOLDER_PATH/"*; do
+            [ -f "$bin" ] || continue
+            file "$bin" | grep -q "Mach-O" || continue
+            for dep in $(otool -L "$bin" | awk '/libSDL2-2\.0\.0\.dylib/ {print $1}'); do
+              [ "$dep" = "@rpath/libSDL2-2.0.0.dylib" ] && continue
+              install_name_tool -change "$dep" @rpath/libSDL2-2.0.0.dylib "$bin"
+            done
+          done
         basedOnDependencyAnalysis: false
       - name: Copy slang-shaders to bundle
         script: |
@@ -153,7 +173,7 @@ targets:
   TruchiEmuCoreHost:
     type: xpc-service
     platform: macOS
-    deploymentTarget: "14.0"
+    deploymentTarget: "26.0"
     entitlements:
       path: TruchiEmu/Core/XPC/Service/CoreHost.entitlements
     settings:
@@ -166,7 +186,7 @@ targets:
         GCC_C_LANGUAGE_STANDARD: gnu17
         CLANG_CXX_LANGUAGE_STANDARD: gnu++17
         CLANG_CXX_LIBRARY: libc++
-        MACOSX_DEPLOYMENT_TARGET: "14.0"
+        MACOSX_DEPLOYMENT_TARGET: "26.0"
         ARCHS: "arm64"
         CODE_SIGN_STYLE: Manual
         CODE_SIGN_IDENTITY: "-"

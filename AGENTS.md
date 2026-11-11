@@ -129,7 +129,7 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 - **XcodeGen**: Run `xcodegen generate` after any `project.yml` change to regenerate `TruchiEmu.xcodeproj`. Do not edit the `.xcodeproj` directly.
 - **No project.yml edits for new files**: Sources under `TruchiEmu/` and resources under `TruchiEmu/Resources/` are auto-included via recursive paths in `project.yml`. Only edit `project.yml` if you're adding a directory that should be **excluded** from the build.
 - **Build command**: `xcodebuild -project TruchiEmu.xcodeproj -scheme TruchiEmu -configuration Debug build` for a Debug build. Use `-configuration Release` for a Release build (no `DEBUG`/`LOG_DEBUG`/`LOG_EXTREME` flags — see "Compile-time flags" below). (Or open the xcodeproj in Xcode.)
-- **macOS 14.0+ and Swift 5.9** required
+- **macOS 26.0+ and Swift 5.9** required. Apple Silicon only (`ARCHS: "arm64"` on both targets). macOS 14 and 15 are not supported. The floor is set by the bundled `libSDL2-2.0.0.dylib`, which has `minos 26.0`.
 
 ### Source exclusions in project.yml
 

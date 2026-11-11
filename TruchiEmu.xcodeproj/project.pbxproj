@@ -6752,7 +6752,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "mkdir -p \"$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH\"\ncp -f /opt/homebrew/lib/libSDL2-2.0.0.dylib \"$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH/\"\ninstall_name_tool -id @rpath/libSDL2-2.0.0.dylib \"$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH/libSDL2-2.0.0.dylib\"\n";
+			shellScript = "mkdir -p \"$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH\"\ncp -f /opt/homebrew/lib/libSDL2-2.0.0.dylib \"$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH/\"\n# Same ordering as librashader above: unsigned before install_name_tool,\n# re-signed by the later phase.\ncodesign --remove-signature \"$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH/libSDL2-2.0.0.dylib\" 2>/dev/null || true\ninstall_name_tool -id @rpath/libSDL2-2.0.0.dylib \"$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH/libSDL2-2.0.0.dylib\"\n# The linker recorded Homebrew's absolute install name\n# (/opt/homebrew/opt/sdl2/lib/libSDL2-2.0.0.dylib) in the app binary.\n# Rewrite it to @rpath so the bundled copy is loaded on Macs without\n# Homebrew. Covers both the Release executable and the Debug\n# stub + TruchiEmu.debug.dylib pair.\nfor bin in \"$TARGET_BUILD_DIR/$EXECUTABLE_FOLDER_PATH/\"*; do\n  [ -f \"$bin\" ] || continue\n  file \"$bin\" | grep -q \"Mach-O\" || continue\n  for dep in $(otool -L \"$bin\" | awk '/libSDL2-2\\.0\\.0\\.dylib/ {print $1}'); do\n    [ \"$dep\" = \"@rpath/libSDL2-2.0.0.dylib\" ] && continue\n    install_name_tool -change \"$dep\" @rpath/libSDL2-2.0.0.dylib \"$bin\"\n  done\ndone\n";
 		};
 		D831D45C4236463C93EAD9BE /* Embed librashader dylib */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -6771,7 +6771,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "mkdir -p \"$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH\"\ncp -f \"$PROJECT_DIR/TruchiEmu/lib/librashader.dylib\" \"$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH/\"\ninstall_name_tool -id @rpath/librashader.dylib \"$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH/librashader.dylib\"\n";
+			shellScript = "mkdir -p \"$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH\"\ncp -f \"$PROJECT_DIR/TruchiEmu/lib/librashader.dylib\" \"$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH/\"\n# Strip the upstream signature before rewriting the install name so\n# install_name_tool does not warn that it invalidates it. The\n# \"Re-sign dylibs and app bundle\" phase signs it again afterwards.\ncodesign --remove-signature \"$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH/librashader.dylib\" 2>/dev/null || true\ninstall_name_tool -id @rpath/librashader.dylib \"$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH/librashader.dylib\"\n";
 		};
 		D84330A38C37C03098CA4E4D /* Re-sign dylibs and app bundle */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -7319,7 +7319,7 @@
 				INFOPLIST_FILE = TruchiEmu/Resources/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/../Frameworks";
 				LIBRARY_SEARCH_PATHS = "/opt/homebrew/lib /usr/local/lib";
-				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
 				OTHER_LDFLAGS = "-framework Metal -framework MetalKit -framework GameController -framework AVFoundation -framework WebKit -framework OpenGL -framework Network -framework SwiftData -larchive -L$(PROJECT_DIR)/TruchiEmu/lib -llibrashader_capi -lSDL2";
 				PRODUCT_BUNDLE_IDENTIFIER = com.TruchiEmu.app;
 				PRODUCT_NAME = TruchiEmu;
@@ -7380,7 +7380,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -7412,7 +7412,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
 				OTHER_LDFLAGS = "-framework AVFoundation -framework OpenGL -framework IOSurface";
 				PRODUCT_BUNDLE_IDENTIFIER = com.TruchiEmu.CoreHost;
 				PRODUCT_NAME = TruchiEmuCoreHost;
@@ -7440,7 +7440,7 @@
 				INFOPLIST_FILE = TruchiEmu/Resources/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/../Frameworks";
 				LIBRARY_SEARCH_PATHS = "/opt/homebrew/lib /usr/local/lib";
-				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
 				OTHER_LDFLAGS = "-framework Metal -framework MetalKit -framework GameController -framework AVFoundation -framework WebKit -framework OpenGL -framework Network -framework SwiftData -larchive -L$(PROJECT_DIR)/TruchiEmu/lib -llibrashader_capi -lSDL2";
 				PRODUCT_BUNDLE_IDENTIFIER = com.TruchiEmu.app;
 				PRODUCT_NAME = TruchiEmu;
@@ -7471,7 +7471,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
 				OTHER_LDFLAGS = "-framework AVFoundation -framework OpenGL -framework IOSurface";
 				PRODUCT_BUNDLE_IDENTIFIER = com.TruchiEmu.CoreHost;
 				PRODUCT_NAME = TruchiEmuCoreHost;
@@ -7527,7 +7527,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";

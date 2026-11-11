@@ -1,7 +1,7 @@
 TruchiEmuCoreHost:
   type: xpc-service
   platform: macOS
-  deploymentTarget: "14.0"
+  deploymentTarget: "26.0"
 
   info:
     path: TruchiEmu/Core/XPC/Service/Info.plist
@@ -17,7 +17,7 @@ TruchiEmuCoreHost:
       GCC_C_LANGUAGE_STANDARD: gnu17
       CLANG_CXX_LANGUAGE_STANDARD: gnu++17
       CLANG_CXX_LIBRARY: libc++
-      MACOSX_DEPLOYMENT_TARGET: "14.0"
+      MACOSX_DEPLOYMENT_TARGET: "26.0"
       ARCHS: "$(ARCHS_STANDARD)"
       CODE_SIGN_STYLE: Automatic
       ENABLE_HARDENED_RUNTIME: NO
