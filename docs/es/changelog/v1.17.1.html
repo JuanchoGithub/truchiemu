@@ -1,0 +1,53 @@
+---
+layout: default
+title: v1.17.1 - Documentación de TruchiEmu
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/es/changelog.html' | relative_url }}">Registro de cambios</a>
+        <span class="separator">/</span>
+        <span class="current">v1.17.1</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.17.1</h1>
+        <div class="release-meta">
+            <span class="release-date">11 de noviembre de 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>Esta versión corrige un fallo al arrancar en Macs que no tienen Homebrew instalado. La app ahora incluye su propia copia de SDL2 en lugar de cargarla desde una carpeta de Homebrew.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Destacados</h2>
+        <ul class="feature-list">
+            <li><strong>La app vuelve a abrirse en Macs sin Homebrew:</strong> v1.17.0 pedía a macOS que cargara <code>libSDL2-2.0.0.dylib</code> desde la carpeta de Homebrew (<code>/opt/homebrew/opt/sdl2/lib/</code>). Homebrew no forma parte de macOS, así que en una Mac que no lo tiene, macOS detenía la app antes de que apareciera la primera ventana (informe de fallo: <em>Library not loaded</em>, espacio de nombres <code>DYLD</code>). La app ahora incluye su propia copia de SDL2 y carga esa copia desde dentro del paquete de la app. No hace falta instalar Homebrew.</li>
+            <li><strong>Requiere macOS 26 o posterior:</strong> La compilación de SDL2 que va dentro de la app está dirigida a macOS 26.0, así que esta versión solo funciona en macOS 26 y macOS 27. v1.17.0 ya estaba limitada a estas versiones en tiempo de ejecución, porque tenía que cargar esa misma compilación de SDL2.</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Cambios detallados</h2>
+        <ul>
+            <li>Compilación — la fase <em>Embed SDL2 dylib</em> ahora también reescribe la dependencia de la propia app con SDL2 a <code>@rpath/libSDL2-2.0.0.dylib</code>. Antes solo la dylib copiada recibía un ID nuevo, mientras la app seguía apuntando a la ruta absoluta de Homebrew, lo que funciona en la Mac de desarrollo y falla en cualquier otra. No queda ninguna referencia a <code>/opt/homebrew</code> en ningún binario dentro del paquete.</li>
+            <li>Compilación — el destino mínimo sube a macOS 26.0 en <code>project.yml</code> y <code>xpc_target.yml</code>, para coincidir con el mínimo de <code>libSDL2-2.0.0.dylib</code> incluida.</li>
+            <li>Shaders — <code>ShaderManager.getUniformSnapshot()</code>, <code>getUniformSnapshotIfChanged(cachedGeneration:)</code> y <code>getCurrentFragmentFunctionName()</code> ahora son <code>nonisolated static</code>, así los hilos del renderizador los leen sin el singleton aislado al actor principal; se actualizaron las llamadas en <code>MetalCoordinator</code>, <code>BaseRunner</code> y la comprobación de la bezel de armario.</li>
+            <li>Controles — <code>GamepadNavigationManager.toolbarComboMembers</code> ahora es un conjunto <code>nonisolated static</code>, así las rutas de entrada de SDL, DOS, ScummVM y del mando base comprueban los atajos de la barra sin tocar la instancia del actor principal.</li>
+            <li>Boxart — <code>BoxArtService.resolveLocalBoxArt(for:)</code> e <code>isValidImageFile(at:)</code> pasan a <code>nonisolated static</code>; el método de instancia queda como envoltorio para las llamadas existentes.</li>
+            <li>Grabación — las referencias finalizadas de <code>AVAssetWriter</code> y de sus entradas se envían a las colas de fondo como <code>nonisolated(unsafe)</code>, y <code>MetalCoordinator</code> resuelve <code>StreamRecordingService.shared</code> antes del manejador de finalización del búfer de comandos en lugar de dentro de él.</li>
+            <li>Auditoría de desplazamiento — el obsoleto <code>CVDisplayLink</code> se sustituye por <code>CADisplayLink</code> en un hilo dedicado, así la auditoría sigue muestreando mientras el hilo principal está bloqueado.</li>
+            <li>Corrección del actor principal — los temporizadores de rebote de desplazamiento de la cuadrícula y de la barra lateral y el observador de pantalla completa del monitor externo ahora usan <code>MainActor.assumeIsolated</code>, porque siempre se ejecutan en el bucle de ejecución principal.</li>
+            <li>Limpiezas — se eliminaron <code>PI</code>, <code>lineR2</code>, <code>latestOnError</code> y constantes de tamaño holo duplicadas sin uso, y la importación de <code>CoreVideo</code> sin uso; se reemplazó el obsoleto <code>String(contentsOf:)</code> por la forma con <code>usedEncoding:</code>; se descartaron resultados sin uso, se cambió <code>var</code> por <code>let</code>, se usó <code>Range(rows)</code> en lugar de <code>rows.toRange()</code>, y el puntero de fotograma en <code>rf_decoder_bridge.h</code> se marca como nullable.</li>
+            <li>Subida de la versión de marketing a 1.17.1 y del número de compilación a 44 en <code>project.yml</code>, ambos <code>Info.plist</code> y <code>docs/_config.yml</code>.</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/es/changelog/v1.17.0.html' | relative_url }}" class="release-prev">&larr; v1.17.0</a>
+        <a href="{{ '/es/changelog.html' | relative_url }}" class="release-all">Todas las versiones</a>
+    </nav>
+</div>

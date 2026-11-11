@@ -1,0 +1,53 @@
+---
+layout: default
+title: v1.17.1 - TruchiEmu Documentation
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/changelog.html' | relative_url }}">Changelog</a>
+        <span class="separator">/</span>
+        <span class="current">v1.17.1</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.17.1</h1>
+        <div class="release-meta">
+            <span class="release-date">November 11, 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>This release fixes a crash at launch on Macs that do not have Homebrew installed. The app now carries its own copy of SDL2 instead of loading it from a Homebrew folder.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Highlights</h2>
+        <ul class="feature-list">
+            <li><strong>The app opens again on Macs without Homebrew:</strong> v1.17.0 asked macOS to load <code>libSDL2-2.0.0.dylib</code> from the Homebrew folder (<code>/opt/homebrew/opt/sdl2/lib/</code>). Homebrew is not part of macOS, so on a Mac that does not have it, macOS stopped the app before the first window appeared (crash report: <em>Library not loaded</em>, namespace <code>DYLD</code>). The app now contains its own copy of SDL2 and loads that copy from inside the app bundle. No Homebrew install is needed.</li>
+            <li><strong>Requires macOS 26 or later:</strong> The SDL2 build inside the app targets macOS 26.0, so this version runs on macOS 26 and macOS 27 only. v1.17.0 was already limited to these versions at runtime, because the same SDL2 build had to load.</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Detailed Changes</h2>
+        <ul>
+            <li>Build — the <em>Embed SDL2 dylib</em> phase now also rewrites the app's own dependency on SDL2 to <code>@rpath/libSDL2-2.0.0.dylib</code>. Before, only the copied dylib got a new ID while the app still pointed at the absolute Homebrew path, which works on a developer Mac and fails everywhere else. No <code>/opt/homebrew</code> reference remains in any binary inside the bundle.</li>
+            <li>Build — deployment target raised to macOS 26.0 in <code>project.yml</code> and <code>xpc_target.yml</code>, to match the minimum OS of the bundled <code>libSDL2-2.0.0.dylib</code>.</li>
+            <li>Shaders — <code>ShaderManager.getUniformSnapshot()</code>, <code>getUniformSnapshotIfChanged(cachedGeneration:)</code>, and <code>getCurrentFragmentFunctionName()</code> are now <code>nonisolated static</code>, so renderer threads read them without the main-actor-isolated singleton; call sites in <code>MetalCoordinator</code>, <code>BaseRunner</code>, and the cabinet bezel check updated.</li>
+            <li>Controls — <code>GamepadNavigationManager.toolbarComboMembers</code> is now a <code>nonisolated static</code> set, so the SDL, DOS, ScummVM, and base gamepad input paths check toolbar combos without touching the main-actor instance.</li>
+            <li>Box art — <code>BoxArtService.resolveLocalBoxArt(for:)</code> and <code>isValidImageFile(at:)</code> moved to <code>nonisolated static</code>; the instance method remains as a wrapper for existing callers.</li>
+            <li>Recording — finalized <code>AVAssetWriter</code> and input references are handed to background queues as <code>nonisolated(unsafe)</code>, and <code>MetalCoordinator</code> resolves <code>StreamRecordingService.shared</code> before the command-buffer completion handler instead of inside it.</li>
+            <li>Scroll performance audit — the deprecated <code>CVDisplayLink</code> is replaced by <code>CADisplayLink</code> on a dedicated thread, so the audit keeps sampling while the main thread is blocked.</li>
+            <li>Main-actor correctness — the grid and sidebar scroll debounce timers and the external-display full-screen observer now use <code>MainActor.assumeIsolated</code>, because they always run on the main run loop.</li>
+            <li>Cleanups — removed unused <code>PI</code>, <code>lineR2</code>, <code>latestOnError</code>, and duplicate holo size constants, and the unused <code>CoreVideo</code> import; replaced the deprecated <code>String(contentsOf:)</code> with the <code>usedEncoding:</code> form; discarded unused results, changed <code>var</code> to <code>let</code>, used <code>Range(rows)</code> instead of <code>rows.toRange()</code>, and marked the frame pointer in <code>rf_decoder_bridge.h</code> as nullable.</li>
+            <li>Bump marketing version to 1.17.1 and build number to 44 across <code>project.yml</code>, both <code>Info.plist</code>s, and <code>docs/_config.yml</code>.</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/changelog/v1.17.0.html' | relative_url }}" class="release-prev">&larr; v1.17.0</a>
+        <a href="{{ '/changelog.html' | relative_url }}" class="release-all">All Releases</a>
+    </nav>
+</div>
