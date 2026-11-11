@@ -36,6 +36,9 @@ struct ContentView: View {
 @State private var searchText = ""
 @FocusState private var searchFocused: Bool
 @State private var showCreateCategorySheet = false
+// ROMs on which "New Category…" was invoked, so the create sheet can offer to
+// add them to the category it creates. Empty for the sidebar's New Category.
+@State private var createCategoryTargetROMs: [ROM] = []
 @State private var editingCategory: GameCategory? = nil
 @State private var renamingSystem: SystemInfo? = nil
 @State private var shaderOverrideData: ShaderOverrideData?
@@ -149,7 +152,15 @@ struct ContentView: View {
                  HStack(spacing: 0) {
                       SystemSidebarView(
                           selectedFilter: $selectedFilter,
-                          showCreateCategorySheet: $showCreateCategorySheet,
+                          // The sidebar has no game context, so clear any ROMs
+                          // carried over from the grid's context menu.
+                          showCreateCategorySheet: Binding(
+                              get: { showCreateCategorySheet },
+                              set: { newValue in
+                                  if newValue { createCategoryTargetROMs = [] }
+                                  showCreateCategorySheet = newValue
+                              }
+                          ),
                           editingCategory: $editingCategory,
                           searchText: $searchText,
                           searchFocused: $searchFocused,
@@ -266,6 +277,7 @@ case .library:
 
                 LibraryGridView(
                           showCreateCategorySheet: $showCreateCategorySheet,
+                          createCategoryTargetROMs: $createCategoryTargetROMs,
                           filter: $selectedFilter,
                           selectedROM: $selectedROM,
                           searchText: $searchText,
@@ -287,7 +299,7 @@ case .library:
                      }
                  }
                 .sheet(isPresented: $showCreateCategorySheet) {
-                    CreateCategorySheet()
+                    CreateCategorySheet(targetROMs: createCategoryTargetROMs)
                         .gamepadDismissable { showCreateCategorySheet = false }
                 }
 .sheet(item: $editingCategory) { category in

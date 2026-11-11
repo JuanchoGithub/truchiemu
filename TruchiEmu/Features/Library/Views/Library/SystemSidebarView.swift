@@ -590,6 +590,10 @@ struct CreateCategorySheet: View {
     @EnvironmentObject var library: ROMLibrary
     @ObservedObject private var loc = LocalizationManager.shared
 
+    // ROMs "New Category…" was invoked on (empty from the sidebar). Used to
+    // offer adding them to the freshly created category.
+    var targetROMs: [ROM] = []
+
     @State private var isSmart = false
     // ObservableObject (not @State) so rule edits made inside nested sheets
     // update this sheet live on macOS.
@@ -618,7 +622,32 @@ struct CreateCategorySheet: View {
         }
         return !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
-    
+
+    // After creating a category from a game's context menu, offer to add the
+    // game(s) to it. Suppressible with "Don't Ask Again" (stored in
+    // AppSettings) and overridable in General settings.
+    private func offerAddToNewCategory(_ category: GameCategory) {
+        guard !targetROMs.isEmpty,
+              AppSettings.getBool(GameCategory.askToAddAfterCreateSettingsKey, defaultValue: true) else { return }
+
+        let alert = NSAlert()
+        alert.alertStyle = .informational
+        alert.messageText = loc.localized("category.addGamePromptTitle")
+        alert.informativeText = String(format: loc.localized("category.addGamePromptMessage"), category.name)
+        alert.addButton(withTitle: loc.localized("category.addGamePromptAdd"))
+        alert.addButton(withTitle: loc.localized("category.addGamePromptNotNow"))
+        alert.showsSuppressionButton = true
+        alert.suppressionButton?.title = loc.localized("category.dontAskAgain")
+
+        let response = alert.runModal()
+        if alert.suppressionButton?.state == .on {
+            AppSettings.setBool(GameCategory.askToAddAfterCreateSettingsKey, value: false)
+        }
+        if response == .alertFirstButtonReturn {
+            categoryManager.addRomsToCategory(targetROMs, categoryID: category.id)
+        }
+    }
+
     var body: some View {
         NavigationStack {
             Form {
@@ -706,12 +735,13 @@ struct CreateCategorySheet: View {
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button(loc.localized("app.create")) {
+                        let createdCategory: GameCategory
                         if isSmart {
                             let finalName = name.trimmingCharacters(in: .whitespacesAndNewlines)
                                 .isEmpty
                                 ? GameCategory.autoName(fromQuery: smartDraft.category.smartQuery)
                                 : name
-                            categoryManager.addSmartCategory(
+                            createdCategory = categoryManager.addSmartCategory(
                                 name: finalName,
                                 query: smartDraft.category.smartQuery,
                                 disabledSystemIDs: smartDraft.category.smartDisabledSystemIDs,
@@ -726,7 +756,7 @@ struct CreateCategorySheet: View {
                                 id: pendingCategoryId
                             )
                         } else {
-                            categoryManager.addCategory(
+                            createdCategory = categoryManager.addCategory(
                                 name: name,
                                 iconName: selectedIconName ?? "gamecontroller.fill",
                                 customIconPath: customIconPath,
@@ -734,6 +764,7 @@ struct CreateCategorySheet: View {
                                 id: pendingCategoryId
                             )
                         }
+                        offerAddToNewCategory(createdCategory)
                         dismiss()
                     }
                     .disabled(!canCreate)

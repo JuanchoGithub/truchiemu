@@ -7,6 +7,19 @@ class CategoryManager: ObservableObject {
     @Published var categories: [GameCategory] = [] {
         didSet { rebuildMemberIndex() }
     }
+
+    // Most recently used category (added to / removed from), for the game
+    // context menu's quick-access shortcut. Session-scoped on purpose: it is
+    // not persisted, so it resets on the next launch.
+    @Published var lastUsedCategoryID: String?
+
+    // The last-used category, resolved against the current list (nil when it
+    // was deleted or never used).
+    var lastUsedCategory: GameCategory? {
+        guard let id = lastUsedCategoryID else { return nil }
+        return categories.first { $0.id == id }
+    }
+
     private let categoriesKey = "game_categories_v1"
     private let encoder = JSONEncoder()
     private let decoder = JSONDecoder()
@@ -111,7 +124,8 @@ class CategoryManager: ObservableObject {
     
     // MARK: - Category CRUD
     
-    func addCategory(name: String, iconName: String = "gamecontroller.fill", customIconPath: String? = nil, colorHex: String = "007AFF", id: String? = nil) {
+    @discardableResult
+    func addCategory(name: String, iconName: String = "gamecontroller.fill", customIconPath: String? = nil, colorHex: String = "007AFF", id: String? = nil) -> GameCategory {
         let category = GameCategory(
             id: id ?? UUID().uuidString,
             name: name,
@@ -122,6 +136,7 @@ class CategoryManager: ObservableObject {
         )
         categories.append(category)
         saveCategories()
+        return category
     }
     
     @discardableResult
@@ -187,6 +202,7 @@ class CategoryManager: ObservableObject {
 
     func addGamesToCategory(gameIDs: [UUID], gameKeys: [String] = [], categoryID: String) {
         guard let index = categories.firstIndex(where: { $0.id == categoryID }) else { return }
+        lastUsedCategoryID = categoryID
 
         if categories[index].isSmart {
             for key in gameKeys {
@@ -214,6 +230,7 @@ class CategoryManager: ObservableObject {
 
     func removeGamesFromCategory(gameIDs: [UUID], gameKeys: [String] = [], categoryID: String) {
         guard let index = categories.firstIndex(where: { $0.id == categoryID }) else { return }
+        lastUsedCategoryID = categoryID
         if categories[index].isSmart {
             for key in gameKeys {
                 if categories[index].smartIncludedGameKeys.contains(key) {

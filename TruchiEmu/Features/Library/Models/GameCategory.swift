@@ -230,6 +230,11 @@ struct GameCategory: Identifiable, Codable, Hashable, Equatable {
         ("Gray", "8E8E93"), ("Dark Gray", "636366")
     ]
     
+    // AppSettings key: after creating a category from a game's context menu,
+    // ask whether to add the game(s) to it. Default true; overridable in
+    // General settings.
+    static let askToAddAfterCreateSettingsKey = "category.askToAddAfterCreate"
+
     // Default categories
     static func defaults() -> [GameCategory] {
         []

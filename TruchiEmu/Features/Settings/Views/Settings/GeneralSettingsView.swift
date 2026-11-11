@@ -7,6 +7,7 @@ struct GeneralSettingsView: View {
     @State private var notificationsEnabled: Bool = false
     @State private var boxArtPivotingEnabled: Bool = true
     @State private var hltbEnabled: Bool = true
+    @State private var categoryAskToAddAfterCreate: Bool = true
     @State private var openCriticAPIKey: String = ""
 
     @State private var pending = PendingThemeSettings()
@@ -199,6 +200,17 @@ LazyVGrid(columns: [GridItem(.adaptive(minimum: 60))], spacing: 2) {
                 .id("section-boxart-pivoting")
             }
 
+            // ★ Categories Section
+            if (!isSearching || matchesSearch("categories category add game prompt ask create")) && sectionVisible("section-categories") {
+                Section(header: Label(loc.localized("app.categories"), systemImage: "folder")) {
+                    Toggle(loc.localized("settings.categories.askToAddAfterCreate"), isOn: $categoryAskToAddAfterCreate)
+                    Text(loc.localized("settings.categories.askToAddAfterCreateDescription"))
+                        .font(.caption)
+                        .foregroundStyle(AppColors.textSecondary(colorScheme))
+                }
+                .id("section-categories")
+            }
+
             // ★ Application Section
             if (!isSearching || matchesSearch("Application version build notifications updates")) && sectionVisible("section-application") {
                 Section(header: Label(loc.localized("settings.application"), systemImage: "app.badge")) {
@@ -330,6 +342,7 @@ LazyVGrid(columns: [GridItem(.adaptive(minimum: 60))], spacing: 2) {
         notificationsEnabled = NotificationService.shared.isAuthorized
         boxArtPivotingEnabled = prefs.boxArtPivotingEnabled()
         hltbEnabled = AppSettings.getBool("hltbEnabled", defaultValue: true)
+        categoryAskToAddAfterCreate = AppSettings.getBool(GameCategory.askToAddAfterCreateSettingsKey, defaultValue: true)
         openCriticAPIKey = OpenCriticService.shared.apiKey ?? ""
             pending.theme = themeManager.currentTheme
             pending.appearanceMode = themeManager.appearanceMode
@@ -350,6 +363,9 @@ LazyVGrid(columns: [GridItem(.adaptive(minimum: 60))], spacing: 2) {
         }
         .onChange(of: hltbEnabled) { _, newValue in
             AppSettings.setBool("hltbEnabled", value: newValue)
+        }
+        .onChange(of: categoryAskToAddAfterCreate) { _, newValue in
+            AppSettings.setBool(GameCategory.askToAddAfterCreateSettingsKey, value: newValue)
         }
         .onChange(of: openCriticAPIKey) { _, newValue in
             OpenCriticService.shared.apiKey = newValue.isEmpty ? nil : newValue
@@ -510,6 +526,7 @@ private struct CustomThemeButton: View {
         matchesSearch("Language Region systems language emulation core country localization") ||
         matchesSearch("Theme accent color appearance mode light dark gaming tinted surfaces toolbar") ||
         matchesSearch("boxArt pivoting 3D tilt cursor") ||
+        matchesSearch("categories category add game prompt ask create") ||
         matchesSearch("Application version build notifications updates")
     }
 

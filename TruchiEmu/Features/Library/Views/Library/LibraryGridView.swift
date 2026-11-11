@@ -24,6 +24,7 @@ struct LibraryGridView: View {
     @ObservedObject private var boxArtService = BoxArtService.shared
     @ObservedObject private var libraryAutomation = LibraryAutomationCoordinator.shared
     @Binding var showCreateCategorySheet: Bool
+    @Binding var createCategoryTargetROMs: [ROM]
     @Binding var filter: LibraryFilter
     @Binding var selectedROM: ROM?
     @Binding var searchText: String
@@ -39,6 +40,7 @@ struct LibraryGridView: View {
 
     init(
         showCreateCategorySheet: Binding<Bool>,
+        createCategoryTargetROMs: Binding<[ROM]>,
         filter: Binding<LibraryFilter>,
         selectedROM: Binding<ROM?>,
         searchText: Binding<String>,
@@ -47,6 +49,7 @@ struct LibraryGridView: View {
         categoryManager: CategoryManager
     ) {
         self._showCreateCategorySheet = showCreateCategorySheet
+        self._createCategoryTargetROMs = createCategoryTargetROMs
         self._filter = filter
         self._selectedROM = selectedROM
         self._searchText = searchText
@@ -1749,6 +1752,7 @@ struct LibraryGridView: View {
                 Menu {
                     Group {
                     Button {
+                        createCategoryTargetROMs = menuTargetROMs
                         showCreateCategorySheet = true
                     } label: {
                         Label(loc.localized("contextMenu.newCategory"), systemImage: "plus.circle")
@@ -1759,28 +1763,7 @@ struct LibraryGridView: View {
                     }
 
                     ForEach(categoryManager.categories) { category in
-                        let isInCategory = categoryManager.contains(rom, categoryID: category.id)
-                        Button {
-                            if isInCategory {
-                                categoryManager.removeRomsFromCategory(menuTargetROMs, categoryID: category.id)
-                            } else {
-                                categoryManager.addRomsToCategory(menuTargetROMs, categoryID: category.id)
-                            }
-                        } label: {
-                            HStack {
-                                GameCategoryMenuIcon(category: category)
-                                    .foregroundColor(Color(hex: category.colorHex) ?? .blue)
-                                Text(category.name)
-                                Spacer()
-                                if isInCategory {
-                                    Image(systemName: "checkmark.circle.fill")
-                                        .foregroundColor(AppColors.brandAccent)
-                                } else {
-			Image(systemName: "plus.circle")
-				.foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
-                                }
-                            }
-                        }
+                        categoryToggleMenu(category, rom: rom, targets: menuTargetROMs)
                     }
 
                     let categoriesForTargetGames = categoryManager.categories(containingAnyOf: menuTargetROMs)
@@ -1798,6 +1781,27 @@ struct LibraryGridView: View {
                     .menuIconsAlwaysVisible()
                 } label: {
                     Label(loc.localized("contextMenu.categories"), systemImage: "folder.badge.plus")
+                }
+
+                // One-click action for the category used most recently this
+                // session, so adding to it does not need the submenu.
+                if let recent = categoryManager.lastUsedCategory {
+                    let isInRecent = categoryManager.contains(rom, categoryID: recent.id)
+                    Button {
+                        if isInRecent {
+                            categoryManager.removeRomsFromCategory(menuTargetROMs, categoryID: recent.id)
+                        } else {
+                            categoryManager.addRomsToCategory(menuTargetROMs, categoryID: recent.id)
+                        }
+                    } label: {
+                        Label {
+                            Text(isInRecent
+                                 ? String(format: loc.localized("contextMenu.removeFromCategory"), recent.name)
+                                 : String(format: loc.localized("contextMenu.addToCategory"), recent.name))
+                        } icon: {
+                            Image(nsImage: GameCategoryMenuImage.image(for: recent))
+                        }
+                    }
                 }
 
                     Divider()
@@ -1852,6 +1856,29 @@ struct LibraryGridView: View {
             }
             .menuIconsAlwaysVisible()
         )
+    }
+
+    // One category row in the game context menu. A Toggle so macOS draws its
+    // own checkmark for membership; the icon is a colorized NSImage because
+    // menus drop SwiftUI tinting (see GameCategoryMenuImage).
+    @ViewBuilder
+    private func categoryToggleMenu(_ category: GameCategory, rom: ROM, targets: [ROM]) -> some View {
+        Toggle(isOn: Binding(
+            get: { categoryManager.contains(rom, categoryID: category.id) },
+            set: { isOn in
+                if isOn {
+                    categoryManager.addRomsToCategory(targets, categoryID: category.id)
+                } else {
+                    categoryManager.removeRomsFromCategory(targets, categoryID: category.id)
+                }
+            }
+        )) {
+            Label {
+                Text(category.name)
+            } icon: {
+                Image(nsImage: GameCategoryMenuImage.image(for: category))
+            }
+        }
     }
 
     // MARK: - Delete/Hide Game Actions
