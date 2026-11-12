@@ -164,6 +164,56 @@ class FocusableMTKView: MTKView {
 
     // MARK: - Keyboard Events
 
+    /// Menu key equivalents are offered to the key window before `keyDown`,
+    /// so a menu item can silently steal a game hotkey. `.recording` is ⇧⌘R
+    /// by default, which is also "Rescan Library" (⌘⇧R) — pressing it in a
+    /// game window started a library rescan instead of a recording. Dispatch
+    /// the media hotkeys here so the game window wins over the menu.
+    override func performKeyEquivalent(with event: NSEvent) -> Bool {
+        if dispatchMediaHotkey(event) { return true }
+        return super.performKeyEquivalent(with: event)
+    }
+
+    /// Handles the media hotkeys (screenshot, share button, recording).
+    /// Shared by `keyDown` and `performKeyEquivalent`; returns true when the
+    /// event matched a media hotkey and was consumed.
+    @discardableResult
+    private func dispatchMediaHotkey(_ event: NSEvent) -> Bool {
+        let hotkeys = HotkeyConfigManager.shared
+        let systemID = runner?.systemID
+
+        if hotkeys.matches(.screenshot, systemID: systemID, event: event) {
+            Task { @MainActor in
+                self.runner?.performScreenshot()
+            }
+            return true
+        }
+
+        if hotkeys.matches(.shareButton, systemID: systemID, event: event) {
+            Task { @MainActor in
+                self.runner?.handleSharePress(isLongPress: false)
+            }
+            return true
+        }
+
+        if hotkeys.matches(.recording, systemID: systemID, event: event) {
+            Task { @MainActor in
+                guard let runner = self.runner else { return }
+                let service = StreamRecordingService.shared
+                if service.isRecording {
+                    service.stop()
+                } else {
+                    let size = runner.captureSize
+                    let url = EmulatorRunner.recordingOutputURL(systemID: runner.systemID, rom: runner.rom)
+                    service.startRecording(outputURL: url, width: Int(size.width), height: Int(size.height))
+                }
+            }
+            return true
+        }
+
+        return false
+    }
+
     override func keyDown(with event: NSEvent) {
         // DOS/ScummVM/Wii/GameCube capture the keyboard and forward it to the
         // core, so application hotkeys are disabled to avoid colliding with
@@ -179,10 +229,7 @@ class FocusableMTKView: MTKView {
         let hotkeys = HotkeyConfigManager.shared
         let systemID = runner?.systemID
 
-        if hotkeys.matches(.screenshot, systemID: systemID, event: event) {
-            Task { @MainActor in
-                self.runner?.performScreenshot()
-            }
+        if dispatchMediaHotkey(event) {
             return
         }
 
@@ -292,31 +339,9 @@ class FocusableMTKView: MTKView {
             return
         }
 
-        if hotkeys.matches(.shareButton, systemID: systemID, event: event) {
-            Task { @MainActor in
-                self.runner?.handleSharePress(isLongPress: false)
-            }
-            return
-        }
-
         if hotkeys.matches(.toggleWiiController, systemID: systemID, event: event) {
             Task { @MainActor in
                 self.runner?.toggleWiiControllerAttachment()
-            }
-            return
-        }
-
-        if hotkeys.matches(.recording, systemID: systemID, event: event) {
-            Task { @MainActor in
-                guard let runner = self.runner else { return }
-                let service = StreamRecordingService.shared
-                if service.isRecording {
-                    service.stop()
-                } else {
-                    let size = runner.captureSize
-                    let url = EmulatorRunner.recordingOutputURL(systemID: runner.systemID, rom: runner.rom)
-                    service.startRecording(outputURL: url, width: Int(size.width), height: Int(size.height))
-                }
             }
             return
         }

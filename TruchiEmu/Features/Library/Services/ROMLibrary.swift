@@ -665,6 +665,14 @@ class ROMLibrary: ObservableObject {
     }
 
     func fullRescan() async {
+        // This clears every entry before it re-scans, and `scanROMs` skips
+        // folders while a game runs. A rescan started during gameplay would
+        // therefore delete the whole library and put nothing back. Refuse.
+        guard !RunningGamesTracker.shared.isGameRunning else {
+            LoggerService.warning(category: "ROMLibrary", "Full rescan refused: a game is running")
+            return
+        }
+
         isScanning = true
         scanProgress = 0
         

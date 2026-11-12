@@ -149,6 +149,8 @@ private var firstFrameTimer: Timer?
     private var gameLoadedObserver: NSObjectProtocol?
     private var screenshotObserver: NSObjectProtocol?
     private var clipSavedObserver: NSObjectProtocol?
+    private var recordingSavedObserver: NSObjectProtocol?
+    private var recordingFailedObserver: NSObjectProtocol?
     private var isClosingWindow: Bool = false
     private var didLoadSaveState: Bool = false
 var moveListOverlayView: NSHostingView<AnyView>?
@@ -1054,6 +1056,21 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
         clipSavedObserver = NotificationCenter.default.addObserver(forName: .clipSaved, object: nil, queue: .main) { [weak self] note in
             guard let url = note.userInfo?["url"] as? URL else { return }
             self?.postClipSavedPill(url: url)
+        }
+
+        // Observe finished local recordings. Without this the recording just
+        // stops with no feedback, so the user cannot tell where the file went.
+        recordingSavedObserver = NotificationCenter.default.addObserver(forName: .recordingSaved, object: nil, queue: .main) { [weak self] note in
+            guard let self, let url = note.userInfo?["url"] as? URL else { return }
+            self.postRecordingSavedPill(url: url)
+            self.postRecordingHistory(url: url)
+        }
+
+        // Observe failed recordings so a start that cannot write is visible.
+        recordingFailedObserver = NotificationCenter.default.addObserver(forName: .recordingFailed, object: nil, queue: .main) { [weak self] note in
+            guard let self else { return }
+            let detail = note.userInfo?["detail"] as? String ?? ""
+            self.postRecordingFailedPill(detail: detail)
         }
 
         // Core is initializing async — we're now waiting for the first frame
@@ -2151,6 +2168,14 @@ hostingView.widthAnchor.constraint(equalToConstant: 320)
             NotificationCenter.default.removeObserver(observer)
             screenshotObserver = nil
         }
+        if let observer = recordingSavedObserver {
+            NotificationCenter.default.removeObserver(observer)
+            recordingSavedObserver = nil
+        }
+        if let observer = recordingFailedObserver {
+            NotificationCenter.default.removeObserver(observer)
+            recordingFailedObserver = nil
+        }
     }
 
     // MARK: - Helper Functions
@@ -2374,6 +2399,50 @@ hostingView.widthAnchor.constraint(equalToConstant: 320)
             }
         )
         ScreenshotPillPresenter.shared.present(notification)
+    }
+
+    private func postRecordingSavedPill(url: URL) {
+        let notification = PillNotification(
+            icon: "record.circle",
+            title: LocalizationManager.shared.localized("media.recordingSaved"),
+            subtitle: url.lastPathComponent,
+            autoDismissDelay: 8,
+            action: PillAction(label: LocalizationManager.shared.localized("media.showInFinder")) {
+                NSWorkspace.shared.activateFileViewerSelecting([url])
+                ScreenshotPillPresenter.shared.dismiss()
+            }
+        )
+        ScreenshotPillPresenter.shared.present(notification)
+    }
+
+    private func postRecordingFailedPill(detail: String) {
+        let notification = PillNotification(
+            icon: "exclamationmark.triangle.fill",
+            title: LocalizationManager.shared.localized("media.recordingFailed"),
+            subtitle: detail,
+            autoDismissDelay: 10
+        )
+        ScreenshotPillPresenter.shared.present(notification)
+    }
+
+    private func postRecordingHistory(url: URL) {
+        NotificationHistoryManager.shared.post(
+            icon: "record.circle",
+            title: LocalizationManager.shared.localized("media.recordingSaved"),
+            subtitle: url.lastPathComponent,
+            autoDismissDelay: 8,
+            actionLabel: LocalizationManager.shared.localized("media.showInFinder"),
+            actionType: "reveal-recording",
+            actionPayload: OpenURLActionPayload(url: url.path)
+        )
+    }
+
+    static func registerRecordingHistoryHandler() {
+        NotificationHistoryManager.shared.registerActionHandler(type: "reveal-recording") { entry in
+            guard let payload: OpenURLActionPayload = entry.decodePayload(OpenURLActionPayload.self) else { return false }
+            NSWorkspace.shared.activateFileViewerSelecting([URL(fileURLWithPath: payload.url)])
+            return true
+        }
     }
 
     static func registerScreenshotHistoryHandler() {

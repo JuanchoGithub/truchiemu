@@ -562,7 +562,15 @@ class StreamRecordingService: ObservableObject {
         let fileManager = FileManager.default
         let parentDir = self.outputURL!.deletingLastPathComponent().path
         if !fileManager.fileExists(atPath: parentDir) {
-            try? fileManager.createDirectory(atPath: parentDir, withIntermediateDirectories: true)
+            do {
+                try fileManager.createDirectory(atPath: parentDir, withIntermediateDirectories: true)
+            } catch {
+                LoggerService.error(category: "Recording", "Failed to create recording folder \(parentDir): \(error.localizedDescription)")
+                if initiator == .user {
+                    Self.announceRecordingFailed(detail: Self.cannotWriteDetail(path: parentDir))
+                }
+                return
+            }
         }
 
         if fileManager.fileExists(atPath: self.outputURL!.path) {
@@ -572,6 +580,9 @@ class StreamRecordingService: ObservableObject {
         let outputFileType: AVFileType = codec.isLossless ? .mov : .mp4
         guard let writer = try? AVAssetWriter(outputURL: self.outputURL!, fileType: outputFileType) else {
             LoggerService.error(category: "Recording", "Failed to create AVAssetWriter")
+            if initiator == .user {
+                Self.announceRecordingFailed(detail: Self.cannotWriteDetail(path: parentDir))
+            }
             return
         }
         assetWriter = writer
@@ -663,7 +674,11 @@ class StreamRecordingService: ObservableObject {
 
             startAudioCapture()
         } else {
-            LoggerService.error(category: "Recording", "AVAssetWriter failed to start: \(writer.error?.localizedDescription ?? "unknown")")
+            let reason = writer.error?.localizedDescription ?? "unknown"
+            LoggerService.error(category: "Recording", "AVAssetWriter failed to start: \(reason)")
+            if initiator == .user {
+                Self.announceRecordingFailed(detail: String(format: LocalizationManager.shared.localized("media.recordingFailedStart"), reason))
+            }
             self.videoInput = nil
             self.audioInput = nil
             self.pixelBufferAdaptor = nil
@@ -935,7 +950,7 @@ class StreamRecordingService: ObservableObject {
         if streamingService != nil {
             stopStreaming()
         } else if assetWriter != nil {
-            stopLocalRecording()
+            stopLocalRecording(userInitiated: wasUserInitiated)
         } else {
             LoggerService.info(category: "Recording", "Recording already stopped externally")
             return
@@ -948,8 +963,9 @@ class StreamRecordingService: ObservableObject {
         LoggerService.info(category: "Recording", "Recording stopped")
     }
 
-    private func stopLocalRecording() {
+    private func stopLocalRecording(userInitiated: Bool) {
         guard let writer = assetWriter else { return }
+        let savedURL = self.outputURL
 
         videoInput?.markAsFinished()
         audioInput?.markAsFinished()
@@ -964,10 +980,37 @@ class StreamRecordingService: ObservableObject {
          writer.finishWriting {
             if let error = writerRef.error {
                 LoggerService.error(category: "Recording", "AVAssetWriter error: \(error.localizedDescription) status=\(writerRef.status.rawValue)")
+                if userInitiated {
+                    Self.announceRecordingFailed(detail: error.localizedDescription)
+                }
             } else {
                 LoggerService.info(category: "Recording", "Recording saved (status=\(writerRef.status.rawValue))")
+                if userInitiated, let savedURL {
+                    Self.announceRecordingSaved(at: savedURL)
+                }
             }
         }
+    }
+
+    /// Localized "cannot write to <path>" detail for a failed start. The folder
+    /// may exist but be write-protected by the system (for example when it
+    /// needs a privacy grant the app does not hold).
+    private static func cannotWriteDetail(path: String) -> String {
+        String(format: LocalizationManager.shared.localized("media.recordingFailedWrite"), path)
+    }
+
+    /// Announces a finished user recording so the game window can show a pill
+    /// and a Notification Center entry with "Show in Finder".
+    /// `nonisolated` because the writer's `finishWriting` callback runs off the
+    /// main actor.
+    nonisolated static func announceRecordingSaved(at url: URL) {
+        NotificationCenter.default.post(name: .recordingSaved, object: nil, userInfo: ["url": url])
+    }
+
+    /// Announces a failed recording so the game window can show the reason
+    /// instead of failing without feedback.
+    nonisolated static func announceRecordingFailed(detail: String) {
+        NotificationCenter.default.post(name: .recordingFailed, object: nil, userInfo: ["detail": detail])
     }
 
     private func stopStreaming() {

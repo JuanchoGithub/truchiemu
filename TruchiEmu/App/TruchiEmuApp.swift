@@ -35,6 +35,8 @@ static let showChangelogFromMenu = Notification.Name("showChangelogFromMenu")
     static let libraryROMsRemoved = Notification.Name("libraryROMsRemoved")
     static let libraryDisplayedROMsDidChange = Notification.Name("libraryDisplayedROMsDidChange")
     static let clipSaved = Notification.Name("clipSaved")
+    static let recordingSaved = Notification.Name("recordingSaved")
+    static let recordingFailed = Notification.Name("recordingFailed")
     static let firstSaveCelebrated = Notification.Name("firstSaveCelebrated")
     static let exitAppUpdateMode = Notification.Name("exitAppUpdateMode")
   }
@@ -288,6 +290,7 @@ LoggerService.debug(category: category, message)
         }
 
         StandaloneGameWindowController.registerScreenshotHistoryHandler()
+        StandaloneGameWindowController.registerRecordingHistoryHandler()
     }
     
 var body: some Scene {
