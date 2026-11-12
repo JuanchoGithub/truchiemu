@@ -1,0 +1,51 @@
+---
+layout: default
+title: v1.17.2 - TruchiEmu Documentation
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/changelog.html' | relative_url }}">Changelog</a>
+        <span class="separator">/</span>
+        <span class="current">v1.17.2</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.17.2</h1>
+        <div class="release-meta">
+            <span class="release-date">November 12, 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>This release fixes two input problems: the recording hotkey no longer triggers a library rescan, and the Settings and game-info windows no longer send gamepad presses to the library behind them.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Highlights</h2>
+        <ul class="feature-list">
+            <li><strong>Recording hotkey works in a game window:</strong> The recording hotkey (<code>⇧⌘R</code> by default) was the same shortcut as the <em>Rescan Library</em> menu item, and macOS gives menu shortcuts the first chance to handle a key press. Pressing the hotkey in a game window started a library rescan instead of a recording. Because a full rescan clears every library entry before it scans again, and scanning skips folders while a game runs, each press emptied the library. The game window now handles the media hotkeys (screenshot, share button, recording) before the menu, and a full rescan is refused while a game runs.</li>
+            <li><strong>Recording results are visible:</strong> A finished recording shows a <em>Recording saved</em> notice with <em>Show in Finder</em>, and a recording that cannot start shows a notice with the reason. Before, both cases were silent.</li>
+            <li><strong>Settings and game-info windows keep their own gamepad input:</strong> Both windows claimed gamepad navigation before macOS made them the key window, so they were bound to the library window. The library handled the presses, and during button-mapping capture a press of A or B also moved through the library behind the window (for example, it entered TV Mode). Each window now binds to its real window after it appears.</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Detailed Changes</h2>
+        <ul>
+            <li>Input — <code>FocusableMTKView</code> dispatches the media hotkeys (screenshot, share button, recording) from <code>performKeyEquivalent</code>, so the game window wins over the menu key equivalent; <code>keyDown</code> uses the same dispatcher.</li>
+            <li>Library — <code>ROMLibrary.fullRescan()</code> refuses to clear the library while a game is running.</li>
+            <li>Recording — <code>StreamRecordingService</code> announces finished user recordings and reports start failures (folder creation, writer creation, writer start) instead of failing without a message.</li>
+            <li>Game window — <code>StandaloneGameWindowController</code> shows a <em>Recording saved</em> pill and a Notification Center entry with <em>Show in Finder</em>, and a failure pill with the reason.</li>
+            <li>Controls — a new <code>gamepadNavWindowOwner(_:)</code> modifier binds <code>ownedWindow</code> to the real hosting window of the view after the view attaches; the Settings and game-info gamepad navigation contexts use it.</li>
+            <li>Localization — new strings for the recording notices in English, Spanish, Portuguese, and Japanese.</li>
+            <li>Bump marketing version to 1.17.2 and build number to 45 across <code>project.yml</code>, both <code>Info.plist</code>s, and <code>docs/_config.yml</code>.</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/changelog/v1.17.1.html' | relative_url }}" class="release-prev">&larr; v1.17.1</a>
+        <a href="{{ '/changelog.html' | relative_url }}" class="release-all">All Releases</a>
+    </nav>
+</div>

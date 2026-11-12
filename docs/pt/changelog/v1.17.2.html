@@ -1,0 +1,51 @@
+---
+layout: default
+title: v1.17.2 - Documentação do TruchiEmu
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/pt/changelog.html' | relative_url }}">Registro de mudanças</a>
+        <span class="separator">/</span>
+        <span class="current">v1.17.2</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.17.2</h1>
+        <div class="release-meta">
+            <span class="release-date">12 de novembro de 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>Esta versão corrige dois problemas de entrada: o atalho de gravação não inicia mais uma nova varredura da biblioteca, e as janelas de Ajustes e de informações do jogo não enviam mais os pressionamentos do controle para a biblioteca atrás delas.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Destaques</h2>
+        <ul class="feature-list">
+            <li><strong>O atalho de gravação funciona na janela do jogo:</strong> o atalho de gravação (<code>⇧⌘R</code> por padrão) era o mesmo do item de menu <em>Verificar biblioteca novamente</em>, e o macOS dá prioridade aos atalhos de menu. Pressioná-lo em uma janela de jogo iniciava uma nova varredura da biblioteca em vez de uma gravação. Como uma varredura completa apaga todas as entradas antes de verificar de novo, e a varredura ignora pastas enquanto um jogo está em execução, cada pressionamento esvaziava a biblioteca. Agora a janela do jogo trata os atalhos de mídia (captura de tela, botão compartilhar, gravação) antes do menu, e uma varredura completa é recusada enquanto um jogo está em execução.</li>
+            <li><strong>Os resultados da gravação ficam visíveis:</strong> uma gravação concluída mostra um aviso <em>Gravação salva</em> com <em>Mostrar no Finder</em>, e uma gravação que não consegue começar mostra um aviso com o motivo. Antes, os dois casos eram silenciosos.</li>
+            <li><strong>As janelas de Ajustes e de informações do jogo mantêm a própria entrada do controle:</strong> as duas janelas reivindicavam a navegação por controle antes de o macOS torná-las a janela ativa, então ficavam ligadas à janela da biblioteca. A biblioteca tratava os pressionamentos e, durante a captura de mapeamento de botões, pressionar A ou B também navegava pela biblioteca atrás (por exemplo, entrava no Modo TV). Agora cada janela se liga à sua janela real depois de aparecer.</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Mudanças detalhadas</h2>
+        <ul>
+            <li>Entrada — <code>FocusableMTKView</code> despacha os atalhos de mídia (captura de tela, botão compartilhar, gravação) a partir de <code>performKeyEquivalent</code>, então a janela do jogo vence o atalho de menu; <code>keyDown</code> usa o mesmo despachante.</li>
+            <li>Biblioteca — <code>ROMLibrary.fullRescan()</code> se recusa a apagar a biblioteca enquanto um jogo está em execução.</li>
+            <li>Gravação — <code>StreamRecordingService</code> anuncia as gravações do usuário concluídas e informa falhas de início (criação da pasta, criação do escritor, início do escritor) em vez de falhar sem mensagem.</li>
+            <li>Janela do jogo — <code>StandaloneGameWindowController</code> mostra uma pílula <em>Gravação salva</em> e uma entrada na Central de Notificações com <em>Mostrar no Finder</em>, e uma pílula de falha com o motivo.</li>
+            <li>Controles — um novo modificador <code>gamepadNavWindowOwner(_:)</code> liga <code>ownedWindow</code> à janela de hospedagem real da visualização depois que ela é anexada; os contextos de navegação por controle de Ajustes e de informações do jogo o usam.</li>
+            <li>Localização — novas cadeias para os avisos de gravação em inglês, espanhol, português e japonês.</li>
+            <li>Versão de marketing elevada para 1.17.2 e número de compilação para 45 em <code>project.yml</code>, nos dois <code>Info.plist</code> e em <code>docs/_config.yml</code>.</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/pt/changelog/v1.17.1.html' | relative_url }}" class="release-prev">&larr; v1.17.1</a>
+        <a href="{{ '/pt/changelog.html' | relative_url }}" class="release-all">Todas as versões</a>
+    </nav>
+</div>

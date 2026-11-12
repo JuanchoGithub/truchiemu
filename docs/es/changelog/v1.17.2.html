@@ -1,0 +1,51 @@
+---
+layout: default
+title: v1.17.2 - Documentación de TruchiEmu
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/es/changelog.html' | relative_url }}">Registro de cambios</a>
+        <span class="separator">/</span>
+        <span class="current">v1.17.2</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.17.2</h1>
+        <div class="release-meta">
+            <span class="release-date">12 de noviembre de 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>Esta versión corrige dos problemas de entrada: el atajo de grabación ya no lanza un reescaneo de la biblioteca, y las ventanas de Ajustes e información del juego ya no envían las pulsaciones del mando a la biblioteca que tienen detrás.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Destacados</h2>
+        <ul class="feature-list">
+            <li><strong>El atajo de grabación funciona en la ventana del juego:</strong> el atajo de grabación (<code>⇧⌘R</code> por defecto) era el mismo que el del elemento de menú <em>Reescanear biblioteca</em>, y macOS da prioridad a los atajos de menú. Al pulsarlo en una ventana de juego se iniciaba un reescaneo de la biblioteca en lugar de una grabación. Como un reescaneo completo borra todas las entradas antes de volver a escanear, y el escaneo omite carpetas mientras hay un juego en marcha, cada pulsación vaciaba la biblioteca. Ahora la ventana del juego gestiona los atajos multimedia (captura de pantalla, botón compartir, grabación) antes que el menú, y un reescaneo completo se rechaza mientras hay un juego en marcha.</li>
+            <li><strong>Los resultados de la grabación son visibles:</strong> una grabación terminada muestra un aviso <em>Grabación guardada</em> con <em>Mostrar en Finder</em>, y una grabación que no puede empezar muestra un aviso con el motivo. Antes, ambos casos eran silenciosos.</li>
+            <li><strong>Las ventanas de Ajustes e información del juego conservan su propia entrada de mando:</strong> ambas ventanas reclamaban la navegación con mando antes de que macOS las convirtiera en ventana activa, así que quedaban ligadas a la ventana de la biblioteca. La biblioteca gestionaba las pulsaciones y, durante la captura de mapeo de botones, pulsar A o B también navegaba por la biblioteca de detrás (por ejemplo, entraba en Modo TV). Ahora cada ventana se liga a su ventana real después de aparecer.</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Cambios detallados</h2>
+        <ul>
+            <li>Entrada — <code>FocusableMTKView</code> despacha los atajos multimedia (captura de pantalla, botón compartir, grabación) desde <code>performKeyEquivalent</code>, así la ventana del juego gana al atajo de menú; <code>keyDown</code> usa el mismo despachador.</li>
+            <li>Biblioteca — <code>ROMLibrary.fullRescan()</code> se niega a borrar la biblioteca mientras hay un juego en marcha.</li>
+            <li>Grabación — <code>StreamRecordingService</code> anuncia las grabaciones de usuario terminadas y comunica los fallos de inicio (creación de carpeta, creación del escritor, inicio del escritor) en lugar de fallar sin mensaje.</li>
+            <li>Ventana del juego — <code>StandaloneGameWindowController</code> muestra una píldora <em>Grabación guardada</em> y una entrada en el Centro de notificaciones con <em>Mostrar en Finder</em>, y una píldora de fallo con el motivo.</li>
+            <li>Controles — un nuevo modificador <code>gamepadNavWindowOwner(_:)</code> liga <code>ownedWindow</code> a la ventana de alojamiento real de la vista después de que la vista se adjunte; los contextos de navegación con mando de Ajustes e información del juego lo usan.</li>
+            <li>Localización — nuevas cadenas para los avisos de grabación en inglés, español, portugués y japonés.</li>
+            <li>Subida de la versión de marketing a 1.17.2 y del número de compilación a 45 en <code>project.yml</code>, ambos <code>Info.plist</code> y <code>docs/_config.yml</code>.</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/es/changelog/v1.17.1.html' | relative_url }}" class="release-prev">&larr; v1.17.1</a>
+        <a href="{{ '/es/changelog.html' | relative_url }}" class="release-all">Todas las versiones</a>
+    </nav>
+</div>
