@@ -406,7 +406,12 @@ struct TVModeView: View {
         ) { rom, focus in
             TVModeGameTile(
                 rom: rom,
-                focus: viewModel.page != .row1 ? focus : 0,
+                // Only the active row shows focus. On the detail page row 2
+                // sits behind the hero, blurred and dimmed, so its growth,
+                // halo and 20 Hz holo animation are invisible — and that holo
+                // tick re-rasterized the full-screen blur of this row 20 times
+                // a second. Same rule row 1 already uses.
+                focus: viewModel.page == .row2 ? focus : 0,
                 theme: viewModel.theme
             )
         }

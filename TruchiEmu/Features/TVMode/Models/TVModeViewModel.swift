@@ -301,13 +301,27 @@ final class TVModeViewModel: ObservableObject {
         let count = games.count
         let newIndex = (((selectedGameIndex + dir) % count) + count) % count
         guard newIndex != selectedGameIndex else { return }
+        if deferHero && page == .detail { detailHeroStale = true }
+
+        if page == .detail {
+            // The row sits behind the hero there, blurred by `18 * scale` and
+            // dimmed to 25%, so its slide is invisible. Animating it anyway
+            // re-rasterizes that full-screen blur on every frame of the slide
+            // (and keeps doing it across chained fast-move steps), which is
+            // what made stepping between games on the detail page feel slow.
+            // Leave `seq` untouched so `CurvedRowLayout` snaps to the new slot.
+            gameMove.delta = dir
+            selectedGameIndex = newIndex
+            if gamePending == 0 { syncStateForMainWindow() }
+            return
+        }
+
         let stepAnimation: Animation = linear ? .linear(duration: duration) : .easeOut(duration: duration)
         withAnimation(stepAnimation) {
             gameMove = RowMove(delta: dir, seq: gameMove.seq + 1, duration: duration, linear: linear)
             selectedGameIndex = newIndex
             if gamePending == 0 { syncStateForMainWindow() }
         }
-        if deferHero && page == .detail { detailHeroStale = true }
     }
 
     // MARK: - Fast-move stepper

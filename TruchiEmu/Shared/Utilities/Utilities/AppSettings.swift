@@ -62,8 +62,7 @@ final class AppSettingsCache {
         guard !inFlight() else { return }
         ensureLoaded()
         let data = try! JSONEncoder().encode(value)
-        cache[key] = data
-        saveAsync(key: key, value: data)
+        store(key: key, value: data)
     }
 
     func getString(_ key: String, defaultValue: String?) -> String? {
@@ -79,8 +78,7 @@ final class AppSettingsCache {
     func setString(_ key: String, value: String?) {
         guard !inFlight() else { return }
         let data = try! JSONEncoder().encode(value)
-        cache[key] = data
-        saveAsync(key: key, value: data)
+        store(key: key, value: data)
     }
 
     func getInt(_ key: String, defaultValue: Int) -> Int {
@@ -97,8 +95,7 @@ final class AppSettingsCache {
         guard !inFlight() else { return }
         ensureLoaded()
         let data = try! JSONEncoder().encode(value)
-        cache[key] = data
-        saveAsync(key: key, value: data)
+        store(key: key, value: data)
     }
 
     func getDouble(_ key: String, defaultValue: Double) -> Double {
@@ -115,8 +112,7 @@ final class AppSettingsCache {
         guard !inFlight() else { return }
         ensureLoaded()
         let data = try! JSONEncoder().encode(value)
-        cache[key] = data
-        saveAsync(key: key, value: data)
+        store(key: key, value: data)
     }
 
     func getData(_ key: String) -> Data? {
@@ -127,8 +123,7 @@ final class AppSettingsCache {
 
     func setData(_ key: String, value: Data) {
         guard !inFlight() else { return }
-        cache[key] = value
-        saveAsync(key: key, value: value)
+        store(key: key, value: value)
     }
 
     func remove(_ key: String) {
@@ -151,8 +146,7 @@ final class AppSettingsCache {
         guard !inFlight() else { return }
         ensureLoaded()
         let data = try! JSONEncoder().encode(value)
-        cache[key] = data
-        saveAsync(key: key, value: data)
+        store(key: key, value: data)
     }
 
     func getCodable<T: Codable>(_ key: String, type: T.Type) -> T? {
@@ -166,8 +160,18 @@ final class AppSettingsCache {
         guard !inFlight() else { return }
         ensureLoaded()
         let data = try! JSONEncoder().encode(value)
-        cache[key] = data
-        saveAsync(key: key, value: data)
+        store(key: key, value: data)
+    }
+
+    /// Caches `data` and persists it, skipping the SwiftData round-trip when
+    /// the cached value is unchanged. Each `saveAsync` runs a fetch + delete +
+    /// insert + `context.save()` on the main actor; TV mode rewrites the same
+    /// filter keys on every d-pad step, and those redundant saves land in the
+    /// middle of the row animation.
+    private func store(key: String, value: Data) {
+        guard cache[key] != value else { return }
+        cache[key] = value
+        saveAsync(key: key, value: value)
     }
     
     private func saveAsync(key: String, value: Data) {

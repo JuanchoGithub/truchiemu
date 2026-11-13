@@ -20,9 +20,31 @@ struct TVModeGameDetailView: View {
 
     @State private var boxart: NSImage?
     @State private var titleImage: NSImage?
+    /// Set when the game has a boxart path but the image could not be
+    /// decoded. Until then the hero holds the placeholder while the cover
+    /// decodes instead of showing the title screen (see `heroImage`).
+    @State private var boxartUnavailable: Bool = false
     @State private var snaps: [NSImage] = []
     @State private var selectedSnapIndex: Int = 0
     @State private var downloading: Bool = false
+
+    /// Seeds the hero art from the pre-generated thumbnail cache/disk, which
+    /// costs a `fileExists` probe and a small JPEG decode (1–3 ms for
+    /// `.large`). Doing it here — and not in `onAppear` — means the very first
+    /// frame already shows the cover, with no placeholder and no wrong-image
+    /// flash after a game change.
+    init(rom: ROM, theme: TVModeSettings.Theme, focused: Bool, mostRecentSaveSlot: SlotInfo? = nil) {
+        self.rom = rom
+        self.theme = theme
+        self.focused = focused
+        self.mostRecentSaveSlot = mostRecentSaveSlot
+        _boxart = State(initialValue: rom.hasBoxArt
+            ? ImageCache.shared.thumbnailSyncPregen(for: rom.boxArtLocalPath, preferredSize: .large)
+            : nil)
+        _titleImage = State(initialValue: !rom.hasBoxArt && rom.hasTitleScreen
+            ? ImageCache.shared.thumbnailSyncPregen(for: rom.titleScreenLocalPath, preferredSize: .large)
+            : nil)
+    }
 
     var body: some View {
         HStack(spacing: 32 * scale) {
@@ -44,11 +66,20 @@ struct TVModeGameDetailView: View {
         SystemPreferences.shared.boxType(for: rom.systemID ?? "")
     }
 
+    /// The image shown as the hero. The boxart wins whenever the game has one,
+    /// even while it is still decoding. Falling back to the title screen on a
+    /// cache miss showed a screenshot first and swapped it for the cover a beat
+    /// later — the "flash" seen when stepping between games.
+    private var heroImage: NSImage? {
+        if rom.hasBoxArt, !boxartUnavailable { return boxart }
+        return titleImage
+    }
+
     /// Aspect ratio of the hero art. Falls back to the system's `BoxType` while
     /// the image is still loading so the container never flashes a wrong-ratio
     /// frame.
     private var heroAspect: CGFloat {
-        if let img = boxart ?? titleImage, img.size.width > 0, img.size.height > 0 {
+        if let img = heroImage, img.size.width > 0, img.size.height > 0 {
             return img.size.width / img.size.height
         }
         return boxType.aspectRatio
@@ -79,7 +110,7 @@ struct TVModeGameDetailView: View {
                 let radius = heroCornerRadius(for: size)
                 HStack(spacing: 0) {
                     Spacer(minLength: 0)
-                    if let img = boxart ?? titleImage {
+                    if let img = heroImage {
                         // Auto holo on the selected game's hero boxart — always on,
                         // using the user's weighted random variant, with the
                         // wizard-style self-driven light + card motion. No border
@@ -271,6 +302,7 @@ struct TVModeGameDetailView: View {
     private func resetArt() {
         boxart = nil
         titleImage = nil
+        boxartUnavailable = false
         snaps = []
         selectedSnapIndex = 0
         downloading = false
@@ -321,11 +353,24 @@ struct TVModeGameDetailView: View {
 
     /// Decodes whatever the memory cache did not have, off the main thread.
     private func fillMissingArt(_ missingSnaps: [URL]) {
-        if rom.hasBoxArt, boxart == nil {
+        // Keyed on the exact `.large` cache entry, not on `boxart`: the
+        // synchronous first-frame pass may have settled for a smaller cached
+        // size (a row-2 tile thumb), and that must still be replaced by the
+        // full-size cover.
+        if rom.hasBoxArt,
+           ImageCache.shared.thumbnailCachedOrPregen(for: rom.boxArtLocalPath, preferredSize: .large) == nil {
             let path = rom.boxArtLocalPath
             Task {
-                if let img = await ImageCache.shared.thumbnail(for: path, preferredSize: .large) {
-                    await MainActor.run { if boxart == nil { boxart = img } }
+                let img = await ImageCache.shared.thumbnail(for: path, preferredSize: .large)
+                await MainActor.run {
+                    if let img {
+                        boxart = img
+                    } else {
+                        // Decode failed. Only now is the title screen a valid
+                        // substitute — and only if there is no smaller cached
+                        // cover left to show.
+                        if boxart == nil { boxartUnavailable = true }
+                    }
                 }
             }
         }

@@ -200,6 +200,33 @@ actor ImageCache {
         return nil
     }
 
+    /// Synchronous "cache or pre-generated thumb" load for callers that must
+    /// paint art on the very first frame (the TV-mode hero cover). Same as
+    /// `thumbnailSync`, minus its last-resort decode of the full source image:
+    /// only the in-memory thumbnail cache and the pre-generated `te_thumbs`
+    /// JPEG are used, so the cost is one `fileExists` probe plus a small JPEG
+    /// decode (measured 1–3 ms for `.large` once ImageIO is warm). A missing
+    /// pre-gen returns `nil` cheaply and the caller stays on the async path.
+    ///
+    /// Order: exact-size memory hit, then the pre-gen file at the requested
+    /// size (so a large hero never shows a 400 px grid thumb stretched), then
+    /// any other cached size, which is still better than a placeholder.
+    nonisolated func thumbnailSyncPregen(for url: URL, preferredSize: BoxArtThumbnailSize) -> NSImage? {
+        let sizeKey = "thumb:\(preferredSize.rawValue):\(url.path)" as NSString
+        if let cached = thumbnailCache.object(forKey: sizeKey) {
+            return cached
+        }
+        let thumbURL = BoxArtThumbnailService.thumbnailURL(for: url, size: preferredSize)
+        if FileManager.default.fileExists(atPath: thumbURL.path),
+           let source = CGImageSourceCreateWithURL(thumbURL as CFURL, nil),
+           let cgImage = CGImageSourceCreateImageAtIndex(source, 0, [kCGImageSourceShouldCacheImmediately: true] as CFDictionary) {
+            let image = NSImage(cgImage: cgImage, size: .zero)
+            thumbnailCache.setObject(image, forKey: sizeKey, cost: cost(of: image))
+            return image
+        }
+        return thumbnailCachedOrPregen(for: url, preferredSize: preferredSize)
+    }
+
     func removeThumbnail(for url: URL) {
         let key = thumbKey(url)
         thumbnailCache.removeObject(forKey: key as NSString)
