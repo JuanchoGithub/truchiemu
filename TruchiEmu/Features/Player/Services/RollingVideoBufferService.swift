@@ -324,18 +324,12 @@ final class RollingVideoBufferService: ObservableObject {
             throw NSError(domain: "RollingBuffer", code: 2)
         }
         try? FileManager.default.removeItem(at: outputURL)
-        session.outputURL = outputURL
-        session.outputFileType = .mp4
         session.timeRange = exportRange
         session.shouldOptimizeForNetworkUse = false
 
-        await withCheckedContinuation { (cont: CheckedContinuation<Void, Never>) in
-            session.exportAsynchronously {
-                cont.resume()
-            }
-        }
-
-        if session.status == .failed || session.status == .cancelled {
+        do {
+            try await session.export(to: outputURL, as: .mp4)
+        } catch {
             // Passthrough can fail to satisfy the timeRange on fragmented
             // inputs that cannot be re-streamed with a non-zero timeRange.
             // Fall back to re-encoding via a codec-aware highest-quality
@@ -346,11 +340,6 @@ final class RollingVideoBufferService: ObservableObject {
                 exportRange: exportRange,
                 outputURL: outputURL
             )
-            return
-        }
-
-        if session.status != .completed {
-            throw session.error ?? NSError(domain: "RollingBuffer", code: Int(session.status.rawValue))
         }
     }
 
@@ -375,18 +364,9 @@ final class RollingVideoBufferService: ObservableObject {
         guard let session = AVAssetExportSession(asset: composition, presetName: preset) else {
             throw NSError(domain: "RollingBuffer", code: 2)
         }
-        session.outputURL = outputURL
-        session.outputFileType = fileType
         session.timeRange = exportRange
         session.shouldOptimizeForNetworkUse = false
-        await withCheckedContinuation { (cont: CheckedContinuation<Void, Never>) in
-            session.exportAsynchronously {
-                cont.resume()
-            }
-        }
-        if session.status != .completed {
-            throw session.error ?? NSError(domain: "RollingBuffer", code: Int(session.status.rawValue))
-        }
+        try await session.export(to: outputURL, as: fileType)
     }
 
     /// Asks StreamRecordingService to finalize its current recording, awaiting the file flush.
@@ -469,29 +449,18 @@ final class RollingVideoBufferService: ObservableObject {
             throw NSError(domain: "RollingBuffer", code: 2)
         }
         try? FileManager.default.removeItem(at: outputURL)
-        session.outputURL = outputURL
-        session.outputFileType = .mp4
         session.timeRange = exportRange
         session.shouldOptimizeForNetworkUse = false
 
-        await withCheckedContinuation { (cont: CheckedContinuation<Void, Never>) in
-            session.exportAsynchronously {
-                cont.resume()
-            }
-        }
-
-        if session.status == .failed || session.status == .cancelled {
+        do {
+            try await session.export(to: outputURL, as: .mp4)
+        } catch {
             try? FileManager.default.removeItem(at: outputURL)
             try await Self.reencodeWithTrim(
                 composition: composition,
                 exportRange: exportRange,
                 outputURL: outputURL
             )
-            return
-        }
-
-        if session.status != .completed {
-            throw session.error ?? NSError(domain: "RollingBuffer", code: Int(session.status.rawValue))
         }
     }
 
