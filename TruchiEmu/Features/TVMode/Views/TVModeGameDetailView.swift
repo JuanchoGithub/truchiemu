@@ -27,6 +27,9 @@ struct TVModeGameDetailView: View {
     @State private var snaps: [NSImage] = []
     @State private var selectedSnapIndex: Int = 0
     @State private var downloading: Bool = false
+    /// Pending title-screen / screenshot download for this game. Cancelled as
+    /// soon as the ROM changes, so browsing never waits for it.
+    @State private var artDownloadTask: Task<Void, Never>?
 
     /// Seeds the hero art from the pre-generated thumbnail cache/disk, which
     /// costs a `fileExists` probe and a small JPEG decode (1–3 ms for
@@ -57,6 +60,7 @@ struct TVModeGameDetailView: View {
         .padding(40 * scale)
         .onAppear { loadArt() }
         .onChange(of: rom.id) { _, _ in resetArt(); loadArt() }
+        .onDisappear { artDownloadTask?.cancel() }
     }
 
     /// The game's declared boxart layout (vertical / box / landscape). Drives
@@ -300,6 +304,8 @@ struct TVModeGameDetailView: View {
     // MARK: - Art
 
     private func resetArt() {
+        artDownloadTask?.cancel()
+        artDownloadTask = nil
         boxart = nil
         titleImage = nil
         boxartUnavailable = false
@@ -311,16 +317,37 @@ struct TVModeGameDetailView: View {
     private func loadArt() {
         downloading = true
         fillMissingArt(loadArtFromCache())
-        Task {
-            async let titleTask = BoxArtService.shared.downloadTitleScreen(for: rom)
-            async let snapTask = BoxArtService.shared.downloadScreenshots(for: rom)
-            _ = await (titleTask, snapTask)
-            await MainActor.run {
-                // Reload after the async fetch since the ROM's URL paths may now
-                // be populated on disk.
-                fillMissingArt(loadArtFromCache())
-                downloading = false
-            }
+        scheduleArtDownload()
+    }
+
+    /// Fetches the title screen / screenshots for a game that has none, but
+    /// never on the navigation path:
+    ///
+    /// - Only games that actually lack art are looked up. A game whose art is
+    ///   already on disk never reaches the lookup.
+    /// - The fetch waits for the navigation to be quiet for a moment, so
+    ///   stepping through games does not start one per game.
+    /// - It goes through `downloadTitleAndScreenshots`, whose on-disk check and
+    ///   negative-result cache (7 days for "the CDN does not have it", 6 h for
+    ///   a network failure) keep a game from being looked up again on every
+    ///   visit. The lookup hashes the ROM and lists CDN manifests; repeating
+    ///   that inline per visit is what made browsing games without art slow.
+    /// - The task is cancelled when the ROM changes or the view goes away.
+    private func scheduleArtDownload() {
+        artDownloadTask?.cancel()
+        guard !rom.hasTitleScreen || rom.screenshotPaths.isEmpty else {
+            downloading = false
+            return
+        }
+        let rom = self.rom
+        artDownloadTask = Task { @MainActor in
+            try? await Task.sleep(nanoseconds: 400_000_000)
+            guard !Task.isCancelled else { return }
+            await BoxArtService.shared.downloadTitleAndScreenshots(for: rom, library: library)
+            guard !Task.isCancelled else { return }
+            // Reload after the fetch since the art may now be on disk.
+            fillMissingArt(loadArtFromCache())
+            downloading = false
         }
     }
 
