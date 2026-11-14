@@ -1199,7 +1199,30 @@ class ROMLibrary: ObservableObject {
             newROMsToAdd = processNewROMs(scannedROMs, existingROMPaths: existingPaths)
         }
 
-        let deletedROMs = existingROMs.filter { !scannedPaths.contains($0.path.path) }
+        // Rows for archive members are checked against the members the archive
+        // still reports, not just against the outer file. Otherwise a row whose
+        // inner file stopped being a ROM (e.g. an extension removed from
+        // SystemDatabase.json) outlives its archive's refresh forever. Member
+        // listing is limited to archives that actually have member rows, and it
+        // never prunes an archive that a whole-archive system owns.
+        let archivesWithMemberRows = Set(existingROMs.compactMap { rom -> String? in
+            guard rom.innerROMPath != nil else { return nil }
+            if let systemID = rom.systemID, ArchiveExtractor.isArchiveAwareSystem(systemID) { return nil }
+            return rom.path.path
+        })
+        var scannedMemberKeys: Set<String> = []
+        for url in romFileURLs where archivesWithMemberRows.contains(url.path) {
+            for inner in ROMIdentifier.listInnerROMs(url: url) {
+                scannedMemberKeys.insert(url.path + "\u{0}" + inner.relativePath)
+            }
+        }
+
+        let deletedROMs = existingROMs.filter { rom in
+            guard let inner = rom.innerROMPath else {
+                return !scannedPaths.contains(rom.path.path)
+            }
+            return !scannedMemberKeys.contains(rom.path.path + "\u{0}" + inner)
+        }
 
         if !newROMsToAdd.isEmpty {
             withAnimation(.easeInOut(duration: 0.3)) { self.roms.append(contentsOf: newROMsToAdd); self.roms.sort { $0.displayName < $1.displayName } }

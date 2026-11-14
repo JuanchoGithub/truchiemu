@@ -388,10 +388,34 @@ class SystemDatabase {
     }()
 
     private static let bundleFingerprintKey = "systemDBBundleFingerprint"
+    private static let discoveredExtensionsKey = "systemDBDiscoveredExtensions"
 
     private static func fingerprint(_ data: Data) -> String {
         let sum = data.reduce(UInt64(0)) { $0 &+ UInt64($1) }
         return "\(data.count).\(sum)"
+    }
+
+    /// Extensions that libretro cores reported for systems that already exist in
+    /// the bundle. Kept apart from the cache so the bundled JSON stays the source
+    /// of truth for extension lists: an extension removed from the bundle must
+    /// disappear at runtime instead of surviving in the cache forever.
+    static func discoveredExtensions() -> [String: [String]] {
+        guard let data = UserDefaults.standard.data(forKey: discoveredExtensionsKey),
+              let decoded = try? JSONDecoder().decode([String: [String]].self, from: data) else {
+            return [:]
+        }
+        return decoded
+    }
+
+    static func recordDiscoveredExtensions(_ additions: [String: [String]]) {
+        guard !additions.isEmpty else { return }
+        var stored = discoveredExtensions()
+        for (id, exts) in additions where !exts.isEmpty {
+            stored[id] = Array(Set(stored[id] ?? []).union(exts)).sorted()
+        }
+        if let data = try? JSONEncoder().encode(stored) {
+            UserDefaults.standard.set(data, forKey: discoveredExtensionsKey)
+        }
     }
 
     static func _loadSystems() -> [SystemInfo] {
@@ -451,6 +475,7 @@ class SystemDatabase {
         // 3. MERGE THEM
         var finalSystems: [SystemInfo] = []
         var processedIDs = Set<String>()
+        let discoveredExtensions = Self.discoveredExtensions()
 
         // Phase A: Use Bundled data as the foundation
         for (id, bundleSys) in bundledSystems {
@@ -460,8 +485,10 @@ class SystemDatabase {
             // MERGE: Take the important bundled data, but keep cached dynamic changes
             var mergedSys = bundleSys
 
-            // Union the extensions (Bundle + Libretro discoveries)
-            let combinedExtensions = Set(bundleSys.extensions).union(cacheSys.extensions)
+            // Extensions: bundle is authoritative, plus libretro discoveries
+            // recorded separately. Cached extensions are deliberately NOT merged
+            // here, so removing one from the bundle actually removes it.
+            let combinedExtensions = Set(bundleSys.extensions).union(discoveredExtensions[id] ?? [])
             mergedSys.extensions = Array(combinedExtensions).sorted()
 
             // Preserve user states from cache
@@ -1110,6 +1137,7 @@ class LibretroInfoManager: ObservableObject {
                     }
                 }
             }
+            var discoveredExtAdds: [String: [String]] = [:]
             for i in 0..<currentSystems.count {
                 guard let freshExts = singleSystemExtAdds[currentSystems[i].id] else { continue }
                 let safeExts = freshExts.filter { extensionOwner[$0] == nil || extensionOwner[$0] == currentSystems[i].id }
@@ -1117,7 +1145,12 @@ class LibretroInfoManager: ObservableObject {
                 let combined = Set(currentSystems[i].extensions.map { $0.lowercased() }).union(safeExts)
                 currentSystems[i].extensions = Array(combined).sorted()
                 for ext in safeExts { extensionOwner[ext] = currentSystems[i].id }
+                discoveredExtAdds[currentSystems[i].id] = Array(safeExts)
             }
+
+            // Persist the discoveries separately; the cache no longer contributes
+            // extensions, so otherwise they would be lost on the next launch.
+            SystemDatabase.recordDiscoveredExtensions(discoveredExtAdds)
             
             SystemDatabase.saveSystems(currentSystems)
             LibretroInfoManager.saveMappings() // The fix from the previous step!
