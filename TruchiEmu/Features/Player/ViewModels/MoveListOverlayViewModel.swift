@@ -32,6 +32,14 @@ class MoveListOverlayViewModel: ObservableObject {
     private let moveForest = MoveForest()
     private var lastForestCompleted: [String] = []
 
+    // The resolved move list and its forest only change when the character,
+    // game, button labels, or stored move metadata change. Rebuilding them on
+    // every controller event (which is what the overlay used to do) costs
+    // several milliseconds per event and stalls the render loop.
+    private var cachedMoves: [ResolvedMove] = []
+    private var cachedMovesKey: String = ""
+    private var contentRevision: Int = 0
+
     private var maxMovesToShow: Int { AppSettings.getInt("moveListMaxMoves", defaultValue: 5) }
     private var moveSlotOrder: [String] = []
 
@@ -175,6 +183,7 @@ class MoveListOverlayViewModel: ObservableObject {
     }
 
     private func computeButtonKeyLabels(systemID: String) {
+        defer { contentRevision &+= 1 }
         guard let game = moveListService.currentGameData else {
             buttonKeyLabels = [:]
             return
@@ -212,6 +221,7 @@ class MoveListOverlayViewModel: ObservableObject {
         guard let gameName = gameName else { return }
         let charName = isCommonMoveId(moveId) ? "__common__" : (selectedCharacterName ?? "")
         storageService.toggleFavorite(gameName: gameName, characterName: charName, moveId: moveId)
+        invalidateMoveCache()
         updateFilteredMoves(for: inputStateTracker.inputSequence)
     }
 
@@ -219,6 +229,7 @@ class MoveListOverlayViewModel: ObservableObject {
         guard let gameName = gameName else { return }
         let charName = isCommonMoveId(moveId) ? "__common__" : (selectedCharacterName ?? "")
         storageService.toggleHidden(gameName: gameName, characterName: charName, moveId: moveId)
+        invalidateMoveCache()
         updateFilteredMoves(for: inputStateTracker.inputSequence)
     }
 
@@ -266,6 +277,7 @@ class MoveListOverlayViewModel: ObservableObject {
     func toggleSection(characterName: String, section: String) {
         guard let gName = gameName else { return }
         storageService.toggleSectionHidden(gameName: gName, characterName: characterName, section: section)
+        invalidateMoveCache()
         objectWillChange.send()
         if moveListService.selectedCharacter?.name == characterName {
             updateFilteredMoves(for: inputStateTracker.inputSequence)
@@ -275,6 +287,7 @@ class MoveListOverlayViewModel: ObservableObject {
     func enableAllSections(characterName: String, sections: [String]) {
         guard let gName = gameName else { return }
         storageService.setAllSections(gameName: gName, characterName: characterName, sections: sections, hidden: false)
+        invalidateMoveCache()
         objectWillChange.send()
         if moveListService.selectedCharacter?.name == characterName {
             updateFilteredMoves(for: inputStateTracker.inputSequence)
@@ -284,6 +297,7 @@ class MoveListOverlayViewModel: ObservableObject {
     func disableAllSections(characterName: String, sections: [String]) {
         guard let gName = gameName else { return }
         storageService.setAllSections(gameName: gName, characterName: characterName, sections: sections, hidden: true)
+        invalidateMoveCache()
         objectWillChange.send()
         if moveListService.selectedCharacter?.name == characterName {
             updateFilteredMoves(for: inputStateTracker.inputSequence)
@@ -329,14 +343,28 @@ class MoveListOverlayViewModel: ObservableObject {
         !inputSteps.isEmpty
     }
 
+    /// Drops the memoized resolved move list and forest so the next update
+    /// rebuilds them. Call this after stored move metadata changes.
+    private func invalidateMoveCache() {
+        contentRevision &+= 1
+    }
+
     private func updateFilteredMoves(for sequence: [InputSequenceStep]) {
         guard let character = moveListService.selectedCharacter else {
-            filteredMoves = []
+            if !filteredMoves.isEmpty {
+                filteredMoves = []
+            }
             return
         }
 
-        showMoveNames = AppSettings.getBool("moveListShowMoveNames", defaultValue: false)
-        computeButtonKeyLabels(systemID: inputStateTracker.systemID)
+        // Nothing displays the move list while both panels are hidden. Keep the
+        // input pipeline cheap after the overlay is dismissed.
+        guard isOverlayVisible || needsCharacterSelection else { return }
+
+        let shouldShowNames = AppSettings.getBool("moveListShowMoveNames", defaultValue: false)
+        if showMoveNames != shouldShowNames {
+            showMoveNames = shouldShowNames
+        }
 
         let rawDirections = inputStateTracker.rawDirectionHistory
         let motions = inputStateTracker.detectedMotions
@@ -412,10 +440,18 @@ class MoveListOverlayViewModel: ObservableObject {
                 }
             }
         }
-        inputSteps = steps
-        inputDirections = directions
-        inputDirectionCharges = directionCharges
-        inputButtons = buttons
+        if inputSteps != steps {
+            inputSteps = steps
+        }
+        if inputDirections != directions {
+            inputDirections = directions
+        }
+        if inputDirectionCharges != directionCharges {
+            inputDirectionCharges = directionCharges
+        }
+        if inputButtons != buttons {
+            inputButtons = buttons
+        }
 
         if lastSequenceLength >= 2 && sequence.isEmpty {
             recordAttempt()
@@ -426,8 +462,13 @@ class MoveListOverlayViewModel: ObservableObject {
             directionAttemptCounts[dir, default: 0] += 1
         }
 
-        var allMoves = collectAllMoves(for: character)
-        moveForest.build(with: allMoves)
+        let cacheKey = "\(gameName ?? "")|\(character.id)|\(contentRevision)"
+        if cacheKey != cachedMovesKey {
+            cachedMoves = collectAllMoves(for: character)
+            moveForest.build(with: cachedMoves)
+            cachedMovesKey = cacheKey
+        }
+        var allMoves = cachedMoves
         let favoriteIds = Set(storageService.getFavorites(gameName: gameName ?? "", characterName: character.name).map(\.moveId))
 
         if directions.isEmpty && buttons.isEmpty {
@@ -471,8 +512,12 @@ class MoveListOverlayViewModel: ObservableObject {
 
         let dirMatched = computeMatchedDirectionCount(directions: directions)
         let btnMatched = computeMatchedButtonCount(buttons: buttons)
-        matchedDirectionCount = dirMatched
-        matchedButtonCount = btnMatched
+        if matchedDirectionCount != dirMatched {
+            matchedDirectionCount = dirMatched
+        }
+        if matchedButtonCount != btnMatched {
+            matchedButtonCount = btnMatched
+        }
 
         let topCandidates = Array(sorted.prefix(maxMovesToShow))
         let topIds = Set(topCandidates.map(\.id))
@@ -625,14 +670,6 @@ class MoveListOverlayViewModel: ObservableObject {
                     }
                 }
                 if match { return true }
-                else {
-                    let suffixStart2 = longSteps.count - shortSteps.count
-                    for i in 0..<shortSteps.count {
-                        let s = shortSteps[i]
-                        let l = longSteps[suffixStart2 + i]
-                        print("[suffixFilter]   step[\(i)] short: dir=\(s.direction ?? -1) btns=\(s.buttons)  long: dir=\(l.direction ?? -1) btns=\(l.buttons)")
-                    }
-                }
             }
         }
         return false
@@ -643,12 +680,9 @@ class MoveListOverlayViewModel: ObservableObject {
         for short in moves {
             for long in moves where long.id != short.id {
                 let longMatched = inProgress[long.id]?.matched ?? 0
-                let suffixResult = Self.isSuffixContained(short, of: long)
-                print("[suffixFilter] short='\(short.name)'(\(short.totalSteps)steps) long='\(long.name)'(\(long.totalSteps)steps) longMatched=\(longMatched) suffixResult=\(suffixResult)")
                 guard long.totalSteps > short.totalSteps,
                       longMatched > 0,
-                      suffixResult else { continue }
-                print("[suffixFilter] HIDING '\(short.name)' — suffix-contained in '\(long.name)'")
+                      Self.isSuffixContained(short, of: long) else { continue }
                 hidden.insert(short.id)
                 break
             }

@@ -21,6 +21,12 @@ class InputStateTracker: ObservableObject {
     private(set) var rawDirectionHistory: [FightDataDirection] = []
     @Published private(set) var detectedMotions: [DetectedMotion] = []
 
+    // Motion detection is recomputed from `rawDirectionHistory`. Cache the
+    // history that produced the last published value so unchanged input does
+    // not republish `detectedMotions` (which drives the expensive move-list
+    // re-evaluation) on every controller event.
+    private var lastDetectedHistory: [FightDataDirection] = []
+
     private var inputTimeout: TimeInterval { AppSettings.getDouble("moveListInputTimeout", defaultValue: 1.0) }
     private var chargeThreshold: TimeInterval { AppSettings.getDouble("moveListChargeThreshold", defaultValue: 0.8) }
     private var diagonalMergeWindow: TimeInterval { AppSettings.getDouble("moveListDiagonalMerge", defaultValue: 0.083) }
@@ -69,7 +75,9 @@ class InputStateTracker: ObservableObject {
             }
         }
 
-        activeButtons = pressedButtons
+        if activeButtons != pressedButtons {
+            activeButtons = pressedButtons
+        }
         previousInputState = newState
 
         let currentDirection = FightDataDirection.fromRetroButtons(held: pressedButtons)
@@ -93,7 +101,9 @@ class InputStateTracker: ObservableObject {
             residualDirectionTimer = nil
             pendingResidualDirection = nil
         }
-        lastDirection = currentDirection
+        if lastDirection != currentDirection {
+            lastDirection = currentDirection
+        }
         previousDirection = currentDirection
 
         var stepButtons = Set<String>()
@@ -208,6 +218,7 @@ class InputStateTracker: ObservableObject {
             self?.chargeCheckTask = nil
             self?.lastDirectionStepTime = nil
             self?.rawDirectionHistory.removeAll()
+            self?.lastDetectedHistory.removeAll()
             self?.detectedMotions = []
         }
     }
@@ -271,6 +282,7 @@ class InputStateTracker: ObservableObject {
         chargeCheckTask = nil
         lastDirectionStepTime = nil
         rawDirectionHistory.removeAll()
+        lastDetectedHistory.removeAll()
         detectedMotions = []
     }
 
@@ -286,6 +298,8 @@ class InputStateTracker: ObservableObject {
 
     private func updateDetectedMotions() {
         let raw = rawDirectionHistory
+        guard raw != lastDetectedHistory else { return }
+        lastDetectedHistory = raw
         detectedMotions = MotionDetector.detect(in: raw)
     }
 }
