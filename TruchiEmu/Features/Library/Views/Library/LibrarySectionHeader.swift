@@ -16,50 +16,120 @@ struct LibrarySectionHeaderView: View {
     let onToggle: () -> Void
 
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var isHovered = false
 
     var body: some View {
         Button(action: onToggle) {
             HStack(spacing: 10) {
-                Image(systemName: isCollapsed ? "chevron.right" : "chevron.down")
-                    .font(.system(size: 11, weight: .bold))
-                    .foregroundStyle(AppColors.brandAccent)
-                    .frame(width: 12)
+                iconPlate
 
-                iconView
-                    .frame(width: 28, height: 28)
+                VStack(alignment: .leading, spacing: 1) {
+                    Text(verbatim: title)
+                        .font(.system(size: 15, weight: .bold, design: .rounded))
+                        .foregroundStyle(AppColors.textPrimary(colorScheme))
+                        .lineLimit(1)
 
-                Text(verbatim: title)
-                    .font(.system(size: 16, weight: .bold, design: .rounded))
-                    .textCase(.uppercase)
-                    .tracking(0.8)
-                    .foregroundStyle(AppColors.textPrimary(colorScheme))
-
-                if let year {
-                    Text(verbatim: String(year))
-                        .font(.system(size: 12, weight: .semibold, design: .rounded))
-                        .monospacedDigit()
-                        .foregroundStyle(AppColors.textSecondary(colorScheme))
+                    if let subtitle {
+                        Text(verbatim: subtitle)
+                            .font(.system(size: 10, weight: .medium))
+                            .foregroundStyle(AppColors.textTertiary(colorScheme))
+                            .lineLimit(1)
+                    }
                 }
 
-                Spacer(minLength: 12)
+                Spacer(minLength: 8)
 
-                Text(verbatim: countLabel)
-                    .font(.system(size: 12, weight: .semibold, design: .rounded))
-                    .monospacedDigit()
-                    .foregroundStyle(AppColors.textSecondary(colorScheme))
-                    .padding(.horizontal, 9)
-                    .padding(.vertical, 3)
-                    .background(AppColors.cardBackgroundSubtle(colorScheme), in: Capsule())
-                    .overlay(Capsule().strokeBorder(AppColors.cardBorder(colorScheme), lineWidth: 1))
+                countBlock
+
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 10, weight: .bold))
+                    .foregroundStyle(isHovered ? AppColors.brandAccent : AppColors.textTertiary(colorScheme))
+                    .rotationEffect(.degrees(isCollapsed ? 0 : 90))
+                    .frame(width: 14)
+                    .animation(reduceMotion ? nil : AppMotion.micro, value: isCollapsed)
             }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 8)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 6)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(AppColors.cardBackground(colorScheme), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
-            .overlay(RoundedRectangle(cornerRadius: 10, style: .continuous).strokeBorder(AppColors.cardBorder(colorScheme), lineWidth: 1))
-            .contentShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+            .background(
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .fill(AppColors.cardBackground(colorScheme))
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 12, style: .continuous)
+                            .fill(AppColors.brandAccent.opacity(isHovered ? 0.06 : 0))
+                    }
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 12, style: .continuous)
+                            .strokeBorder(
+                                isHovered ? AppColors.brandAccent.opacity(0.28) : AppColors.cardBorder(colorScheme),
+                                lineWidth: 1
+                            )
+                    }
+            )
+            .shadow(color: .black.opacity(isHovered ? 0.10 : 0), radius: 8, y: 3)
+            .contentShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
         }
         .buttonStyle(.plain)
+        .onHover { isHovered = $0 }
+        .animation(reduceMotion ? nil : AppMotion.micro, value: isHovered)
+        .accessibilityLabel(Text(verbatim: title))
+        .accessibilityValue(Text(verbatim: countLabel))
+    }
+
+    /// Gray descriptor under the title: manufacturer and/or launch year, the
+    /// same role the subtitle plays in a numbered list row.
+    private var subtitle: String? {
+        var parts: [String] = []
+        if let systemID,
+           let system = SystemDatabase.displaySystem(forInternalID: systemID) {
+            let maker = system.manufacturer.trimmingCharacters(in: .whitespacesAndNewlines)
+            if !maker.isEmpty, maker != "Unknown", maker != "Various" {
+                parts.append(maker)
+            }
+        }
+        if let year {
+            parts.append(String(year))
+        }
+        return parts.isEmpty ? nil : parts.joined(separator: " · ")
+    }
+
+    private var iconPlate: some View {
+        RoundedRectangle(cornerRadius: 9, style: .continuous)
+            .fill(AppColors.brandAccent.opacity(colorScheme == .dark ? 0.16 : 0.10))
+            .overlay {
+                RoundedRectangle(cornerRadius: 9, style: .continuous)
+                    .strokeBorder(AppColors.brandAccent.opacity(0.18), lineWidth: 1)
+            }
+            .overlay {
+                iconView
+                    .frame(width: 20, height: 20)
+            }
+            .frame(width: 30, height: 30)
+    }
+
+    private var countBlock: some View {
+        VStack(alignment: .trailing, spacing: 0) {
+            Text(verbatim: count.formatted())
+                .font(.system(size: 13, weight: .bold, design: .rounded))
+                .monospacedDigit()
+                .foregroundStyle(AppColors.textPrimary(colorScheme))
+            Text(verbatim: unitLabel.uppercased())
+                .font(.system(size: 7, weight: .bold, design: .rounded))
+                .tracking(0.5)
+                .foregroundStyle(AppColors.textTertiary(colorScheme))
+        }
+        .padding(.horizontal, 9)
+        .padding(.vertical, 3)
+        .background(
+            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                .fill(AppColors.brandAccent.opacity(colorScheme == .dark ? 0.14 : 0.09))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                .strokeBorder(AppColors.brandAccent.opacity(0.16), lineWidth: 1)
+        )
+        .fixedSize()
     }
 
     @ViewBuilder
@@ -72,9 +142,13 @@ struct LibrarySectionHeaderView: View {
                 .aspectRatio(contentMode: .fit)
         } else {
             Image(systemName: "gamecontroller")
-                .font(.system(size: 15, weight: .medium))
+                .font(.system(size: 14, weight: .medium))
                 .foregroundStyle(AppColors.brandAccent)
         }
+    }
+
+    private var unitLabel: String {
+        LocalizationManager.shared.localized(count == 1 ? "shell.unit.games.one" : "shell.unit.games")
     }
 
     private var countLabel: String {

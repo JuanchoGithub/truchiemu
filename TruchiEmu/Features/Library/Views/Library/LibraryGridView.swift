@@ -2066,19 +2066,51 @@ struct LibraryGridView: View {
         }
     }
 
-    /// Live counts for the hero band. One O(n) pass over the visible games;
-    /// called from the view body, so it must stay allocation-light.
-    private var heroStats: (games: Int, systems: Int, withArt: Int, favorites: Int) {
+    /// Live counts and the recent shelf for the hero band. One O(n) pass over
+    /// the visible games; called from the view body, so it must stay
+    /// allocation-light. The shelf keeps only the newest few played games
+    /// (insertion into a 4-slot array), never sorting the whole collection.
+    private var heroStats: (games: Int, systems: Int, withArt: Int, favorites: Int, recent: [ROM]) {
         let roms = viewModel.displayedROMs
         var systemIDs = Set<String>()
         var withArt = 0
         var favorites = 0
+        var recent: [ROM] = []
         for rom in roms {
             if let systemID = rom.systemID { systemIDs.insert(systemID) }
             if rom.hasBoxArt { withArt += 1 }
             if rom.isFavorite { favorites += 1 }
+            if let played = rom.lastPlayed {
+                let slot = recent.firstIndex { ($0.lastPlayed ?? .distantPast) < played } ?? recent.endIndex
+                recent.insert(rom, at: slot)
+                if recent.count > 4 { recent.removeLast() }
+            }
         }
-        return (roms.count, systemIDs.count, withArt, favorites)
+        if recent.isEmpty {
+            // Nothing played yet: lean on the first art in the collection so
+            // the hero still shows the shelf is where games will land.
+            recent = Array(roms.lazy.filter { $0.hasBoxArt }.prefix(4))
+        }
+        return (roms.count, systemIDs.count, withArt, favorites, recent)
+    }
+
+    /// Tag above the hero title. Systems lead with the manufacturer (a real
+    /// descriptor), collections with what kind of collection they are.
+    private var heroEyebrow: String {
+        if let system = currentSystem {
+            let maker = system.manufacturer.trimmingCharacters(in: .whitespacesAndNewlines)
+            if !maker.isEmpty, maker != "Unknown", maker != "Various" { return maker }
+            return loc.localized("shell.eyebrow.system")
+        }
+        switch filter {
+        case .all: return loc.localized("shell.eyebrow.library")
+        case .favorites: return loc.localized("shell.eyebrow.collection")
+        case .recent, .lastAdded: return loc.localized("shell.eyebrow.recent")
+        case .category: return loc.localized("shell.eyebrow.category")
+        case .retroAchievements: return loc.localized("shell.eyebrow.achievements")
+        case .hidden, .mameNonGames: return loc.localized("shell.eyebrow.archive")
+        case .system: return loc.localized("shell.eyebrow.system")
+        }
     }
 
     private var libraryHeader: some View {
@@ -2088,10 +2120,13 @@ struct LibraryGridView: View {
                 title: heroTitle,
                 system: currentSystem,
                 icon: heroIcon,
+                eyebrow: heroEyebrow,
                 games: stats.games,
                 systems: stats.systems,
                 withArt: stats.withArt,
-                favorites: stats.favorites
+                favorites: stats.favorites,
+                recent: stats.recent,
+                onLaunch: { rom in Task { await launchGame(rom) } }
             )
 
             filterDeck

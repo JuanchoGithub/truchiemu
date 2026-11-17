@@ -201,68 +201,281 @@ struct LibraryQuickAccessTile: View {
     }
 }
 
-// MARK: - Stat Chip
+// MARK: - Hero Stat Tile
 
-/// Capsule with a bold value and a muted unit, e.g. `68% with art`.
-struct LibraryStatChip: View {
+/// Stat block for the collection hero: a soft tinted plate with a bold value
+/// over a tiny uppercase unit ("68% / WITH ART"). Reads like the counted
+/// blocks on a dashboard without needing a chart.
+struct LibraryStatTile: View {
     let icon: String
     let value: String
     let unit: String
     var tint: Color = AppColors.brandAccent
 
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var isHovered = false
 
     var body: some View {
-        HStack(spacing: 5) {
-            Image(systemName: icon)
-                .font(.system(size: 9, weight: .semibold))
-                .foregroundStyle(tint)
-            Text(verbatim: value)
-                .font(.system(size: 12, weight: .semibold, design: .rounded))
-                .monospacedDigit()
-                .foregroundStyle(AppColors.textPrimary(colorScheme))
-            Text(verbatim: unit)
-                .font(.system(size: 11, weight: .medium))
+        VStack(alignment: .leading, spacing: 2) {
+            HStack(spacing: 4) {
+                Image(systemName: icon)
+                    .font(.system(size: 8, weight: .bold))
+                    .foregroundStyle(tint)
+
+                Text(verbatim: value)
+                    .font(.system(size: 17, weight: .bold, design: .rounded))
+                    .monospacedDigit()
+                    .contentTransition(.numericText())
+                    .foregroundStyle(AppColors.textPrimary(colorScheme))
+                    .lineLimit(1)
+            }
+
+            Text(verbatim: unit.uppercased())
+                .font(.system(size: 8, weight: .bold, design: .rounded))
+                .tracking(0.4)
                 .foregroundStyle(AppColors.textTertiary(colorScheme))
+                .lineLimit(1)
         }
-        .padding(.horizontal, 9)
-        .padding(.vertical, 5)
+        .padding(.horizontal, 10)
+        .padding(.vertical, 6)
+        .frame(minWidth: 60, alignment: .leading)
         .background(
-            Capsule(style: .continuous)
-                .fill(AppColors.cardBackgroundSubtle(colorScheme))
+            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                .fill(tint.opacity(colorScheme == .dark ? (isHovered ? 0.20 : 0.13) : (isHovered ? 0.16 : 0.10)))
         )
         .overlay(
-            Capsule(style: .continuous)
-                .strokeBorder(AppColors.cardBorder(colorScheme), lineWidth: 1)
+            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                .strokeBorder(tint.opacity(isHovered ? 0.32 : 0.16), lineWidth: 1)
         )
+        .scaleEffect(isHovered && !reduceMotion ? 1.04 : 1)
+        .animation(reduceMotion ? nil : AppMotion.micro, value: isHovered)
+        .onHover { isHovered = $0 }
         .fixedSize()
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(Text(verbatim: "\(value) \(unit)"))
+    }
+}
+
+// MARK: - Hero Backdrop
+
+/// Ambient bed behind the collection hero: an accent wash, one drifting
+/// secondary glow parked in the top-trailing corner and a fading dot field.
+/// The glow only animates its offset, so it never re-lays out the header.
+private struct HeroAura: View, Equatable {
+    let colorScheme: ColorScheme
+
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var drift = false
+
+    static func == (lhs: HeroAura, rhs: HeroAura) -> Bool {
+        lhs.colorScheme == rhs.colorScheme
+    }
+
+    var body: some View {
+        ZStack(alignment: .topTrailing) {
+            LinearGradient(
+                colors: [
+                    AppColors.brandAccent.opacity(colorScheme == .dark ? 0.10 : 0.07),
+                    Color.clear
+                ],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+
+            RadialGradient(
+                colors: [
+                    AppColors.brandAccentSecondary.opacity(colorScheme == .dark ? 0.20 : 0.16),
+                    Color.clear
+                ],
+                center: .center,
+                startRadius: 0,
+                endRadius: 190
+            )
+            .frame(width: 380, height: 240)
+            .blur(radius: 18)
+            .offset(
+                x: 90 + (drift ? 18 : -14),
+                y: -120 + (drift ? -8 : 12)
+            )
+
+            DotField(color: AppColors.textPrimary(colorScheme))
+                .mask(
+                    LinearGradient(
+                        stops: [
+                            .init(color: .clear, location: 0.22),
+                            .init(color: .white, location: 0.70)
+                        ],
+                        startPoint: .leading,
+                        endPoint: .trailing
+                    )
+                )
+                .opacity(0.55)
+        }
+        .allowsHitTesting(false)
+        .onAppear {
+            guard !reduceMotion else { return }
+            withAnimation(.easeInOut(duration: 16).repeatForever(autoreverses: true)) {
+                drift = true
+            }
+        }
+    }
+}
+
+/// Hairline dot grid, drawn once per hero update.
+private struct DotField: View {
+    let color: Color
+    var spacing: CGFloat = 22
+
+    var body: some View {
+        Canvas { context, size in
+            let dot = Path(ellipseIn: CGRect(x: -0.9, y: -0.9, width: 1.8, height: 1.8))
+            var field = Path()
+            var y: CGFloat = spacing / 2
+            while y < size.height {
+                var x: CGFloat = spacing / 2
+                while x < size.width {
+                    field.addPath(dot, transform: CGAffineTransform(translationX: x, y: y))
+                    x += spacing
+                }
+                y += spacing
+            }
+            context.fill(field, with: .color(color.opacity(0.14)))
+        }
+    }
+}
+
+// MARK: - Hero Shelf Card
+
+/// One tilted box-art card in the hero's recent shelf. Hovering straightens
+/// and lifts the card and reveals a play badge; clicking launches the game.
+private struct HeroShelfCard: View {
+    let rom: ROM
+    /// Horizontal rank offset used to build the fan (-1.5 ... +1.5).
+    let fanIndex: Double
+    let onHover: (Bool) -> Void
+    let onLaunch: () -> Void
+
+    private let width: CGFloat = 48
+    private let height: CGFloat = 66
+
+    @State private var image: NSImage?
+    @State private var isHovered = false
+    @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    init(rom: ROM, fanIndex: Double, onHover: @escaping (Bool) -> Void, onLaunch: @escaping () -> Void) {
+        self.rom = rom
+        self.fanIndex = fanIndex
+        self.onHover = onHover
+        self.onLaunch = onLaunch
+
+        // Paint from the in-memory cache only; the `.task` fills a miss.
+        let cached: NSImage? = rom.hasBoxArt
+            ? ImageCache.shared.thumbnailCachedOrPregen(for: rom.boxArtLocalPath, preferredSize: .tiny)
+            : nil
+        _image = State(initialValue: cached)
+    }
+
+    var body: some View {
+        Button(action: onLaunch) {
+            artwork
+                .frame(width: width, height: height)
+                .clipShape(RoundedRectangle(cornerRadius: 7, style: .continuous))
+                .overlay {
+                    RoundedRectangle(cornerRadius: 7, style: .continuous)
+                        .strokeBorder(.white.opacity(isHovered ? 0.55 : 0.22), lineWidth: 1)
+                }
+                .overlay(alignment: .bottomTrailing) {
+                    if isHovered {
+                        Image(systemName: "play.fill")
+                            .font(.system(size: 7, weight: .black))
+                            .foregroundStyle(.white)
+                            .frame(width: 16, height: 16)
+                            .background(Circle().fill(AppColors.brandAccent))
+                            .overlay(Circle().strokeBorder(.white.opacity(0.5), lineWidth: 0.5))
+                            .padding(4)
+                            .transition(.scale.combined(with: .opacity))
+                    }
+                }
+                .shadow(
+                    color: isHovered ? AppColors.brandAccent.opacity(0.45) : .black.opacity(0.25),
+                    radius: isHovered ? 10 : 5,
+                    y: isHovered ? 5 : 2
+                )
+                .rotationEffect(.degrees(isHovered ? 0 : fanIndex * 4), anchor: .bottom)
+                .offset(y: isHovered ? -7 : abs(fanIndex) * 1.2)
+                .scaleEffect(isHovered ? 1.14 : 1)
+                .animation(reduceMotion ? .easeOut(duration: 0.12) : AppMotion.tilt, value: isHovered)
+        }
+        .buttonStyle(.plain)
+        .onHover { hovering in
+            isHovered = hovering
+            onHover(hovering)
+        }
+        .help(rom.displayName)
+        .accessibilityLabel(Text(verbatim: "\(LocalizationManager.shared.localized("contextMenu.launchGame")) \(rom.displayName)"))
+        .task(id: rom.id) {
+            guard image == nil, rom.hasBoxArt else { return }
+            image = await ImageCache.shared.thumbnail(for: rom.boxArtLocalPath, preferredSize: .small)
+        }
+    }
+
+    @ViewBuilder
+    private var artwork: some View {
+        if let image {
+            Image(nsImage: image)
+                .resizable()
+                .scaledToFill()
+        } else {
+            LinearGradient(
+                colors: [
+                    AppColors.brandAccent.opacity(0.30),
+                    AppColors.brandAccent.opacity(0.10)
+                ],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            .overlay {
+                Image(systemName: "gamecontroller.fill")
+                    .font(.system(size: 13))
+                    .foregroundStyle(.white.opacity(0.7))
+            }
+        }
     }
 }
 
 // MARK: - Collection Hero
 
-/// Header band above the library content. Owns collection identity, the live
-/// counts for the current filter and the box-art coverage chips.
+/// Header band above the library content. Owns collection identity, live
+/// counts for the current filter, and a fanned shelf of recent games.
 struct LibraryCollectionHero: View {
     let title: String
     let system: SystemInfo?
     let icon: String
+    /// Small uppercase tag above the title, e.g. "NINTENDO" or "LIBRARY".
+    let eyebrow: String
     let games: Int
     let systems: Int
     let withArt: Int
     let favorites: Int
+    /// Newest first. Hovering one swaps the count line for a resume line.
+    let recent: [ROM]
+    let onLaunch: (ROM) -> Void
 
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @ObservedObject private var loc = LocalizationManager.shared
     @State private var appeared = false
+    @State private var hoveredRecent: ROM?
+    @State private var plateTilt: CGPoint = .zero
 
     private var artPercent: Int {
         guard games > 0 else { return 0 }
         return Int((Double(withArt) / Double(games) * 100).rounded())
     }
 
-    private var subtitle: String {
+    private var countLine: String {
         let gamesText = "\(games.formatted()) \(unitText(games, pluralKey: "shell.unit.games"))"
         guard systems > 1 else { return gamesText }
         return "\(gamesText) · \(systems) \(unitText(systems, pluralKey: "shell.unit.systems"))"
@@ -274,48 +487,99 @@ struct LibraryCollectionHero: View {
         count == 1 ? loc.localized(pluralKey + ".one") : loc.localized(pluralKey)
     }
 
+    private var shelf: [ROM] {
+        Array(recent.prefix(4))
+    }
+
     var body: some View {
-        HStack(alignment: .center, spacing: 14) {
-            iconPlate
+        ZStack {
+            HeroAura(colorScheme: colorScheme)
+                .equatable()
 
-            VStack(alignment: .leading, spacing: 3) {
-                Text(verbatim: title)
-                    .font(.system(size: 26, weight: .bold, design: .rounded))
-                    .foregroundStyle(AppColors.textPrimary(colorScheme))
-                    .lineLimit(1)
-                    .truncationMode(.tail)
-                    .contentTransition(.opacity)
-
-                Text(verbatim: subtitle)
-                    .font(.system(size: 11, weight: .medium))
-                    .foregroundStyle(AppColors.textTertiary(colorScheme))
-                    .lineLimit(1)
-            }
-
-            Spacer(minLength: 12)
-
-            if games > 0 {
-                HStack(spacing: 6) {
-                    LibraryStatChip(
-                        icon: "photo.on.rectangle",
-                        value: "\(artPercent)%",
-                        unit: loc.localized("shell.unit.withArt")
-                    )
-                    if favorites > 0 {
-                        LibraryStatChip(
-                            icon: "heart.fill",
-                            value: favorites.formatted(),
-                            unit: loc.localized("shell.unit.favorites"),
-                            tint: .pink
-                        )
+            HStack(alignment: .center, spacing: 14) {
+                iconPlate
+                    .rotation3DEffect(.degrees(plateTilt.y * -7), axis: (1, 0, 0), perspective: 0.5)
+                    .rotation3DEffect(.degrees(plateTilt.x * 10), axis: (0, 1, 0), perspective: 0.5)
+                    .onContinuousHover { phase in
+                        guard !reduceMotion else { return }
+                        switch phase {
+                        case .active(let point):
+                            plateTilt = CGPoint(
+                                x: (point.x / 56) - 0.5,
+                                y: (point.y / 56) - 0.5
+                            )
+                        case .ended:
+                            plateTilt = .zero
+                        }
                     }
+                    .animation(reduceMotion ? nil : AppMotion.tilt, value: plateTilt)
+
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(verbatim: eyebrow.uppercased())
+                        .font(.system(size: 8, weight: .bold, design: .rounded))
+                        .tracking(1.1)
+                        .foregroundStyle(AppColors.brandAccent)
+                        .lineLimit(1)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 3)
+                        .background(
+                            Capsule(style: .continuous)
+                                .fill(AppColors.brandAccent.opacity(colorScheme == .dark ? 0.16 : 0.10))
+                        )
+                        .overlay(
+                            Capsule(style: .continuous)
+                                .strokeBorder(AppColors.brandAccent.opacity(0.18), lineWidth: 1)
+                        )
+
+                    Text(verbatim: title)
+                        .font(.system(size: 27, weight: .bold, design: .rounded))
+                        .tracking(-0.4)
+                        .foregroundStyle(AppColors.textPrimary(colorScheme))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.72)
+                        .contentTransition(.opacity)
+
+                    subtitle
                 }
-                .layoutPriority(1)
+
+                Spacer(minLength: 8)
+
+                if games > 0 {
+                    HStack(spacing: 6) {
+                        if systems > 1 {
+                            LibraryStatTile(
+                                icon: "gamecontroller.fill",
+                                value: systems.formatted(),
+                                unit: loc.localized("shell.unit.systems")
+                            )
+                        }
+                        LibraryStatTile(
+                            icon: "photo.on.rectangle",
+                            value: "\(artPercent)%",
+                            unit: loc.localized("shell.unit.withArt")
+                        )
+                        if favorites > 0 {
+                            LibraryStatTile(
+                                icon: "heart.fill",
+                                value: favorites.formatted(),
+                                unit: loc.localized("shell.unit.favorites"),
+                                tint: .pink
+                            )
+                        }
+                    }
+                    .layoutPriority(2)
+                }
+
+                if !shelf.isEmpty {
+                    recentShelf
+                        .padding(.leading, 2)
+                        .layoutPriority(3)
+                }
             }
+            .padding(.horizontal, 20)
+            .padding(.vertical, 12)
         }
-        .padding(.horizontal, 20)
-        .padding(.top, 14)
-        .padding(.bottom, 12)
+        .frame(height: 94)
         .opacity(appeared ? 1 : 0)
         .offset(y: appeared ? 0 : 6)
         .onAppear {
@@ -323,6 +587,58 @@ struct LibraryCollectionHero: View {
                 appeared = true
             }
         }
+    }
+
+    private var subtitle: some View {
+        ZStack(alignment: .leading) {
+            HStack(spacing: 5) {
+                Image(systemName: "square.stack.3d.up.fill")
+                    .font(.system(size: 9, weight: .semibold))
+                Text(verbatim: countLine)
+            }
+            .opacity(hoveredRecent == nil ? 1 : 0)
+
+            if let rom = hoveredRecent {
+                HStack(spacing: 5) {
+                    Image(systemName: "play.circle.fill")
+                        .font(.system(size: 10, weight: .bold))
+                        .foregroundStyle(AppColors.brandAccent)
+                    Text(verbatim: resumeLine(for: rom))
+                        .lineLimit(1)
+                }
+                .transition(.opacity)
+            }
+        }
+        .font(.system(size: 11, weight: .medium))
+        .foregroundStyle(AppColors.textTertiary(colorScheme))
+        .lineLimit(1)
+        .animation(.easeOut(duration: 0.16), value: hoveredRecent?.id)
+    }
+
+    private func resumeLine(for rom: ROM) -> String {
+        guard rom.lastPlayed != nil else { return rom.displayName }
+        return "\(loc.localized("shell.resume")) · \(rom.displayName)"
+    }
+
+    private var recentShelf: some View {
+        HStack(spacing: -18) {
+            ForEach(Array(shelf.enumerated()), id: \.element.id) { index, rom in
+                HeroShelfCard(
+                    rom: rom,
+                    fanIndex: Double(index) - Double(shelf.count - 1) / 2,
+                    onHover: { hovering in
+                        if hovering {
+                            hoveredRecent = rom
+                        } else if hoveredRecent?.id == rom.id {
+                            hoveredRecent = nil
+                        }
+                    },
+                    onLaunch: { onLaunch(rom) }
+                )
+                .zIndex(hoveredRecent?.id == rom.id ? 10 : Double(index))
+            }
+        }
+        .frame(height: 66, alignment: .center)
     }
 
     @ViewBuilder
