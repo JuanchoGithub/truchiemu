@@ -47,7 +47,15 @@ struct SidebarRowButton: View {
                     .padding(.vertical, 2)
                     .background(isSelected ? AppColors.accentBackground(colorScheme) : AppColors.cardBackgroundSubtle(colorScheme))
                     .cornerRadius(6)
-                    .padding(.trailing, isHovered && system != nil ? 22 : 0)
+
+                // Gutter for the context-menu button that the trailing overlay
+                // draws on hover/selection, so the ellipsis never lands on the
+                // count. Only reserved when the button is actually visible so
+                // other rows keep their full label width.
+                if (isHovered || isSelected) && system != nil {
+                    Color.clear
+                        .frame(width: 20, height: 1)
+                }
             }
             .padding(.horizontal, 6)
             .padding(.vertical, 2)
@@ -67,6 +75,9 @@ struct SidebarRowButton: View {
                         .padding(.vertical, 6)
                 }
                 .menuIndicator(.hidden)
+                .menuStyle(.borderlessButton)
+                .tint(AppColors.textSecondary(colorScheme))
+                .fixedSize()
                 .padding(.trailing, 4)
                 .transition(.opacity)
             }

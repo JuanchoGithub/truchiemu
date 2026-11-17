@@ -345,8 +345,8 @@ struct LibraryGridView: View {
                     AppSettings.setDouble("gridZoomLevel", value: newValue)
                 }
             }
-            
-            filterChips
+
+            libraryHeader
             
             if shouldShowFilterStatus {
                 filterStatusStrip
@@ -1187,12 +1187,12 @@ struct LibraryGridView: View {
     // Dynamic spacing between grid items based on zoom
     private var gridSpacing: CGFloat {
         // Less spacing when zoomed in (cards are bigger)
-        8 + ((1.0 - continuousZoom) * 12)
+        12 + ((1.0 - continuousZoom) * 12)
     }
     
     // Horizontal padding adjusts with zoom to prevent edge clipping
     private var horizontalPadding: CGFloat {
-        8 + ((1.0 - continuousZoom) * 12)
+        20 + ((1.0 - continuousZoom) * 12)
     }
     
     // Combined grid padding
@@ -2032,6 +2032,104 @@ struct LibraryGridView: View {
     }
 
     // MARK: - Search & Filters
+
+    // MARK: - Collection Hero
+
+    private var heroTitle: String {
+        switch filter {
+        case .all: return loc.localized("app.allGames")
+        case .favorites: return loc.localized("app.favorites")
+        case .recent: return loc.localized("app.recent")
+        case .lastAdded: return loc.localized("app.lastAdded")
+        case .hidden: return loc.localized("app.hiddenGames")
+        case .mameNonGames: return loc.localized("app.hiddenMAMEFiles")
+        case .retroAchievements: return loc.localized("library.retroAchievements")
+        case .system(let system): return system.sidebarDisplayName
+        case .category(let id):
+            return categoryManager.categories.first(where: { $0.id == id })?.name
+                ?? loc.localized("app.category")
+        }
+    }
+
+    private var heroIcon: String {
+        switch filter {
+        case .all: return "square.grid.2x2.fill"
+        case .favorites: return "heart.fill"
+        case .recent, .lastAdded: return "clock.fill"
+        case .hidden: return "eye.slash"
+        case .mameNonGames: return "doc.badge.gearshape"
+        case .retroAchievements: return "trophy.fill"
+        case .system(let system): return system.iconName
+        case .category(let id):
+            return categoryManager.categories.first(where: { $0.id == id })?.iconName
+                ?? "folder.fill"
+        }
+    }
+
+    /// Live counts for the hero band. One O(n) pass over the visible games;
+    /// called from the view body, so it must stay allocation-light.
+    private var heroStats: (games: Int, systems: Int, withArt: Int, favorites: Int) {
+        let roms = viewModel.displayedROMs
+        var systemIDs = Set<String>()
+        var withArt = 0
+        var favorites = 0
+        for rom in roms {
+            if let systemID = rom.systemID { systemIDs.insert(systemID) }
+            if rom.hasBoxArt { withArt += 1 }
+            if rom.isFavorite { favorites += 1 }
+        }
+        return (roms.count, systemIDs.count, withArt, favorites)
+    }
+
+    private var libraryHeader: some View {
+        let stats = heroStats
+        return VStack(spacing: 0) {
+            LibraryCollectionHero(
+                title: heroTitle,
+                system: currentSystem,
+                icon: heroIcon,
+                games: stats.games,
+                systems: stats.systems,
+                withArt: stats.withArt,
+                favorites: stats.favorites
+            )
+
+            filterDeck
+        }
+        .background {
+            LinearGradient(
+                colors: [
+                    AppColors.brandAccent.opacity(colorScheme == .dark ? 0.06 : 0.05),
+                    Color.clear
+                ],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .allowsHitTesting(false)
+        }
+        .overlay(alignment: .bottom) {
+            Rectangle()
+                .fill(AppColors.divider(colorScheme))
+                .frame(height: 1)
+        }
+    }
+
+    // Rounded control deck that hosts the filter pills.
+    private var filterDeck: some View {
+        filterChips
+            .padding(.vertical, 4)
+            .background {
+                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                    .fill(AppColors.cardBackground(colorScheme))
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 14, style: .continuous)
+                            .strokeBorder(AppColors.cardBorder(colorScheme), lineWidth: 1)
+                    }
+            }
+            .padding(.horizontal, 14)
+            .padding(.top, 2)
+            .padding(.bottom, 10)
+    }
 
     // Width-aware chip bar. Sort chips lead, then the user-configured filter
     // pills. When the bar is too narrow, the tail of the list is pushed into

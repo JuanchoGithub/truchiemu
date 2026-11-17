@@ -891,6 +891,7 @@
 		9369EAC462BDE91DFE8486CB /* ATARI800-alt.png in Resources */ = {isa = PBXBuildFile; fileRef = CD2FE1ECA3ADA9DB03225538 /* ATARI800-alt.png */; };
 		936CB95671EC28D1BF799322 /* MAMEGenreService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5D30E06BD1B8444F1AC5E41 /* MAMEGenreService.swift */; };
 		938FB796AE66683C4E416FAF /* MoveListOverlayViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E87F33C253900ECEF327206 /* MoveListOverlayViewModel.swift */; };
+		93B7595E2AF4B00993988F86 /* LibraryDeckComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61E12B8DA655D1B0770ECEE6 /* LibraryDeckComponents.swift */; };
 		93BB6735F8212D93096F0480 /* input_systemLabels_chip_8.json in Resources */ = {isa = PBXBuildFile; fileRef = E60D39A667424C4AC79035D5 /* input_systemLabels_chip_8.json */; };
 		93E13A6BD3032AFCCF53B964 /* input_systemLabels_cdi.json in Resources */ = {isa = PBXBuildFile; fileRef = 9E0F93F29D86E231FAD33074 /* input_systemLabels_cdi.json */; };
 		942FBFB13FAD15A22CCF4481 /* UNKNOWN.png in Resources */ = {isa = PBXBuildFile; fileRef = 9B0459DA5C098B3E37B3656D /* UNKNOWN.png */; };
@@ -2187,6 +2188,7 @@
 		6175B877BC872BA3246D8388 /* input_coreLabels_snes9x_2002.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_snes9x_2002.json; sourceTree = "<group>"; };
 		6187410E8087793214025773 /* MSX2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = MSX2.png; sourceTree = "<group>"; };
 		61D0DEF002A36188BF433ED6 /* fbneo@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "fbneo@132w.png"; sourceTree = "<group>"; };
+		61E12B8DA655D1B0770ECEE6 /* LibraryDeckComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryDeckComponents.swift; sourceTree = "<group>"; };
 		61EE2306C49C20631F9B6071 /* SG1000.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SG1000.png; sourceTree = "<group>"; };
 		62264697086E084CF5A6E26B /* LibrarySortPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibrarySortPicker.swift; sourceTree = "<group>"; };
 		622F8211E719F06C7DBF42EE /* input_coreLabels_higan_accuracy.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_higan_accuracy.json; sourceTree = "<group>"; };
@@ -4357,6 +4359,7 @@
 				A0A1BBAF236A7482126D4923 /* IconPickerView.swift */,
 				ED22E0198CFE81289DAC573E /* ImageCropView.swift */,
 				AE6DD9F2D88F252E2CECD2CC /* LibraryAnimations.swift */,
+				61E12B8DA655D1B0770ECEE6 /* LibraryDeckComponents.swift */,
 				44D6E43A22D859720886ECD6 /* LibraryFilterOption.swift */,
 				5C15A861E2696512846B9609 /* LibraryGridView.swift */,
 				1E2ED80F235CD4A44E0FF754 /* LibrarySectionHeader.swift */,
@@ -7042,6 +7045,7 @@
 				A88B029EDF9B982AD0A805D9 /* LibraryAnimations.swift in Sources */,
 				E51CDE2C230FBBFE9AA8A980 /* LibraryAutomationCoordinator.swift in Sources */,
 				071BE304A3EEFDA17AAFB3D4 /* LibraryBackupService.swift in Sources */,
+				93B7595E2AF4B00993988F86 /* LibraryDeckComponents.swift in Sources */,
 				0D8A07B323B96EBC8E1F8E1F /* LibraryFilterOption.swift in Sources */,
 				9A20252FD5A94F429367B691 /* LibraryGridView.swift in Sources */,
 				3D1B3E0F90A86CB3D8543AFC /* LibraryMetadataStore.swift in Sources */,

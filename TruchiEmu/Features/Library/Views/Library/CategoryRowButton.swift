@@ -44,9 +44,14 @@ struct CategoryRowButton: View {
         .foregroundColor(isSelected ? (Color(hex: category.colorHex) ?? .blue) : AppColors.textPrimary(colorScheme))
         .padding(.horizontal, 6)
         .padding(.vertical, 2)
-        .padding(.trailing, (isHovered || isSelected) ? 22 : 0)
         .background(isSelected ? (Color(hex: category.colorHex) ?? .blue).opacity(0.15) : AppColors.cardBackgroundSubtle(colorScheme))
         .cornerRadius(6)
+
+        // Gutter for the context-menu button drawn by the trailing overlay.
+        if isHovered || isSelected {
+          Color.clear
+            .frame(width: 20, height: 1)
+        }
       }
       .padding(.horizontal, 6)
       .padding(.vertical, 2)
@@ -98,6 +103,9 @@ struct CategoryRowButton: View {
                         .padding(.vertical, 6)
                 }
                 .menuIndicator(.hidden)
+                .menuStyle(.borderlessButton)
+                .tint(AppColors.textSecondary(colorScheme))
+                .fixedSize()
                 .padding(.trailing, 4)
                 .transition(.opacity)
             }

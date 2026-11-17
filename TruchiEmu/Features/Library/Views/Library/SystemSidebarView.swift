@@ -1,6 +1,16 @@
 import SwiftUI
 import UniformTypeIdentifiers
 
+/// One smart-collection entry in the navigation deck's quick-access tiles.
+private struct QuickAccessItem: Identifiable {
+    let id: String
+    let icon: String
+    let label: String
+    let count: Int
+    let filter: LibraryFilter
+    let tint: Color
+}
+
 struct SystemSidebarView: View {
     @EnvironmentObject var library: ROMLibrary
     @EnvironmentObject var categoryManager: CategoryManager
@@ -112,22 +122,81 @@ struct SystemSidebarView: View {
         return searchMatchedROMs.filter(basePredicate).count
     }
 
-    @ViewBuilder
-    private var smartCollectionRows: some View {
-        sidebarRow(icon: "square.grid.2x2", label: loc.localized("app.allGames"), count: searchAwareCount(fallbackKey: "all") { !$0.isHidden }, filter: .all)
-
-        let favCount = searchAwareCount(fallbackKey: "favorites") { $0.isFavorite && !$0.isHidden }
-        if favCount > 0 {
-            sidebarRow(icon: "heart.fill", label: loc.localized("app.favorites"), count: favCount, tint: .pink, filter: .favorites)
-        }
-
+    private var quickAccessItems: [QuickAccessItem] {
+        let allCount = searchAwareCount(fallbackKey: "all") { !$0.isHidden }
         let recentCount = searchAwareCount(fallbackKey: "recent") { $0.lastPlayed != nil && !$0.isHidden }
-        sidebarRow(icon: "clock.fill", label: loc.localized("app.recent"), count: recentCount, tint: .orange, filter: .recent)
+        let favoritesCount = searchAwareCount(fallbackKey: "favorites") { $0.isFavorite && !$0.isHidden }
 
-        let raCount = retroAchievementsMatchCount
-        if raCount > 0 {
-            sidebarRow(icon: "trophy.fill", label: loc.localized("library.retroAchievements"), count: raCount, tint: AppColors.brandAccent, filter: .retroAchievements)
+        var items: [QuickAccessItem] = [
+            QuickAccessItem(
+                id: "all",
+                icon: "square.grid.2x2.fill",
+                label: loc.localized("app.allGames"),
+                count: allCount,
+                filter: .all,
+                tint: AppColors.brandAccent
+            ),
+            QuickAccessItem(
+                id: "favorites",
+                icon: "heart.fill",
+                label: loc.localized("app.favorites"),
+                count: favoritesCount,
+                filter: .favorites,
+                tint: .pink
+            ),
+            QuickAccessItem(
+                id: "recent",
+                icon: "clock.fill",
+                label: loc.localized("app.recent"),
+                count: recentCount,
+                filter: .recent,
+                tint: .orange
+            )
+        ]
+        if raService.isEnabled {
+            items.append(QuickAccessItem(
+                id: "retroAchievements",
+                icon: "trophy.fill",
+                label: loc.localized("shell.tile.achievements"),
+                count: retroAchievementsMatchCount,
+                filter: .retroAchievements,
+                tint: AppColors.brandAccent
+            ))
         }
+        return items
+    }
+
+    @ViewBuilder
+    private var quickAccessTiles: some View {
+        let items = quickAccessItems
+
+        // Two-up bento rows. An odd trailing tile spans the full deck width
+        // instead of leaving a dead slot beside it.
+        let rows: [[QuickAccessItem]] = stride(from: 0, to: items.count, by: 2).map {
+            Array(items[$0..<min($0 + 2, items.count)])
+        }
+        let focusedFilter = gamepadNav.isGamepadActive && gamepadNav.activeZone == .sidebar
+            ? gamepadFocusedFilter
+            : nil
+
+        VStack(spacing: 8) {
+            ForEach(rows.indices, id: \.self) { rowIndex in
+                HStack(spacing: 8) {
+                    ForEach(rows[rowIndex]) { item in
+                        LibraryQuickAccessTile(
+                            icon: item.icon,
+                            label: item.label,
+                            count: item.count,
+                            isSelected: selectedFilter == item.filter,
+                            tint: item.tint,
+                            isWide: rows[rowIndex].count == 1,
+                            isGamepadFocused: focusedFilter?.id == item.filter.id
+                        ) { selectedFilter = item.filter }
+                    }
+                }
+            }
+        }
+        .padding(.bottom, 10)
     }
 
     private var retroAchievementsMatchCount: Int {
@@ -216,7 +285,7 @@ struct SystemSidebarView: View {
 
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
-                smartCollectionRows
+                quickAccessTiles
 
         sectionHeader(
                     title: loc.localized("app.categories"),
@@ -417,17 +486,22 @@ struct SystemSidebarView: View {
             Button {
                 isExpanded.wrappedValue.toggle()
             } label: {
-                HStack(spacing: 4) {
-            Image(systemName: isExpanded.wrappedValue ? "chevron.down" : "chevron.right")
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(AppColors.brandAccent)
-                        .frame(width: 12, alignment: .center)
-                Text(title)
-                    .font(AppTypography.sectionHeader)
-                    .foregroundStyle(AppColors.textSecondary(colorScheme))
-                    .textCase(.uppercase)
-                    .tracking(0.8)
-                    Spacer(minLength: 0)
+                HStack(spacing: 6) {
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 9, weight: .bold))
+                        .foregroundStyle(isHeaderHovered.wrappedValue ? AppColors.brandAccent : AppColors.textTertiary(colorScheme))
+                        .rotationEffect(.degrees(isExpanded.wrappedValue ? 90 : 0))
+                        .frame(width: 10, alignment: .center)
+                    Text(verbatim: title.uppercased())
+                        .font(.system(size: 10, weight: .semibold, design: .rounded))
+                        .foregroundStyle(isHeaderHovered.wrappedValue ? AppColors.textSecondary(colorScheme) : AppColors.textTertiary(colorScheme))
+                        .tracking(1.0)
+                        .lineLimit(1)
+                        .fixedSize()
+                    Rectangle()
+                        .fill(AppColors.divider(colorScheme))
+                        .frame(height: 1)
+                        .padding(.leading, 2)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .contentShape(Rectangle())
@@ -437,10 +511,11 @@ struct SystemSidebarView: View {
             if showAction, let action = onAction, let label = actionLabel {
                 Button(action: action) {
                     HStack(spacing: 4) {
-                        Image(systemName: "plus.circle")
+                        Image(systemName: "plus")
+                            .font(.system(size: 9, weight: .bold))
                             .foregroundStyle(AppColors.brandAccent)
                         if isHeaderHovered.wrappedValue {
-                            Text(label)
+                            Text(verbatim: label)
                                 .lineLimit(1)
                                 .transition(.opacity.combined(with: .move(edge: .trailing)))
                         }
@@ -470,8 +545,9 @@ struct SystemSidebarView: View {
             }
         }
         .animation(.easeInOut(duration: 0.15), value: showAction)
-        .padding(.top, 8)
-        .padding(.bottom, 4)
+        .animation(AppMotion.micro, value: isExpanded.wrappedValue)
+        .padding(.top, 14)
+        .padding(.bottom, 6)
     }
 
     @ViewBuilder
