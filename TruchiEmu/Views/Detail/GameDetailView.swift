@@ -77,7 +77,6 @@ struct GameDetailView: View {
 @State var raComparisonError: String?
 @State var raComparisonNameMatches: [RAHashComparisonContent.NameMatchItem] = []
     @StateObject var raVerification = ManualStatusController()
-    @State var raComparisonShowDownloadOption = false
 
     @State var openCriticFetching: Bool = false
     @State var openCriticErrorMessage: String? = nil
@@ -219,17 +218,7 @@ struct GameDetailView: View {
             raGameId: raComparisonRAGameId,
             error: raComparisonError,
             isLoading: isFindingRAGame,
-            nameMatches: raComparisonNameMatches,
-            showDownloadOption: raComparisonShowDownloadOption,
-            onDownload: {
-                Task {
-                    showRAHashComparison = false
-                    try? await achievementsService.fetchAndCacheAllGames()
-                    // Short delay to let the sheet dismiss before re-triggering
-                    try? await Task.sleep(nanoseconds: 400_000_000)
-                    findInRA()
-                }
-            }
+            nameMatches: raComparisonNameMatches
         )
     }
 
@@ -695,7 +684,6 @@ struct GameDetailView: View {
         isFindingRAGame = true
         raComparisonError = nil
         raComparisonTitle = currentROM.displayName
-        raComparisonShowDownloadOption = false
         raVerification.showWorking(loc.localized("achievement.loadingAchievements"))
 
         let raConsoleID = achievementsService.mapSystemIDToRAConsoleID(systemID)
@@ -738,6 +726,11 @@ struct GameDetailView: View {
             await MainActor.run {
                 raComparisonCurrentHash = hash
             }
+
+            // The hash list for this console may never have been downloaded.
+            // Fetch it now so the ROM can be identified. Cached lists are
+            // reused, so this only hits the network when data is missing.
+            await achievementsService.ensureGameListForConsole(consoleID: raConsoleID)
 
             if let cachedGame = await achievementsService.findGameByHashLocally(consoleID: raConsoleID, hash: hash, isUserInitiated: true) {
                 // Hash matched a cached RA game. Persist the match so the trophy
@@ -793,18 +786,6 @@ struct GameDetailView: View {
                     )
                 }
             } else {
-                // Check if the real problem is missing hash data
-                let needsDownload = achievementsService.needsHashDownload()
-                if needsDownload {
-                    await MainActor.run {
-                        raComparisonShowDownloadOption = true
-                        isFindingRAGame = false
-                        raVerification.clear()
-                        showRAHashComparison = true
-                    }
-                    return
-                }
-
                 let nameMatches = await achievementsService.findAllRAGamesByName(title: currentROM.displayName, consoleID: raConsoleID)
                 await MainActor.run {
                     if let firstMatch = nameMatches.first {
@@ -816,7 +797,6 @@ struct GameDetailView: View {
                     raComparisonNameMatches = nameMatches.map { RAHashComparisonContent.NameMatchItem(id: $0.id, title: $0.title, hashes: $0.hashes) }
                     isFindingRAGame = false
                     raVerification.clear()
-                    raComparisonShowDownloadOption = false
                     showRAHashComparison = true
 
                     if nameMatches.isEmpty {

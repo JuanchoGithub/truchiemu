@@ -11,8 +11,6 @@ struct RAHashComparisonContent: View {
     let error: String?
     let isLoading: Bool
     let nameMatches: [NameMatchItem]
-    let showDownloadOption: Bool
-    let onDownload: (() -> Void)?
 
     struct NameMatchItem: Identifiable {
         let id: Int
@@ -38,8 +36,6 @@ struct RAHashComparisonContent: View {
                     errorView(error)
                 } else if isDownloading {
                     downloadingView
-                } else if showDownloadOption {
-                    needsDownloadView
                 } else if gameFoundByName {
                     hashMismatchView
                 } else {
@@ -53,7 +49,7 @@ struct RAHashComparisonContent: View {
                 }
             }
         }
-        .frame(width: 600, height: isDownloading || showDownloadOption ? 400 : 520)
+        .frame(width: 600, height: isDownloading ? 400 : 520)
     }
 
     private var loadingView: some View {
@@ -103,35 +99,6 @@ struct RAHashComparisonContent: View {
                 .foregroundColor(AppColors.textTertiary(colorScheme))
         }
         .padding()
-    }
-
-    // MARK: - Needs Download (hash data missing, prompt to download)
-
-    private var needsDownloadView: some View {
-        VStack(spacing: 20) {
-            Image(systemName: "arrow.down.circle.fill")
-                .font(.system(size: 40))
-                .foregroundColor(AppColors.brandAccent)
-
-            Text(loc.localized("raHash.missingHashDataTitle"))
-                .font(.headline)
-
-            Text(loc.localized("raHash.missingHashDataExplanation"))
-                .font(.caption)
-                .foregroundColor(AppColors.textSecondary(colorScheme))
-                .multilineTextAlignment(.center)
-                .fixedSize(horizontal: false, vertical: true)
-
-            Button {
-                onDownload?()
-            } label: {
-                Label(loc.localized("raHash.downloadGameLists"), systemImage: "arrow.down.circle")
-                    .font(.subheadline)
-            }
-            .buttonStyle(.borderedProminent)
-            .controlSize(.large)
-        }
-        .padding(40)
     }
 
     // MARK: - Game Not Found (no name matches at all)
@@ -403,9 +370,7 @@ struct RAHashComparisonContent: View {
         nameMatches: [
             RAHashComparisonContent.NameMatchItem(id: 1234, title: "Super Mario World (USA)", hashes: ["abc123def456", "def456abc789"]),
             RAHashComparisonContent.NameMatchItem(id: 1235, title: "Super Mario World (Europe)", hashes: ["789xyz123", "aaa111bbb222"])
-        ],
-        showDownloadOption: false,
-        onDownload: nil
+        ]
     )
 }
 
@@ -419,8 +384,6 @@ struct RAHashComparisonContent: View {
         raGameId: nil,
         error: nil,
         isLoading: false,
-        nameMatches: [],
-        showDownloadOption: false,
-        onDownload: nil
+        nameMatches: []
     )
 }

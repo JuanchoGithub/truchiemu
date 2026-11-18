@@ -177,7 +177,20 @@ class RetroAchievementsService: ObservableObject {
         AppSettings.setBool("ra_enabled", value: enabled)
         if !enabled {
             currentGame = nil
+            return
         }
+        // Game identification needs the per-console hash lists. Download them
+        // (with progress) as soon as the user turns the feature on, instead of
+        // letting every game check fail until a manual refresh happens.
+        Task { await prepareGameListCacheIfNeeded() }
+    }
+
+    /// Downloads the game lists needed to identify ROMs, and imports lists that
+    /// are already on disk. Files younger than the refresh threshold are reused,
+    /// so enabling RetroAchievements repeatedly does not hammer the RA API.
+    func prepareGameListCacheIfNeeded() async {
+        guard isEnabled, isLoggedIn else { return }
+        try? await fetchAndCacheAllGames()
     }
     
     // MARK: - Authentication
@@ -222,11 +235,7 @@ class RetroAchievementsService: ObservableObject {
             }
 
             Task {
-                try? await fetchAndCacheGameList()
-                if needsHashDownload() {
-                    LoggerService.info(category: "RetroAchievements", "Hash data missing, auto-triggering game list download with hashes...")
-                    try? await fetchAndCacheAllGames()
-                }
+                await prepareGameListCacheIfNeeded()
             }
 
         } catch {
@@ -443,9 +452,7 @@ class RetroAchievementsService: ObservableObject {
             let step = index + 1
             coordinator.startFetchingGames(consoleID: console.id, consoleName: console.name, step: step, total: totalConsoles)
 
-            let safeName = console.name.replacingOccurrences(of: "/", with: "-").replacingOccurrences(of: " ", with: "_")
-            let fileName = "\(console.id)_\(safeName).json"
-            let fileURL = listDataFolder.appendingPathComponent(fileName)
+            let fileURL = listFileURL(consoleID: console.id, consoleName: console.name)
             
             // Freshness check for individual console list
             if !forceRefresh, FileManager.default.fileExists(atPath: fileURL.path) {
@@ -454,183 +461,115 @@ class RetroAchievementsService: ObservableObject {
                     #if LOG_DEBUG
                     LoggerService.debug(category: "RetroAchievements", "Skipping fetch for \(console.name), local list is fresh.")
                     #endif
+                    // The file is fresh but the database may still be empty (for
+                    // example after a store migration). Importing is local work,
+                    // so it never causes extra API traffic.
+                    if !hasHashesInCache(consoleID: console.id) {
+                        await importLocalJSONFile(fileURL)
+                    }
+                    coordinator.updateProgress(Double(step) / Double(totalConsoles), status: coordinator.statusLine)
                     continue
                 }
             }
 
-            LoggerService.info(category: "RetroAchievements", "Fetching games for console: \(console.name) (ID: \(console.id))...")
-            
-            let url = URL(string: "\(apiBaseURL)/API_GetGameList.php")!
-            var components = URLComponents(url: url, resolvingAgainstBaseURL: false)!
-            components.queryItems = [
-                URLQueryItem(name: "u", value: username),
-                URLQueryItem(name: "y", value: webApiKey),
-                URLQueryItem(name: "i", value: String(console.id)),
-                URLQueryItem(name: "h", value: "1") // Include hashes
-            ]
-            
-            guard let finalURL = components.url else { continue }
-            
             do {
-                let (data, _) = try await URLSession.shared.data(from: finalURL)
-                
-                // Save to JSON file with standardized naming
-                let safeName = console.name.replacingOccurrences(of: "/", with: "-").replacingOccurrences(of: " ", with: "_")
-                let fileName = "\(console.id)_\(safeName).json"
-                let fileURL = listDataFolder.appendingPathComponent(fileName)
-                try? data.write(to: fileURL)
-                
-                // Import this specific file into the database
-                await importLocalJSONFile(fileURL)
-                
+                try await downloadGameList(consoleID: console.id, consoleName: console.name)
                 LoggerService.info(category: "RetroAchievements", "Successfully cached games for \(console.name)")
-                } catch {
-                    LoggerService.error(category: "RetroAchievements", "Failed to fetch games for \(console.name): \(error.localizedDescription)")
-                }
-                coordinator.updateProgress(Double(step) / Double(totalConsoles), status: coordinator.statusLine)
+            } catch {
+                LoggerService.error(category: "RetroAchievements", "Failed to fetch games for \(console.name): \(error.localizedDescription)")
             }
+            coordinator.updateProgress(Double(step) / Double(totalConsoles), status: coordinator.statusLine)
+        }
         
         LoggerService.info(category: "RetroAchievements", "Finished fetching games for all consoles.")
         coordinator.finish()
     }
 
-    /// Fetches the entire game list from RA and stores it locally.
-    /// Should be called on first login or when requested via UI.
-    /// All heavy work (JSON parsing, SwiftData upserts) runs on a background context.
-    func fetchAndCacheGameList(isUserInitiated: Bool = false) async throws {
-        guard isEnabled, isLoggedIn else {
-            throw RAError.loginFailed("Not logged in to RetroAchievements.")
-        }
+    /// Downloads one console's game list (with hashes), writes it to
+    /// `listDataFolder`, and imports it into SwiftData.
+    private func downloadGameList(consoleID: Int, consoleName: String) async throws {
+        LoggerService.info(category: "RetroAchievements", "Fetching games for console: \(consoleName) (ID: \(consoleID))...")
 
-        guard let container = SwiftDataContainer.shared.container else { return }
-
-        let mainContext = container.mainContext
-        let descriptor = FetchDescriptor<RAGameCacheEntry>()
-        if let firstEntry = try? mainContext.fetch(descriptor).first {
-            if !shouldFetch(cachedAt: firstEntry.cachedAt, isUserInitiated: isUserInitiated) {
-                LoggerService.info(category: "RetroAchievements", "RA game cache is still fresh (cached at \(firstEntry.cachedAt)), skipping fetch.")
-                return
-            }
-        }
-
-        LoggerService.info(category: "RetroAchievements", "Fetching entire game list from RA (isUserInitiated=\(isUserInitiated))...")
-
-        // 1. Fetch from API (network I/O — already async)
         let url = URL(string: "\(apiBaseURL)/API_GetGameList.php")!
         var components = URLComponents(url: url, resolvingAgainstBaseURL: false)!
         components.queryItems = [
             URLQueryItem(name: "u", value: username),
-            URLQueryItem(name: "y", value: webApiKey)
+            URLQueryItem(name: "y", value: webApiKey),
+            URLQueryItem(name: "i", value: String(consoleID)),
+            URLQueryItem(name: "h", value: "1") // Include hashes
         ]
 
-        let (data, _) = try await URLSession.shared.data(from: components.url!)
-        let raGames = try JSONDecoder().decode([RARAGameListResponse].self, from: data)
+        guard let finalURL = components.url else { throw RAError.networkUnreachable }
 
-        // 2. Determine user's console IDs on main context, then read hash files off-thread
-        let romDescriptor = FetchDescriptor<ROMEntry>()
-        let userRoms = (try? mainContext.fetch(romDescriptor)) ?? []
-        let userSystemIDs = Set(userRoms.compactMap { $0.systemID })
-        let userRAConsoleIDs = Set(userSystemIDs.map { String(Self.systemIDToRAConsoleID($0)) })
-        let localHashes = await readLocalHashFiles(userRAConsoleIDs: userRAConsoleIDs)
-
-        // 3. Write everything to SwiftData on a background context
-        await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
-            DispatchQueue.global(qos: .userInitiated).async {
-                let bgContext = ModelContext(container)
-                do {
-                    try bgContext.transaction {
-                        try bgContext.delete(model: RAGameCacheEntry.self)
-
-                        for raGame in raGames {
-                            let entry = RAGameCacheEntry(
-                                id: raGame.ID,
-                                title: raGame.Title,
-                                consoleID: raGame.ConsoleID,
-                                consoleName: raGame.ConsoleName,
-                                hashes: localHashes[raGame.ID] ?? []
-                            )
-                            bgContext.insert(entry)
-                        }
-                    }
-                } catch {
-                    LoggerService.error(category: "RetroAchievements", "Background SwiftData transaction failed: \(error.localizedDescription)")
-                }
-                continuation.resume()
-            }
-        }
-
-        // 4. Sync main context with background changes
-        mainContext.processPendingChanges()
-
-        LoggerService.info(category: "RetroAchievements", "Successfully cached \(raGames.count) games from RA (\(localHashes.count) with hashes).")
+        let (data, _) = try await URLSession.shared.data(from: finalURL)
+        let fileURL = listFileURL(consoleID: consoleID, consoleName: consoleName)
+        try? data.write(to: fileURL)
+        await importLocalJSONFile(fileURL)
     }
 
-    /// Reads local JSON cache files and returns a dictionary mapping gameID -> [hashes].
-    /// Runs entirely off the main thread — no SwiftData, just file I/O + JSON decoding.
-    private nonisolated func readLocalHashFiles(userRAConsoleIDs: Set<String>) async -> [Int: [String]] {
-        let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
-        let listFolder = appSupport.appendingPathComponent("TruchiEmu/RetroAchievements/Lists", isDirectory: true)
+    /// Standardized on-disk name for a console's game list.
+    private func listFileURL(consoleID: Int, consoleName: String) -> URL {
+        let safeName = consoleName.replacingOccurrences(of: "/", with: "-").replacingOccurrences(of: " ", with: "_")
+        return listDataFolder.appendingPathComponent("\(consoleID)_\(safeName).json")
+    }
 
-        guard FileManager.default.fileExists(atPath: listFolder.path) else { return [:] }
+    /// True when the local database holds hash-bearing entries for a console.
+    private func hasHashesInCache(consoleID: Int) -> Bool {
+        guard let context = modelContext else { return false }
+        let predicate = #Predicate<RAGameCacheEntry> { $0.consoleID == consoleID }
+        let entries = (try? context.fetch(FetchDescriptor<RAGameCacheEntry>(predicate: predicate))) ?? []
+        return entries.contains { !$0.hashes.isEmpty }
+    }
 
-        let jsonFiles: [URL]
+    /// Guarantees that the hash list for `consoleID` is available before a ROM
+    /// is compared against RetroAchievements. An existing list is imported from
+    /// disk; only a completely missing list is downloaded. Lists that are
+    /// already in the database are never re-fetched, so repeated game checks
+    /// stay offline. Returns `true` when hash entries are available.
+    @discardableResult
+    func ensureGameListForConsole(consoleID: Int) async -> Bool {
+        guard isEnabled, isLoggedIn, consoleID > 0 else { return false }
+        if hasHashesInCache(consoleID: consoleID) { return true }
+
+        // A previously downloaded list may still be on disk; import it first.
+        if let existingFile = existingListFile(forConsoleID: consoleID) {
+            await importLocalJSONFile(existingFile)
+            if hasHashesInCache(consoleID: consoleID) { return true }
+        }
+
+        // Nothing usable on disk: fetch just this console's list.
+        guard let consoleName = await raConsoleName(for: consoleID) else { return false }
+        let coordinator = RAGameCacheCoordinator.shared
+        coordinator.startFetchingGames(consoleID: consoleID, consoleName: consoleName, step: 1, total: 1)
+        defer { coordinator.finish() }
+
         do {
-            jsonFiles = try FileManager.default.contentsOfDirectory(at: listFolder, includingPropertiesForKeys: nil)
-                .filter { url in
-                    guard url.pathExtension == "json" else { return false }
-                    let id = url.lastPathComponent.components(separatedBy: "_").first ?? ""
-                    return userRAConsoleIDs.contains(id)
-                }
+            try await downloadGameList(consoleID: consoleID, consoleName: consoleName)
         } catch {
-            return [:]
+            LoggerService.error(category: "RetroAchievements", "Failed to download game list for console \(consoleID): \(error.localizedDescription)")
+            return false
         }
-
-        LoggerService.info(category: "RetroAchievements", "Found \(jsonFiles.count) relevant JSON cache files for your library.")
-
-        var result: [Int: [String]] = [:]
-        let decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .iso8601
-
-        for fileURL in jsonFiles {
-            guard let data = try? Data(contentsOf: fileURL),
-                  let games = try? decoder.decode([GameJSON].self, from: data) else { continue }
-            var count = 0
-            for game in games {
-                if !game.hashes.isEmpty {
-                    result[game.id] = game.hashes
-                    count += 1
-                }
-            }
-            LoggerService.info(category: "RetroAchievements", "Read \(count) games with hashes from \(fileURL.lastPathComponent)")
-        }
-
-        return result
+        return hasHashesInCache(consoleID: consoleID)
     }
 
-    /// Checks whether local hash JSON files exist for the user's library consoles.
-    /// Returns `true` if any relevant hash file is missing.
-    @MainActor
-    func needsHashDownload() -> Bool {
-        guard let context = modelContext else { return true }
-        let romDescriptor = FetchDescriptor<ROMEntry>()
-        guard let userRoms = try? context.fetch(romDescriptor) else { return true }
-        let userSystemIDs = Set(userRoms.compactMap { $0.systemID })
-        let userRAConsoleIDs = userSystemIDs.map { Self.systemIDToRAConsoleID($0) }
-        guard !userRAConsoleIDs.isEmpty else { return false }
+    /// Finds a cached game-list JSON file whose name starts with the console ID.
+    private func existingListFile(forConsoleID consoleID: Int) -> URL? {
+        let prefix = "\(consoleID)_"
+        let files = (try? FileManager.default.contentsOfDirectory(at: listDataFolder, includingPropertiesForKeys: nil)) ?? []
+        return files.first { $0.pathExtension == "json" && $0.lastPathComponent.hasPrefix(prefix) }
+    }
 
-        let listFolder = listDataFolder
-        guard FileManager.default.fileExists(atPath: listFolder.path) else { return true }
-
-        guard let jsonFiles = try? FileManager.default.contentsOfDirectory(at: listFolder, includingPropertiesForKeys: nil) else { return true }
-
-        for consoleID in userRAConsoleIDs where consoleID > 0 {
-            let hasFile = jsonFiles.contains { url in
-                let prefix = url.lastPathComponent.components(separatedBy: "_").first
-                return prefix == String(consoleID)
+    /// Resolves a console name from the local console cache, fetching the
+    /// console list when it has not been downloaded yet.
+    private func raConsoleName(for consoleID: Int) async -> String? {
+        if let context = modelContext {
+            let predicate = #Predicate<RAConsole> { $0.id == consoleID }
+            if let existing = try? context.fetch(FetchDescriptor<RAConsole>(predicate: predicate)).first {
+                return existing.name
             }
-            if !hasFile { return true }
         }
-        return false
+        let consoles = try? await fetchAndCacheConsoleList()
+        return consoles?.first(where: { $0.id == consoleID })?.name
     }
 
     /// Pure mapping from system ID to RA console ID — no MainActor required.
@@ -957,6 +896,11 @@ class RetroAchievementsService: ObservableObject {
         importRACacheStep = 0
         importRACacheTotal = 0
         await Task.yield()
+        // Pull game lists that were never downloaded (or whose files expired),
+        // then import everything that is on disk. Without this the matching
+        // pass runs against an empty cache and nothing ever matches. Fresh
+        // files are reused, so this respects the refresh limits.
+        try? await fetchAndCacheAllGames()
         await importLocalRAGameCache { step, total in
             self.importRACacheStep = step
             self.importRACacheTotal = total
@@ -2470,13 +2414,6 @@ func refreshGameCacheAfterGameStop() {
 
     // MARK: - API Request Helpers
     
-    private struct RARAGameListResponse: Decodable, Sendable {
-        @SafeInt var ID: Int
-        let Title: String
-        @SafeInt var ConsoleID: Int
-        let ConsoleName: String
-    }
-
     private struct RAConsoleResponse: Decodable {
         @SafeInt var ID: Int
         var Name: String
