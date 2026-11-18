@@ -8,6 +8,9 @@ struct DetailBoxArtButton: View {
     let imageURL: URL?
     let rom: ROM?
     let placeholder: () -> AnyView
+    /// `.fit` letterboxes the art. `.fill` crops it to the frame so the hero
+    /// cover reads as a full-bleed plate.
+    var contentMode: ContentMode = .fit
     @State private var isPresented = false
     @State private var showPicker = false
 
@@ -23,7 +26,7 @@ struct DetailBoxArtButton: View {
                 if let img = image {
                     Image(nsImage: img)
                     .resizable()
-                    .aspectRatio(contentMode: .fit)
+                    .aspectRatio(contentMode: contentMode)
                 } else {
                     placeholder()
                 }

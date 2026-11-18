@@ -50,6 +50,8 @@ struct GameDetailView: View {
     @State var hoveredSection: DetailSection? = nil
     @State var bezelSelectorWindowController: BezelSelectorWindowController?
     @State var localTitle: String = ""
+    @State var isEditingTitle: Bool = false
+    @FocusState var titleFieldFocused: Bool
     @State var gameDescription: String? = nil
     @State var mostRecentSaveSlot: SlotInfo? = nil
     @State var titleScreenImage: NSImage? = nil
@@ -125,14 +127,20 @@ struct GameDetailView: View {
 
     @ViewBuilder
     var mainContentArea: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
-                AnyView(sectionContent)
-                    .transition(.opacity.combined(with: .move(edge: .trailing)))
+        HStack(spacing: 0) {
+            Group {
+                if selectedSection == .gameInfo {
+                    gameInfoMainScroll
+                } else {
+                    sectionScroll
+                }
             }
-            .padding(24)
+            .frame(maxWidth: .infinity)
+
+            if selectedSection == .gameInfo {
+                gameInfoInspector
+            }
         }
-        .scrollContentBackground(.hidden)
         .background(Color.clear)
         .overlay(
             RoundedRectangle(cornerRadius: 4)
@@ -141,10 +149,46 @@ struct GameDetailView: View {
         )
     }
 
+    /// Game info keeps its fact sheet in a fixed inspector rail so the
+    /// metadata stays visible while the narrative column scrolls.
+    private var gameInfoMainScroll: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 20) {
+                overviewMainColumn
+            }
+            .padding(24)
+        }
+        .scrollContentBackground(.hidden)
+    }
+
+    private var gameInfoInspector: some View {
+        ScrollView {
+            overviewRail
+                .padding(16)
+        }
+        .scrollContentBackground(.hidden)
+        .frame(width: 292)
+        .background(AppColors.sidebarBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+        .overlay(alignment: .leading) {
+            Divider().overlay(AppColors.divider(colorScheme))
+        }
+    }
+
+    private var sectionScroll: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 20) {
+                AnyView(sectionContent)
+                    .transition(.opacity.combined(with: .move(edge: .trailing)))
+            }
+            .padding(24)
+        }
+        .scrollContentBackground(.hidden)
+    }
+
     @ViewBuilder
     private var sectionContent: some View {
         switch selectedSection {
-        case .gameInfo: overviewSection
+        case .gameInfo: overviewMainColumn
         case .technical: technicalSection
         case .shader: shaderSection
         case .bezels: bezelsSection
@@ -191,7 +235,7 @@ struct GameDetailView: View {
 
     var body: some View {
         GeometryReader { geo in
-            let headerHeight = min(max(geo.size.height * 0.25, 150), 210)
+            let headerHeight = min(max(geo.size.height * 0.38, 250), 300)
             VStack(spacing: 0) {
                 compactHeaderSection
                     .frame(height: headerHeight)
@@ -224,6 +268,7 @@ struct GameDetailView: View {
 		loadBoxArt()
             loadSlotInfo()
             loadTitleScreen()
+            loadScreenshots()
             // Only load achievements if we're logged in and RA is enabled
             if achievementsService.isLoggedIn && achievementsService.isEnabled {
                 loadAchievements()
@@ -247,6 +292,8 @@ struct GameDetailView: View {
         manualAction.clear()
         loadSlotInfo()
         loadTitleScreen()
+        loadScreenshots()
+        isEditingTitle = false
         if achievementsService.isLoggedIn && achievementsService.isEnabled {
           loadAchievements()
         }
@@ -348,57 +395,75 @@ struct GameDetailView: View {
         }
     }
 
-    var primarySections: [DetailSection] {
-        var sections: [DetailSection] = [.gameInfo]
-        sections.append(.savedStates)
-        if achievementsService.isEnabled {
-            sections.append(.achievements)
-        }
-        sections.append(contentsOf: [.cheats, .shader, .bezels, .controls])
-        if OpenCriticService.shared.apiKey != nil, !OpenCriticService.shared.apiKey!.isEmpty {
-            sections.append(.openCritic)
-        }
-        if let sysID = currentROM.systemID, sysID == "dos" || sysID == "scummvm" {
-            sections.append(.analogMouse)
-        }
-        if currentROM.systemID == "dos" {
-            sections.append(.dosJoystick)
-        }
-        if currentROM.systemID == "gb" || currentROM.systemID == "gbc" {
-            sections.append(.coreOptions)
-        }
-        return sections
+    private struct DetailNavGroup {
+        let title: String
+        let sections: [DetailSection]
     }
 
-    var advancedSections: [DetailSection] {
-        [.core, .technical]
+    /// Sidebar groups. Flattening them keeps the gamepad navigation index in
+    /// sync with the visible row order.
+    private var navGroups: [DetailNavGroup] {
+        var game: [DetailSection] = [.gameInfo, .savedStates]
+        if achievementsService.isEnabled {
+            game.append(.achievements)
+        }
+        game.append(.cheats)
+        if let key = OpenCriticService.shared.apiKey, !key.isEmpty {
+            game.append(.openCritic)
+        }
+
+        var setup: [DetailSection] = [.shader, .bezels, .controls]
+        if let sysID = currentROM.systemID, sysID == "dos" || sysID == "scummvm" {
+            setup.append(.analogMouse)
+        }
+        if currentROM.systemID == "dos" {
+            setup.append(.dosJoystick)
+        }
+        if currentROM.systemID == "gb" || currentROM.systemID == "gbc" {
+            setup.append(.coreOptions)
+        }
+
+        return [
+            DetailNavGroup(title: loc.localized("gameDetail.groupGame"), sections: game),
+            DetailNavGroup(title: loc.localized("gameDetail.groupSetup"), sections: setup),
+            DetailNavGroup(title: loc.localized("gameDetail.groupAdvanced"), sections: [.core, .technical])
+        ]
     }
 
     var allSections: [DetailSection] {
-        primarySections + advancedSections
+        navGroups.flatMap(\.sections)
     }
 
     var sidebarNavigation: some View {
-        VStack(alignment: .leading, spacing: 2) {
-            ForEach(primarySections, id: \.self) { section in
-                sidebarItem(for: section)
+        VStack(alignment: .leading, spacing: 6) {
+            ForEach(Array(navGroups.enumerated()), id: \.offset) { index, group in
+                VStack(alignment: .leading, spacing: 2) {
+                    if index > 0 {
+                        Divider()
+                            .overlay(AppColors.divider(colorScheme))
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 3)
+                    }
+
+                    Text(verbatim: group.title.uppercased())
+                        .font(.system(size: 9, weight: .bold, design: .rounded))
+                        .tracking(0.9)
+                        .foregroundStyle(AppColors.textTertiary(colorScheme))
+                        .padding(.horizontal, 10)
+                        .padding(.bottom, 2)
+
+                    ForEach(group.sections, id: \.self) { section in
+                        sidebarItem(for: section)
+                    }
+                }
             }
 
-            Divider()
-                .overlay(AppColors.divider(colorScheme))
-                .padding(.vertical, 4)
-                .padding(.horizontal, 6)
-
-            ForEach(advancedSections, id: \.self) { section in
-                sidebarItem(for: section)
-            }
-
-            Spacer()
+            Spacer(minLength: 0)
         }
-        .frame(width: 160)
-        .padding(.vertical, 12)
-        .padding(.leading, 8)
-        .padding(.trailing, 4)
+        .frame(width: 190)
+        .padding(.top, 10)
+        .padding(.bottom, 12)
+        .padding(.horizontal, 8)
         .background(AppColors.sidebarBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
     }
 
@@ -410,51 +475,92 @@ struct GameDetailView: View {
         let isGamepadFocused = gamepadNav.isGamepadActive
             && gamepadTwoZoneContext?.activeZone == .sidebar
             && gamepadTwoZoneContext?.sidebarIndex == sectionIndex
+        let badge = sidebarBadge(for: section)
 
-        return AnyView(
-            Button {
-                withAnimation(.easeInOut(duration: 0.15)) {
-                    selectedSection = section
-                }
-            } label: {
-            HStack(spacing: 10) {
+        return Button {
+            withAnimation(.easeInOut(duration: 0.15)) {
+                selectedSection = section
+            }
+        } label: {
+            HStack(spacing: 9) {
                 Image(systemName: section.sectionIcon)
-                    .font(.system(size: 15, weight: .medium))
-                    .frame(width: 20, height: 20)
-                    .foregroundColor(isSelected ? AppColors.brandAccent : AppColors.textSecondary(colorScheme))
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(isSelected ? AppColors.textOnAccent(colorScheme) : AppColors.textTertiary(colorScheme))
+                    .frame(width: 24, height: 24)
+                    .background(
+                        RoundedRectangle(cornerRadius: 7, style: .continuous)
+                            .fill(isSelected
+                                  ? AppColors.brandAccent
+                                  : AppColors.cardBackgroundSubtle(colorScheme).opacity(0.8))
+                    )
+
                 Text(section.localizedTitle)
-                    .font(AppTypography.subheadline)
-                    .foregroundColor(isSelected ? AppColors.textPrimary(colorScheme) : AppColors.textSecondary(colorScheme))
-                    .fontWeight(isSelected ? .medium : .regular)
-                Spacer()
-            }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.leading, 10)
-                .padding(.trailing, 6)
-                .padding(.vertical, 7)
-                .contentShape(Rectangle())
-            }
-            .buttonStyle(.plain)
-            .help(section.helpText)
-            .background(
-                RoundedRectangle(cornerRadius: 6)
-                    .fill(isSelected ? AppColors.accentBackground(colorScheme) : 
-                          (isHovered ? AppColors.cardBackgroundSubtle(colorScheme) : .clear))
-            )
-            .overlay(alignment: .leading) {
-                if isSelected {
-                    RoundedRectangle(cornerRadius: 2)
-                        .fill(AppColors.brandAccent)
-                        .frame(width: 3, height: 20)
-                        .padding(.leading, 2)
+                    .font(.system(size: 13, weight: isSelected ? .semibold : .medium, design: .rounded))
+                    .foregroundStyle(isSelected ? AppColors.textPrimary(colorScheme) : AppColors.textSecondary(colorScheme))
+                    .lineLimit(1)
+
+                Spacer(minLength: 4)
+
+                if let badge {
+                    Text(verbatim: badge)
+                        .font(.system(size: 9, weight: .semibold, design: .rounded))
+                        .monospacedDigit()
+                        .foregroundStyle(isSelected ? AppColors.brandAccent : AppColors.textTertiary(colorScheme))
+                        .padding(.horizontal, 5)
+                        .padding(.vertical, 1)
+                        .background(
+                            Capsule(style: .continuous)
+                                .fill(isSelected
+                                      ? AppColors.brandAccent.opacity(0.14)
+                                      : AppColors.cardBackgroundSubtle(colorScheme))
+                        )
                 }
             }
-            .overlay(
-                RoundedRectangle(cornerRadius: 6)
-                    .stroke(isGamepadFocused ? AppColors.brandAccent : Color.clear, lineWidth: 2)
-            )
-            .onHover { hoveredSection = $0 ? section : nil }
+            .padding(.leading, 12)
+            .padding(.trailing, 7)
+            .padding(.vertical, 5)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .help(section.helpText)
+        .background(
+            RoundedRectangle(cornerRadius: 9, style: .continuous)
+                .fill(isSelected
+                      ? AppColors.accentBackground(colorScheme)
+                      : (isHovered ? AppColors.cardBackgroundSubtle(colorScheme) : .clear))
         )
+        .overlay(
+            RoundedRectangle(cornerRadius: 9, style: .continuous)
+                .strokeBorder(isSelected ? AppColors.brandAccent.opacity(0.25) : .clear, lineWidth: 1)
+        )
+        .overlay(alignment: .leading) {
+            Capsule(style: .continuous)
+                .fill(AppColors.brandAccent)
+                .frame(width: 3, height: 16)
+                .padding(.leading, 3)
+                .opacity(isSelected ? 1 : 0)
+        }
+        .overlay(
+            RoundedRectangle(cornerRadius: 9, style: .continuous)
+                .stroke(isGamepadFocused ? AppColors.brandAccent : Color.clear, lineWidth: 2)
+        )
+        .animation(AppMotion.stateChange, value: isSelected)
+        .onHover { hoveredSection = $0 ? section : nil }
+    }
+
+    /// Live counts make the nav rows useful without opening them.
+    func sidebarBadge(for section: DetailSection) -> String? {
+        switch section {
+        case .savedStates:
+            let count = slotInfoList.filter { $0.exists }.count
+            return count > 0 ? "\(count)" : nil
+        case .achievements:
+            guard !gameAchievements.isEmpty else { return nil }
+            return "\(unlockedAchievementCount)/\(gameAchievements.count)"
+        default:
+            return nil
+        }
     }
 
     func loadSlotInfo() {

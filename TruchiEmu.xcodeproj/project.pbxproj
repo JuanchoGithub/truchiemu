@@ -663,6 +663,7 @@
 		6F2C1E8482FEDF81E4C30930 /* AMIGA.png in Resources */ = {isa = PBXBuildFile; fileRef = DC11E976179410D451158A7A /* AMIGA.png */; };
 		6F33447857143BD5EBCB4A13 /* fightdata_cvs2.json in Resources */ = {isa = PBXBuildFile; fileRef = B390C1FF301195D44A9FACE5 /* fightdata_cvs2.json */; };
 		6F40193C9A9BCC936F152ED1 /* SavedStates.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C4859B682A869506B406B2 /* SavedStates.swift */; };
+		6F5B5C30DBF21F3EA670806C /* DetailMediaGallery.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA23A31F979C140E64DEA61D /* DetailMediaGallery.swift */; };
 		6F7C39782A0E545ED709A424 /* fightdata_capsnk.json in Resources */ = {isa = PBXBuildFile; fileRef = C5C3E57020AB94499BF98B56 /* fightdata_capsnk.json */; };
 		6F84B7886CE8645E3DD551AA /* input_coreLabels_dinothawr.json in Resources */ = {isa = PBXBuildFile; fileRef = AAAFBB29963B639FAAAFDFDF /* input_coreLabels_dinothawr.json */; };
 		6F92B91BE02DB32A96709519 /* SEGA32X.png in Resources */ = {isa = PBXBuildFile; fileRef = D1C768165EDB98167DB1AA24 /* SEGA32X.png */; };
@@ -1314,6 +1315,7 @@
 		D7215BC8C6DC025146779C3E /* input_coreOverrides_desmume_2015.json in Resources */ = {isa = PBXBuildFile; fileRef = 632520A7FB69D6AA71C8C09A /* input_coreOverrides_desmume_2015.json */; };
 		D7F0A5F6F85DF830F94E10BC /* SUPERVISION.png in Resources */ = {isa = PBXBuildFile; fileRef = 5FD91CADCD44C206B8BF2C38 /* SUPERVISION.png */; };
 		D804D2B87362CD5BD3DDCD85 /* GameInfoWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DB287DD57B0134E27B1041F /* GameInfoWindow.swift */; };
+		D821090AC9516C5D7E308A28 /* DetailHeroStatDeck.swift in Sources */ = {isa = PBXBuildFile; fileRef = A91EA3E6FAF6F4DE88534F20 /* DetailHeroStatDeck.swift */; };
 		D82DDB8B44DB0DC32F47E152 /* fightdata_sfex.json in Resources */ = {isa = PBXBuildFile; fileRef = AD9DDC02CE4528E2001A87B1 /* fightdata_sfex.json */; };
 		D86C5BF059EBAA07D55D579E /* DAPHNE.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C459265720761CCC9C13B51 /* DAPHNE.png */; };
 		D8C46EB4ABDA59F0B0A76D8A /* fightdata_jojoba.json in Resources */ = {isa = PBXBuildFile; fileRef = 0ACE5D08FEC5443E32D54E3D /* fightdata_jojoba.json */; };
@@ -2625,6 +2627,7 @@
 		A8935D40F11BF986BE60A840 /* ThemeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeManager.swift; sourceTree = "<group>"; };
 		A8C6248356BAE1B1F7CC6401 /* NotificationCenterSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationCenterSheetView.swift; sourceTree = "<group>"; };
 		A8F0CB1E24411337D925A5B0 /* APPLE_II.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = APPLE_II.png; sourceTree = "<group>"; };
+		A91EA3E6FAF6F4DE88534F20 /* DetailHeroStatDeck.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailHeroStatDeck.swift; sourceTree = "<group>"; };
 		A9258394F027EC5364CFCE39 /* GameOverlayToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameOverlayToolbar.swift; sourceTree = "<group>"; };
 		A94757847430E98D2FD0C8BC /* MoveListService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoveListService.swift; sourceTree = "<group>"; };
 		A9747E1374E8440042D0FF33 /* input_systemLabels_3do.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_3do.json; sourceTree = "<group>"; };
@@ -2818,6 +2821,7 @@
 		C9DADC9C3C46BD2DDB4C4734 /* input_coreLabels_tyrquake.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_tyrquake.json; sourceTree = "<group>"; };
 		C9EA57166E8095A1A45761BB /* Cheats.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cheats.swift; sourceTree = "<group>"; };
 		C9F54364D05E25E6DB8E0D89 /* fightdata_mvsc2.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_mvsc2.json; sourceTree = "<group>"; };
+		CA23A31F979C140E64DEA61D /* DetailMediaGallery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailMediaGallery.swift; sourceTree = "<group>"; };
 		CA24A7B42B3C58E4CD5125EC /* HelpContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpContent.swift; sourceTree = "<group>"; };
 		CA757F0E892B2D610E14129A /* fightdata_mtlchamp.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_mtlchamp.json; sourceTree = "<group>"; };
 		CAAAD055E295BDBDFA7D49E1 /* ngage.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = ngage.ico; sourceTree = "<group>"; };
@@ -3593,6 +3597,8 @@
 				154CCFA03FA2B0980BA39F0C /* CoreAndAchievements.swift */,
 				E07C31C568B8140ACE5C6ABD /* CoreOptionsSection.swift */,
 				A75E11DE818FADB9C12751AD /* DetailBoxArtComponents.swift */,
+				A91EA3E6FAF6F4DE88534F20 /* DetailHeroStatDeck.swift */,
+				CA23A31F979C140E64DEA61D /* DetailMediaGallery.swift */,
 				5C0861586830102C1E785A85 /* DetailSection.swift */,
 				D9DD356AFB297E7357F9435E /* DOSJoystick.swift */,
 				312DD29D6B77A5CC9B13F942 /* Header.swift */,
@@ -6937,6 +6943,8 @@
 				53610C7E863EC39935522D46 /* DOSRunner.swift in Sources */,
 				093A0D5881AA5FCDDD7AEDFF /* DesignSystem.swift in Sources */,
 				487D415E3A60D766E5C55314 /* DetailBoxArtComponents.swift in Sources */,
+				D821090AC9516C5D7E308A28 /* DetailHeroStatDeck.swift in Sources */,
+				6F5B5C30DBF21F3EA670806C /* DetailMediaGallery.swift in Sources */,
 				92931B26614CCBD73F498965 /* DetailSection.swift in Sources */,
 				95003D500A633FFBC2877CCB /* DiscHeaderReader.swift in Sources */,
 				A5C590109668FDF5230CEA0D /* DisplayCacheCodec.swift in Sources */,

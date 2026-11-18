@@ -29,22 +29,26 @@ struct ModernSectionCard<Content: View>: View {
     var body: some View {
         VStack(spacing: 0) {
             if showHeader, let title = title {
-                HStack(spacing: AppSpacing.sm) {
+                HStack(spacing: AppSpacing.md) {
                     if let icon = icon {
                         Image(systemName: icon)
-                            .foregroundColor(AppColors.textTertiary(colorScheme))
-                            .font(.body)
+                            .font(.system(size: 10, weight: .semibold))
+                            .foregroundStyle(AppColors.brandAccent)
+                            .frame(width: 22, height: 22)
+                            .background(
+                                RoundedRectangle(cornerRadius: 7, style: .continuous)
+                                    .fill(AppColors.accentBackground(colorScheme))
+                            )
                     }
                     Text(title)
-                        .font(.caption)
-                        .fontWeight(.semibold)
-                        .foregroundColor(AppColors.textTertiary(colorScheme))
+                        .font(.system(size: 11, weight: .semibold, design: .rounded))
+                        .foregroundColor(AppColors.textSecondary(colorScheme))
                         .textCase(.uppercase)
-                        .tracking(0.5)
+                        .tracking(0.7)
                     if let badge = badge {
                         Text(badge)
-                            .font(.caption2)
-                            .fontWeight(.semibold)
+                            .font(.system(size: 9, weight: .semibold, design: .rounded))
+                            .monospacedDigit()
                             .padding(.horizontal, AppSpacing.sm)
                             .padding(.vertical, AppSpacing.xxs)
                             .background(AppColors.accentBackground(colorScheme))
@@ -56,7 +60,7 @@ struct ModernSectionCard<Content: View>: View {
                         headerTrailing
                     }
                 }
-                .padding(.bottom, AppSpacing.sm)
+                .padding(.bottom, AppSpacing.md)
                 .overlay(alignment: .bottom) {
                     Divider()
                         .overlay(AppColors.divider(colorScheme))
@@ -67,13 +71,13 @@ struct ModernSectionCard<Content: View>: View {
         }
         .padding(AppSpacing.xl)
         .background(
-            RoundedRectangle(cornerRadius: AppRadius.lg)
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
                 .fill(AppColors.cardBackground(colorScheme))
         )
         .overlay(
-            RoundedRectangle(cornerRadius: AppRadius.lg)
-                .stroke(AppColors.cardBorder(colorScheme), lineWidth: 1)
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .strokeBorder(AppColors.cardBorder(colorScheme), lineWidth: 1)
         )
-        .clipped()
+        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
     }
 }
