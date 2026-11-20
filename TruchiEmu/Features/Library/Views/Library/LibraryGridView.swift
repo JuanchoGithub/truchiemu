@@ -366,30 +366,7 @@ struct LibraryGridView: View {
                 .padding(.vertical, 6)
             }
 
-            if raService.isMatchingAll {
-                HStack(spacing: 12) {
-                    BouncingProgressBar()
-                        .frame(width: 240)
-                    if raService.isImportingRACache {
-                        let format = loc.localized("retroAchievements.importingCacheProgress")
-                        Text(format
-                            .replacingOccurrences(of: "{0}", with: "\(raService.importRACacheStep)")
-                            .replacingOccurrences(of: "{1}", with: "\(raService.importRACacheTotal)"))
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    } else {
-                        let format = loc.localized("retroAchievements.matchedOfTotal")
-                        Text(format
-                            .replacingOccurrences(of: "{0}", with: "\(raService.matchedAllCount)")
-                            .replacingOccurrences(of: "{1}", with: "\(raService.matchedAllTotal)"))
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
-                    Spacer()
-                }
-                .padding(.horizontal)
-                .padding(.vertical, 6)
-            }
+            RAMatchProgressView()
             
             ZStack {
                 Group {
@@ -2665,7 +2642,46 @@ struct LibraryGridView: View {
         }
     }
 
-    // MARK: - Empty State Illustration
+    // MARK: - RetroAchievements Match Progress
+
+/// The progress bar of the RetroAchievements library match.
+///
+/// The view observes the progress object by itself. The library grid must not
+/// read the progress values. A change of the progress redraws the whole
+/// library window. That took 25 seconds for one library match.
+private struct RAMatchProgressView: View {
+    @ObservedObject private var progress = RAMatchProgress.shared
+    @ObservedObject private var loc = LocalizationManager.shared
+
+    var body: some View {
+        if progress.isMatchingAll {
+            HStack(spacing: 12) {
+                BouncingProgressBar()
+                    .frame(width: 240)
+                if progress.isImportingRACache {
+                    let format = loc.localized("retroAchievements.importingCacheProgress")
+                    Text(format
+                        .replacingOccurrences(of: "{0}", with: "\(progress.importRACacheStep)")
+                        .replacingOccurrences(of: "{1}", with: "\(progress.importRACacheTotal)"))
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                } else {
+                    let format = loc.localized("retroAchievements.matchedOfTotal")
+                    Text(format
+                        .replacingOccurrences(of: "{0}", with: "\(progress.matchedAllCount)")
+                        .replacingOccurrences(of: "{1}", with: "\(progress.matchedAllTotal)"))
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                Spacer()
+            }
+            .padding(.horizontal)
+            .padding(.vertical, 6)
+        }
+    }
+}
+
+// MARK: - Empty State Illustration
 
 private struct EmptyStateIllustration: View {
     @Environment(\.colorScheme) private var colorScheme

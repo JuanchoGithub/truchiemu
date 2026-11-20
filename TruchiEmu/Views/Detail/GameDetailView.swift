@@ -85,6 +85,16 @@ struct GameDetailView: View {
         library.rom(withID: rom.id) ?? rom
     }
 
+    /// The RetroAchievements match state of the current game.
+    ///
+    /// The value changes when the "Vincular biblioteca" operation finds the
+    /// game. The view loads the achievements when the value changes. The
+    /// value holds the status and the game ID in one string, so the view
+    /// loads the achievements only once when both values change.
+    var raMatchKey: String {
+        "\(currentROM.raMatchStatus ?? "none")|\(currentROM.raGameId ?? 0)"
+    }
+
     var system: SystemInfo? {
         SystemDatabase.displaySystem(forInternalID: currentROM.systemID ?? "")
     }
@@ -291,6 +301,11 @@ struct GameDetailView: View {
   .onChange(of: currentROM.lastPlayed) { _, _ in
             // Refresh slot info when user returns from playing the game
             loadSlotInfo()
+        }
+        .onChange(of: raMatchKey) { _, _ in
+            // The "Vincular biblioteca" operation found this game. Load the
+            // achievements now, so the user sees the result of the work.
+            loadAchievements()
         }
         .task(id: currentROM.id) {
             if currentROM.systemID == "mame" || currentROM.systemID == "arcade" {

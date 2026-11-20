@@ -47,20 +47,15 @@ class RetroAchievementsService: ObservableObject {
     @Published var isEnabled = false
     @Published var richPresence: String?
     
-    // MARK: - "Match All Games" progress (observed by Library + Settings views)
-    @Published var isMatchingAll = false
-    @Published var matchedAllCount = 0
-    @Published var matchedAllTotal = 0
-    // True during the cache-import phase of "Match All Games". When true the
-    // views show "Importing game cache (step/total files)"; when false they
-    // show the matched-count progress line.
-    @Published var isImportingRACache = false
-    @Published var importRACacheStep = 0
-    @Published var importRACacheTotal = 0
+    // MARK: - "Match All Games" progress
+    //
+    // The progress lives in `RAMatchProgress`. The library window observes
+    // this service. A progress change in this service redraws the whole
+    // library window. That took 25 seconds for one library match.
     
     // MARK: - Configuration
     
-    private let apiBaseURL = "https://retroachievements.org/API"
+    private static let apiBaseURL = "https://retroachievements.org/API"
     
     private static let baseFolder: URL = {
         let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
@@ -117,6 +112,16 @@ class RetroAchievementsService: ObservableObject {
     /// Kept for compatibility with the app's launch wiring; the context is now
     /// resolved live from SwiftDataContainer.shared.mainContext.
     func setModelContext(_ context: ModelContext) {}
+
+    /// The game index. The index holds all games in memory. It replaces the
+    /// per-ROM database queries. The service builds the index when it does not
+    /// exist and drops it when a new list file arrives.
+    private var hashIndex: RAHashIndex?
+
+    // The time that the match phase spends in the name search and in the
+    // hash search. The values are only for the timing log.
+    private var nameSearchSeconds: TimeInterval = 0
+    private var hashSearchSeconds: TimeInterval = 0
     
     // MARK: - Initialization
     
@@ -364,7 +369,7 @@ class RetroAchievementsService: ObservableObject {
         let coordinator = RAGameCacheCoordinator.shared
         coordinator.startFetchingConsoles()
 
-        let url = URL(string: "\(apiBaseURL)/API_GetConsoleIDs.php")!
+        let url = URL(string: "\(Self.apiBaseURL)/API_GetConsoleIDs.php")!
         var components = URLComponents(url: url, resolvingAgainstBaseURL: false)!
         components.queryItems = [
             URLQueryItem(name: "u", value: username),
@@ -372,7 +377,7 @@ class RetroAchievementsService: ObservableObject {
         ]
         
         guard let finalURL = components.url else { throw RAError.networkUnreachable }
-        let (data, _) = try await URLSession.shared.data(from: finalURL)
+        let data = try await Self.fetchData(from: finalURL)
         
         let consoles = try JSONDecoder().decode([RAConsoleResponse].self, from: data)
         let results = await importConsolesFromList(consoles, context: context)
@@ -441,19 +446,19 @@ class RetroAchievementsService: ObservableObject {
         let userSystemIDs = Set(userRoms.compactMap { $0.systemID })
         let userRAConsoleIDs = Set(userSystemIDs.map { mapSystemIDToRAConsoleID($0) })
         
-    let filteredConsoles = consoles.filter { userRAConsoleIDs.contains($0.id) }
+        let filteredConsoles = consoles.filter { userRAConsoleIDs.contains($0.id) }
         LoggerService.info(category: "RetroAchievements", "Refreshing game lists for \(filteredConsoles.count) systems present in library (out of \(consoles.count) total RA consoles).")
 
         let coordinator = RAGameCacheCoordinator.shared
         let totalConsoles = filteredConsoles.count
 
-        // Uses listDataFolder for console-specific lists
-        for (index, console) in filteredConsoles.enumerated() {
-            let step = index + 1
-            coordinator.startFetchingGames(consoleID: console.id, consoleName: console.name, step: step, total: totalConsoles)
-
+        // 3. Split the consoles into two groups: the lists that are fresh on
+        // disk and the lists that must be downloaded.
+        var staleConsoles: [(id: Int, name: String, fileURL: URL)] = []
+        var freshCount = 0
+        for console in filteredConsoles {
             let fileURL = listFileURL(consoleID: console.id, consoleName: console.name)
-            
+
             // Freshness check for individual console list
             if !forceRefresh, FileManager.default.fileExists(atPath: fileURL.path) {
                 let attributes = try? FileManager.default.attributesOfItem(atPath: fileURL.path)
@@ -464,33 +469,142 @@ class RetroAchievementsService: ObservableObject {
                     // The file is fresh but the database may still be empty (for
                     // example after a store migration). Importing is local work,
                     // so it never causes extra API traffic.
-                    if !hasHashesInCache(consoleID: console.id) {
+                    if !isCacheUpToDate(consoleID: console.id, fileURL: fileURL) {
                         await importLocalJSONFile(fileURL)
                     }
-                    coordinator.updateProgress(Double(step) / Double(totalConsoles), status: coordinator.statusLine)
+                    freshCount += 1
                     continue
                 }
             }
 
-            do {
-                try await downloadGameList(consoleID: console.id, consoleName: console.name)
-                LoggerService.info(category: "RetroAchievements", "Successfully cached games for \(console.name)")
-            } catch {
-                LoggerService.error(category: "RetroAchievements", "Failed to fetch games for \(console.name): \(error.localizedDescription)")
-            }
-            coordinator.updateProgress(Double(step) / Double(totalConsoles), status: coordinator.statusLine)
+            staleConsoles.append((console.id, console.name, fileURL))
         }
-        
+
+        // 4. Download the stale lists at the same time. The old code fetched
+        // them one after another. That took 22 seconds for 24 consoles.
+        // The number of downloads at the same time is limited. The server
+        // must not receive too many requests from one user.
+        if !staleConsoles.isEmpty {
+            let user = username
+            let key = webApiKey
+            var done = freshCount
+            // The server sends "429 Too Many Requests" when more than two
+            // requests arrive at the same time.
+            let maxParallelDownloads = 2
+
+            if let first = staleConsoles.first {
+                coordinator.startFetchingGames(consoleID: first.id, consoleName: first.name, step: done, total: totalConsoles)
+            }
+
+            await withTaskGroup(of: (String, URL, String?).self) { group in
+                var next = 0
+
+                // Fill the group with the first downloads.
+                while next < min(maxParallelDownloads, staleConsoles.count) {
+                    let item = staleConsoles[next]
+                    next += 1
+                    group.addTask {
+                        do {
+                            try await Self.downloadGameListFile(
+                                consoleID: item.id,
+                                consoleName: item.name,
+                                to: item.fileURL,
+                                username: user,
+                                webApiKey: key
+                            )
+                            return (item.name, item.fileURL, nil)
+                        } catch {
+                            return (item.name, item.fileURL, error.localizedDescription)
+                        }
+                    }
+                }
+
+                // Add one new download for each finished download.
+                while let (consoleName, fileURL, errorMessage) = await group.next() {
+                    done += 1
+                    if let errorMessage = errorMessage {
+                        LoggerService.error(category: "RetroAchievements", "Failed to fetch games for \(consoleName): \(errorMessage)")
+                    } else {
+                        await importLocalJSONFile(fileURL)
+                        LoggerService.info(category: "RetroAchievements", "Successfully cached games for \(consoleName)")
+                    }
+                    coordinator.updateFetchingGames(consoleName: consoleName, step: done, total: totalConsoles)
+
+                    if next < staleConsoles.count {
+                        let item = staleConsoles[next]
+                        next += 1
+                        group.addTask {
+                            do {
+                                try await Self.downloadGameListFile(
+                                    consoleID: item.id,
+                                    consoleName: item.name,
+                                    to: item.fileURL,
+                                    username: user,
+                                    webApiKey: key
+                                )
+                                return (item.name, item.fileURL, nil)
+                            } catch {
+                                return (item.name, item.fileURL, error.localizedDescription)
+                            }
+                        }
+                    }
+                }
+            }
+
+            // The list files changed. The index must be built again.
+            hashIndex = nil
+        }
+
         LoggerService.info(category: "RetroAchievements", "Finished fetching games for all consoles.")
         coordinator.finish()
     }
 
-    /// Downloads one console's game list (with hashes), writes it to
-    /// `listDataFolder`, and imports it into SwiftData.
-    private func downloadGameList(consoleID: Int, consoleName: String) async throws {
-        LoggerService.info(category: "RetroAchievements", "Fetching games for console: \(consoleName) (ID: \(consoleID))...")
+    /// Downloads data from the RetroAchievements server.
+    ///
+    /// The function checks the HTTP status code. The old code saved the
+    /// answer to the disk without checking it. A "429 Too Many Requests"
+    /// answer from the server was then saved as a game list. That answer
+    /// holds no games, so the match found fewer games.
+    ///
+    /// The server sends "429 Too Many Requests" when too many requests
+    /// arrive at the same time. The function waits and tries again when the
+    /// server sends this answer.
+    private nonisolated static func fetchData(from url: URL) async throws -> Data {
+        var lastStatus = 0
 
-        let url = URL(string: "\(apiBaseURL)/API_GetGameList.php")!
+        for attempt in 0..<5 {
+            let (data, response) = try await URLSession.shared.data(from: url)
+            let status = (response as? HTTPURLResponse)?.statusCode ?? 0
+
+            if status == 200 { return data }
+
+            lastStatus = status
+
+            guard status == 429 else { break }
+
+            // Wait longer after each failed try. The wait time is not the
+            // same for each request, so the requests do not all arrive at
+            // the same time after the wait.
+            let waitSeconds = 2.0 * Double(attempt + 1) + Double.random(in: 0...1.0)
+            try? await Task.sleep(nanoseconds: UInt64(waitSeconds * 1_000_000_000))
+        }
+
+        throw RAError.serverError(lastStatus)
+    }
+
+    /// Downloads one console's game list (with hashes) and writes it to disk.
+    ///
+    /// The function does not import the file into the database. The caller
+    /// imports the file. This split lets the app download many lists at the
+    /// same time.
+    private nonisolated static func downloadGameListFile(
+        consoleID: Int,
+        consoleName: String,
+        to fileURL: URL,
+        username: String?,
+        webApiKey: String
+    ) async throws {
+        let url = URL(string: "\(Self.apiBaseURL)/API_GetGameList.php")!
         var components = URLComponents(url: url, resolvingAgainstBaseURL: false)!
         components.queryItems = [
             URLQueryItem(name: "u", value: username),
@@ -501,9 +615,25 @@ class RetroAchievementsService: ObservableObject {
 
         guard let finalURL = components.url else { throw RAError.networkUnreachable }
 
-        let (data, _) = try await URLSession.shared.data(from: finalURL)
-        let fileURL = listFileURL(consoleID: consoleID, consoleName: consoleName)
+        let data = try await fetchData(from: finalURL)
         try? data.write(to: fileURL)
+    }
+
+    /// Downloads one console's game list (with hashes), writes it to
+    /// `listDataFolder`, and imports it into SwiftData.
+    private func downloadGameList(consoleID: Int, consoleName: String) async throws {
+        LoggerService.info(category: "RetroAchievements", "Fetching games for console: \(consoleName) (ID: \(consoleID))...")
+
+        let fileURL = listFileURL(consoleID: consoleID, consoleName: consoleName)
+        try await Self.downloadGameListFile(
+            consoleID: consoleID,
+            consoleName: consoleName,
+            to: fileURL,
+            username: username,
+            webApiKey: webApiKey
+        )
+        // The list file changed. The index must be built again.
+        hashIndex = nil
         await importLocalJSONFile(fileURL)
     }
 
@@ -516,9 +646,31 @@ class RetroAchievementsService: ObservableObject {
     /// True when the local database holds hash-bearing entries for a console.
     private func hasHashesInCache(consoleID: Int) -> Bool {
         guard let context = modelContext else { return false }
-        let predicate = #Predicate<RAGameCacheEntry> { $0.consoleID == consoleID }
-        let entries = (try? context.fetch(FetchDescriptor<RAGameCacheEntry>(predicate: predicate))) ?? []
-        return entries.contains { !$0.hashes.isEmpty }
+        var descriptor = FetchDescriptor<RAGameCacheEntry>(predicate: #Predicate { $0.consoleID == consoleID })
+        descriptor.fetchLimit = 1
+        let entry = (try? context.fetch(descriptor))?.first
+        return !(entry?.hashes.isEmpty ?? true)
+    }
+
+    /// True when the database already holds the games of the list file.
+    ///
+    /// The check compares the date of the file with the date of the newest
+    /// database row of that console. The import phase uses this check to skip
+    /// the files that did not change. The old code imported all files on
+    /// every run. That took 116 seconds.
+    private func isCacheUpToDate(consoleID: Int, fileURL: URL) -> Bool {
+        guard let context = modelContext else { return false }
+        guard let attributes = try? FileManager.default.attributesOfItem(atPath: fileURL.path),
+              let fileDate = attributes[.modificationDate] as? Date
+        else { return false }
+
+        var descriptor = FetchDescriptor<RAGameCacheEntry>(
+            predicate: #Predicate { $0.consoleID == consoleID },
+            sortBy: [SortDescriptor(\RAGameCacheEntry.cachedAt, order: .reverse)]
+        )
+        descriptor.fetchLimit = 1
+        guard let newest = (try? context.fetch(descriptor))?.first else { return false }
+        return newest.cachedAt >= fileDate
     }
 
     /// Guarantees that the hash list for `consoleID` is available before a ROM
@@ -616,12 +768,22 @@ class RetroAchievementsService: ObservableObject {
 
         let totalCount = jsonFiles.count
         for (index, fileURL) in jsonFiles.enumerated() {
+            // Skip the files that the database already holds. The old code
+            // imported all files on every run. That took 116 seconds.
+            let consoleID = Int(fileURL.lastPathComponent.components(separatedBy: "_").first ?? "") ?? 0
+            if consoleID > 0, isCacheUpToDate(consoleID: consoleID, fileURL: fileURL) {
+                onProgress?(index + 1, totalCount)
+                continue
+            }
             await importLocalJSONFile(fileURL)
             onProgress?(index + 1, totalCount)
         }
     }
 
     /// Imports a single console JSON file using a background ModelContext.
+    ///
+    /// The function writes the games in one batch. The old code ran one query
+    /// per game. That took 116 seconds for 32,000 games.
     func importLocalJSONFile(_ fileURL: URL) async {
         guard let container = SwiftDataContainer.shared.container else { return }
 
@@ -630,33 +792,33 @@ class RetroAchievementsService: ObservableObject {
             let decoder = JSONDecoder()
             decoder.dateDecodingStrategy = .iso8601
 
-            guard let games = try? decoder.decode([GameJSON].self, from: data) else { return }
+            guard let games = try? decoder.decode([RAGameListEntry].self, from: data) else { return }
+            guard let consoleID = games.first?.consoleID else { return }
+            let gameIDs = games.map(\.id)
 
-            // Run upserts on a background context
+            // Run the write on a background context
             await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
                 DispatchQueue.global(qos: .userInitiated).async {
                     let bgContext = ModelContext(container)
+                    // Remove the old rows of this console and any row that uses
+                    // the same game ID. Then insert the new rows in one save.
+                    try? bgContext.delete(
+                        model: RAGameCacheEntry.self,
+                        where: #Predicate { $0.consoleID == consoleID }
+                    )
+                    try? bgContext.delete(
+                        model: RAGameCacheEntry.self,
+                        where: #Predicate { gameIDs.contains($0.id) }
+                    )
                     for game in games {
-                        let gameID = game.id
-                        let fetchDescriptor = FetchDescriptor<RAGameCacheEntry>(
-                            predicate: #Predicate<RAGameCacheEntry> { $0.id == gameID }
+                        let entry = RAGameCacheEntry(
+                            id: game.id,
+                            title: game.title,
+                            consoleID: game.consoleID,
+                            consoleName: game.consoleName,
+                            hashes: game.hashes
                         )
-
-                        if let existing = try? bgContext.fetch(fetchDescriptor).first {
-                            existing.hashes = game.hashes
-                            existing.title = game.title
-                            existing.consoleID = game.consoleID
-                            existing.consoleName = game.consoleName
-                        } else {
-                            let entry = RAGameCacheEntry(
-                                id: game.id,
-                                title: game.title,
-                                consoleID: game.consoleID,
-                                consoleName: game.consoleName,
-                                hashes: game.hashes
-                            )
-                            bgContext.insert(entry)
-                        }
+                        bgContext.insert(entry)
                     }
                     try? bgContext.save()
                     continuation.resume()
@@ -670,34 +832,29 @@ class RetroAchievementsService: ObservableObject {
         }
     }
 
-    /// Performs a local search in the RAGameCacheEntry database for a name match.
+    /// Performs a local search for a name match.
+    ///
+    /// The search uses the index. The old code ran one database query per
+    /// ROM. That took 56 seconds for 2,108 ROMs.
     func identifyGameByName(title: String, consoleID: Int) async -> Int? {
+        let cleanedTitle = RAHashIndex.cleanedRomTitle(title)
+
+        #if LOG_DEBUG
+        LoggerService.debug(category: "RetroAchievements", "Searching RA cache for cleaned title: '\(cleanedTitle)' (original: '\(title)')")
+        #endif
+
+        // Search the index. The index holds the same games as the database.
+        if let index = await cachedIndex() {
+            return index.game(titleContains: cleanedTitle, consoleID: consoleID)?.id
+        }
+
+        // The index holds no games. Search the database.
         guard let context = modelContext else { return nil }
-        
-        // 1. Clean the title: remove extension, replace underscores, remove common tags
-        var cleanedTitle = title
-        if let lastDotIndex = cleanedTitle.lastIndex(of: ".") {
-            cleanedTitle = String(cleanedTitle[..<lastDotIndex])
-        }
-        cleanedTitle = cleanedTitle.replacingOccurrences(of: "_", with: " ")
-        
-        // Remove common tags like (World), [!], etc.
-        let tagRegex = try? NSRegularExpression(pattern: "\\s*[\\[\\(].*?[\\]\\)]", options: .caseInsensitive)
-        if let regex = tagRegex {
-            cleanedTitle = regex.stringByReplacingMatches(in: cleanedTitle, options: [], range: NSRange(location: 0, length: cleanedTitle.utf16.count), withTemplate: "")
-        }
-        
-        cleanedTitle = cleanedTitle.trimmingCharacters(in: .whitespacesAndNewlines)
-        
-        LoggerService.info(category: "RetroAchievements", "Searching RA cache for cleaned title: '\(cleanedTitle)' (original: '\(title)')")
-        
-        // 2. Use localizedStandardContains for resilient name matching
         let predicate = #Predicate<RAGameCacheEntry> {
             $0.title.localizedStandardContains(cleanedTitle) && $0.consoleID == consoleID
         }
-        
         let descriptor = FetchDescriptor<RAGameCacheEntry>(predicate: predicate)
-        
+
         do {
             let results = try context.fetch(descriptor)
             // Return the first match found in the local cache, ensuring it's a valid ID
@@ -713,6 +870,11 @@ class RetroAchievementsService: ObservableObject {
     
     /// Finds a game ID by hash searching across ALL consoles in the local cache.
     private func findGameIdByHashLocally(hash: String) async -> Int? {
+        if let index = await cachedIndex(),
+           let match = index.game(hash: hash) {
+            return match.id
+        }
+
         guard let context = modelContext else { return nil }
         let descriptor = FetchDescriptor<RAGameCacheEntry>()
         let entries = (try? context.fetch(descriptor)) ?? []
@@ -724,38 +886,92 @@ class RetroAchievementsService: ObservableObject {
         return nil
     }
 
-    // Find game by hash - tries local cache first
+    // Find game by hash - uses the local cache
     func findGameByHashLocally(consoleID: Int, hash: String, isUserInitiated: Bool = false) async -> (id: Int, title: String, hashes: [String])? {
         let lowerHash = hash.lowercased()
-        LoggerService.info(category: "RetroAchievements", "Searching RA cache for hash: \(lowerHash) (ConsoleID: \(consoleID))")
-        
-        // First try local cache (full game list search)
+        #if LOG_DEBUG
+        LoggerService.debug(category: "RetroAchievements", "Searching RA cache for hash: \(lowerHash) (ConsoleID: \(consoleID))")
+        #endif
+
+        // The index holds all games of the local cache. The index is the only
+        // source that the match phase uses. The database search below runs
+        // only when the index holds no games.
+        if let index = await cachedIndex() {
+            if let match = index.game(hash: lowerHash, consoleID: consoleID) {
+                #if LOG_DEBUG
+                LoggerService.debug(category: "RetroAchievements", "Local cache HIT for hash \(lowerHash): \(match.title) (ID: \(match.id))")
+                #endif
+                return (match.id, match.title, match.hashes)
+            }
+
+            #if LOG_DEBUG
+            LoggerService.debug(category: "RetroAchievements", "Local cache MISS for hash \(lowerHash).")
+            #endif
+            return nil
+        }
+
+        // The index holds no games. Search the database.
         if let context = modelContext {
-            // Fetch games for this console first. 
-            // Filtering hashes in the predicate can crash with _NSCoreDataStringSearch 
+            // Fetch games for this console first.
+            // Filtering hashes in the predicate can crash with _NSCoreDataStringSearch
             // when applied to array attributes in some SwiftData versions.
             let predicate = #Predicate<RAGameCacheEntry> {
                 $0.consoleID == consoleID
             }
             let descriptor = FetchDescriptor<RAGameCacheEntry>(predicate: predicate)
-            
+
             do {
                 let gamesForConsole = try context.fetch(descriptor)
                 if let result = gamesForConsole.first(where: { entry in
                     entry.hashes.contains(where: { $0.caseInsensitiveCompare(lowerHash) == .orderedSame })
                 }) {
-                    LoggerService.info(category: "RetroAchievements", "Local cache HIT for hash \(lowerHash): \(result.title) (ID: \(result.id))")
+                    #if LOG_DEBUG
+                    LoggerService.debug(category: "RetroAchievements", "Local cache HIT for hash \(lowerHash): \(result.title) (ID: \(result.id))")
+                    #endif
                     return (result.id, result.title, result.hashes)
                 }
             } catch {
                 LoggerService.error(category: "RetroAchievements", "Failed to fetch from local cache: \(error.localizedDescription)")
             }
         }
-        
-        LoggerService.info(category: "RetroAchievements", "Local cache MISS for hash \(lowerHash).")
-        
-        LoggerService.info(category: "RetroAchievements", "Hash \(lowerHash) not found in any local cache, will need API resolution.")
+
+        #if LOG_DEBUG
+        LoggerService.debug(category: "RetroAchievements", "Local cache MISS for hash \(lowerHash).")
+        LoggerService.debug(category: "RetroAchievements", "Hash \(lowerHash) not found in any local cache, will need API resolution.")
+        #endif
         return nil
+    }
+
+    // MARK: - Game Index
+
+    /// The game index. The function builds the index when it does not exist.
+    ///
+    /// The index reads the cached list files. The build takes about 0.2
+    /// seconds. The database is used when the list files are not available.
+    /// The function returns nil when no games are available.
+    private func cachedIndex() async -> RAHashIndex? {
+        if let index = hashIndex { return index.isEmpty ? nil : index }
+
+        let folder = listDataFolder
+        var index = await RAHashIndex.build(from: folder)
+        if index.isEmpty {
+            index = await Self.buildIndexFromDatabase(container: SwiftDataContainer.shared.container)
+        }
+        hashIndex = index
+        return index.isEmpty ? nil : index
+    }
+
+    /// Builds the index from the database. The function is used when the list
+    /// files are not available.
+    private nonisolated static func buildIndexFromDatabase(container: ModelContainer?) async -> RAHashIndex {
+        guard let container = container else { return RAHashIndex(games: []) }
+        return await Task.detached(priority: .userInitiated) {
+            let bgContext = ModelContext(container)
+            let entries = (try? bgContext.fetch(FetchDescriptor<RAGameCacheEntry>())) ?? []
+            return RAHashIndex(games: entries.map {
+                RAHashIndex.Game(id: $0.id, title: $0.title, consoleID: $0.consoleID, hashes: $0.hashes)
+            })
+        }.value
     }
     
     // Find all games by name - tries local cache first, then falls back to API.
@@ -765,7 +981,17 @@ class RetroAchievementsService: ObservableObject {
         let queryKeys = Self.buildTitleSearchKeys(for: title)
         guard !queryKeys.isEmpty else { return [] }
 
-        // First try local cache
+        // First try the index. The index holds the same games as the database.
+        if let index = await cachedIndex(),
+           let consoleGames = index.gamesByConsole[consoleID] {
+            let matches = consoleGames.compactMap { game -> (Int, String, [String])? in
+                Self.matchesTitleSearchKeys(queryKeys: queryKeys, candidate: game.title) ?
+                (game.id, game.title, game.hashes) : nil
+            }
+            if !matches.isEmpty { return matches }
+        }
+
+        // The index holds no games. Search the database.
         if let context = modelContext {
             let predicate = #Predicate<RAGameCacheEntry> {
                 $0.consoleID == consoleID
@@ -843,7 +1069,7 @@ class RetroAchievementsService: ObservableObject {
         guard let username = username, !webApiKey.isEmpty else { return [] }
 
         // Use the generic game list endpoint filtered by console
-        let url = URL(string: "\(apiBaseURL)/API_GetGameList.php")!
+        let url = URL(string: "\(Self.apiBaseURL)/API_GetGameList.php")!
         var components = URLComponents(url: url, resolvingAgainstBaseURL: false)!
         components.queryItems = [
             URLQueryItem(name: "u", value: username),
@@ -870,6 +1096,16 @@ class RetroAchievementsService: ObservableObject {
     }
 
     /// Matches all games in the library using the local RA cache.
+    ///
+    /// The function uses three phases:
+    /// 1. It downloads the game lists that are missing. Then it imports the
+    ///    lists that changed.
+    /// 2. It builds the game index. The index holds all games in memory.
+    /// 3. It hashes the ROM files. Then it compares the hashes with the index.
+    ///
+    /// The old code ran one database query per ROM. That took 480 seconds for
+    /// 2,108 ROMs.
+    ///
     /// - Parameter roms: The authoritative set of games to match (the in-memory library the user sees).
     /// - Parameter onProgress: Optional closure invoked after each ROM with the running matched count and total.
     func matchAllCachedGames(
@@ -878,23 +1114,24 @@ class RetroAchievementsService: ObservableObject {
     ) async -> (matched: Int, total: Int) {
         var matchedCount = 0
         let coordinator = RAGameCacheCoordinator.shared
+        let progress = RAMatchProgress.shared
 
         // Publish state BEFORE the long import/matching work so SwiftUI gets to
         // render the progress bar with the correct total immediately. Without
         // this reordering the bar either didn't appear or showed frozen,
         // because importLocalRAGameCache() then the matching loop hogged the
         // MainActor for seconds with no SwiftUI render frame in between.
-        isMatchingAll = true
-        matchedAllCount = 0
-        matchedAllTotal = roms.count
+        progress.isMatchingAll = true
+        progress.matchedAllCount = 0
+        progress.matchedAllTotal = roms.count
         await Task.yield()
 
         // Cache-import phase. Drive the dedicated published state so the bar
         // shows "Importing game cache (step/total)" instead of being stuck on
         // "Matched 0 of N" for ~50s while JSON files are parsed.
-        isImportingRACache = true
-        importRACacheStep = 0
-        importRACacheTotal = 0
+        progress.isImportingRACache = true
+        progress.importRACacheStep = 0
+        progress.importRACacheTotal = 0
         await Task.yield()
         // Pull game lists that were never downloaded (or whose files expired),
         // then import everything that is on disk. Without this the matching
@@ -902,56 +1139,254 @@ class RetroAchievementsService: ObservableObject {
         // files are reused, so this respects the refresh limits.
         try? await fetchAndCacheAllGames()
         await importLocalRAGameCache { step, total in
-            self.importRACacheStep = step
-            self.importRACacheTotal = total
+            progress.importRACacheStep = step
+            progress.importRACacheTotal = total
         }
-        isImportingRACache = false
+        progress.isImportingRACache = false
         await Task.yield()
 
+        // Index phase. One build replaces all per-ROM database queries.
+        let consoleIDs = Set(roms.compactMap { $0.systemID }.map { Self.systemIDToRAConsoleID($0) })
+        let indexStart = Date()
+        let gameIndex = await RAHashIndex.build(from: listDataFolder, consoleIDs: consoleIDs)
+        hashIndex = gameIndex
+        let indexSeconds = Date().timeIntervalSince(indexStart)
+        LoggerService.info(category: "RetroAchievements", "Index built with \(gameIndex.gameCount) games and \(gameIndex.gamesByHash.count) hashes in \(String(format: "%.2f", indexSeconds))s.")
+
+        // Read all rows of the library in one query. The old code ran one
+        // query per ROM.
+        let context = modelContext
+        var entriesByID: [UUID: ROMEntry] = [:]
+        let fetchStart = Date()
+        if let context = context {
+            let rows = (try? context.fetch(FetchDescriptor<ROMEntry>())) ?? []
+            entriesByID = Dictionary(rows.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
+        }
+        let fetchSeconds = Date().timeIntervalSince(fetchStart)
+
         let totalRoms = roms.count
+        var step = 0
+        var pendingSave = 0
+        var hashSeconds: TimeInterval = 0
+        var syncSeconds: TimeInterval = 0
+        var saveSeconds: TimeInterval = 0
+        var yieldSeconds: TimeInterval = 0
+        var lastProgressTime = Date.distantPast
+        nameSearchSeconds = 0
+        hashSearchSeconds = 0
 
-        for (index, rom) in roms.enumerated() {
-            let step = index + 1
-            coordinator.startHashing(romName: rom.name, step: step, total: totalRoms)
+        coordinator.startHashing(romName: roms.first?.name ?? "", step: 0, total: totalRoms)
 
-            await syncROMWithRA(rom: rom)
+        // Hash phase. All files are hashed in one continuous group. The old
+        // code used 88 groups of 24 files. Each group was a barrier: the next
+        // group could only start after the slowest file of the previous group
+        // finished. That kept the processor power at about one third.
+        let hashStart = Date()
+        let hashes = await computeHashes(for: roms, entriesByID: entriesByID)
+        hashSeconds = Date().timeIntervalSince(hashStart)
 
-            // Check if it was matched
-            if let context = modelContext {
-                let descriptor = FetchDescriptor<ROMEntry>(predicate: #Predicate { $0.id == rom.id })
-                if let entry = try? context.fetch(descriptor).first, entry.raMatchStatus == "matched" {
-                    matchedCount += 1
-                }
+        // Match phase. Every ROM is compared with the index now.
+        for rom in roms {
+            step += 1
+
+            let syncStart = Date()
+            let isMatched = await syncROMWithRA(
+                rom: rom,
+                entry: entriesByID[rom.id],
+                hash: hashes[rom.id],
+                index: gameIndex,
+                saveChanges: false
+            )
+            syncSeconds += Date().timeIntervalSince(syncStart)
+            if isMatched { matchedCount += 1 }
+
+            // Update the progress one time per second. The library
+            // window redraws on every state change. The old code changed
+            // the state for every ROM and yielded for every ROM. That
+            // took 25 seconds.
+            let now = Date()
+            if now.timeIntervalSince(lastProgressTime) >= 1.0 {
+                progress.matchedAllCount = matchedCount
+                progress.step = step
+                progress.currentRomName = rom.name
+                onProgress?(matchedCount, totalRoms)
+                lastProgressTime = now
+
+                // Let SwiftUI draw the progress. The yield runs only when
+                // the progress changes. The old code yielded for every
+                // ROM.
+                let yieldStart = Date()
+                await Task.yield()
+                yieldSeconds += Date().timeIntervalSince(yieldStart)
             }
-            matchedAllCount = matchedCount
-            onProgress?(matchedCount, totalRoms)
-            coordinator.updateHashingProgress(Double(step) / Double(totalRoms), romName: rom.name, step: step, total: totalRoms)
-            // Let SwiftUI repaint the running counter. The hashing happens off
-            // MainActor, but the SwiftData lookup + the progress closure above
-            // are synchronous; yielding here guarantees a render frame per ROM
-            // so the bar never freezes between iterations.
-            await Task.yield()
+
+            // Save in batches. The old code saved after every ROM.
+            pendingSave += 1
+            if pendingSave >= 200 {
+                let saveStart = Date()
+                try? context?.save()
+                saveSeconds += Date().timeIntervalSince(saveStart)
+                pendingSave = 0
+            }
         }
 
-        isMatchingAll = false
+        try? context?.save()
+
+        progress.matchedAllCount = matchedCount
+        progress.step = totalRoms
+        progress.currentRomName = ""
+        onProgress?(matchedCount, totalRoms)
+        LoggerService.info(category: "RetroAchievements", "Matched \(matchedCount) of \(totalRoms) games. Index took \(String(format: "%.2f", indexSeconds))s. Rows took \(String(format: "%.2f", fetchSeconds))s. Hashing took \(String(format: "%.2f", hashSeconds))s. Matching took \(String(format: "%.2f", syncSeconds))s. Name search took \(String(format: "%.2f", nameSearchSeconds))s. Hash search took \(String(format: "%.2f", hashSearchSeconds))s. Saving took \(String(format: "%.2f", saveSeconds))s. Yielding took \(String(format: "%.2f", yieldSeconds))s. The match phase took \(String(format: "%.2f", Date().timeIntervalSince(indexStart)))s.")
+
+        progress.isMatchingAll = false
         coordinator.finish()
         return (matchedCount, totalRoms)
+    }
+
+    /// Computes the file hashes that the database does not hold.
+    ///
+    /// The function reads all files in one continuous group of parallel
+    /// workers. The old code used 88 groups of 24 files. Each group was a
+    /// barrier, so the next group could only start after the slowest file of
+    /// the previous group finished. That kept the processor power at about
+    /// one third of the available power.
+    ///
+    /// - Parameters:
+    ///   - roms: The ROMs to hash.
+    ///   - entriesByID: The database rows of the ROMs. The function uses the
+    ///     stored hash when the row holds one.
+    /// - Returns: The hash of each ROM. The map has no entry for a ROM that
+    ///   the hash function cannot read.
+    private func computeHashes(for roms: [ROM], entriesByID: [UUID: ROMEntry]) async -> [UUID: String] {
+        var hashes: [UUID: String] = [:]
+        var pending: [(id: UUID, path: String, systemID: String, name: String)] = []
+
+        for rom in roms {
+            let entry = entriesByID[rom.id]
+
+            // ROMs that are already linked do not need a hash. The old code
+            // hashed them on every run. That took 14 seconds for the large
+            // disc images of the library.
+            if let entry = entry, let currentId = entry.raGameId, currentId > 0,
+               entry.raMatchStatus == "matched" {
+                continue
+            }
+
+            // Use the stored hash. The old code read the file again on every
+            // run because the in-memory copy of the hash was old.
+            if let stored = entry?.md5?.trimmingCharacters(in: .whitespacesAndNewlines),
+               !stored.isEmpty {
+                hashes[rom.id] = stored
+            } else if let systemID = rom.systemID {
+                pending.append((rom.id, rom.path.path, systemID, rom.name))
+            }
+        }
+
+        guard !pending.isEmpty else { return hashes }
+
+        // A CDI file needs the exclusive lock in the hash library. The lock
+        // stops the other workers. The CDI files go last, so the other files
+        // keep the processors busy until the end.
+        pending.sort { first, second in
+            first.path.lowercased().hasSuffix(".cdi") && !second.path.lowercased().hasSuffix(".cdi")
+        }
+
+        let progress = RAMatchProgress.shared
+        let coordinator = RAGameCacheCoordinator.shared
+        var completed = 0
+        var lastProgressTime = Date.distantPast
+
+        // The number of workers is the number of processor cores. The hash
+        // function uses the processor. The disk is not the limit.
+        let workerCount = min(ProcessInfo.processInfo.activeProcessorCount, pending.count)
+
+        await withTaskGroup(of: (UUID, String?, String).self) { group in
+            var next = 0
+
+            // Fill the group with the first jobs.
+            while next < workerCount {
+                let job = pending[next]
+                next += 1
+                group.addTask {
+                    (job.id, RomHasher.hashRom(at: job.path, systemID: job.systemID), job.name)
+                }
+            }
+
+            // Add one new job for each finished job. The group keeps all
+            // workers busy until every file is hashed.
+            while let (id, hash, name) = await group.next() {
+                if let hash = hash { hashes[id] = hash }
+                completed += 1
+
+                if next < pending.count {
+                    let job = pending[next]
+                    next += 1
+                    group.addTask {
+                        (job.id, RomHasher.hashRom(at: job.path, systemID: job.systemID), job.name)
+                    }
+                }
+
+                // Update the progress one time per second. The library
+                // window redraws on every state change.
+                let now = Date()
+                if now.timeIntervalSince(lastProgressTime) >= 1.0 {
+                    progress.step = completed
+                    progress.currentRomName = name
+                    coordinator.updateHashingProgress(
+                        Double(completed) / Double(pending.count),
+                        romName: name,
+                        step: completed,
+                        total: pending.count
+                    )
+                    lastProgressTime = now
+                }
+            }
+        }
+
+        return hashes
     }
 
     // MARK: - Game Identification
     
     /// Coordinates the identification of a local ROM with RetroAchievements.
     /// Performs name-based lookup via local cache, followed by hash verification via API.
-    func syncROMWithRA(rom: ROM) async {
-        guard isLoggedIn, let systemID = rom.systemID, let context = modelContext else { return }
+    ///
+    /// - Parameters:
+    ///   - rom: The ROM to match.
+    ///   - entry: The database row of the ROM. The function reads the row when
+    ///     the caller does not pass it.
+    ///   - hash: The file hash. The function reads the stored hash when the
+    ///     caller does not pass it.
+    ///   - index: The game index. The function reads the index when the caller
+    ///     does not pass it.
+    ///   - saveChanges: The function saves the database when this value is
+    ///     true. The match phase saves in batches.
+    /// - Returns: True when the ROM is linked to a game.
+    @discardableResult
+    func syncROMWithRA(
+        rom: ROM,
+        entry: ROMEntry? = nil,
+        hash: String? = nil,
+        index: RAHashIndex? = nil,
+        saveChanges: Bool = true
+    ) async -> Bool {
+        guard isLoggedIn, let systemID = rom.systemID, let context = modelContext else { return false }
 
-        LoggerService.info(category: "RetroAchievements", "Syncing \(rom.name) with RA...")
+        #if LOG_DEBUG
+        LoggerService.debug(category: "RetroAchievements", "Syncing \(rom.name) with RA...")
+        #endif
 
         // 0. Find the corresponding ROMEntry in SwiftData
-        let descriptor = FetchDescriptor<ROMEntry>(predicate: #Predicate { $0.id == rom.id })
-        guard let romEntry = try? context.fetch(descriptor).first else {
-            LoggerService.error(category: "RetroAchievements", "Syncing \(rom.name) failed: ROMEntry not found in SwiftData.")
-            return
+        let romEntry: ROMEntry
+        if let entry = entry {
+            romEntry = entry
+        } else {
+            let descriptor = FetchDescriptor<ROMEntry>(predicate: #Predicate { $0.id == rom.id })
+            guard let found = (try? context.fetch(descriptor))?.first else {
+                LoggerService.error(category: "RetroAchievements", "Syncing \(rom.name) failed: ROMEntry not found in SwiftData.")
+                return false
+            }
+            romEntry = found
         }
 
         // If already matched and valid, we can skip unless it's a placeholder 0
@@ -959,7 +1394,7 @@ class RetroAchievementsService: ObservableObject {
             #if LOG_DEBUG
             LoggerService.debug(category: "RetroAchievements", "\(rom.name) is already identified as ID \(currentId), skipping sync.")
             #endif
-            return
+            return true
         }
 
         // 1. Attempt identification via HASH FIRST (most reliable)
@@ -970,42 +1405,57 @@ class RetroAchievementsService: ObservableObject {
 
         // hashing reads file bytes + calls rcheevos C; for disc images this can
         // take seconds. Run off MainActor so the UI stays responsive and the
-        // "Matched X of Y" line keeps updating per ROM.
+        // "Matched X of Y" line keeps updating per ROM. The match phase
+        // computes the hashes of many files in parallel and passes them here.
         let romHash: String?
-        if let precomputed = rom.md5 {
-            romHash = precomputed
+        if let given = hash {
+            romHash = given
+        } else if let stored = romEntry.md5?.trimmingCharacters(in: .whitespacesAndNewlines), !stored.isEmpty {
+            romHash = stored
         } else {
             let path = rom.path.path
             romHash = await Task.detached(priority: .userInitiated) {
                 RomHasher.hashRom(at: path, systemID: systemID)
             }.value
         }
-        
-        LoggerService.info(category: "RetroAchievements", "Syncing '\(rom.name)' - Generated Hash: \(romHash ?? "NONE") (RA ConsoleID: \(raConsoleID))")
-        
+
+        #if LOG_DEBUG
+        LoggerService.debug(category: "RetroAchievements", "Syncing '\(rom.name)' - Generated Hash: \(romHash ?? "NONE") (RA ConsoleID: \(raConsoleID))")
+        #endif
+
+        // Store the hash. The next run uses the stored hash. The old code
+        // stored the hash only when the game did not match.
+        if let romHash = romHash, romHash.count > 8 {
+            romEntry.md5 = romHash
+        }
+
         if let romHash = romHash {
             // Check local cache (including the newly imported JSON data)
-            if let result = await findGameByHashLocally(consoleID: raConsoleID, hash: romHash) {
-                LoggerService.info(category: "RetroAchievements", "Hash MATCH found for \(rom.name): \(result.title) (ID: \(result.id))")
+            if let result = await findGameByHash(consoleID: raConsoleID, hash: romHash, index: index) {
+                #if LOG_DEBUG
+                LoggerService.debug(category: "RetroAchievements", "Hash MATCH found for \(rom.name): \(result.title) (ID: \(result.id))")
+                #endif
                 romEntry.raGameId = result.id
                 romEntry.raMatchStatus = "matched"
-                
+
                 // If we also identified it as ID 0 previously, clear it
                 if romEntry.raGameId == 0 { romEntry.raGameId = result.id }
-                
-                try? context.save()
-                return
+
+                if saveChanges { try? context.save() }
+                return true
             }
             // Try alternate console for GB/GBC duality
             if let altID = altConsoleID {
-                if let result = await findGameByHashLocally(consoleID: altID, hash: romHash) {
-                    LoggerService.info(category: "RetroAchievements", "Hash MATCH found on alternate console for \(rom.name): \(result.title) (ID: \(result.id))")
+                if let result = await findGameByHash(consoleID: altID, hash: romHash, index: index) {
+                    #if LOG_DEBUG
+                    LoggerService.debug(category: "RetroAchievements", "Hash MATCH found on alternate console for \(rom.name): \(result.title) (ID: \(result.id))")
+                    #endif
                     romEntry.raGameId = result.id
                     romEntry.raMatchStatus = "matched"
                     matchedOnAltConsole = true
-                    try? context.save()
+                    if saveChanges { try? context.save() }
                     postGBGBCCrossMatchNotification(rom: rom, systemID: systemID, altConsoleID: altID)
-                    return
+                    return true
                 }
             }
         }
@@ -1015,12 +1465,12 @@ class RetroAchievementsService: ObservableObject {
         // setting raGameId to a name-match game causes wrong RA data to display
         // in views that check raGameId > 0. The status alone ("mismatch") is set
         // so the RA comparison sheet can still use name matching.
-        if let raGameId = await identifyGameByName(title: rom.name, consoleID: raConsoleID) {
+        if let raGameId = await findGameByName(title: rom.name, consoleID: raConsoleID, index: index) {
             romEntry.raMatchStatus = "mismatch"
-            
+
             // 3. Verify the exact version using the ROM's hash via local cache
             if let romHash = romHash {
-                if let result = await findGameByHashLocally(consoleID: raConsoleID, hash: romHash) {
+                if let result = await findGameByHash(consoleID: raConsoleID, hash: romHash, index: index) {
                     if result.id == raGameId {
                         romEntry.raMatchStatus = "matched"
                     } else {
@@ -1029,7 +1479,7 @@ class RetroAchievementsService: ObservableObject {
                     }
                 } else if let altID = altConsoleID {
                     // Try alternate console for GB/GBC duality
-                    if let result = await findGameByHashLocally(consoleID: altID, hash: romHash) {
+                    if let result = await findGameByHash(consoleID: altID, hash: romHash, index: index) {
                         if result.id == raGameId {
                             romEntry.raMatchStatus = "matched"
                             matchedOnAltConsole = true
@@ -1041,10 +1491,10 @@ class RetroAchievementsService: ObservableObject {
                     }
                 } else {
                     /*
-                     IMPORTANT: Individual hash lookups via API_GetGameByHash.php are BANNED by RetroAchievements 
-                     for library scanning. All identification MUST be done via the local JSON cache lists 
+                     IMPORTANT: Individual hash lookups via API_GetGameByHash.php are BANNED by RetroAchievements
+                     for library scanning. All identification MUST be done via the local JSON cache lists
                      (API_GetGameList.php?h=1) to avoid server strain.
-                     
+
 if let raGameIDFromHash = try? await resolveHash(hash: romHash) {
                           if raGameIDFromHash == raGameId {
                               romEntry.raMatchStatus = "matched"
@@ -1059,11 +1509,11 @@ if let raGameIDFromHash = try? await resolveHash(hash: romHash) {
         } else {
             // 4. Final attempt: Identify by hash only via local cache if not found earlier
             if let romHash = romHash {
-                if let result = await findGameByHashLocally(consoleID: raConsoleID, hash: romHash) {
+                if let result = await findGameByHash(consoleID: raConsoleID, hash: romHash, index: index) {
                     romEntry.raGameId = result.id
                     romEntry.raMatchStatus = "matched"
                 } else if let altID = altConsoleID {
-                    if let result = await findGameByHashLocally(consoleID: altID, hash: romHash) {
+                    if let result = await findGameByHash(consoleID: altID, hash: romHash, index: index) {
                         romEntry.raGameId = result.id
                         romEntry.raMatchStatus = "matched"
                         matchedOnAltConsole = true
@@ -1075,18 +1525,54 @@ if let raGameIDFromHash = try? await resolveHash(hash: romHash) {
                 }
             }
         }
-        
+
         if matchedOnAltConsole {
             postGBGBCCrossMatchNotification(rom: rom, systemID: systemID, altConsoleID: altConsoleID ?? 0)
         }
-        
-        // Persist computed MD5 if we have it
-        if let md5 = romHash, md5.count > 8 {
-            romEntry.md5 = md5
-        }
-        
+
         // Persist changes to SwiftData
-        try? context.save()
+        if saveChanges { try? context.save() }
+
+        return romEntry.raMatchStatus == "matched"
+    }
+
+    /// Finds a game by its file hash. The function uses the index when it can.
+    ///
+    /// The index holds all games of the local cache. The function does not
+    /// search the database when the index holds games. That search loads all
+    /// games of a console for every ROM.
+    private func findGameByHash(
+        consoleID: Int,
+        hash: String,
+        index: RAHashIndex?
+    ) async -> (id: Int, title: String, hashes: [String])? {
+        let start = Date()
+        defer { hashSearchSeconds += Date().timeIntervalSince(start) }
+        if let index = index {
+            if let match = index.game(hash: hash, consoleID: consoleID) {
+                return (match.id, match.title, match.hashes)
+            }
+            if !index.isEmpty { return nil }
+        }
+        return await findGameByHashLocally(consoleID: consoleID, hash: hash)
+    }
+
+    /// Finds a game by its name. The function uses the index when it can.
+    private func findGameByName(
+        title: String,
+        consoleID: Int,
+        index: RAHashIndex?
+    ) async -> Int? {
+        let start = Date()
+        defer { nameSearchSeconds += Date().timeIntervalSince(start) }
+        if let index = index {
+            let cleanedTitle = RAHashIndex.cleanedRomTitle(title)
+            if let match = index.game(titleContains: cleanedTitle, consoleID: consoleID) {
+                return match.id
+            }
+            if !index.isEmpty { return nil }
+        }
+        return await identifyGameByName(title: title, consoleID: consoleID)
     }
 
     /// Helper to map Libretro/SystemDatabase IDs to RetroAchievements Console IDs
@@ -1186,7 +1672,7 @@ if let raGameIDFromHash = try? await resolveHash(hash: romHash) {
         guard let username = username, !webApiKey.isEmpty else { return nil }
         
         // This calls the API to resolve hash to game ID
-        let url = URL(string: "\(apiBaseURL)/API_GetGameByHash.php")!
+        let url = URL(string: "\(Self.apiBaseURL)/API_GetGameByHash.php")!
         var components = URLComponents(url: url, resolvingAgainstBaseURL: false)!
         components.queryItems = [
             URLQueryItem(name: "h", value: hash),
@@ -1223,7 +1709,7 @@ if let raGameIDFromHash = try? await resolveHash(hash: romHash) {
 
     // Fetch game ID from a ROM hash.
     private func requestGameByHash(hash: String, username: String) async throws -> RAHashResponse? {
-        let url = URL(string: "\(apiBaseURL)/API_GetGameByHash.php")!
+        let url = URL(string: "\(Self.apiBaseURL)/API_GetGameByHash.php")!
         var components = URLComponents(url: url, resolvingAgainstBaseURL: false)!
         #if LOG_DEBUG
         LoggerService.debug(category: "RetroAchievements", "Requesting Game, hash \(hash), user: \(username)")
@@ -1826,7 +2312,7 @@ func refreshGameCacheAfterGameStop() {
     func fetchLeaderboards(gameID: Int) async throws -> [Leaderboard] {
         guard isLoggedIn, let username = username, !webApiKey.isEmpty else { return[] }
         
-        let url = URL(string: "\(apiBaseURL)/API_GetGameRankAndScore.php")!
+        let url = URL(string: "\(Self.apiBaseURL)/API_GetGameRankAndScore.php")!
         var components = URLComponents(url: url, resolvingAgainstBaseURL: false)!
         components.queryItems = [
             URLQueryItem(name: "g", value: String(gameID)),
@@ -1864,7 +2350,7 @@ func refreshGameCacheAfterGameStop() {
     func submitLeaderboardScore(leaderboardID: Int, score: Int) async throws {
         guard isLoggedIn, let username = username, !webApiKey.isEmpty else { return }
         
-        let url = URL(string: "\(apiBaseURL)/API_SubmitLeaderboardEntry.php")!
+        let url = URL(string: "\(Self.apiBaseURL)/API_SubmitLeaderboardEntry.php")!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         
@@ -2419,48 +2905,8 @@ func refreshGameCacheAfterGameStop() {
         var Name: String
     }
 
-    private struct GameJSON: Decodable {
-        let id: Int
-        let title: String
-        let consoleID: Int
-        let consoleName: String
-        let hashes: [String]
-        
-        enum CodingKeys: String, CodingKey {
-            case ID, Title, ConsoleID, ConsoleName, Hashes
-            case id, title, consoleID, consoleName, hashes
-        }
-        
-        init(from decoder: Decoder) throws {
-            let container = try decoder.container(keyedBy: CodingKeys.self)
-            
-            // Decode ID (handles string/int and case variants)
-            if let val = try? container.decode(Int.self, forKey: .ID) { id = val }
-            else if let val = try? container.decode(Int.self, forKey: .id) { id = val }
-            else if let s = try? container.decode(String.self, forKey: .ID) { id = Int(s) ?? 0 }
-            else if let s = try? container.decode(String.self, forKey: .id) { id = Int(s) ?? 0 }
-            else { id = 0 }
-            
-            // Decode Title
-            title = (try? container.decode(String.self, forKey: .Title)) ?? (try? container.decode(String.self, forKey: .title)) ?? "Unknown"
-            
-            // Decode ConsoleID
-            if let val = try? container.decode(Int.self, forKey: .ConsoleID) { consoleID = val }
-            else if let val = try? container.decode(Int.self, forKey: .consoleID) { consoleID = val }
-            else if let s = try? container.decode(String.self, forKey: .ConsoleID) { consoleID = Int(s) ?? 0 }
-            else if let s = try? container.decode(String.self, forKey: .consoleID) { consoleID = Int(s) ?? 0 }
-            else { consoleID = 0 }
-            
-            // Decode ConsoleName
-            consoleName = (try? container.decode(String.self, forKey: .ConsoleName)) ?? (try? container.decode(String.self, forKey: .consoleName)) ?? ""
-            
-            // Decode Hashes
-            hashes = (try? container.decode([String].self, forKey: .Hashes)) ?? (try? container.decode([String].self, forKey: .hashes)) ?? []
-        }
-    }
-
     private func requestUserSummary(username: String) async throws -> RAUserInfo {
-        let url = URL(string: "\(apiBaseURL)/API_GetUserSummary.php")!
+        let url = URL(string: "\(Self.apiBaseURL)/API_GetUserSummary.php")!
         var components = URLComponents(url: url, resolvingAgainstBaseURL: false)!
         components.queryItems = [
             URLQueryItem(name: "u", value: username),
@@ -2546,7 +2992,7 @@ func refreshGameCacheAfterGameStop() {
     }
     
     private func requestGameInfo(gameID: String, username: String) async throws -> (response: RAGameResponse?, rawData: Data?) {
-        let url = URL(string: "\(apiBaseURL)/API_GetGameInfoAndUserProgress.php")!
+        let url = URL(string: "\(Self.apiBaseURL)/API_GetGameInfoAndUserProgress.php")!
         var components = URLComponents(url: url, resolvingAgainstBaseURL: false)!
         components.queryItems = [
             URLQueryItem(name: "g", value: gameID),

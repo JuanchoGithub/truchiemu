@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <strings.h>
+#include <pthread.h>
 #include "rc_runtime.h"
 #include "rc_runtime_types.h"
 #include "rc_error.h"
@@ -458,6 +459,12 @@ int rcheevos_api_init_login_with_token(const char* username, const char* api_tok
 
 // --- Hash generation ---
 
+// The library hashes many files in parallel. The custom CD reader is global
+// state inside rcheevos. A CDI file needs the write lock because it installs
+// and removes that reader. Other files need the read lock because they must
+// not run while the reader is installed.
+static pthread_rwlock_t g_hash_lock = PTHREAD_RWLOCK_INITIALIZER;
+
 int rcheevos_hash_generate(const char* path, uint32_t console_id, char* out_hash, size_t out_hash_size) {
     if (!path || !out_hash || out_hash_size < 33) return 0;
 
@@ -466,12 +473,19 @@ int rcheevos_hash_generate(const char* path, uint32_t console_id, char* out_hash
     int is_cdi = (dot && strcasecmp(dot, ".cdi") == 0);
 
     if (is_cdi)
+        pthread_rwlock_wrlock(&g_hash_lock);
+    else
+        pthread_rwlock_rdlock(&g_hash_lock);
+
+    if (is_cdi)
         rcheevos_cdreader_register();
 
     int result = (rc_hash_generate_from_file(out_hash, console_id, path) != 0) ? 1 : 0;
 
     if (is_cdi)
         rc_hash_init_custom_cdreader(NULL);
+
+    pthread_rwlock_unlock(&g_hash_lock);
 
     return result;
 }

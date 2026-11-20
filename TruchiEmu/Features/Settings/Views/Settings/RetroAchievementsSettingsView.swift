@@ -7,6 +7,7 @@ struct RetroAchievementsSettingsView: View {
     @ObservedObject private var raService = RetroAchievementsService.shared
     @ObservedObject private var loc = LocalizationManager.shared
     @ObservedObject private var raCacheCoordinator = RAGameCacheCoordinator.shared
+    @ObservedObject private var raMatchProgress = RAMatchProgress.shared
     @EnvironmentObject private var library: ROMLibrary
     @Environment(\.colorScheme) private var colorScheme
     @State private var username = ""
@@ -381,33 +382,33 @@ struct RetroAchievementsSettingsView: View {
             .disabled(raCacheCoordinator.isActive || isCacheRefreshing.wrappedValue || !raService.isLoggedIn)
 
             SettingsActionButton(loc.localized("retroAchievements.matchAllGames"), systemImage: "trophy", action: onMatchAllGames)
-            .disabled(raCacheCoordinator.isActive || raService.isMatchingAll || !raService.isLoggedIn)
+            .disabled(raCacheCoordinator.isActive || raMatchProgress.isMatchingAll || !raService.isLoggedIn)
         }
 
-        if raService.isMatchingAll {
+        if raMatchProgress.isMatchingAll {
             VStack(alignment: .leading, spacing: 6) {
                 BouncingProgressBar()
-                if raService.isImportingRACache {
+                if raMatchProgress.isImportingRACache {
                     // Cache-import phase: show files-progress instead of the
                     // matched counter (which is still 0 of N during import).
                     let format = loc.localized("retroAchievements.importingCacheProgress")
                     Text(format
-                        .replacingOccurrences(of: "{0}", with: "\(raService.importRACacheStep)")
-                        .replacingOccurrences(of: "{1}", with: "\(raService.importRACacheTotal)"))
+                        .replacingOccurrences(of: "{0}", with: "\(raMatchProgress.importRACacheStep)")
+                        .replacingOccurrences(of: "{1}", with: "\(raMatchProgress.importRACacheTotal)"))
                         .font(.caption)
                         .foregroundColor(AppColors.textSecondary(colorScheme))
                 } else {
                     let format = loc.localized("retroAchievements.matchedOfTotal")
                     Text(format
-                        .replacingOccurrences(of: "{0}", with: "\(raService.matchedAllCount)")
-                        .replacingOccurrences(of: "{1}", with: "\(raService.matchedAllTotal)"))
+                        .replacingOccurrences(of: "{0}", with: "\(raMatchProgress.matchedAllCount)")
+                        .replacingOccurrences(of: "{1}", with: "\(raMatchProgress.matchedAllTotal)"))
                         .font(.caption)
                         .foregroundColor(AppColors.textSecondary(colorScheme))
                 }
             }
         }
 
-        if raCacheCoordinator.isActive && !raService.isMatchingAll {
+        if raCacheCoordinator.isActive && !raMatchProgress.isMatchingAll {
             VStack(alignment: .leading, spacing: 6) {
                 HStack {
                     Text(raCacheCoordinator.statusLine)
@@ -518,9 +519,15 @@ struct RetroAchievementsSettingsView: View {
         }
         matchingStatus = nil
         Task {
+            let romIDs = library.roms.map(\.id)
             let (matched, total) = await raService.matchAllCachedGames(roms: library.roms)
             await MainActor.run {
-                raService.isMatchingAll = false
+                // The operation writes the result to the database. The game
+                // view reads the result from the memory of the library. The
+                // memory must get the new values, or the game view shows the
+                // old state.
+                library.refreshRAMatchData(ids: romIDs)
+                raMatchProgress.isMatchingAll = false
                 let format = loc.localized("retroAchievements.matchedOfTotal")
                 matchingStatus = format
                     .replacingOccurrences(of: "{0}", with: "\(matched)")

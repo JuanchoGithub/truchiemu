@@ -48,6 +48,19 @@ class RAGameCacheCoordinator: ObservableObject {
         self.statusLine = status
     }
 
+    /// Updates the progress of the parallel game-list download.
+    func updateFetchingGames(consoleName: String, step: Int, total: Int) {
+        let truncated = String(consoleName.prefix(25))
+        let status = loc.localized("retroAchievements.fetchingGamesProgress")
+            .replacingOccurrences(of: "{0}", with: truncated)
+            .replacingOccurrences(of: "{1}", with: "\(step)")
+            .replacingOccurrences(of: "{2}", with: "\(total)")
+        statusLine = status
+        progress = total > 0 ? Double(step) / Double(total) : 0
+        currentStep = step
+        totalSteps = total
+    }
+
     func startHashing(romName: String, step: Int, total: Int) {
         let truncated = String(romName.prefix(25))
         phase = .hashing(romName: truncated)

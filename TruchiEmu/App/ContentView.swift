@@ -23,6 +23,7 @@ struct ContentView: View {
     @Environment(SystemDatabaseWrapper.self) private var systemDatabase
 @StateObject private var metadataSync = MetadataSyncCoordinator.shared
 @StateObject private var raCacheCoordinator = RAGameCacheCoordinator.shared
+@StateObject private var raMatchProgress = RAMatchProgress.shared
 @ObservedObject var wizard = SetupWizardState.shared
 @ObservedObject var gamepadNavCoordinator = GamepadNavCoordinator.shared
 @ObservedObject private var ppssppAssetService = PPSSPAssetService.shared
@@ -475,6 +476,9 @@ LoggerService.info(category: "Shaders", "Updated shader for \(updatedROMIDs.coun
     private var activeBackgroundTask: String? {
         if metadataSync.isActive {
             return metadataSync.statusLine
+        }
+        if raMatchProgress.isMatchingAll {
+            return raMatchProgress.statusLine
         }
         if raCacheCoordinator.isActive {
             return raCacheCoordinator.statusLine

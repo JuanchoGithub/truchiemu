@@ -304,6 +304,41 @@ class ROMLibrary: ObservableObject {
         }
     }
 
+    /// Refreshes the RetroAchievements data of the ROMs in the memory.
+    ///
+    /// The "Vincular biblioteca" operation writes this data to the database.
+    /// The game view reads the data from the memory. Without this function
+    /// the game view shows the old data after the operation.
+    ///
+    /// The function changes the array only once. The library window redraws
+    /// on every change of the array.
+    func refreshRAMatchData(ids: [UUID]) {
+        guard !ids.isEmpty else { return }
+        let idSet = Set(ids)
+        let refreshed = repository.roms(ids: Array(idSet))
+        guard !refreshed.isEmpty else { return }
+
+        var updated = roms
+        var hasChanges = false
+        var changedCount = 0
+        for candidate in refreshed {
+            guard let idx = romIndexByID[candidate.id], updated.indices.contains(idx) else { continue }
+            if updated[idx].raGameId != candidate.raGameId ||
+               updated[idx].raMatchStatus != candidate.raMatchStatus ||
+               updated[idx].md5 != candidate.md5 {
+                updated[idx].raGameId = candidate.raGameId
+                updated[idx].raMatchStatus = candidate.raMatchStatus
+                updated[idx].md5 = candidate.md5
+                hasChanges = true
+                changedCount += 1
+            }
+        }
+        if hasChanges {
+            roms = updated
+            LoggerService.info(category: "RetroAchievements", "Updated the RetroAchievements data of \(changedCount) games in the library.")
+        }
+    }
+
     // This method is called after any folder removal to ensure we don't keep orphaned ROM entries
     private func purgeROMsOutsideLibraryFolders() {
         let validPaths = primaryFolders.map { $0.url.path } + subfolderMap.values.flatMap { $0.map { $0.url.path } }
@@ -804,6 +839,13 @@ class ROMLibrary: ObservableObject {
         switch result {
             case .identified(let info), .identifiedFromName(let info):
                 var updated = rom; updated.crc32 = info.crc; updated.thumbnailLookupSystemID = info.thumbnailLookupSystemID
+                // The file changed. The stored RetroAchievements hash and the
+                // RetroAchievements match belong to the old file.
+                if let oldCRC = rom.crc32, oldCRC != info.crc {
+                    updated.md5 = nil
+                    updated.raGameId = nil
+                    updated.raMatchStatus = nil
+                }
                 if updated.metadata == nil { updated.metadata = ROMMetadata() }
                 updated.metadata?.title = info.name; updated.metadata?.year = info.year
                 updated.metadata?.publisher = info.publisher; updated.metadata?.developer = info.developer; updated.metadata?.genre = info.genre
@@ -820,6 +862,13 @@ class ROMLibrary: ObservableObject {
                 
             case .crcNotInDatabase(let crc):
                 var updated = rom; updated.crc32 = crc
+                // The file changed. The stored RetroAchievements hash and the
+                // RetroAchievements match belong to the old file.
+                if let oldCRC = rom.crc32, oldCRC != crc {
+                    updated.md5 = nil
+                    updated.raGameId = nil
+                    updated.raMatchStatus = nil
+                }
                 if updated.metadata?.title != nil {
                     updated.metadata?.title = nil; updated.metadata?.year = nil
                     updated.metadata?.publisher = nil; updated.metadata?.developer = nil; updated.metadata?.genre = nil

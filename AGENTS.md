@@ -207,6 +207,8 @@ The `TruchiEmuCoreHost` XPC target additionally excludes (`project.yml:165-178`)
 | `CheatManagerService.shared` | `Features/Player/Services/` | Per-ROM cheat load/toggle, persists enabled state to AppSettings |
 | `CheatDownloadService.shared` | `Services/` | Downloads `.cht` from libretro-database GitHub repo |
 | `RetroAchievementsService.shared` | `Services/` | RA auth, achievement tracking/unlocking, rich presence, disk caching |
+| `RAHashIndex` | `Services/RAHashIndex.swift` | In-memory index of the cached RA list files. The library match uses it. The database is only a fallback. |
+| `RAMatchProgress.shared` | `Services/RAMatchProgress.swift` | Progress of the library match. It is a separate object because the library window observes the RA service. |
 | `HardcoreModeManager.shared` | `Services/` | Enforces hardcore restrictions (blocks save states, rewind, cheats) |
 | `RunningGamesTracker.shared` | `Features/Player/Services/` | Tracks running ROMs; prevents double-launch; signals gameplay to pause background work |
 | `InputCaptureManager.shared` | `Core/InputCapture/` | Keyboard/mouse capture for game windows; requires Accessibility permissions |
@@ -381,6 +383,22 @@ Owned by `StreamRecordingService` when its `mode != .localFile`. Live RTMP publi
 ## RetroAchievements & Hardcore Mode
 
 - **`RetroAchievementsService`**: Full RA integration with auth (login/credentials), game identification (hash matching), achievement tracking/unlocking, rich presence polling, hardcore mode toggle, game data caching to disk.
+- **Library match ("Vincular biblioteca")**: The match phase uses `RAHashIndex`. The index holds all games of the cached list files in memory. The rules are:
+  - The index is the only source for the hash and name searches. The database search is a fallback that runs only when the index holds no games.
+  - The index reads the cached list files. It never calls `API_GetGameByHash.php`. The only server call is `API_GetGameList.php?h=1`.
+  - The import phase skips the list files that the database already holds. The check compares the file date with the date of the newest database row of that console.
+  - The progress lives in `RAMatchProgress`. The library window observes `RetroAchievementsService`. A progress change in the service redraws the whole window. That took 25 seconds for one match.
+  - The match phase yields only when the progress changes. The old code yielded for every ROM. That took 25 seconds for one match.
+  - The hash phase runs all files in ONE continuous task group. Never split the files into fixed groups. A group is a barrier: the next group waits for the slowest file of the previous group. That cut the processor power to one third.
+  - The hash phase stores the hash in `ROMEntry.md5`. The next run reuses it. `ROMLibrary` clears the hash when the CRC of the file changes.
+  - The match writes the result to the database rows. The game view reads the values from the memory of `ROMLibrary`. The memory must be refreshed with `ROMLibrary.refreshRAMatchData(ids:)` after the match. Without this, the game view shows the old state and only offers the "validate ROM compatibility" button.
+  - The result of the match has 4 states. The game view shows a different message for each state: `matched` (the achievements), `mismatch` (the ROM is a different version), `not_supported` (the game was not found on RA), and no status (the ROM was not checked).
+- **RA server rate limit**: The server sends "429 Too Many Requests" when more than **2** requests arrive at the same time. The rules are:
+  - Every download must check the HTTP status code. The old code saved the answer to the disk without checking it. A 429 answer was then saved as a game list. That answer holds no games, so the match found fewer games.
+  - The list downloads use 2 workers. Never use more.
+  - A 429 answer must be retried after a wait. The wait time grows after each failed try.
+  - The import into SwiftData must stay in order. The import is local work and uses one background `ModelContext` at a time.
+- **C code of the Swift packages in a Debug build**: Xcode compiles the C code of a Swift package with `-O0` in a Debug build. The MD5 of rcheevos then runs at 123 MB/s instead of 578 MB/s. The hash phase of the library match takes 7.6 seconds in a Debug build and 2.2 seconds in a Release build. Always measure with a Release build.
 - **`HardcoreModeManager`**: Singleton enforcing hardcore restrictions. When hardcore is active, the following are blocked:
   - Save states (check `attemptSaveState()` before allowing)
   - Rewind
