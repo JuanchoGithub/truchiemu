@@ -358,6 +358,7 @@
 		374324E43AD46F029502E45E /* appIcon1024.jpg in Resources */ = {isa = PBXBuildFile; fileRef = F20EF6C414682B78AE383860 /* appIcon1024.jpg */; };
 		378F817B232C785B2764C3C5 /* input_coreOverrides_mame.json in Resources */ = {isa = PBXBuildFile; fileRef = 57D2E2F6CB71E8188AA78090 /* input_coreOverrides_mame.json */; };
 		37960EC714E081D43F165C71 /* input_coreOverrides_dolphin.json in Resources */ = {isa = PBXBuildFile; fileRef = E8C0B309CDF7F5C3FA06E6B7 /* input_coreOverrides_dolphin.json */; };
+		37A38A7221A8F16FA2774CD5 /* DeckComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0DC4EC33790957080FB1AB3 /* DeckComponents.swift */; };
 		37BAACC5CDE0D05AF0BE7D5D /* ntsc_encoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D1D4A22BB19D522A22BE8F5B /* ntsc_encoder.cpp */; settings = {COMPILER_FLAGS = "-O3"; }; };
 		37E503A31525F302675202E8 /* tic80-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = 39463E20150756E0CA0D4DFA /* tic80-cheats.zip */; };
 		3857DC8DDF88D59947F37E9C /* ExternalDisplayPromptView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0456AFF112B9AE6172688C2F /* ExternalDisplayPromptView.swift */; };
@@ -2689,6 +2690,7 @@
 		B09D20EAAADCE4BB4E132CF1 /* atari2600@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "atari2600@132w.png"; sourceTree = "<group>"; };
 		B0ACFB2417F39777ACCAE33B /* openlara@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "openlara@132w.png"; sourceTree = "<group>"; };
 		B0B100CCB0D7D954E68F18C1 /* ScrollPerfAuditRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollPerfAuditRunner.swift; sourceTree = "<group>"; };
+		B0DC4EC33790957080FB1AB3 /* DeckComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeckComponents.swift; sourceTree = "<group>"; };
 		B10ACE737699B0B6D68E5066 /* input_coreLabels_citra_canary.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_citra_canary.json; sourceTree = "<group>"; };
 		B12A98BB2EE2B24AACBFFF1F /* frame.m3d */ = {isa = PBXFileReference; path = frame.m3d; sourceTree = "<group>"; };
 		B1635E744F6AAC5F638DF434 /* CoreOverrideBridge-Swift.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "CoreOverrideBridge-Swift.h"; sourceTree = "<group>"; };
@@ -5100,6 +5102,7 @@
 				7A0A290509C1D20EA2265610 /* AccentSegmentedControl.swift */,
 				6FA6F0077547C094AAD1CCAE /* AppearanceMode.swift */,
 				C67F121E078838D4056A40D2 /* AppHaptics.swift */,
+				B0DC4EC33790957080FB1AB3 /* DeckComponents.swift */,
 				ABE60205F14183C120DDC8AA /* DesignSystem.swift */,
 				EB9860B861DA80D87C80768D /* MarqueeText.swift */,
 				A84FFA7A2ABB24FD8BC64A51 /* MenuIconVisibility.swift */,
@@ -6947,6 +6950,7 @@
 				E3B1B7AABF98E84143040010 /* DOSJoystickPreset.swift in Sources */,
 				DAFE857499FFE1F3765B1593 /* DOSJoystickSettingsView.swift in Sources */,
 				53610C7E863EC39935522D46 /* DOSRunner.swift in Sources */,
+				37A38A7221A8F16FA2774CD5 /* DeckComponents.swift in Sources */,
 				093A0D5881AA5FCDDD7AEDFF /* DesignSystem.swift in Sources */,
 				487D415E3A60D766E5C55314 /* DetailBoxArtComponents.swift in Sources */,
 				D821090AC9516C5D7E308A28 /* DetailHeroStatDeck.swift in Sources */,

@@ -43,41 +43,61 @@ struct CoreDownloadStatusBar: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
+        VStack(alignment: .leading, spacing: 5) {
             HStack(spacing: 8) {
+                Image(systemName: "arrow.down.circle.fill")
+                    .font(.system(size: 10, weight: .semibold))
+                    .foregroundStyle(AppColors.brandAccent)
+                    .frame(width: 20, height: 20)
+                    .background(
+                        RoundedRectangle(cornerRadius: 6, style: .continuous)
+                            .fill(AppColors.accentBackground(colorScheme))
+                    )
+
+                Text(statusMessage)
+                    .font(.system(size: 11, weight: .medium, design: .rounded))
+                    .foregroundStyle(AppColors.textSecondary(colorScheme))
+                    .lineLimit(1)
+
+                Spacer(minLength: 8)
+
                 if isIndeterminate {
                     ProgressView()
                         .controlSize(.small)
                 } else {
-            Text("\(Int(progress * 100))%")
-                .font(.caption.weight(.medium).monospacedDigit())
-                .foregroundStyle(AppColors.textSecondaryNeutral(colorScheme))
-                        .frame(width: 36, alignment: .trailing)
+                    Text(verbatim: "\(Int(progress * 100))%")
+                        .font(.system(size: 12, weight: .bold, design: .rounded))
+                        .monospacedDigit()
+                        .foregroundStyle(AppColors.textPrimary(colorScheme))
                 }
-            Text(statusMessage)
-                .font(.caption)
-                .foregroundStyle(AppColors.textSecondaryNeutral(colorScheme))
-                    .lineLimit(1)
-                Spacer()
-            Text(coreManager.downloadCoreName)
-                .font(.caption.weight(.medium))
-                .foregroundStyle(AppColors.textSecondaryNeutral(colorScheme))
+
+                Text(coreManager.downloadCoreName)
+                    .font(.system(size: 11, weight: .medium, design: .rounded))
+                    .foregroundStyle(AppColors.textTertiary(colorScheme))
                     .lineLimit(1)
             }
+
             if isIndeterminate {
                 ProgressView()
                     .progressViewStyle(.linear)
                     .controlSize(.small)
+                    .tint(AppColors.brandAccent)
             } else {
                 ProgressView(value: progress)
                     .progressViewStyle(.linear)
                     .controlSize(.small)
-                    .tint(AppColors.brandAccentSecondary)
+                    .tint(AppColors.brandAccent)
+                    .scaleEffect(y: 0.8, anchor: .center)
             }
         }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 6)
+        .padding(.horizontal, 14)
+        .padding(.vertical, 8)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+        .background(AppColors.cardBackground(colorScheme))
+        .overlay(alignment: .top) {
+            Rectangle()
+                .fill(AppColors.divider(colorScheme))
+                .frame(height: 1)
+        }
     }
 }

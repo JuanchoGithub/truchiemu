@@ -141,7 +141,10 @@ struct GameDetailView: View {
                 if selectedSection == .gameInfo {
                     gameInfoMainScroll
                 } else {
-                    sectionScroll
+                    VStack(spacing: 0) {
+                        detailSectionHero
+                        sectionScroll
+                    }
                 }
             }
             .frame(maxWidth: .infinity)
@@ -180,6 +183,122 @@ struct GameDetailView: View {
         .background(AppColors.sidebarBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
         .overlay(alignment: .leading) {
             Divider().overlay(AppColors.divider(colorScheme))
+        }
+    }
+
+    // MARK: - Section Hero
+
+    /// Live facts for the section header. Each section shows only the counts it
+    /// owns, then falls back to play history so the band is never empty.
+    private var detailSectionHeroStats: [DeckStatItem] {
+        var items: [DeckStatItem] = []
+
+        switch selectedSection {
+        case .shader:
+            items.append(DeckStatItem(
+                id: "shader",
+                icon: "display",
+                value: ShaderManager.displayName(for: ShaderManager.effectivePresetID(for: currentROM)),
+                unit: loc.localized("gameDetail.shader"),
+                tint: isShaderCustomized ? AppColors.warning(colorScheme) : AppColors.brandAccent
+            ))
+        case .savedStates:
+            let saves = slotInfoList.filter { $0.exists }.count
+            if saves > 0 {
+                items.append(DeckStatItem(
+                    id: "saves",
+                    icon: "externaldrive.fill",
+                    value: saves.formatted(),
+                    unit: loc.localized("gameDetail.savedStates")
+                ))
+            }
+        case .achievements:
+            if !gameAchievements.isEmpty {
+                items.append(DeckStatItem(
+                    id: "achievements",
+                    icon: "trophy.fill",
+                    value: "\(unlockedAchievementCount)/\(gameAchievements.count)",
+                    unit: loc.localized("gameDetail.achievements"),
+                    tint: AppColors.warning(colorScheme)
+                ))
+                items.append(DeckStatItem(
+                    id: "points",
+                    icon: "star.fill",
+                    value: "\(earnedPoints)/\(totalAchievementPoints)",
+                    unit: loc.localized("achievement.pointsLabel"),
+                    tint: AppColors.warning(colorScheme)
+                ))
+            }
+        case .technical:
+            if let fileSize {
+                items.append(DeckStatItem(
+                    id: "size",
+                    icon: "externaldrive",
+                    value: fileSize,
+                    unit: loc.localized("gameInfo.fileSize")
+                ))
+            }
+            if let crcHash {
+                items.append(DeckStatItem(
+                    id: "crc",
+                    icon: "number",
+                    value: String(crcHash.prefix(8)),
+                    unit: loc.localized("gameInfo.crc32")
+                ))
+            }
+        case .controls:
+            items.append(DeckStatItem(
+                id: "controllers",
+                icon: "gamecontroller.fill",
+                value: controllerService.connectedControllers.count.formatted(),
+                unit: loc.localized("settings.unit.controllers")
+            ))
+        case .openCritic:
+            if let score = currentROM.metadata?.openCriticScore, score > 0 {
+                items.append(DeckStatItem(
+                    id: "score",
+                    icon: "star.fill",
+                    value: "\(score)",
+                    unit: loc.localized("gameDetail.openCritic"),
+                    tint: AppColors.warning(colorScheme)
+                ))
+            }
+        default:
+            break
+        }
+
+        if items.isEmpty {
+            if currentROM.totalPlaytimeSeconds > 0 {
+                items.append(DeckStatItem(
+                    id: "playtime",
+                    icon: "hourglass",
+                    value: Self.compactPlaytime(currentROM.totalPlaytimeSeconds),
+                    unit: loc.localized("gameDetail.playtime")
+                ))
+            } else if currentROM.timesPlayed > 0 {
+                items.append(DeckStatItem(
+                    id: "sessions",
+                    icon: "gamecontroller.fill",
+                    value: "\(currentROM.timesPlayed)",
+                    unit: loc.localized("gameDetail.sessions")
+                ))
+            }
+        }
+
+        return Array(items.prefix(3))
+    }
+
+    private var detailSectionHero: some View {
+        DeckHeroBand(
+            icon: selectedSection.sectionIcon,
+            eyebrow: systemName.isEmpty ? loc.localized("gameInfo.system") : systemName,
+            title: selectedSection.localizedTitle,
+            stats: detailSectionHeroStats
+        )
+        .overlay(alignment: .bottom) {
+            Rectangle()
+                .fill(AppColors.divider(colorScheme))
+                .frame(height: 1)
         }
     }
 

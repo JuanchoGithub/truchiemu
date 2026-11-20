@@ -152,7 +152,6 @@ init(pending: CoreManager.PendingCoreDownload, selectedCoreID: Binding<String>? 
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
             headerSection
-            Divider()
             if pendingROM != nil {
                 romContextBox
             }
@@ -190,23 +189,41 @@ init(pending: CoreManager.PendingCoreDownload, selectedCoreID: Binding<String>? 
 
     // MARK: - Subviews
 
+    /// System name for the sheet eyebrow, or nil when the pending download has
+    /// no system context (e.g. a manual core install).
+    private var coreEyebrow: String? {
+        guard let id = pending.systemID else { return nil }
+        let name = SystemDatabase.systemName(forInternalID: id)
+        return name.isEmpty ? nil : name
+    }
+
     private var headerSection: some View {
-        HStack(spacing: 16) {
-            ZStack {
-                Circle()
-                    .fill(AppColors.brandAccent.opacity(0.15))
-                    .frame(width: 56, height: 56)
-                Image(systemName: "cpu")
-                    .font(.system(size: 26))
-                    .foregroundStyle(AppColors.brandAccent)
-            }
-            VStack(alignment: .leading, spacing: 2) {
-                Text("coreDownload.title")
-                    .font(.title2.weight(.bold))
-		Text("coreDownload.description")
-				.foregroundColor(AppColors.textSecondary(colorScheme))
-                    .font(.subheadline)
-            }
+        DeckHeroBand(
+            icon: "cpu",
+            eyebrow: coreEyebrow ?? loc.localized("gameDetail.core"),
+            title: loc.localized("coreDownload.title"),
+            subtitle: loc.localized("coreDownload.description"),
+            stats: [
+                DeckStatItem(
+                    id: "installed",
+                    icon: "checkmark.seal.fill",
+                    value: allCoresForSystem.filter(\.isInstalled).count.formatted(),
+                    unit: loc.localized("coreDownload.unit.installed")
+                ),
+                DeckStatItem(
+                    id: "available",
+                    icon: "arrow.down.circle.fill",
+                    value: allCoresForSystem.filter { !$0.isInstalled }.count.formatted(),
+                    unit: loc.localized("coreDownload.unit.available")
+                )
+            ],
+            height: 96
+        )
+        .padding(.top, -28)
+        .overlay(alignment: .bottom) {
+            Rectangle()
+                .fill(AppColors.divider(colorScheme))
+                .frame(height: 1)
         }
     }
 
@@ -226,33 +243,51 @@ init(pending: CoreManager.PendingCoreDownload, selectedCoreID: Binding<String>? 
     }
 
     private var romContextBox: some View {
-        HStack(spacing: 10) {
+        HStack(spacing: 12) {
             if let img = boxArtImage {
                 Image(nsImage: img)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .frame(width: 40, height: 40)
-                    .cornerRadius(6)
+                    .frame(width: 44, height: 44)
+                    .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8, style: .continuous)
+                            .strokeBorder(AppColors.cardBorder(colorScheme), lineWidth: 1)
+                    )
             } else {
-		Image(systemName: "gamecontroller")
-				.foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
+                Image(systemName: "gamecontroller")
+                    .font(.system(size: 18))
+                    .foregroundStyle(AppColors.textTertiary(colorScheme))
+                    .frame(width: 44, height: 44)
+                    .background(
+                        RoundedRectangle(cornerRadius: 8, style: .continuous)
+                            .fill(AppColors.cardBackgroundSubtle(colorScheme))
+                    )
             }
-            VStack(alignment: .leading, spacing: 2) {
-		Text("coreDownload.readyToLaunch")
-				.font(.caption)
-				.foregroundColor(AppColors.textSecondary(colorScheme))
+            VStack(alignment: .leading, spacing: 3) {
+                DeckEyebrow(text: loc.localized("coreDownload.readyToLaunch"))
                 if let rom = pendingROM {
-                    Text(rom.displayName)
-                        .font(.body.weight(.medium))
+                    Text(verbatim: rom.displayName)
+                        .font(.system(size: 14, weight: .semibold, design: .rounded))
+                        .lineLimit(1)
                 } else {
-		Text("coreDownload.unknownGame")
-				.font(.body.weight(.medium))
-				.foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
+                    Text(verbatim: loc.localized("coreDownload.unknownGame"))
+                        .font(.system(size: 14, weight: .semibold, design: .rounded))
+                        .foregroundStyle(AppColors.textSecondary(colorScheme))
                 }
             }
+            Spacer(minLength: 0)
         }
         .padding(12)
         .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .fill(AppColors.cardBackground(colorScheme))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .strokeBorder(AppColors.cardBorder(colorScheme), lineWidth: 1)
+        )
         .onAppear { loadBoxArt() }
         .onChange(of: boxArtService.boxArtUpdated) { _, _ in
             // React to later arrivals of THIS rom's art; avoid churning on
@@ -261,8 +296,6 @@ init(pending: CoreManager.PendingCoreDownload, selectedCoreID: Binding<String>? 
                 loadBoxArt()
             }
         }
-        .background(AppColors.cardBackgroundSubtle(colorScheme))
-        .cornerRadius(10)
     }
 
     // A single core selection button view

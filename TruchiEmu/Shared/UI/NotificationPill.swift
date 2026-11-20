@@ -100,21 +100,24 @@ struct NotificationPill: View {
     var body: some View {
         HStack(spacing: 12) {
             Image(systemName: notification.icon)
-                .font(.system(size: 12, weight: .medium))
-                .foregroundStyle(AppGradients.accent)
-                .frame(width: 20, height: 20)
+                .font(.system(size: 12, weight: .semibold))
+                .foregroundStyle(AppColors.brandAccent)
+                .frame(width: 24, height: 24)
+                .background(
+                    RoundedRectangle(cornerRadius: 8, style: .continuous)
+                        .fill(AppColors.brandAccent.opacity(colorScheme == .dark ? 0.22 : 0.13))
+                )
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(displayTitle)
-                    .font(.caption)
-                    .fontWeight(.medium)
-                    .foregroundColor(.primary)
+                    .font(.system(size: 12, weight: .semibold, design: .rounded))
+                    .foregroundColor(AppColors.textPrimaryNeutral(colorScheme))
                     .contentTransition(.numericText())
                     .lineLimit(1)
 
                 if let subtitle = notification.subtitle {
                     Text(subtitle)
-                        .font(.caption2)
+                        .font(.system(size: 10.5, weight: .medium))
                         .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
                         .lineLimit(1)
                 }
@@ -154,7 +157,11 @@ struct NotificationPill: View {
                 .fill(.regularMaterial)
                 .overlay(
                     Capsule()
-                        .fill(AppColors.brandAccent.opacity(0.08))
+                        .fill(AppColors.brandAccent.opacity(colorScheme == .dark ? 0.12 : 0.06))
+                )
+                .overlay(
+                    Capsule()
+                        .strokeBorder(.white.opacity(colorScheme == .dark ? 0.14 : 0.5), lineWidth: 1)
                 )
                 .shadow(color: .black.opacity(0.15), radius: 8, y: 4)
         )

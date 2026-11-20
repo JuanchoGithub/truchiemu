@@ -7,7 +7,6 @@ struct GameOverlayToolbar: View {
     @ObservedObject var runner: EmulatorRunner
     @ObservedObject var windowController: StandaloneGameWindowController
     @ObservedObject private var loc = LocalizationManager.shared
-    @ObservedObject private var themeManager = ThemeManager.shared
     @ObservedObject private var preferences = GameToolbarPreferences.shared
     @ObservedObject private var trainingManager = TrainingModeManager.shared
     @ObservedObject private var recordingService = StreamRecordingService.shared
@@ -123,14 +122,19 @@ struct GameOverlayToolbar: View {
             }
         )
         .background(
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .fill(AppColors.windowBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled).opacity(0.92))
+            RoundedRectangle(cornerRadius: 13, style: .continuous)
+                .fill(.ultraThinMaterial)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 13, style: .continuous)
+                        .fill(AppColors.brandAccent.opacity(colorScheme == .dark ? 0.10 : 0.05))
+                )
         )
         .overlay(
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .stroke(AppColors.cardBorder(colorScheme), lineWidth: 0.5)
+            RoundedRectangle(cornerRadius: 13, style: .continuous)
+                .strokeBorder(.white.opacity(colorScheme == .dark ? 0.16 : 0.55), lineWidth: 1)
         )
-        .shadow(color: .black.opacity(colorScheme == .dark ? 0.35 : 0.12), radius: 12, x: 0, y: 4)
+        .shadow(color: .black.opacity(colorScheme == .dark ? 0.45 : 0.18), radius: 18, y: 6)
+        .shadow(color: AppColors.brandAccent.opacity(0.18), radius: 10, y: 2)
         .background(measurementRow(mode: mode))
         .popover(isPresented: toolbarPopoverBinding, arrowEdge: .top) {
             Group {
@@ -229,11 +233,11 @@ struct GameOverlayToolbar: View {
         .padding(podPadding)
         .background(
             RoundedRectangle(cornerRadius: 10, style: .continuous)
-                .fill(AppColors.cardBackgroundSubtle(colorScheme))
+                .fill(AppColors.cardBackground(colorScheme).opacity(0.55))
         )
         .overlay(
             RoundedRectangle(cornerRadius: 10, style: .continuous)
-                .stroke(AppColors.cardBorder(colorScheme), lineWidth: 0.5)
+                .strokeBorder(.white.opacity(colorScheme == .dark ? 0.10 : 0.35), lineWidth: 0.75)
         )
         .accessibilityElement(children: .contain)
     }
@@ -254,11 +258,11 @@ struct GameOverlayToolbar: View {
         .padding(podPadding)
         .background(
             RoundedRectangle(cornerRadius: 10, style: .continuous)
-                .fill(AppColors.cardBackgroundSubtle(colorScheme))
+                .fill(AppColors.cardBackground(colorScheme).opacity(0.55))
         )
         .overlay(
             RoundedRectangle(cornerRadius: 10, style: .continuous)
-                .stroke(AppColors.cardBorder(colorScheme), lineWidth: 0.5)
+                .strokeBorder(.white.opacity(colorScheme == .dark ? 0.10 : 0.35), lineWidth: 0.75)
         )
         .accessibilityElement(children: .contain)
     }
@@ -893,8 +897,11 @@ private struct ToolbarOverflowView: View {
                         let info = presentation(for: item)
                         let isFocused = windowController.isGamepadToolbarMode && focusIndex == index
                         let isHovered = hoveredIndex == index
-                        if index > 0 && items[index - 1].group != item.group {
-                            Divider().opacity(0.5)
+                        if index == 0 || items[index - 1].group != item.group {
+                            DeckGroupLabel(text: loc.localized(item.group.localizationKey))
+                                .padding(.horizontal, 12)
+                                .padding(.top, 8)
+                                .padding(.bottom, 4)
                         }
                         Button {
                             perform(item)

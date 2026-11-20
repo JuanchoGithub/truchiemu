@@ -546,6 +546,15 @@ struct SettingsView: View {
                 }
                 .padding(.horizontal, 10)
                 .padding(.vertical, 8)
+                .background(
+                    RoundedRectangle(cornerRadius: 9, style: .continuous)
+                        .fill(AppColors.cardBackground(colorScheme))
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 9, style: .continuous)
+                        .strokeBorder(AppColors.cardBorder(colorScheme), lineWidth: 1)
+                )
+                .padding(.horizontal, 2)
                 .opacity(compact ? 0 : 1)
                 .allowsHitTesting(!compact)
                 .disabled(compact)
@@ -558,13 +567,11 @@ struct SettingsView: View {
                     ForEach(SidebarSection.allCases) { section in
                         let pages = sidebarPages[section] ?? []
                         if !pages.isEmpty {
-                            Text(section.label.uppercased())
-                                .font(AppTypography.sectionHeader)
-                                .foregroundStyle(AppColors.textSecondary(colorScheme))
-                                .lineLimit(1)
-                                .padding(.top, 8)
-                                .padding(.bottom, 4)
+                            DeckGroupLabel(text: section.label)
                                 .opacity(compact ? 0 : 1)
+                                .padding(.top, 10)
+                                .padding(.bottom, 5)
+                                .padding(.horizontal, 2)
 
                             ForEach(pages) { page in
                                 sidebarItem(for: page, compact: compact)
@@ -747,11 +754,16 @@ struct SettingsView: View {
         } label: {
             HStack(spacing: 8) {
                 Image(systemName: page.icon)
-                    .font(.system(size: 14, weight: .medium))
-                    .symbolVariant(isSelected ? .fill : .none)
-                    .frame(width: 20)
+                    .font(.system(size: compact ? 13 : 11, weight: .semibold))
+                    .frame(width: 22, height: 22)
                     .fixedSize()
-                    .foregroundColor(isSelected ? AppColors.brandAccent : (isHovered ? AppColors.brandAccent : AppColors.textSecondary(colorScheme)))
+                    .foregroundColor(isSelected ? AppColors.textOnAccent(colorScheme) : (isHovered ? AppColors.brandAccent : AppColors.textTertiary(colorScheme)))
+                    .background(
+                        RoundedRectangle(cornerRadius: 7, style: .continuous)
+                            .fill(isSelected
+                                  ? AppColors.brandAccent
+                                  : AppColors.cardBackgroundSubtle(colorScheme).opacity(0.8))
+                    )
                 if !compact {
                     Text(page.label)
                         .font(AppTypography.callout)
@@ -767,7 +779,7 @@ struct SettingsView: View {
             }
             // Fixed height keeps the row pitch identical in both widths, so the
             // collapse reads as a horizontal slide with no vertical drift.
-            .frame(height: 18)
+            .frame(height: 22)
             .frame(maxWidth: .infinity, alignment: compact ? .center : .leading)
             .padding(.vertical, 7)
             .padding(.horizontal, compact ? 4 : 10)
@@ -857,10 +869,86 @@ struct SettingsView: View {
         .buttonStyle(.plain)
     }
 
+    // MARK: - Page Hero
+
+    /// Live facts for the page header. Only real data appears; a page with no
+    /// counters keeps the version tile so the band never reads half-built.
+    private var pageHeroStats: [DeckStatItem] {
+        var items: [DeckStatItem] = []
+
+        switch selectedPage {
+        case .general:
+            items.append(DeckStatItem(
+                id: "theme",
+                icon: "paintpalette.fill",
+                value: ThemeManager.shared.currentTheme.displayName,
+                unit: loc.localized("settings.unit.theme")
+            ))
+            items.append(DeckStatItem(
+                id: "language",
+                icon: "globe",
+                value: loc.currentLanguage.uppercased(),
+                unit: loc.localized("settings.unit.language")
+            ))
+        case .library:
+            items.append(DeckStatItem(
+                id: "games",
+                icon: "square.stack.3d.up.fill",
+                value: library.roms.count.formatted(),
+                unit: loc.localized("shell.unit.games")
+            ))
+        case .controllers:
+            items.append(DeckStatItem(
+                id: "controllers",
+                icon: "gamecontroller.fill",
+                value: controllerService.connectedControllers.count.formatted(),
+                unit: loc.localized("settings.unit.controllers")
+            ))
+        case .retroAchievements:
+            if let username = RetroAchievementsService.shared.username, !username.isEmpty {
+                let shown = username.count > 14 ? String(username.prefix(13)) + "…" : username
+                items.append(DeckStatItem(
+                    id: "account",
+                    icon: "person.crop.circle.fill",
+                    value: shown,
+                    unit: loc.localized("settings.unit.account"),
+                    tint: AppColors.warning(colorScheme)
+                ))
+            }
+        default:
+            break
+        }
+
+        items.append(DeckStatItem(
+            id: "version",
+            icon: "tag.fill",
+            value: "v\(AppVersion.current)",
+            unit: loc.localized("settings.unit.version")
+        ))
+
+        return Array(items.prefix(3))
+    }
+
+    private var pageHero: some View {
+        DeckHeroBand(
+            icon: selectedPage.icon,
+            eyebrow: selectedPage.sidebarSection.label,
+            title: selectedPage.label,
+            stats: pageHeroStats
+        )
+        .overlay(alignment: .bottom) {
+            Rectangle()
+                .fill(AppColors.divider(colorScheme))
+                .frame(height: 1)
+        }
+    }
+
     // MARK: - Detail Content
     @ViewBuilder
     private var detailContent: some View {
         VStack(spacing: 0) {
+            pageHero
+
             Rectangle()
                 .fill(AppColors.brandAccent.opacity(0.3))
                 .frame(height: 1)

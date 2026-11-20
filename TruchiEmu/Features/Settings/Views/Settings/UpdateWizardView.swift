@@ -20,7 +20,6 @@ struct UpdateWizardView: View {
         ScrollView {
             VStack(spacing: AppSpacing.xl3) {
                 headerSection
-                versionComparison
                 releaseNotesSection
                 changelogSection
                 actionSection
@@ -36,56 +35,37 @@ struct UpdateWizardView: View {
     // MARK: - Header
 
     private var headerSection: some View {
-        VStack(spacing: AppSpacing.md) {
-            Image(systemName: "arrow.down.circle.fill")
-                .font(.system(size: 56))
-                .foregroundStyle(AppColors.brandAccent)
-            Text(loc.localized("update.availableTitle"))
-                .font(.largeTitle.weight(.bold))
-            Text(loc.localized("update.availableSubtitle") + " \(release.version)")
-                .font(.body)
-                .foregroundStyle(AppColors.textSecondary(colorScheme))
-        }
-        .padding(.top, AppSpacing.xl2)
-    }
-
-    // MARK: - Version Comparison
-
-    private var versionComparison: some View {
-        HStack(spacing: AppSpacing.lg) {
-            versionChip(
-                label: loc.localized("update.currentLabel"),
-                version: AppVersion.current,
-                isCurrent: true
-            )
-            Image(systemName: "arrow.right")
-                .font(.title3)
-                .foregroundStyle(AppColors.textTertiary(colorScheme))
-            versionChip(
-                label: loc.localized("update.latestLabel"),
-                version: release.version,
-                isCurrent: false
-            )
-            Spacer()
-        }
-    }
-
-    private func versionChip(label: String, version: String, isCurrent: Bool) -> some View {
-        VStack(alignment: .leading, spacing: AppSpacing.xs) {
-            Text(label)
-                .font(.caption2)
-                .foregroundStyle(AppColors.textTertiary(colorScheme))
-            Text("v\(version)")
-                .font(.title3.weight(.semibold))
-                .foregroundStyle(isCurrent ? AppColors.textPrimary(colorScheme) : AppColors.brandAccent)
-        }
-        .padding(AppSpacing.md)
-        .background(AppColors.cardBackground(colorScheme))
-        .clipShape(RoundedRectangle(cornerRadius: AppRadius.md))
-        .overlay(
-            RoundedRectangle(cornerRadius: AppRadius.md)
-                .stroke(isCurrent ? AppColors.cardBorder(colorScheme) : AppColors.brandAccent.opacity(0.3), lineWidth: 1)
+        DeckHeroBand(
+            icon: "arrow.down.circle.fill",
+            eyebrow: loc.localized("update.eyebrow"),
+            title: loc.localized("update.availableTitle"),
+            subtitle: "\(loc.localized("update.availableSubtitle")) \(release.version)",
+            stats: [
+                DeckStatItem(
+                    id: "current",
+                    icon: "desktopcomputer",
+                    value: "v\(AppVersion.current)",
+                    unit: loc.localized("update.currentLabel")
+                ),
+                DeckStatItem(
+                    id: "latest",
+                    icon: "sparkles",
+                    value: "v\(release.version)",
+                    unit: loc.localized("update.latestLabel"),
+                    tint: AppColors.success(colorScheme)
+                )
+            ],
+            height: 108
         )
+        .background(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .fill(AppColors.cardBackground(colorScheme))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .strokeBorder(AppColors.cardBorder(colorScheme), lineWidth: 1)
+        )
+        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
     }
 
     // MARK: - Release Notes (latest)
