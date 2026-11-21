@@ -140,8 +140,34 @@ private struct RecordStreamButtonContent: View {
         .foregroundColor(isRecording ? AppColors.error(colorScheme) : AppColors.textPrimary(colorScheme))
         .background(
             RoundedRectangle(cornerRadius: 8)
-                .fill(isRecording ? AppColors.error(colorScheme).opacity(0.16) : Color.primary.opacity(isHovered ? 0.08 : 0))
+                .fill(isRecording ? AppColors.error(colorScheme).opacity(0.16) : AppColors.brandAccent.opacity(isHovered ? 0.10 : 0))
         )
+        .overlay {
+            if isRecording {
+                RecordingPulseRing()
+            }
+        }
+    }
+}
+
+/// A single expanding red ring around the record plate. The animation restarts
+/// each time recording begins because the overlay only exists while recording.
+private struct RecordingPulseRing: View {
+    @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var pulse = false
+
+    var body: some View {
+        RoundedRectangle(cornerRadius: 8, style: .continuous)
+            .strokeBorder(AppColors.error(colorScheme).opacity(pulse ? 0 : 0.55), lineWidth: 1.5)
+            .scaleEffect(reduceMotion ? 1 : (pulse ? 1.10 : 1))
+            .allowsHitTesting(false)
+            .onAppear {
+                guard !reduceMotion else { return }
+                withAnimation(.easeOut(duration: 1.1).repeatForever(autoreverses: false)) {
+                    pulse = true
+                }
+            }
     }
 }
 

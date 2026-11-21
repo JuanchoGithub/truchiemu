@@ -121,20 +121,13 @@ struct GameOverlayToolbar: View {
                 )
             }
         )
-        .background(
-            RoundedRectangle(cornerRadius: 13, style: .continuous)
-                .fill(.ultraThinMaterial)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 13, style: .continuous)
-                        .fill(AppColors.brandAccent.opacity(colorScheme == .dark ? 0.10 : 0.05))
-                )
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 13, style: .continuous)
-                .strokeBorder(.white.opacity(colorScheme == .dark ? 0.16 : 0.55), lineWidth: 1)
-        )
-        .shadow(color: .black.opacity(colorScheme == .dark ? 0.45 : 0.18), radius: 18, y: 6)
-        .shadow(color: AppColors.brandAccent.opacity(0.18), radius: 10, y: 2)
+        .background(toolbarChrome)
+        .overlay(toolbarBorder)
+        .shadow(color: .black.opacity(colorScheme == .dark ? 0.50 : 0.20), radius: 22, y: 8)
+        .shadow(color: AppColors.brandAccent.opacity(colorScheme == .dark ? 0.22 : 0.16), radius: 14, y: 3)
+        .scaleEffect(windowController.isToolbarVisible ? 1 : 0.96, anchor: .bottom)
+        .offset(y: windowController.isToolbarVisible ? 0 : 8)
+        .animation(.spring(response: 0.32, dampingFraction: 0.86), value: windowController.isToolbarVisible)
         .background(measurementRow(mode: mode))
         .popover(isPresented: toolbarPopoverBinding, arrowEdge: .top) {
             Group {
@@ -231,14 +224,7 @@ struct GameOverlayToolbar: View {
         }
         .frame(width: contentWidth)
         .padding(podPadding)
-        .background(
-            RoundedRectangle(cornerRadius: 10, style: .continuous)
-                .fill(AppColors.cardBackground(colorScheme).opacity(0.55))
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 10, style: .continuous)
-                .strokeBorder(.white.opacity(colorScheme == .dark ? 0.10 : 0.35), lineWidth: 0.75)
-        )
+        .background(podChrome())
         .accessibilityElement(children: .contain)
     }
 
@@ -256,14 +242,7 @@ struct GameOverlayToolbar: View {
         }
         .frame(width: contentWidth)
         .padding(podPadding)
-        .background(
-            RoundedRectangle(cornerRadius: 10, style: .continuous)
-                .fill(AppColors.cardBackground(colorScheme).opacity(0.55))
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 10, style: .continuous)
-                .strokeBorder(.white.opacity(colorScheme == .dark ? 0.10 : 0.35), lineWidth: 0.75)
-        )
+        .background(podChrome())
         .accessibilityElement(children: .contain)
     }
 
@@ -326,11 +305,83 @@ struct GameOverlayToolbar: View {
         }
     }
 
+    private var toolbarShape: RoundedRectangle {
+        RoundedRectangle(cornerRadius: 14, style: .continuous)
+    }
+
+    /// Layered glass: material, a top specular wash, then a faint accent tint.
+    /// The layers stay inside one rounded shape so the shadow reads as a single pane.
+    @ViewBuilder
+    private var toolbarChrome: some View {
+        let shape = toolbarShape
+        ZStack {
+            shape.fill(.ultraThinMaterial)
+            shape.fill(
+                LinearGradient(
+                    colors: colorScheme == .dark
+                        ? [Color.white.opacity(0.12), Color.white.opacity(0.01)]
+                        : [Color.white.opacity(0.60), Color.white.opacity(0.06)],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+            )
+            shape.fill(AppColors.brandAccent.opacity(colorScheme == .dark ? 0.08 : 0.04))
+        }
+    }
+
+    /// Hairline border that brightens at the top edge, plus a soft accent rim.
+    private var toolbarBorder: some View {
+        let shape = toolbarShape
+        return ZStack {
+            shape.strokeBorder(
+                LinearGradient(
+                    colors: [
+                        Color.white.opacity(colorScheme == .dark ? 0.28 : 0.85),
+                        Color.white.opacity(colorScheme == .dark ? 0.06 : 0.25)
+                    ],
+                    startPoint: .top,
+                    endPoint: .bottom
+                ),
+                lineWidth: 1
+            )
+            shape.strokeBorder(AppColors.brandAccent.opacity(colorScheme == .dark ? 0.18 : 0.14), lineWidth: 1)
+                .padding(1)
+        }
+        .allowsHitTesting(false)
+    }
+
     private func divider(_ mode: ToolbarCompactMode) -> some View {
-        Rectangle()
-            .fill(AppColors.divider(colorScheme))
-            .frame(width: 1, height: dividerHeight(mode))
-            .padding(.horizontal, 1.5)
+        LinearGradient(
+            colors: [
+                AppColors.divider(colorScheme).opacity(0),
+                AppColors.divider(colorScheme),
+                AppColors.divider(colorScheme).opacity(0)
+            ],
+            startPoint: .top,
+            endPoint: .bottom
+        )
+        .frame(width: 1, height: dividerHeight(mode))
+        .padding(.horizontal, 1.5)
+    }
+
+    /// Recessed inner pod. Sits below the glass so the time/capture clusters
+    /// read as their own control group without a second raised surface.
+    private func podChrome(_ cornerRadius: CGFloat = 10) -> some View {
+        let shape = RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+        return ZStack {
+            shape.fill(AppColors.cardBackground(colorScheme).opacity(colorScheme == .dark ? 0.45 : 0.55))
+            shape.fill(
+                LinearGradient(
+                    colors: [
+                        Color.black.opacity(colorScheme == .dark ? 0.16 : 0.035),
+                        Color.black.opacity(colorScheme == .dark ? 0.02 : 0.0)
+                    ],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+            )
+            shape.strokeBorder(Color.white.opacity(colorScheme == .dark ? 0.08 : 0.40), lineWidth: 0.75)
+        }
     }
 
     private func measurementRow(mode: ToolbarCompactMode) -> some View {

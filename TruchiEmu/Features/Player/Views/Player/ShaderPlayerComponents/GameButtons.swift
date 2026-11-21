@@ -164,6 +164,8 @@ struct ToolbarButton: View {
   var textAsIcon: Bool = false
   let action: () -> Void
   @Environment(\.colorScheme) private var colorScheme
+  @Environment(\.accessibilityReduceMotion) private var reduceMotion
+  @State private var isHovered = false
 
   private var foreground: Color {
     if disabled { return AppColors.textTertiary(colorScheme) }
@@ -172,14 +174,43 @@ struct ToolbarButton: View {
     return AppColors.textPrimary(colorScheme)
   }
 
-  private var background: Color {
-    if danger { return AppColors.error(colorScheme).opacity(0.15) }
-    if active { return AppColors.brandAccent.opacity(0.16) }
-    return .clear
+  private var tint: Color {
+    danger ? AppColors.error(colorScheme) : AppColors.brandAccent
+  }
+
+  /// Presses read as a 0.95 squish; hover only lifts the plate. Both are
+  /// instant enough to feel native and survive fast pointer travel.
+  private var isInteractive: Bool { !disabled }
+
+  @ViewBuilder
+  private var plate: some View {
+    let shape = RoundedRectangle(cornerRadius: 8, style: .continuous)
+    ZStack {
+      if danger {
+        shape.fill(AppColors.error(colorScheme).opacity(active ? 0.20 : (isHovered ? 0.14 : 0.12)))
+      } else if active {
+        shape.fill(
+          LinearGradient(
+            colors: [
+              AppColors.brandAccent.opacity(0.26),
+              AppColors.brandAccent.opacity(0.13)
+            ],
+            startPoint: .top,
+            endPoint: .bottom
+          )
+        )
+      } else if isHovered && isInteractive {
+        shape.fill(AppColors.brandAccent.opacity(0.10))
+      }
+
+      if active || (isHovered && isInteractive) {
+        shape.strokeBorder(tint.opacity(active ? 0.40 : 0.20), lineWidth: 0.75)
+      }
+    }
   }
 
   var body: some View {
-        HoverButton(action: action) {
+        Button(action: action) {
             ToolbarButtonContent(
                 icon: icon,
                 label: label,
@@ -188,13 +219,34 @@ struct ToolbarButton: View {
                 textAsIcon: textAsIcon
             )
             .foregroundColor(foreground)
-            .background(
-                RoundedRectangle(cornerRadius: 8)
-                    .fill(background)
-            )
+            .background(plate)
+            .overlay(alignment: .bottom) {
+                if active && !disabled {
+                    Capsule()
+                        .fill(tint)
+                        .frame(width: horizontal ? 22 : 14, height: 2)
+                        .padding(.bottom, 2)
+                        .transition(.opacity)
+                }
+            }
             .contentShape(Rectangle())
+            .scaleEffect(isHovered && isInteractive ? 1.03 : 1)
+            .offset(y: isHovered && isInteractive ? -1 : 0)
+            .animation(
+                reduceMotion ? Animation.linear(duration: 0) : .spring(response: 0.20, dampingFraction: 0.72),
+                value: isHovered
+            )
+            .animation(.easeOut(duration: 0.16), value: active)
         }
+        .buttonStyle(ToolbarButtonStyle())
         .disabled(disabled)
+        .onHover { hovering in
+            guard isInteractive else { return }
+            isHovered = hovering
+        }
+        .onChange(of: disabled) { _, isDisabled in
+            if isDisabled { isHovered = false }
+        }
         .help(label)
         .accessibilityLabel(label)
     }
