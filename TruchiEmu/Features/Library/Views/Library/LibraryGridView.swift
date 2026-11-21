@@ -245,8 +245,6 @@ struct LibraryGridView: View {
     @State private var selectedGenres: Set<String> = []
     @State private var showGenrePicker: Bool = false
     @State private var showOtherFilters: Bool = false
-    @State private var otherChipHovered = false
-    @State private var genreChipHovered = false
     @State private var clearChipHovered = false
     @State private var showPillEditor: Bool = false
     @State private var pillWidths: [String: CGFloat] = [:]
@@ -477,191 +475,203 @@ struct LibraryGridView: View {
             .gamepadDismissable { gameToDelete = nil }
         }
         .toolbar {
+            // Flexible lead keeps the three clusters on the trailing edge, the
+            // same side the old toolbar used.
+            ToolbarSpacer(.flexible)
+
+            // Three clusters, left to right: library, view, utility. A
+            // `ToolbarSpacer` between them keeps each cluster on its own
+            // plate, so the eye can separate the actions at a glance.
             ToolbarItem(placement: .primaryAction) {
-                Spacer()
-            }
-            ToolbarItem(placement: .primaryAction) {
-            Button { pickFolder() } label: {
-                Label(loc.localized("toolbar.addROMFolder"), systemImage: "folder.badge.plus")
-                    .labelStyle(.iconOnly)
-            }
-            .buttonStyle(.bordered)
-            .help(loc.localized("toolbar.addROMFolder"))
-            }
-            ToolbarItem(placement: .primaryAction) {
-                Color.clear
-                    .frame(width: 8)
-            }
-            ToolbarItem(placement: .primaryAction) {
-                HStack(spacing: 6) {
-                    Image(systemName: "minus.magnifyingglass")
-                        .font(.system(size: 12))
-                        .foregroundStyle(continuousZoom == 0.0 && ThemeManager.shared.toolbarAccentEnabled ? AppColors.brandAccent : .primary)
-                    Slider(value: $continuousZoom, in: 0...1, step: 1.0/7.0,
-                           onEditingChanged: { isEditing in
-                               if viewMode == .grid, !isEditing {
-                                   withAnimation(.interpolatingSpring(stiffness: 150, damping: 20)) {
-                                       updateColumnCountFromZoom()
-                                   }
-                               }
-                           })
-.frame(width: 160)
-                    Image(systemName: "plus.magnifyingglass")
-                        .font(.system(size: 12))
-                        .foregroundStyle(continuousZoom == 1.0 && ThemeManager.shared.toolbarAccentEnabled ? AppColors.brandAccent : .primary)
-                    Text("\(Int(continuousZoom * 100))%")
-                        .font(.system(size: 9, weight: .medium, design: .rounded))
-                        .frame(width: 36)
+                Button { pickFolder() } label: {
+                    Label(loc.localized("toolbar.addROMFolder"), systemImage: "folder.badge.plus")
+                        .labelStyle(.iconOnly)
                 }
+                .help(loc.localized("toolbar.addROMFolder"))
+                .toolbarIconStyle()
             }
-            ToolbarItem(placement: .primaryAction) {
+
+            ToolbarSpacer(.fixed)
+
+            ToolbarItemGroup(placement: .primaryAction) {
+                ToolbarZoomControl(zoom: $continuousZoom) {
+                    if viewMode == .grid {
+                        withAnimation(.interpolatingSpring(stiffness: 150, damping: 20)) {
+                            updateColumnCountFromZoom()
+                        }
+                    }
+                }
+
                 AccentSegmentedControl(
                     selection: $viewMode,
                     options: [(ViewMode.grid, "square.grid.2x2"), (ViewMode.list, "list.bullet"), (ViewMode.holo, "sparkles"), (ViewMode.tv, "tv")],
                     accentColor: ThemeManager.shared.toolbarAccentEnabled ? AppColors.brandAccent : .blue
                 )
-                .frame(width: 160)
+                .frame(width: 132)
                 .help(loc.localized("toolbar.switchViewMode"))
-            }
-            ToolbarItem(placement: .primaryAction) {
-                Menu {
-                    Group {
-                    if isSystemView {
-                        Section(loc.localized("toolbar.boxArtStyle")) {
-                            ForEach(BoxType.allCases) { type in
-                                Button {
-                                    if case .system(let system) = filter {
-                                        prefs.setBoxType(type, for: system.id)
-                                    }
-                                } label: {
-                                    HStack {
-                                        Label(loc.localized(type.localizationKey), systemImage: type.iconName)
-                                        if case .system(let system) = filter, prefs.boxType(for: system.id) == type {
-                                            Image(systemName: "checkmark")
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    } else {
-                        Section(loc.localized("toolbar.boxArtDisplayMode")) {
-                            ForEach(BoxArtDisplayMode.allCases) { mode in
-                                Button {
-                                    prefs.setBoxArtDisplayMode(mode)
-                                } label: {
-                                    HStack {
-                                        Label(loc.localized(mode.localizationKey), systemImage: mode.iconName)
-                                        if prefs.boxArtDisplayMode() == mode {
-                                            Image(systemName: "checkmark")
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    Divider()
-                    Section(loc.localized("toolbar.download")) {
-                        Button {
-                            guard !isDownloading else { return }
-                            showBoxArtDownloadSheet = true
-                        } label: {
-                            Label(loc.localized("toolbar.downloadAllBoxArt"), systemImage: "arrow.down.circle.fill")
-                        }
-                        .disabled(isDownloading)
-                    }
-                    }
-                    .menuIconsAlwaysVisible()
-         } label: {
-                Image(systemName: "photo.stack")
-            }
-            .help(loc.localized("toolbar.boxArtOptions"))
-            .tint(ThemeManager.shared.toolbarAccentEnabled ? AppColors.brandAccent : .primary)
-            }
-            ToolbarItem(placement: .primaryAction) {
-                Menu {
-                    Section(loc.localized("toolbar.inputDevice")) {
-                        inputDeviceButtons
-                    }
-                    .menuIconsAlwaysVisible()
-            } label: {
- HStack(spacing: 4) {
- let hasControllers = controllerService.connectedControllers.contains(where: { !$0.isKeyboard })
- if hasControllers {
- Image(systemName: "keyboard")
- Image(systemName: "gamecontroller")
- } else {
- Image(systemName: "keyboard")
- }
-                }
-            }
-        .help(loc.localized("toolbar.inputDevice"))
-        .tint(ThemeManager.shared.toolbarAccentEnabled ? AppColors.brandAccent : .primary)
-            }
-        ToolbarItem(placement: .primaryAction) {
-            Button {
-                showNotificationPopover.toggle()
-            } label: {
-                ZStack(alignment: .topTrailing) {
-                    Image(systemName: "bell")
-                    if notificationHistory.unreadCount > 0 {
-                    Text("\(notificationHistory.unreadCount)")
-                    .font(.system(size: 9, weight: .bold))
-                    .foregroundColor(AppColors.textOnAccent(colorScheme))
-                    .padding(.horizontal, 4)
-                    .padding(.vertical, 1)
-                    .background(AppColors.brandAccent)
-                            .clipShape(Capsule())
-                            .offset(x: 8, y: -8)
-                    }
-                }
-            }
-            .foregroundStyle(ThemeManager.shared.toolbarAccentEnabled ? AppColors.brandAccent : .primary)
-            .help(loc.localized("toolbar.notifications"))
-            .popover(isPresented: $showNotificationPopover, arrowEdge: .bottom) {
-                NotificationPopoverView(showAll: $showNotificationCenterSheet)
-                    .gamepadDismissable { showNotificationPopover = false }
-            }
-        }
-        ToolbarItem(placement: .primaryAction) {
-            Button {
-                showHelpSheet = true
-            } label: {
-                Image(systemName: "questionmark.circle")
-            }
-            .help(loc.localized("toolbar.help"))
-            .foregroundStyle(ThemeManager.shared.toolbarAccentEnabled ? AppColors.brandAccent : .primary)
-            .popover(isPresented: $showHelpSheet, arrowEdge: .bottom) {
-                HelpSheetView()
-                    .gamepadDismissable { showHelpSheet = false }
-            }
-        }
-        ToolbarItem(placement: .primaryAction) {
-            Button {
-                if let mainMenu = NSApp.mainMenu {
-                        for item in mainMenu.items {
-                            if let submenu = item.submenu {
-                                for subItem in submenu.items {
-                                    if subItem.title == "Settings…" || subItem.title == "Preferences…" {
-                                        if let action = subItem.action {
-                                            NSApp.sendAction(action, to: subItem.target, from: subItem)
-                                        }
-                                        return
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    NSApp.windows.first { $0.identifier?.rawValue == "settings" }?.makeKeyAndOrderFront(nil)
-                } label: {
-                    Label(loc.localized("app.settings"), systemImage: "gearshape")
-                        .labelStyle(.titleAndIcon)
-                }
-                .padding(.horizontal, 4)
-                .help(loc.localized("app.settings"))
-                .foregroundStyle(ThemeManager.shared.toolbarAccentEnabled ? AppColors.brandAccent : .primary)
+
+                boxArtMenu
             }
 
+            ToolbarSpacer(.fixed)
+
+            ToolbarItemGroup(placement: .primaryAction) {
+                inputDeviceMenu
+                notificationButton
+                helpButton
+                settingsButton
+            }
+        }
     }
+
+    // MARK: - Toolbar clusters
+    //
+    // Each cluster is one plate in the toolbar. The views live here instead of
+    // inline in `.toolbar` so the three groups stay readable.
+
+    /// Box art style, display mode and batch download. Sits in the view
+    /// cluster so every card-related control is in one place.
+    private var boxArtMenu: some View {
+        Menu {
+            Group {
+                if isSystemView {
+                    Section(loc.localized("toolbar.boxArtStyle")) {
+                        ForEach(BoxType.allCases) { type in
+                            Button {
+                                if case .system(let system) = filter {
+                                    prefs.setBoxType(type, for: system.id)
+                                }
+                            } label: {
+                                HStack {
+                                    Label(loc.localized(type.localizationKey), systemImage: type.iconName)
+                                    if case .system(let system) = filter, prefs.boxType(for: system.id) == type {
+                                        Image(systemName: "checkmark")
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    Section(loc.localized("toolbar.boxArtDisplayMode")) {
+                        ForEach(BoxArtDisplayMode.allCases) { mode in
+                            Button {
+                                prefs.setBoxArtDisplayMode(mode)
+                            } label: {
+                                HStack {
+                                    Label(loc.localized(mode.localizationKey), systemImage: mode.iconName)
+                                    if prefs.boxArtDisplayMode() == mode {
+                                        Image(systemName: "checkmark")
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                Divider()
+                Section(loc.localized("toolbar.download")) {
+                    Button {
+                        guard !isDownloading else { return }
+                        showBoxArtDownloadSheet = true
+                    } label: {
+                        Label(loc.localized("toolbar.downloadAllBoxArt"), systemImage: "arrow.down.circle.fill")
+                    }
+                    .disabled(isDownloading)
+                }
+            }
+            .menuIconsAlwaysVisible()
+        } label: {
+            Image(systemName: "photo.stack")
+        }
+        .help(loc.localized("toolbar.boxArtOptions"))
+        .toolbarIconStyle()
+    }
+
+    /// Input device picker for the active system.
+    private var inputDeviceMenu: some View {
+        Menu {
+            Section(loc.localized("toolbar.inputDevice")) {
+                inputDeviceButtons
+            }
+            .menuIconsAlwaysVisible()
+        } label: {
+            HStack(spacing: 4) {
+                let hasControllers = controllerService.connectedControllers.contains(where: { !$0.isKeyboard })
+                if hasControllers {
+                    Image(systemName: "keyboard")
+                    Image(systemName: "gamecontroller")
+                } else {
+                    Image(systemName: "keyboard")
+                }
+            }
+        }
+        .help(loc.localized("toolbar.inputDevice"))
+        .toolbarIconStyle()
+    }
+
+    private var notificationButton: some View {
+        Button {
+            showNotificationPopover.toggle()
+        } label: {
+            HStack(spacing: 4) {
+                Image(systemName: "bell")
+                if notificationHistory.unreadCount > 0 {
+                    // Counted pill next to the bell, the same language as the
+                    // library chips. A corner badge clipped the small toolbar icon.
+                    Text(notificationHistory.unreadCount > 99 ? "99+" : "\(notificationHistory.unreadCount)")
+                        .font(.system(size: 9, weight: .bold, design: .rounded))
+                        .monospacedDigit()
+                        .foregroundStyle(AppColors.textOnAccent(for: AppColors.brandAccent, colorScheme: colorScheme))
+                        .padding(.horizontal, 4)
+                        .padding(.vertical, 1)
+                        .background(Capsule().fill(AppColors.brandAccent))
+                }
+            }
+        }
+        .toolbarIconStyle()
+        .help(loc.localized("toolbar.notifications"))
+        .popover(isPresented: $showNotificationPopover, arrowEdge: .bottom) {
+            NotificationPopoverView(showAll: $showNotificationCenterSheet)
+                .gamepadDismissable { showNotificationPopover = false }
+        }
+    }
+
+    private var helpButton: some View {
+        Button {
+            showHelpSheet = true
+        } label: {
+            Image(systemName: "questionmark.circle")
+        }
+        .help(loc.localized("toolbar.help"))
+        .toolbarIconStyle()
+        .popover(isPresented: $showHelpSheet, arrowEdge: .bottom) {
+            HelpSheetView()
+                .gamepadDismissable { showHelpSheet = false }
+        }
+    }
+
+    private var settingsButton: some View {
+        Button {
+            if let mainMenu = NSApp.mainMenu {
+                for item in mainMenu.items {
+                    if let submenu = item.submenu {
+                        for subItem in submenu.items {
+                            if subItem.title == "Settings…" || subItem.title == "Preferences…" {
+                                if let action = subItem.action {
+                                    NSApp.sendAction(action, to: subItem.target, from: subItem)
+                                }
+                                return
+                            }
+                        }
+                    }
+                }
+            }
+            NSApp.windows.first { $0.identifier?.rawValue == "settings" }?.makeKeyAndOrderFront(nil)
+        } label: {
+            Label(loc.localized("app.settings"), systemImage: "gearshape")
+                .labelStyle(.iconOnly)
+        }
+        .help(loc.localized("app.settings"))
+        .toolbarIconStyle()
     }
 
     private var libraryObserved: some View {
@@ -2205,14 +2215,10 @@ struct LibraryGridView: View {
             // Fixed (always-visible) elements measured as a group. Measure
             // "Other" with a representative badge so its width is stable and
             // never feeds back into the visible-count calc.
-            Button { showOtherFilters.toggle() } label: {
-                otherButtonLabel(badgeCount: 99)
-            }
-            .background(widthReporter(id: "other"))
-            Button { showGenrePicker.toggle() } label: {
-                genreButtonLabel
-            }
-            .background(widthReporter(id: "genre"))
+            otherChip(badgeCount: 99)
+                .background(widthReporter(id: "other"))
+            genreChip
+                .background(widthReporter(id: "genre"))
             if !activeFilters.isEmpty || !selectedGenres.isEmpty {
                 Button {
                     activeFilters.removeAll()
@@ -2243,11 +2249,7 @@ struct LibraryGridView: View {
             }
 
             // Other button.
-            Button { showOtherFilters.toggle() } label: {
-                otherButtonLabel(badgeCount: otherBadgeCount)
-            }
-            .buttonStyle(.plain)
-            .onHover { otherChipHovered = $0 }
+            otherChip(badgeCount: otherBadgeCount)
             .popover(isPresented: $showOtherFilters) {
                 OtherFiltersPopover(
                     pills: hiddenPills,
@@ -2262,11 +2264,7 @@ struct LibraryGridView: View {
             .contextMenu { editPillsMenu.menuIconsAlwaysVisible() }
 
             // Genre filter chip.
-            Button { showGenrePicker.toggle() } label: {
-                genreButtonLabel
-            }
-            .buttonStyle(.plain)
-            .onHover { genreChipHovered = $0 }
+            genreChip
             .popover(isPresented: $showGenrePicker) {
                 GenrePickerView(
                     selectedGenres: $selectedGenres,
@@ -2390,46 +2388,26 @@ struct LibraryGridView: View {
     }
 
     // Label builders shared between the measurement row and the visible row.
-    private func otherButtonLabel(badgeCount: Int) -> some View {
-        HStack(spacing: 4) {
-            Image(systemName: badgeCount > 0 ? "line.3.horizontal.decrease.circle.fill" : "line.3.horizontal.decrease.circle")
-                .font(.system(size: 10, weight: .medium))
-            Text(loc.localized("library.otherFilters"))
-                .font(.system(size: 11, weight: .medium))
-            if badgeCount > 0 {
-                Text("(\(badgeCount))")
-                    .font(.system(size: 10))
-            }
-        }
-        .foregroundColor(badgeCount > 0 ? AppColors.textOnAccent(for: AppColors.selectedFill(for: AppColors.brandAccent), colorScheme: colorScheme) : (otherChipHovered ? AppColors.brandAccent : AppColors.textPrimary(colorScheme)))
-        .padding(.horizontal, 10)
-        .padding(.vertical, 6)
-        .frame(minHeight: 30)
-        .background(Capsule().fill(badgeCount > 0 ? AppColors.selectedFill(for: AppColors.brandAccent) : (otherChipHovered ? AppColors.accentBackground(colorScheme) : AppColors.cardBackgroundSubtle(colorScheme))))
+    // Both go through `LibraryChip`, so a chip measures the same as it draws.
+    private func otherChip(badgeCount: Int) -> LibraryChip {
+        LibraryChip(
+            icon: badgeCount > 0 ? "line.3.horizontal.decrease.circle.fill" : "line.3.horizontal.decrease.circle",
+            title: loc.localized("library.otherFilters"),
+            count: badgeCount,
+            isActive: badgeCount > 0,
+            action: { showOtherFilters.toggle() }
+        )
     }
 
-    private var genreButtonLabel: some View {
-        HStack(spacing: 4) {
-            Image(systemName: selectedGenres.isEmpty ? "tag" : "tag.fill")
-                .font(.system(size: 10, weight: .medium))
-            if selectedGenres.count == 1, let genre = selectedGenres.first {
-                Text(genre)
-                    .font(.system(size: 11, weight: .medium))
-                    .lineLimit(1)
-            } else {
-                Text(loc.localized("library.genre"))
-                    .font(.system(size: 11, weight: .medium))
-                if selectedGenres.count > 1 {
-                    Text("(\(selectedGenres.count))")
-                        .font(.system(size: 10))
-                }
-            }
-        }
-        .foregroundColor(selectedGenres.isEmpty ? (genreChipHovered ? AppColors.brandAccent : AppColors.textPrimary(colorScheme)) : AppColors.textOnAccent(for: AppColors.selectedFill(for: AppColors.brandAccent), colorScheme: colorScheme))
-        .padding(.horizontal, 10)
-        .padding(.vertical, 6)
-        .frame(minHeight: 30)
-        .background(Capsule().fill(selectedGenres.isEmpty ? (genreChipHovered ? AppColors.accentBackground(colorScheme) : AppColors.cardBackgroundSubtle(colorScheme)) : AppColors.selectedFill(for: AppColors.brandAccent)))
+    private var genreChip: LibraryChip {
+        let singleGenre = selectedGenres.count == 1 ? selectedGenres.first : nil
+        return LibraryChip(
+            icon: selectedGenres.isEmpty ? "tag" : "tag.fill",
+            title: singleGenre ?? loc.localized("library.genre"),
+            count: selectedGenres.count,
+            isActive: !selectedGenres.isEmpty,
+            action: { showGenrePicker.toggle() }
+        )
     }
 
     private var clearButtonLabel: some View {

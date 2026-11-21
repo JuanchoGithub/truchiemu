@@ -137,8 +137,6 @@ struct SortRow: View {
     var onCommit: ((LibrarySortOrder, Bool) -> Void)? = nil
 
     @ObservedObject private var loc = LocalizationManager.shared
-    @State private var isHovered: Bool = false
-    @Environment(\.colorScheme) private var colorScheme
 
     /// nil = not active (the `.name` fallback is in effect).
     private var phase: Phase? {
@@ -179,81 +177,29 @@ struct SortRow: View {
         }
     }
 
-    // MARK: Capsule chip row (matches existing sort-chip styling)
+    // MARK: Capsule chip row (shared `LibraryChip` styling)
 
     private var chipRow: some View {
-        let activeFill = AppColors.selectedFill(for: AppColors.brandAccent)
-        return Button {
-            cycle()
-        } label: {
-            HStack(spacing: 4) {
-                Image(systemName: iconName)
-                    .font(.system(size: 10, weight: .medium))
-                    .scaleEffect(phase != nil ? 1.1 : 1)
-                Text(loc.localized(order.localizationKey))
-                    .font(.system(size: 11, weight: .medium))
-            }
-            .foregroundColor(phase != nil ? AppColors.textOnAccent(for: activeFill, colorScheme: colorScheme) : (isHovered ? AppColors.brandAccent : AppColors.textPrimary(colorScheme)))
-            .padding(.horizontal, 10)
-            .padding(.vertical, 6)
-            .frame(minHeight: 30)
-            .background(
-                Capsule()
-                    .fill(phase != nil ? activeFill : (isHovered ? AppColors.accentBackground(colorScheme) : AppColors.cardBackgroundSubtle(colorScheme)))
-                    .scaleEffect(isHovered ? 1.05 : 1)
-                    .shadow(color: phase != nil ? AppColors.brandAccent.opacity(0.3) : (isHovered ? AppColors.brandAccent.opacity(0.2) : .clear), radius: isHovered ? 4 : 0, y: 2)
-            )
-        }
-        .buttonStyle(.plain)
-        .help(tooltip)
-        .onHover { hovering in
-            let shouldAnimate = !NSWorkspace.shared.accessibilityDisplayShouldReduceMotion
-            if shouldAnimate {
-                withAnimation(.easeOut(duration: 0.15)) { isHovered = hovering }
-            } else {
-                isHovered = hovering
-            }
-        }
-        .animation(.easeOut(duration: 0.2), value: phase)
+        LibraryChip(
+            icon: iconName,
+            title: loc.localized(order.localizationKey),
+            isActive: phase != nil,
+            tooltip: tooltip,
+            action: { cycle() }
+        )
     }
 
-    // MARK: Popover row (matches `FilterChipView` so the "Other" popover
-    // shows a uniform list of capsule pills).
+    // MARK: Popover row (stretched, same `LibraryChip` styling)
 
     private var popoverRow: some View {
-        let activeFill = AppColors.selectedFill(for: AppColors.brandAccent)
-        return Button {
-            cycle()
-        } label: {
-            HStack(spacing: 4) {
-                Image(systemName: iconName)
-                    .font(.system(size: 10, weight: .medium))
-                    .scaleEffect(phase != nil ? 1.1 : 1)
-                Text(loc.localized(order.localizationKey))
-                    .font(.system(size: 11, weight: .medium, design: .rounded))
-            }
-            .foregroundColor(phase != nil ? AppColors.textOnAccent(for: activeFill, colorScheme: colorScheme) : (isHovered ? AppColors.brandAccent : AppColors.textPrimary(colorScheme)))
-            .padding(.horizontal, 10)
-            .padding(.vertical, 6)
-            .frame(maxWidth: .infinity, minHeight: 30)
-            .background(
-                Capsule()
-                    .fill(phase != nil ? activeFill : (isHovered ? AppColors.accentBackground(colorScheme) : AppColors.cardBackgroundSubtle(colorScheme)))
-                    .scaleEffect(isHovered ? 1.05 : 1)
-                    .shadow(color: phase != nil ? AppColors.brandAccent.opacity(0.3) : (isHovered ? AppColors.brandAccent.opacity(0.2) : .clear), radius: isHovered ? 4 : 0, y: 2)
-            )
-        }
-        .buttonStyle(.plain)
-        .help(tooltip)
-        .onHover { hovering in
-            let shouldAnimate = !NSWorkspace.shared.accessibilityDisplayShouldReduceMotion
-            if shouldAnimate {
-                withAnimation(.easeOut(duration: 0.15)) { isHovered = hovering }
-            } else {
-                isHovered = hovering
-            }
-        }
-        .animation(.easeOut(duration: 0.2), value: phase)
+        LibraryChip(
+            icon: iconName,
+            title: loc.localized(order.localizationKey),
+            isActive: phase != nil,
+            fillsWidth: true,
+            tooltip: tooltip,
+            action: { cycle() }
+        )
     }
 
     private var iconName: String {

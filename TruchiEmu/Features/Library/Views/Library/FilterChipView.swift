@@ -1,56 +1,26 @@
 import SwiftUI
 
 // MARK: - Filter Chip View
+//
+// Thin wrapper over `LibraryChip` so every filter pill shares one shape and
+// one hover/active treatment. The option still owns its icon, label, tooltip
+// and per-filter active color.
 
 struct FilterChipView: View {
     let option: GameFilterOption
     let isActive: Bool
     var fillsWidth: Bool = false
     let action: () -> Void
-    
-    @Namespace private var chipAnimation
-    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
-        // Selected rests on the computed fill (deep on neon themes, bright
-        // where it already contrasts); text always matches the fill.
-        let activeFill = AppColors.selectedFill(for: option.activeColor)
-        return Button(action: action) {
-            HStack(spacing: 4) {
-                Image(systemName: option.icon)
-                    .font(.system(size: 10, weight: .medium))
-                    .scaleEffect(isActive ? 1.1 : 1)
-                Text(option.label)
-                    .font(.system(size: 11, weight: .medium, design: .rounded))
-            }
-            .foregroundColor(isActive ? AppColors.textOnAccent(for: activeFill, colorScheme: colorScheme) : (isHovered ? AppColors.brandAccent : AppColors.textPrimary(colorScheme)))
-            .padding(.horizontal, 10)
-            .padding(.vertical, 6)
-            .frame(maxWidth: fillsWidth ? .infinity : nil, minHeight: 30)
-            .background(
-                Capsule()
-                    .fill(isActive ? activeFill : (isHovered ? AppColors.accentBackground(colorScheme) : AppColors.cardBackgroundSubtle(colorScheme)))
-                    .scaleEffect(isHovered ? 1.05 : 1)
-                    .shadow(color: isActive ? option.activeColor.opacity(0.3) : (isHovered ? AppColors.brandAccent.opacity(0.2) : .clear), radius: isHovered ? 4 : 0, y: 2)
-            )
-        }
-        .buttonStyle(.plain)
-        .help(option.tooltip)
-        .accessibilityLabel(option.label)
-        .accessibilityHint(option.tooltip)
-        .accessibilityAddTraits(.isButton)
-        .onHover { hovering in
-            let shouldAnimate = !NSWorkspace.shared.accessibilityDisplayShouldReduceMotion
-            if shouldAnimate {
-                withAnimation(.easeOut(duration: 0.15)) {
-                    isHovered = hovering
-                }
-            } else {
-                isHovered = hovering
-            }
-        }
-        .animation(.easeOut(duration: 0.2), value: isActive)
+        LibraryChip(
+            icon: option.icon,
+            title: option.label,
+            isActive: isActive,
+            tint: option.activeColor,
+            fillsWidth: fillsWidth,
+            tooltip: option.tooltip,
+            action: action
+        )
     }
-    
-    @State private var isHovered = false
 }

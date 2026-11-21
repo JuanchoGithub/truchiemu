@@ -52,6 +52,7 @@
 		071BE304A3EEFDA17AAFB3D4 /* LibraryBackupService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1432F9680D00AB51A7B817C8 /* LibraryBackupService.swift */; };
 		0731BAFCEC49AC5E62BA3474 /* Passthrough.metal in Sources */ = {isa = PBXBuildFile; fileRef = 2181ADA6355FD20750F4E018 /* Passthrough.metal */; };
 		07A6D0CCDB18449662D35B4B /* mame_libretro.json in Resources */ = {isa = PBXBuildFile; fileRef = 9E53D67A79EFFF76BBC2A45B /* mame_libretro.json */; };
+		07D9332E2C26192A6C5467FA /* LibraryChip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42D49EF20EAC6B299FB93AE4 /* LibraryChip.swift */; };
 		08122F4305BEC84133D0793B /* fightdata_sf2hf.json in Resources */ = {isa = PBXBuildFile; fileRef = 56C1CCC370F61E8A198FE0FD /* fightdata_sf2hf.json */; };
 		08724A1C5294340425F2DA9A /* LoggerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30CC526A551953B4E9BB08C9 /* LoggerService.swift */; };
 		08B36BECDBD9A4963396B066 /* GamingIconBrowserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1327C2617ECE3ABC8B71F920 /* GamingIconBrowserView.swift */; };
@@ -1366,6 +1367,7 @@
 		DF3A62CB15EBDD2139FCC119 /* Atari - 2600.dat in Resources */ = {isa = PBXBuildFile; fileRef = 72FFF143D39011C7542C3520 /* Atari - 2600.dat */; };
 		DF3E976013C7677FA8CCAFD9 /* StandaloneGameWindowController+Bezel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AE14606B8972C36976457FB /* StandaloneGameWindowController+Bezel.swift */; };
 		DFA1E01827B065C37639BCDC /* x1@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 800573E29C406236A2EE8FA0 /* x1@132w.png */; };
+		DFB50D7DDB47BEDBE08A31F8 /* ToolbarChrome.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68FDD8A63A21A88B4B193120 /* ToolbarChrome.swift */; };
 		DFCF1E8DFB529784B0F999B3 /* input_coreLabels_snes9x_2005.json in Resources */ = {isa = PBXBuildFile; fileRef = 2F6291BEE4193685B0964896 /* input_coreLabels_snes9x_2005.json */; };
 		DFF2C66041E018B1D7319306 /* CHAILOVE.png in Resources */ = {isa = PBXBuildFile; fileRef = 579FF46D161EC2DD3CE4C105 /* CHAILOVE.png */; };
 		E00EAE903043223165F86FF6 /* dinothawr@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 42793B84ECC39BAE98C75221 /* dinothawr@132w.png */; };
@@ -1999,6 +2001,7 @@
 		423ADB305912207CD076FCF4 /* pcfx@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "pcfx@132w.png"; sourceTree = "<group>"; };
 		42793B84ECC39BAE98C75221 /* dinothawr@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "dinothawr@132w.png"; sourceTree = "<group>"; };
 		427B5599A80B29D8276CEBE2 /* fightdata_mace.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_mace.json; sourceTree = "<group>"; };
+		42D49EF20EAC6B299FB93AE4 /* LibraryChip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryChip.swift; sourceTree = "<group>"; };
 		42F1E94E5B11261FDEC89DAF /* psp.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = psp.ico; sourceTree = "<group>"; };
 		432C508A73D07EA1295B0302 /* input_systemLabels_commodore_amiga.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_commodore_amiga.json; sourceTree = "<group>"; };
 		4379C651DF62956D8B2BA04A /* MAMERomEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MAMERomEntry.swift; sourceTree = "<group>"; };
@@ -2242,6 +2245,7 @@
 		68D1F7B52E9288BD2CF0C275 /* holo_stylish2_alpha.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = holo_stylish2_alpha.png; sourceTree = "<group>"; };
 		68F707CDD47CCEEBDA203171 /* gba.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = gba.ico; sourceTree = "<group>"; };
 		68FD211A72F4862B10F9258C /* CurvedRowLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurvedRowLayout.swift; sourceTree = "<group>"; };
+		68FDD8A63A21A88B4B193120 /* ToolbarChrome.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolbarChrome.swift; sourceTree = "<group>"; };
 		6929B073D95421001AD7F7D0 /* fightdata_sfa.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_sfa.json; sourceTree = "<group>"; };
 		69314CA8FAAD4A31985E6FA0 /* input_coreOverrides_beetle_psx.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_beetle_psx.json; sourceTree = "<group>"; };
 		6937A26557EA12463539AC7C /* input_coreLabels_theodore.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_theodore.json; sourceTree = "<group>"; };
@@ -4371,6 +4375,7 @@
 				A0A1BBAF236A7482126D4923 /* IconPickerView.swift */,
 				ED22E0198CFE81289DAC573E /* ImageCropView.swift */,
 				AE6DD9F2D88F252E2CECD2CC /* LibraryAnimations.swift */,
+				42D49EF20EAC6B299FB93AE4 /* LibraryChip.swift */,
 				61E12B8DA655D1B0770ECEE6 /* LibraryDeckComponents.swift */,
 				44D6E43A22D859720886ECD6 /* LibraryFilterOption.swift */,
 				5C15A861E2696512846B9609 /* LibraryGridView.swift */,
@@ -5109,6 +5114,7 @@
 				4AF5738E0CA85CD54BC36AC0 /* NotificationPill.swift */,
 				A8935D40F11BF986BE60A840 /* ThemeManager.swift */,
 				377A59ABFA726CC1685B5E3E /* TitlebarNotificationTicker.swift */,
+				68FDD8A63A21A88B4B193120 /* ToolbarChrome.swift */,
 				5E9406B4D1F3A243D22E8BA5 /* TypeToSearch.swift */,
 			);
 			path = UI;
@@ -7063,6 +7069,7 @@
 				A88B029EDF9B982AD0A805D9 /* LibraryAnimations.swift in Sources */,
 				E51CDE2C230FBBFE9AA8A980 /* LibraryAutomationCoordinator.swift in Sources */,
 				071BE304A3EEFDA17AAFB3D4 /* LibraryBackupService.swift in Sources */,
+				07D9332E2C26192A6C5467FA /* LibraryChip.swift in Sources */,
 				93B7595E2AF4B00993988F86 /* LibraryDeckComponents.swift in Sources */,
 				0D8A07B323B96EBC8E1F8E1F /* LibraryFilterOption.swift in Sources */,
 				9A20252FD5A94F429367B691 /* LibraryGridView.swift in Sources */,
@@ -7291,6 +7298,7 @@
 				4DD1329F99229306455B3B86 /* TimeMachineBuffer.swift in Sources */,
 				56EF78D2B7AEFAED9582F023 /* TimeMachineSettingsView.swift in Sources */,
 				C03C61A374B19576151E178A /* TitlebarNotificationTicker.swift in Sources */,
+				DFB50D7DDB47BEDBE08A31F8 /* ToolbarChrome.swift in Sources */,
 				BC6AEA4E7152506E69221D76 /* ToolbarSettingsView.swift in Sources */,
 				1CBE8E9BE89FB1A446E9757E /* TrainingInputManager.swift in Sources */,
 				C7B614C0D64568EA01CC5C75 /* TrainingModeManager.swift in Sources */,
