@@ -16,36 +16,75 @@ struct CategoryRowButton: View {
     @State private var showDeleteAlert = false
     @ObservedObject private var loc = LocalizationManager.shared
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    private var categoryColor: Color {
+        Color(hex: category.colorHex) ?? AppColors.brandAccent
+    }
+
+    private var iconBadgeView: some View {
+        GameCategoryIconView(category: category, size: 16)
+            .foregroundColor(categoryColor)
+            .frame(width: 16, height: 16)
+            .frame(width: 24, height: 24)
+            .background(
+                RoundedRectangle(cornerRadius: 7, style: .continuous)
+                    .fill(
+                        isSelected
+                            ? AnyShapeStyle(
+                                LinearGradient(
+                                    colors: [
+                                        categoryColor.opacity(0.30),
+                                        categoryColor.opacity(0.12)
+                                    ],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                            )
+                            : AnyShapeStyle(AppColors.cardBackgroundSubtle(colorScheme))
+                    )
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 7, style: .continuous)
+                    .strokeBorder(
+                        isSelected ? categoryColor.opacity(0.30) : AppColors.cardBorder(colorScheme),
+                        lineWidth: 1
+                    )
+            )
+            .scaleEffect(isHovered && !reduceMotion ? 1.06 : 1)
+            .animation(reduceMotion ? nil : AppMotion.micro, value: isHovered)
+    }
 
   var body: some View {
     Button {
       selectedFilter = .category(category.id)
     } label: {
-      HStack(spacing: 6) {
-        GameCategoryIconView(category: category, size: 22)
-        .foregroundColor(Color(hex: category.colorHex) ?? .blue)
+      HStack(spacing: 8) {
+        iconBadgeView
 
         Text(category.name)
         .lineLimit(1)
         .foregroundColor(isSelected ? .primary : AppColors.textPrimary(colorScheme))
-        .fontWeight(isSelected ? .medium : .regular)
+        .font(.system(size: 12.5, weight: isSelected ? .semibold : .regular, design: .rounded))
 
         Spacer()
 
         if category.isSmart {
             Image(systemName: "bolt.fill")
                 .font(.system(size: 9, weight: .bold))
-                .foregroundColor(Color(hex: category.colorHex) ?? .yellow)
+                .foregroundColor(categoryColor)
                 .help(loc.localized("category.smartRules"))
         }
 
         Text("\(count)")
-        .font(.caption2.monospacedDigit())
-        .foregroundColor(isSelected ? (Color(hex: category.colorHex) ?? .blue) : AppColors.textPrimary(colorScheme))
+        .font(.system(size: 9.5, weight: .semibold, design: .rounded).monospacedDigit())
+        .foregroundColor(isSelected ? .white : AppColors.textSecondary(colorScheme))
         .padding(.horizontal, 6)
         .padding(.vertical, 2)
-        .background(isSelected ? (Color(hex: category.colorHex) ?? .blue).opacity(0.15) : AppColors.cardBackgroundSubtle(colorScheme))
-        .cornerRadius(6)
+        .background(
+            Capsule(style: .continuous)
+                .fill(isSelected ? categoryColor.opacity(0.85) : AppColors.cardBackgroundSubtle(colorScheme))
+        )
 
         // Gutter for the context-menu button drawn by the trailing overlay.
         if isHovered || isSelected {
@@ -53,30 +92,60 @@ struct CategoryRowButton: View {
             .frame(width: 20, height: 1)
         }
       }
-      .padding(.horizontal, 6)
-      .padding(.vertical, 2)
+      .padding(.horizontal, 7)
+      .padding(.vertical, 3)
       .contentShape(Rectangle())
     }
         .buttonStyle(.plain)
         .background(
-            RoundedRectangle(cornerRadius: 6)
-                .fill(isDropTarget ? (Color(hex: category.colorHex) ?? .blue).opacity(0.2) :
-(isSelected ? (Color(hex: category.colorHex) ?? .blue).opacity(0.15) :
-                        (isHovered ? AppColors.cardBackgroundSubtle(colorScheme) : .clear)))
+            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                .fill(
+                    isDropTarget
+                        ? AnyShapeStyle(categoryColor.opacity(0.20))
+                        : isSelected
+                        ? AnyShapeStyle(
+                            LinearGradient(
+                                colors: [
+                                    categoryColor.opacity(colorScheme == .dark ? 0.24 : 0.16),
+                                    categoryColor.opacity(colorScheme == .dark ? 0.08 : 0.06)
+                                ],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
+                        : AnyShapeStyle(isHovered ? AppColors.cardBackgroundSubtle(colorScheme) : .clear)
+                )
         )
         .overlay {
+            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                .strokeBorder(
+                    isSelected
+                        ? categoryColor.opacity(0.30)
+                        : (isHovered ? AppColors.cardBorder(colorScheme) : .clear),
+                    lineWidth: 1
+                )
+                .allowsHitTesting(false)
+        }
+        .overlay {
             if isGamepadFocused {
-                RoundedRectangle(cornerRadius: 6)
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
                     .stroke(AppColors.brandAccent, lineWidth: 2)
                     .allowsHitTesting(false)
             }
         }
         .overlay(alignment: .leading) {
             if isSelected {
-                RoundedRectangle(cornerRadius: 2)
-                    .fill(Color(hex: category.colorHex) ?? .blue)
-                    .frame(width: 3, height: 20)
+                Capsule(style: .continuous)
+                    .fill(
+                        LinearGradient(
+                            colors: [categoryColor, categoryColor.opacity(0.55)],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                    )
+                    .frame(width: 3, height: 18)
                     .padding(.leading, 2)
+                    .shadow(color: categoryColor.opacity(0.6), radius: 3)
             }
         }
         .overlay(alignment: .trailing) {

@@ -428,6 +428,9 @@ struct LibraryGridView: View {
             gamepadNav.contentItemCount = viewModel.displayedROMs.count
         }
         }
+        .background {
+            LibraryAtmosphere()
+        }
         // Outer scope: the grid below must slide down/up when the
         // "Filtering:" status strip appears, not just resize.
         .animation(AppMotion.stateChange, value: shouldShowFilterStatus)
@@ -1257,7 +1260,7 @@ struct LibraryGridView: View {
             categoryManager: categoryManager,
             scrollTargetRow: $listScrollTargetRow
         )
-        .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+        .background(Color.clear)
         .onAppear {
             gamepadNav.columnCount = 1
             gamepadNav.contentItemCount = viewModel.displayedROMs.count
@@ -2142,11 +2145,36 @@ struct LibraryGridView: View {
             .padding(.vertical, 4)
             .background {
                 RoundedRectangle(cornerRadius: 14, style: .continuous)
-                    .fill(AppColors.cardBackground(colorScheme))
+                    .fill(
+                        LinearGradient(
+                            colors: [
+                                AppColors.cardBackground(colorScheme),
+                                AppColors.cardBackground(colorScheme).opacity(0.82)
+                            ],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                    )
                     .overlay {
                         RoundedRectangle(cornerRadius: 14, style: .continuous)
                             .strokeBorder(AppColors.cardBorder(colorScheme), lineWidth: 1)
                     }
+                    .shadow(
+                        color: Color.black.opacity(colorScheme == .dark ? 0.28 : 0.06),
+                        radius: 10,
+                        y: 3
+                    )
+            }
+            .overlay(alignment: .top) {
+                // Fine catch-light along the deck's top edge.
+                LinearGradient(
+                    colors: [.clear, .white.opacity(colorScheme == .dark ? 0.07 : 0.45), .clear],
+                    startPoint: .leading,
+                    endPoint: .trailing
+                )
+                .frame(height: 1)
+                .padding(.horizontal, 18)
+                .padding(.top, 1)
             }
             .padding(.horizontal, 14)
             .padding(.top, 2)
@@ -2307,8 +2335,7 @@ struct LibraryGridView: View {
             }
         }
         .padding(.horizontal, 16)
-        .padding(.bottom, 8)
-        .frame(maxWidth: .infinity, alignment: .leading)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
         .background(alignment: .leading) { measurementRow }
         .onPreferenceChange(PillWidthKey.self) { pillWidths = $0 }
         .sheet(isPresented: $showPillEditor) {

@@ -203,13 +203,15 @@ struct GameCardView: View {
     }
 
     private var cardBackground: Color {
-        if isSelected { return AppColors.brandAccentSecondary.opacity(0.15) }
-        if isHiddenItem { return Color.gray.opacity(0.08) }
+        if isHiddenItem { return Color.gray.opacity(0.06) }
+        if isSelected || isMultiSelected { return AppColors.brandAccent.opacity(0.045) }
         return .clear
     }
 
     private var cardStrokeColor: Color {
         if isHiddenItem { return Color.gray.opacity(0.3) }
+        if isSelected || isMultiSelected { return AppColors.brandAccent.opacity(0.55) }
+        if isHovered { return AppColors.brandAccent.opacity(0.20) }
         return .clear
     }
 
@@ -494,7 +496,29 @@ struct GameCardView: View {
                     .clipped()
                     .overlay(
                         RoundedRectangle(cornerRadius: 8)
-                            .fill(Color.black.opacity(isHovered ? 0.08 : 0))
+                            .fill(Color.black.opacity(isHovered ? 0.06 : 0))
+                    )
+                    .overlay {
+                        // Pointer spotlight: the art catches the cursor like a
+                        // glossy print. Uses the existing normalized cursor
+                        // position, so it costs nothing extra.
+                        if isHovered, pivotingEnabled, mousePosition != nil {
+                            RadialGradient(
+                                colors: [.white.opacity(0.20), .clear],
+                                center: UnitPoint(x: normalizedMouseX, y: normalizedMouseY),
+                                startRadius: 0,
+                                endRadius: 150
+                            )
+                            .blendMode(.softLight)
+                            .allowsHitTesting(false)
+                        }
+                    }
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8)
+                            .strokeBorder(
+                                .white.opacity(isHovered ? 0.16 : 0),
+                                lineWidth: 0.8
+                            )
                     )
                     .grayscale(artworkGrayscale)
                     .opacity(artworkOpacity)

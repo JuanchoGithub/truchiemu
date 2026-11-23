@@ -351,6 +351,7 @@
 		35A94F53CC6111EDD2350BB0 /* input_systemLabels_dice.json in Resources */ = {isa = PBXBuildFile; fileRef = 51E0AB11BDD9C3E5EDF00912 /* input_systemLabels_dice.json */; };
 		35CD70D71DE0C18534C34292 /* input_coreLabels_gearboy.json in Resources */ = {isa = PBXBuildFile; fileRef = 0A905CA00DBF955F92929F34 /* input_coreLabels_gearboy.json */; };
 		360E85B47542945CD6FE2D16 /* HoloGameCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 421CBFE4EB42D273FCE87B34 /* HoloGameCardView.swift */; };
+		3656513EF77EA1509892ECEB /* LibraryAtmosphere.swift in Sources */ = {isa = PBXBuildFile; fileRef = D807C4321863E8EDE96C2B7F /* LibraryAtmosphere.swift */; };
 		367438AF41A2E4277D7605FE /* input_coreOverrides_pd777.json in Resources */ = {isa = PBXBuildFile; fileRef = 06F8D392772FF18175464C4F /* input_coreOverrides_pd777.json */; };
 		3699BC8E1AF90F686AA00486 /* fightdata_sfz3ugd.json in Resources */ = {isa = PBXBuildFile; fileRef = 33D4B52F0853356C3AA57C59 /* fightdata_sfz3ugd.json */; };
 		36BCFA5CE92E1BA8EE9CD75C /* Nintendo - Nintendo Entertainment System.dat in Resources */ = {isa = PBXBuildFile; fileRef = 55A0C232023C7657365528C8 /* Nintendo - Nintendo Entertainment System.dat */; };
@@ -2918,6 +2919,7 @@
 		D755FBFFC3BD76093815B71D /* vdp@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "vdp@132w.png"; sourceTree = "<group>"; };
 		D7870FCC07B8464EA6562D4B /* ResetSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResetSettingsView.swift; sourceTree = "<group>"; };
 		D7F0182BFC9A5EE471604C70 /* Nintendo - Game Boy Color.dat */ = {isa = PBXFileReference; path = "Nintendo - Game Boy Color.dat"; sourceTree = "<group>"; };
+		D807C4321863E8EDE96C2B7F /* LibraryAtmosphere.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryAtmosphere.swift; sourceTree = "<group>"; };
 		D832E76DC170355207B293CE /* TrainingModeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainingModeManager.swift; sourceTree = "<group>"; };
 		D83947E57DE57084797AE330 /* input_coreLabels_bsnes-jg.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "input_coreLabels_bsnes-jg.json"; sourceTree = "<group>"; };
 		D896B5C23A1A5DC2812951B1 /* HotkeyConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotkeyConfig.swift; sourceTree = "<group>"; };
@@ -4375,6 +4377,7 @@
 				A0A1BBAF236A7482126D4923 /* IconPickerView.swift */,
 				ED22E0198CFE81289DAC573E /* ImageCropView.swift */,
 				AE6DD9F2D88F252E2CECD2CC /* LibraryAnimations.swift */,
+				D807C4321863E8EDE96C2B7F /* LibraryAtmosphere.swift */,
 				42D49EF20EAC6B299FB93AE4 /* LibraryChip.swift */,
 				61E12B8DA655D1B0770ECEE6 /* LibraryDeckComponents.swift */,
 				44D6E43A22D859720886ECD6 /* LibraryFilterOption.swift */,
@@ -7067,6 +7070,7 @@
 				C18E5BE81E68BF2BD3405575 /* LaunchBoxGamesDBService.swift in Sources */,
 				13FD60D485399D437AD283D5 /* LaunchBoxMetadataService.swift in Sources */,
 				A88B029EDF9B982AD0A805D9 /* LibraryAnimations.swift in Sources */,
+				3656513EF77EA1509892ECEB /* LibraryAtmosphere.swift in Sources */,
 				E51CDE2C230FBBFE9AA8A980 /* LibraryAutomationCoordinator.swift in Sources */,
 				071BE304A3EEFDA17AAFB3D4 /* LibraryBackupService.swift in Sources */,
 				07D9332E2C26192A6C5467FA /* LibraryChip.swift in Sources */,

@@ -19,6 +19,7 @@ struct SidebarRowButton: View {
 
     @State private var isHovered = false
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @ObservedObject private var loc = LocalizationManager.shared
     
     var isSelected: Bool {
@@ -29,24 +30,29 @@ struct SidebarRowButton: View {
         Button {
             selectedFilter = filter
         } label: {
-            HStack(spacing: 6) {
-                iconView
-                    .frame(width: 22, height: 22)
+            HStack(spacing: 8) {
+                iconBadgeView
                 
                 Text(label)
                     .lineLimit(1)
                     .foregroundColor(isSelected ? .primary : (isHovered ? .primary : AppColors.textPrimary(colorScheme)))
-                    .fontWeight(isSelected ? .medium : .regular)
+                    .font(.system(size: 12.5, weight: isSelected ? .semibold : .regular, design: .rounded))
                 
                 Spacer()
                 
                 Text("\(count)")
-                    .font(.caption2.monospacedDigit())
-                    .foregroundColor(isSelected ? .primary : AppColors.textPrimary(colorScheme))
+                    .font(.system(size: 9.5, weight: .semibold, design: .rounded).monospacedDigit())
+                    .foregroundColor(
+                        isSelected
+                            ? AppColors.textOnAccent(for: AppColors.brandAccent, colorScheme: colorScheme)
+                            : AppColors.textSecondary(colorScheme)
+                    )
                     .padding(.horizontal, 6)
                     .padding(.vertical, 2)
-                    .background(isSelected ? AppColors.accentBackground(colorScheme) : AppColors.cardBackgroundSubtle(colorScheme))
-                    .cornerRadius(6)
+                    .background(
+                        Capsule(style: .continuous)
+                            .fill(isSelected ? AppColors.brandAccent.opacity(0.85) : AppColors.cardBackgroundSubtle(colorScheme))
+                    )
 
                 // Gutter for the context-menu button that the trailing overlay
                 // draws on hover/selection, so the ellipsis never lands on the
@@ -57,8 +63,8 @@ struct SidebarRowButton: View {
                         .frame(width: 20, height: 1)
                 }
             }
-            .padding(.horizontal, 6)
-            .padding(.vertical, 2)
+            .padding(.horizontal, 7)
+            .padding(.vertical, 3)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
@@ -86,24 +92,54 @@ struct SidebarRowButton: View {
             sidebarContextMenuContent(for: system)
                 .menuIconsAlwaysVisible()
         }
-        .offset(y: isHovered ? -1 : 0)
+        .offset(x: isHovered ? 1 : 0, y: isHovered ? -0.5 : 0)
         .background(
-            RoundedRectangle(cornerRadius: 6)
-                .fill(isSelected ? AppColors.accentBackground(colorScheme) : (isHovered ? AppColors.cardBackgroundSubtle(colorScheme) : .clear))
+            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                .fill(
+                    isSelected
+                        ? AnyShapeStyle(
+                            LinearGradient(
+                                colors: [
+                                    AppColors.brandAccent.opacity(colorScheme == .dark ? 0.24 : 0.16),
+                                    AppColors.brandAccent.opacity(colorScheme == .dark ? 0.08 : 0.06)
+                                ],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
+                        : AnyShapeStyle(isHovered ? AppColors.cardBackgroundSubtle(colorScheme) : .clear)
+                )
         )
         .overlay {
+            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                .strokeBorder(
+                    isSelected
+                        ? AppColors.brandAccent.opacity(0.30)
+                        : (isHovered ? AppColors.cardBorder(colorScheme) : .clear),
+                    lineWidth: 1
+                )
+                .allowsHitTesting(false)
+        }
+        .overlay {
             if isGamepadFocused {
-                RoundedRectangle(cornerRadius: 6)
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
                     .stroke(AppColors.brandAccent, lineWidth: 2)
                     .allowsHitTesting(false)
             }
         }
         .overlay(alignment: .leading) {
             if isSelected {
-                RoundedRectangle(cornerRadius: 2)
-                    .fill(AppColors.brandAccentSecondary)
-                    .frame(width: 3, height: 20)
+                Capsule(style: .continuous)
+                    .fill(
+                        LinearGradient(
+                            colors: [AppColors.brandAccentSecondary, AppColors.brandAccent],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                    )
+                    .frame(width: 3, height: 18)
                     .padding(.leading, 2)
+                    .shadow(color: AppColors.brandAccent.opacity(0.6), radius: 3)
             }
         }
         .onHover { hovering in
@@ -121,6 +157,7 @@ struct SidebarRowButton: View {
             }
         }
         .animation(AppMotion.micro, value: isHovered)
+        .animation(AppMotion.stateChange, value: isSelected)
     }
     
     @ViewBuilder
@@ -283,6 +320,38 @@ struct SidebarRowButton: View {
         }
     }
 
+    private var iconBadgeView: some View {
+        iconView
+            .frame(width: 16, height: 16)
+            .frame(width: 24, height: 24)
+            .background(
+                RoundedRectangle(cornerRadius: 7, style: .continuous)
+                    .fill(
+                        isSelected
+                            ? AnyShapeStyle(
+                                LinearGradient(
+                                    colors: [
+                                        AppColors.brandAccent.opacity(0.30),
+                                        AppColors.brandAccent.opacity(0.12)
+                                    ],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                            )
+                            : AnyShapeStyle(AppColors.cardBackgroundSubtle(colorScheme))
+                    )
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 7, style: .continuous)
+                    .strokeBorder(
+                        isSelected ? AppColors.brandAccent.opacity(0.30) : AppColors.cardBorder(colorScheme),
+                        lineWidth: 1
+                    )
+            )
+            .scaleEffect(isHovered && !reduceMotion ? 1.06 : 1)
+            .animation(reduceMotion ? nil : AppMotion.micro, value: isHovered)
+    }
+
     @ViewBuilder
     private var iconView: some View {
         if let sys = system, let img = sys.emuImage(size: 132) {
@@ -292,7 +361,7 @@ struct SidebarRowButton: View {
         } else {
             Image(systemName: icon)
                 .foregroundColor(tint)
-                .font(.system(size: 14))
+                .font(.system(size: 12, weight: .medium))
         }
     }
 }

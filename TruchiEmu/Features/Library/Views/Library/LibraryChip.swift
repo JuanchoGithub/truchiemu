@@ -70,18 +70,46 @@ struct LibraryChip: View {
             .padding(.horizontal, 10)
             .padding(.vertical, 6)
             .frame(maxWidth: fillsWidth ? .infinity : nil, minHeight: 30)
-            .background(Capsule().fill(fill))
+            .background(
+                Capsule()
+                    .fill(
+                        isActive
+                            ? AnyShapeStyle(
+                                LinearGradient(
+                                    colors: [activeFill, activeFill.opacity(0.82)],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                            )
+                            : AnyShapeStyle(fill)
+                    )
+            )
             .overlay(
                 Capsule()
-                    .strokeBorder(isActive ? Color.clear : AppColors.cardBorder(colorScheme), lineWidth: 1)
+                    .strokeBorder(
+                        isActive
+                            ? Color.white.opacity(0.18)
+                            : AppColors.cardBorder(colorScheme),
+                        lineWidth: 1
+                    )
             )
+            .overlay(alignment: .top) {
+                // Inner catch-light so the active pill reads as a raised key.
+                Capsule()
+                    .fill(Color.white.opacity(isActive ? 0.20 : 0))
+                    .frame(height: 1)
+                    .padding(.horizontal, 10)
+                    .padding(.top, 1)
+            }
             .shadow(
                 color: isActive
-                    ? tint.opacity(0.30)
+                    ? tint.opacity(isHovered ? 0.42 : 0.30)
                     : (isHovered ? tint.opacity(0.18) : .clear),
-                radius: isHovered ? 4 : 0,
+                radius: isActive ? (isHovered ? 8 : 5) : 4,
                 y: 2
             )
+            .scaleEffect(isHovered && !reduceMotion ? 1.035 : 1)
+            .animation(reduceMotion ? nil : AppMotion.micro, value: isHovered)
         }
         .buttonStyle(.plain)
         .help(tooltip ?? title)

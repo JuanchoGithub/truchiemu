@@ -88,16 +88,34 @@ struct LibraryQuickAccessTile: View {
         Image(systemName: icon)
             .font(.system(size: 11, weight: .semibold))
             .foregroundStyle(accent)
-            .frame(width: 22, height: 22)
+            .frame(width: 24, height: 24)
             .background(
-                RoundedRectangle(cornerRadius: 7, style: .continuous)
-                    .fill(accent.opacity(isSelected ? 0.18 : 0.13))
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .fill(
+                        LinearGradient(
+                            colors: [
+                                accent.opacity(isSelected ? 0.26 : 0.18),
+                                accent.opacity(isSelected ? 0.12 : 0.06)
+                            ],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
             )
+            .overlay(
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .strokeBorder(accent.opacity(isSelected ? 0.30 : 0.16), lineWidth: 1)
+            )
+            .shadow(color: accent.opacity(isHovered && !isSelected ? 0.25 : 0), radius: 5)
+            .scaleEffect(isHovered && !reduceMotion ? 1.10 : 1)
+            .rotationEffect(.degrees(isHovered && !reduceMotion ? -5 : 0))
+            .animation(reduceMotion ? nil : AppMotion.micro, value: isHovered)
     }
 
     private var countText: some View {
         Text(verbatim: count.formatted())
-            .font(.system(size: 20, weight: .semibold, design: .rounded))
+            .font(.system(size: 21, weight: .semibold, design: .rounded))
+            .tracking(-0.4)
             .monospacedDigit()
             .foregroundStyle(foreground)
             .contentTransition(.numericText())
@@ -164,6 +182,28 @@ struct LibraryQuickAccessTile: View {
         }
         .overlay {
             ZStack {
+                // Hover sheen sweeping in from the top-leading corner.
+                LinearGradient(
+                    colors: [
+                        .white.opacity(isHovered ? (isSelected ? 0.12 : 0.16) : (isSelected ? 0.07 : 0.0)),
+                        .clear
+                    ],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+
+                // Inner catch-light along the top edge.
+                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                    .strokeBorder(
+                        LinearGradient(
+                            colors: [.white.opacity(isSelected ? 0.28 : 0.10), .clear],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        ),
+                        lineWidth: 1
+                    )
+
                 RoundedRectangle(cornerRadius: 14, style: .continuous)
                     .strokeBorder(
                         isHovered && !isSelected ? tint.opacity(0.35) : .clear,
@@ -177,8 +217,8 @@ struct LibraryQuickAccessTile: View {
             .allowsHitTesting(false)
         }
         .shadow(
-            color: isSelected ? tint.opacity(0.22) : .clear,
-            radius: isHovered ? 10 : 6,
+            color: isSelected ? tint.opacity(isHovered ? 0.34 : 0.22) : .clear,
+            radius: isHovered ? 12 : 6,
             y: isHovered ? 4 : 2
         )
         .scaleEffect(isHovered && !reduceMotion ? 1.02 : 1.0)
@@ -211,6 +251,9 @@ struct LibraryStatTile: View {
     let value: String
     let unit: String
     var tint: Color = AppColors.brandAccent
+    /// Optional 0...1 fill drawn as a hairline meter under the label. Used by
+    /// the art-coverage tile so the hero carries one real data visual.
+    var progress: Double? = nil
 
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -236,6 +279,24 @@ struct LibraryStatTile: View {
                 .tracking(0.4)
                 .foregroundStyle(AppColors.textTertiary(colorScheme))
                 .lineLimit(1)
+
+            if let progress {
+                Capsule()
+                    .fill(tint.opacity(0.16))
+                    .frame(width: 44, height: 2)
+                    .overlay(alignment: .leading) {
+                        Capsule()
+                            .fill(
+                                LinearGradient(
+                                    colors: [tint, tint.opacity(0.65)],
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                )
+                            )
+                            .frame(width: max(2, 44 * CGFloat(min(max(progress, 0), 1))), height: 2)
+                    }
+                    .padding(.top, 2)
+            }
         }
         .padding(.horizontal, 10)
         .padding(.vertical, 6)
@@ -259,33 +320,38 @@ struct LibraryStatTile: View {
 
 // MARK: - Hero Backdrop
 
-/// Ambient bed behind the collection hero: an accent wash, one drifting
-/// secondary glow parked in the top-trailing corner and a fading dot field.
-/// The glow only animates its offset, so it never re-lays out the header.
+/// Ambient bed behind the collection hero: an accent wash, two drifting glows,
+/// a slow light sweep and a fading dot field. Every moving layer animates its
+/// offset/rotation only, so it never re-lays out the header.
 private struct HeroAura: View, Equatable {
     let colorScheme: ColorScheme
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var drift = false
+    @State private var counterDrift = false
+    @State private var sweep = false
 
     static func == (lhs: HeroAura, rhs: HeroAura) -> Bool {
         lhs.colorScheme == rhs.colorScheme
     }
 
+    private var isDark: Bool { colorScheme == .dark }
+
     var body: some View {
         ZStack(alignment: .topTrailing) {
             LinearGradient(
                 colors: [
-                    AppColors.brandAccent.opacity(colorScheme == .dark ? 0.10 : 0.07),
+                    AppColors.brandAccent.opacity(isDark ? 0.12 : 0.08),
                     Color.clear
                 ],
                 startPoint: .top,
                 endPoint: .bottom
             )
 
+            // Primary glow parked in the top-trailing corner.
             RadialGradient(
                 colors: [
-                    AppColors.brandAccentSecondary.opacity(colorScheme == .dark ? 0.20 : 0.16),
+                    AppColors.brandAccentSecondary.opacity(isDark ? 0.22 : 0.16),
                     Color.clear
                 ],
                 center: .center,
@@ -298,6 +364,37 @@ private struct HeroAura: View, Equatable {
                 x: 90 + (drift ? 18 : -14),
                 y: -120 + (drift ? -8 : 12)
             )
+
+            // Counterweight glow behind the icon plate, drifting the other way.
+            RadialGradient(
+                colors: [
+                    AppColors.brandAccent.opacity(isDark ? 0.16 : 0.11),
+                    Color.clear
+                ],
+                center: .center,
+                startRadius: 0,
+                endRadius: 120
+            )
+            .frame(width: 260, height: 200)
+            .blur(radius: 22)
+            .offset(
+                x: -180 + (counterDrift ? -12 : 10),
+                y: -40 + (counterDrift ? 10 : -8)
+            )
+
+            // A slow specular sweep across the top edge of the band.
+            LinearGradient(
+                colors: [
+                    .clear,
+                    .white.opacity(isDark ? 0.06 : 0.28),
+                    .clear
+                ],
+                startPoint: .leading,
+                endPoint: .trailing
+            )
+            .frame(width: 320, height: 1.2)
+            .offset(x: sweep ? 140 : -360, y: 1)
+            .blur(radius: 0.5)
 
             DotField(color: AppColors.textPrimary(colorScheme))
                 .mask(
@@ -317,6 +414,12 @@ private struct HeroAura: View, Equatable {
             guard !reduceMotion else { return }
             withAnimation(.easeInOut(duration: 16).repeatForever(autoreverses: true)) {
                 drift = true
+            }
+            withAnimation(.easeInOut(duration: 23).repeatForever(autoreverses: true)) {
+                counterDrift = true
+            }
+            withAnimation(.linear(duration: 9).repeatForever(autoreverses: false)) {
+                sweep = true
             }
         }
     }
@@ -356,8 +459,8 @@ private struct HeroShelfCard: View {
     let onHover: (Bool) -> Void
     let onLaunch: () -> Void
 
-    private let width: CGFloat = 48
-    private let height: CGFloat = 66
+    private let width: CGFloat = 52
+    private let height: CGFloat = 72
 
     @State private var image: NSImage?
     @State private var isHovered = false
@@ -379,34 +482,68 @@ private struct HeroShelfCard: View {
 
     var body: some View {
         Button(action: onLaunch) {
-            artwork
-                .frame(width: width, height: height)
-                .clipShape(RoundedRectangle(cornerRadius: 7, style: .continuous))
-                .overlay {
-                    RoundedRectangle(cornerRadius: 7, style: .continuous)
-                        .strokeBorder(.white.opacity(isHovered ? 0.55 : 0.22), lineWidth: 1)
-                }
-                .overlay(alignment: .bottomTrailing) {
-                    if isHovered {
-                        Image(systemName: "play.fill")
-                            .font(.system(size: 7, weight: .black))
-                            .foregroundStyle(.white)
-                            .frame(width: 16, height: 16)
-                            .background(Circle().fill(AppColors.brandAccent))
-                            .overlay(Circle().strokeBorder(.white.opacity(0.5), lineWidth: 0.5))
-                            .padding(4)
-                            .transition(.scale.combined(with: .opacity))
+            ZStack {
+                // Ground glow: the card appears to stand on a lit shelf.
+                Ellipse()
+                    .fill(
+                        RadialGradient(
+                            colors: [
+                                (isHovered ? AppColors.brandAccent : Color.black)
+                                    .opacity(isHovered ? 0.55 : 0.30),
+                                .clear
+                            ],
+                            center: .center,
+                            startRadius: 0,
+                            endRadius: width * 0.62
+                        )
+                    )
+                    .frame(width: width * 1.15, height: 14)
+                    .blur(radius: 6)
+                    .offset(y: height / 2 + 2)
+                    .allowsHitTesting(false)
+
+                artwork
+                    .frame(width: width, height: height)
+                    .overlay {
+                        // Pointer-independent specular sweep on hover.
+                        LinearGradient(
+                            colors: [
+                                .white.opacity(0),
+                                .white.opacity(isHovered ? 0.28 : 0),
+                                .white.opacity(0)
+                            ],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                        .blendMode(.softLight)
                     }
-                }
-                .shadow(
-                    color: isHovered ? AppColors.brandAccent.opacity(0.45) : .black.opacity(0.25),
-                    radius: isHovered ? 10 : 5,
-                    y: isHovered ? 5 : 2
-                )
-                .rotationEffect(.degrees(isHovered ? 0 : fanIndex * 4), anchor: .bottom)
-                .offset(y: isHovered ? -7 : abs(fanIndex) * 1.2)
-                .scaleEffect(isHovered ? 1.14 : 1)
-                .animation(reduceMotion ? .easeOut(duration: 0.12) : AppMotion.tilt, value: isHovered)
+                    .clipShape(RoundedRectangle(cornerRadius: 7, style: .continuous))
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 7, style: .continuous)
+                            .strokeBorder(.white.opacity(isHovered ? 0.55 : 0.22), lineWidth: 1)
+                    }
+                    .overlay(alignment: .bottomTrailing) {
+                        if isHovered {
+                            Image(systemName: "play.fill")
+                                .font(.system(size: 7, weight: .black))
+                                .foregroundStyle(.white)
+                                .frame(width: 17, height: 17)
+                                .background(Circle().fill(AppColors.brandAccent))
+                                .overlay(Circle().strokeBorder(.white.opacity(0.5), lineWidth: 0.5))
+                                .padding(4)
+                                .transition(.scale.combined(with: .opacity))
+                        }
+                    }
+                    .shadow(
+                        color: isHovered ? AppColors.brandAccent.opacity(0.50) : .black.opacity(0.28),
+                        radius: isHovered ? 12 : 5,
+                        y: isHovered ? 6 : 2
+                    )
+                    .rotationEffect(.degrees(isHovered ? 0 : fanIndex * 4.5), anchor: .bottom)
+                    .offset(y: isHovered ? -9 : abs(fanIndex) * 1.2)
+                    .scaleEffect(isHovered ? 1.16 : 1)
+                    .animation(reduceMotion ? .easeOut(duration: 0.12) : AppMotion.tilt, value: isHovered)
+            }
         }
         .buttonStyle(.plain)
         .onHover { hovering in
@@ -447,6 +584,13 @@ private struct HeroShelfCard: View {
 
 // MARK: - Collection Hero
 
+private struct HeroWidthPreferenceKey: PreferenceKey {
+    static var defaultValue: CGFloat = 0
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+        value = max(value, nextValue())
+    }
+}
+
 /// Header band above the library content. Owns collection identity, live
 /// counts for the current filter, and a fanned shelf of recent games.
 struct LibraryCollectionHero: View {
@@ -469,6 +613,8 @@ struct LibraryCollectionHero: View {
     @State private var appeared = false
     @State private var hoveredRecent: ROM?
     @State private var plateTilt: CGPoint = .zero
+    @State private var ringSpin = false
+    @State private var heroWidth: CGFloat = 1000
 
     private var artPercent: Int {
         guard games > 0 else { return 0 }
@@ -491,6 +637,11 @@ struct LibraryCollectionHero: View {
         Array(recent.prefix(4))
     }
 
+    /// Newest game that actually has been played — the hero's primary action.
+    private var resumeROM: ROM? {
+        recent.first { $0.lastPlayed != nil }
+    }
+
     var body: some View {
         ZStack {
             HeroAura(colorScheme: colorScheme)
@@ -505,8 +656,8 @@ struct LibraryCollectionHero: View {
                         switch phase {
                         case .active(let point):
                             plateTilt = CGPoint(
-                                x: (point.x / 56) - 0.5,
-                                y: (point.y / 56) - 0.5
+                                x: (point.x / 60) - 0.5,
+                                y: (point.y / 60) - 0.5
                             )
                         case .ended:
                             plateTilt = .zero
@@ -515,36 +666,45 @@ struct LibraryCollectionHero: View {
                     .animation(reduceMotion ? nil : AppMotion.tilt, value: plateTilt)
 
                 VStack(alignment: .leading, spacing: 3) {
-                    Text(verbatim: eyebrow.uppercased())
-                        .font(.system(size: 8, weight: .bold, design: .rounded))
-                        .tracking(1.1)
-                        .foregroundStyle(AppColors.brandAccent)
-                        .lineLimit(1)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 3)
-                        .background(
-                            Capsule(style: .continuous)
-                                .fill(AppColors.brandAccent.opacity(colorScheme == .dark ? 0.16 : 0.10))
-                        )
-                        .overlay(
-                            Capsule(style: .continuous)
-                                .strokeBorder(AppColors.brandAccent.opacity(0.18), lineWidth: 1)
-                        )
+                    eyebrowChip
 
                     Text(verbatim: title)
                         .font(.system(size: 27, weight: .bold, design: .rounded))
                         .tracking(-0.4)
-                        .foregroundStyle(AppColors.textPrimary(colorScheme))
+                        .foregroundStyle(
+                            LinearGradient(
+                                colors: [
+                                    AppColors.textPrimary(colorScheme),
+                                    AppColors.textPrimary(colorScheme).opacity(0.74)
+                                ],
+                                startPoint: .top,
+                                endPoint: .bottom
+                            )
+                        )
                         .lineLimit(1)
                         .minimumScaleFactor(0.72)
                         .contentTransition(.opacity)
 
-                    subtitle
+                    HStack(spacing: 8) {
+                        subtitle
+                        if let rom = resumeROM {
+                            HeroResumeButton(
+                                rom: rom,
+                                label: loc.localized("shell.resume"),
+                                onLaunch: { onLaunch(rom) }
+                            )
+                            .transition(.opacity.combined(with: .scale(scale: 0.94)))
+                        }
+                    }
                 }
+                // The title block keeps its space first; the shelf and the
+                // stat tiles drop out as the window narrows instead of
+                // squeezing the name and the resume action.
+                .layoutPriority(1)
 
                 Spacer(minLength: 8)
 
-                if games > 0 {
+                if games > 0 && heroWidth >= 640 {
                     HStack(spacing: 6) {
                         if systems > 1 {
                             LibraryStatTile(
@@ -556,7 +716,8 @@ struct LibraryCollectionHero: View {
                         LibraryStatTile(
                             icon: "photo.on.rectangle",
                             value: "\(artPercent)%",
-                            unit: loc.localized("shell.unit.withArt")
+                            unit: loc.localized("shell.unit.withArt"),
+                            progress: games > 0 ? Double(withArt) / Double(games) : 0
                         )
                         if favorites > 0 {
                             LibraryStatTile(
@@ -570,7 +731,7 @@ struct LibraryCollectionHero: View {
                     .layoutPriority(2)
                 }
 
-                if !shelf.isEmpty {
+                if !shelf.isEmpty && heroWidth >= 940 {
                     recentShelf
                         .padding(.leading, 2)
                         .layoutPriority(3)
@@ -579,14 +740,69 @@ struct LibraryCollectionHero: View {
             .padding(.horizontal, 20)
             .padding(.vertical, 12)
         }
-        .frame(height: 94)
+        .frame(height: 108)
+        .background {
+            GeometryReader { geo in
+                Color.clear.preference(key: HeroWidthPreferenceKey.self, value: geo.size.width)
+            }
+        }
+        .onPreferenceChange(HeroWidthPreferenceKey.self) { heroWidth = $0 }
+        .overlay(alignment: .top) {
+            // Hairline catch-light where the hero meets the window chrome.
+            LinearGradient(
+                colors: [
+                    Color.clear,
+                    AppColors.brandAccent.opacity(colorScheme == .dark ? 0.30 : 0.22),
+                    Color.clear
+                ],
+                startPoint: .leading,
+                endPoint: .trailing
+            )
+            .frame(height: 1)
+            .padding(.horizontal, 24)
+            .opacity(appeared ? 1 : 0)
+        }
         .opacity(appeared ? 1 : 0)
         .offset(y: appeared ? 0 : 6)
         .onAppear {
             withAnimation(reduceMotion ? .linear(duration: 0) : AppMotion.entrance()) {
                 appeared = true
             }
+            guard !reduceMotion else { return }
+            withAnimation(.linear(duration: 15).repeatForever(autoreverses: false)) {
+                ringSpin = true
+            }
         }
+    }
+
+    private var eyebrowChip: some View {
+        HStack(spacing: 4) {
+            Circle()
+                .fill(AppColors.brandAccent)
+                .frame(width: 4, height: 4)
+                .overlay(
+                    Circle()
+                        .stroke(AppColors.brandAccent.opacity(0.45), lineWidth: 3)
+                        .scaleEffect(1.6)
+                        .opacity(0.35)
+                )
+
+            Text(verbatim: eyebrow.uppercased())
+                .font(.system(size: 8, weight: .bold, design: .rounded))
+                .tracking(1.1)
+                .lineLimit(1)
+        }
+        .foregroundStyle(AppColors.brandAccent)
+        .padding(.horizontal, 8)
+        .padding(.vertical, 3)
+        .background(
+            Capsule(style: .continuous)
+                .fill(AppColors.brandAccent.opacity(colorScheme == .dark ? 0.16 : 0.10))
+        )
+        .overlay(
+            Capsule(style: .continuous)
+                .strokeBorder(AppColors.brandAccent.opacity(0.18), lineWidth: 1)
+        )
     }
 
     private var subtitle: some View {
@@ -621,7 +837,7 @@ struct LibraryCollectionHero: View {
     }
 
     private var recentShelf: some View {
-        HStack(spacing: -18) {
+        HStack(spacing: -16) {
             ForEach(Array(shelf.enumerated()), id: \.element.id) { index, rom in
                 HeroShelfCard(
                     rom: rom,
@@ -638,7 +854,7 @@ struct LibraryCollectionHero: View {
                 .zIndex(hoveredRecent?.id == rom.id ? 10 : Double(index))
             }
         }
-        .frame(height: 66, alignment: .center)
+        .frame(height: 84, alignment: .center)
     }
 
     @ViewBuilder
@@ -646,28 +862,61 @@ struct LibraryCollectionHero: View {
         ZStack {
             // Soft accent aura behind the plate.
             RadialGradient(
-                colors: [AppColors.brandAccent.opacity(0.22), .clear],
+                colors: [AppColors.brandAccent.opacity(0.24), .clear],
                 center: .center,
                 startRadius: 2,
-                endRadius: 44
+                endRadius: 46
             )
-            .frame(width: 88, height: 88)
+            .frame(width: 96, height: 96)
             .allowsHitTesting(false)
 
-            RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .fill(AppColors.accentBackground(colorScheme))
+            // Static orbit track plus a single bright arc that slowly spins.
+            Circle()
+                .stroke(AppColors.brandAccent.opacity(colorScheme == .dark ? 0.12 : 0.14), lineWidth: 1)
+                .frame(width: 66, height: 66)
+
+            Circle()
+                .trim(from: 0.04, to: 0.70)
+                .stroke(
+                    AngularGradient(
+                        colors: [
+                            AppColors.brandAccent.opacity(0.0),
+                            AppColors.brandAccent.opacity(0.85),
+                            AppColors.brandAccentSecondary.opacity(0.65),
+                            AppColors.brandAccent.opacity(0.0)
+                        ],
+                        center: .center
+                    ),
+                    style: StrokeStyle(lineWidth: 1.6, lineCap: .round)
+                )
+                .frame(width: 66, height: 66)
+                .rotationEffect(.degrees(ringSpin ? 360 : 0))
+                .shadow(color: AppColors.brandAccent.opacity(0.45), radius: 3)
+
+            RoundedRectangle(cornerRadius: 15, style: .continuous)
+                .fill(
+                    LinearGradient(
+                        colors: [
+                            AppColors.accentBackground(colorScheme),
+                            AppColors.brandAccent.opacity(colorScheme == .dark ? 0.07 : 0.04)
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
                 .overlay {
-                    RoundedRectangle(cornerRadius: 14, style: .continuous)
-                        .strokeBorder(AppColors.brandAccent.opacity(0.18), lineWidth: 1)
+                    RoundedRectangle(cornerRadius: 15, style: .continuous)
+                        .strokeBorder(AppColors.brandAccent.opacity(0.22), lineWidth: 1)
                 }
-                .frame(width: 52, height: 52)
+                .frame(width: 54, height: 54)
+                .shadow(color: AppColors.brandAccent.opacity(0.20), radius: 10, y: 3)
 
             if let system, let image = system.emuImage(size: 132) {
                 Image(nsImage: image)
                     .resizable()
                     .interpolation(.high)
                     .aspectRatio(contentMode: .fit)
-                    .frame(width: 34, height: 34)
+                    .frame(width: 36, height: 36)
             } else if GamingIconService.isGamingIconName(icon),
                       let image = GamingIconService.shared.image(for: icon) {
                 // Categories can store game-icons.net names ("gi:..."), which
@@ -684,6 +933,74 @@ struct LibraryCollectionHero: View {
                     .foregroundStyle(AppColors.brandAccent)
             }
         }
-        .frame(width: 56, height: 56)
+        .frame(width: 66, height: 66)
+    }
+}
+
+// MARK: - Hero Resume Button
+
+/// Primary action in the hero: resumes the newest played game. The cover art
+/// stays in the shelf; this is the one obvious way to jump back in.
+private struct HeroResumeButton: View {
+    let rom: ROM
+    let label: String
+    let onLaunch: () -> Void
+
+    @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var isHovered = false
+
+    private var accent: Color { AppColors.brandAccent }
+    private var foreground: Color {
+        AppColors.textOnAccent(for: accent, colorScheme: colorScheme)
+    }
+
+    var body: some View {
+        Button(action: onLaunch) {
+            HStack(spacing: 5) {
+                Image(systemName: "play.fill")
+                    .font(.system(size: 8, weight: .black))
+                    .scaleEffect(isHovered ? 1.15 : 1)
+
+                Text(verbatim: label)
+                    .font(.system(size: 10, weight: .bold, design: .rounded))
+
+                Text(verbatim: rom.displayName)
+                    .font(.system(size: 10, weight: .medium, design: .rounded))
+                    .opacity(0.78)
+                    .lineLimit(1)
+                    .truncationMode(.tail)
+                    .frame(maxWidth: 150, alignment: .leading)
+            }
+            .foregroundStyle(foreground)
+            .fixedSize(horizontal: true, vertical: false)
+            .padding(.horizontal, 9)
+            .padding(.vertical, 5)
+            .background(
+                Capsule(style: .continuous)
+                    .fill(
+                        LinearGradient(
+                            colors: [accent, AppColors.brandAccentDimmed],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+            )
+            .overlay {
+                Capsule(style: .continuous)
+                    .strokeBorder(.white.opacity(0.20), lineWidth: 0.8)
+            }
+            .shadow(
+                color: accent.opacity(isHovered ? 0.50 : 0.28),
+                radius: isHovered ? 9 : 4,
+                y: 2
+            )
+            .scaleEffect(isHovered && !reduceMotion ? 1.035 : 1)
+            .animation(reduceMotion ? nil : AppMotion.micro, value: isHovered)
+        }
+        .buttonStyle(.plain)
+        .onHover { isHovered = $0 }
+        .help(rom.displayName)
+        .accessibilityLabel(Text(verbatim: "\(label) \(rom.displayName)"))
     }
 }
