@@ -32,6 +32,16 @@ enum LibraryDisplayEntry {
     case header(title: String, year: Int?, count: Int, systemID: String?)
 }
 
+/// The section that currently owns the top of the viewport in a grouped grid.
+/// Drives the floating header pill that keeps the system name on screen after
+/// the section's own header row has scrolled away.
+struct LibraryVisibleSection: Equatable {
+    let title: String
+    let year: Int?
+    let count: Int
+    let systemID: String?
+}
+
 /// Section titles the user collapsed (the section shows only its header
 /// row). Shared by the grid, holo grid and list so the state survives view
 /// switches — same static pattern as `ScrollActivity`. Keyed by the

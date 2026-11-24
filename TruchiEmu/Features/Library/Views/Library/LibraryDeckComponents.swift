@@ -270,6 +270,7 @@ struct LibraryStatTile: View {
                     .font(.system(size: 17, weight: .bold, design: .rounded))
                     .monospacedDigit()
                     .contentTransition(.numericText())
+                    .animation(reduceMotion ? nil : AppMotion.stateChange, value: value)
                     .foregroundStyle(AppColors.textPrimary(colorScheme))
                     .lineLimit(1)
             }
@@ -684,6 +685,10 @@ struct LibraryCollectionHero: View {
                         .lineLimit(1)
                         .minimumScaleFactor(0.72)
                         .contentTransition(.opacity)
+                        // The filter change that swaps this title is not wrapped
+                        // in `withAnimation`, so the content transition needs its
+                        // own trigger to actually cross-fade.
+                        .animation(reduceMotion ? nil : AppMotion.stateChange, value: title)
 
                     HStack(spacing: 8) {
                         subtitle

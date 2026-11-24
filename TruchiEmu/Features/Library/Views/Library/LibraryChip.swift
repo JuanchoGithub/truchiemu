@@ -111,7 +111,7 @@ struct LibraryChip: View {
             .scaleEffect(isHovered && !reduceMotion ? 1.035 : 1)
             .animation(reduceMotion ? nil : AppMotion.micro, value: isHovered)
         }
-        .buttonStyle(.plain)
+        .buttonStyle(LibraryChipPressStyle(reduceMotion: reduceMotion))
         .help(tooltip ?? title)
         .accessibilityLabel(Text(verbatim: title))
         .accessibilityHint(Text(verbatim: tooltip ?? title))
@@ -124,5 +124,17 @@ struct LibraryChip: View {
             }
         }
         .animation(reduceMotion ? nil : .easeOut(duration: 0.2), value: isActive)
+    }
+}
+
+/// Press feedback for the filter pills. Hover already lifts the chip; a short
+/// press-down completes the "raised key" language so a click reads as physical.
+private struct LibraryChipPressStyle: ButtonStyle {
+    let reduceMotion: Bool
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed && !reduceMotion ? 0.95 : 1)
+            .animation(.easeOut(duration: 0.1), value: configuration.isPressed)
     }
 }

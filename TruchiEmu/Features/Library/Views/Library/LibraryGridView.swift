@@ -205,6 +205,7 @@ struct LibraryGridView: View {
 
 
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var renamingROM: ROM? = nil
     @State private var renameText: String = ""
     @StateObject private var gameLauncher = GameLauncher.shared
@@ -212,6 +213,11 @@ struct LibraryGridView: View {
 
     @State private var viewMode: ViewMode = .grid
     @State private var columnCount: Int = 4
+    /// Section floating pill: the system whose games currently cross the top of
+    /// a grouped grid, reported by the collection view while it scrolls.
+    @State private var visibleSection: LibraryVisibleSection?
+    /// One-shot downward tap on the filter deck after a filter or sort change.
+    @State private var deckNudge = false
 @ObservedObject var prefs = SystemPreferences.shared
 @State private var manualBoxArtSearchROM: ROM?
     
@@ -384,6 +390,9 @@ struct LibraryGridView: View {
                 }
 .transition(.opacity.combined(with: .scale(scale: 0.97)))
 }
+// Floating section pill: stays at the top-left of the content while a grouped
+// grid is scrolled past the section's own header row.
+.overlay(alignment: .topLeading) { floatingSectionOverlay }
 .modifier(GamepadNavReceiver(
     onLaunch: { [self] in if let rom = selectedROM { Task { await launchGame(rom) } } },
     onFocusSearch: { [self] in searchFocused.wrappedValue = true },
@@ -434,6 +443,19 @@ struct LibraryGridView: View {
         // Outer scope: the grid below must slide down/up when the
         // "Filtering:" status strip appears, not just resize.
         .animation(AppMotion.stateChange, value: shouldShowFilterStatus)
+    }
+
+    /// Floating section pill for grouped grids. Kept as its own view to keep
+    /// the content ZStack readable.
+    @ViewBuilder
+    private var floatingSectionOverlay: some View {
+        if let section = visibleSection, viewMode != .list {
+            LibraryFloatingSectionPill(section: section)
+                .padding(.leading, 18)
+                .padding(.top, 10)
+                .transition(.move(edge: .top).combined(with: .opacity))
+                .allowsHitTesting(false)
+        }
     }
 
     private var libraryChrome: some View {
@@ -741,6 +763,7 @@ struct LibraryGridView: View {
             }
         }
         .onReceive(NotificationCenter.default.publisher(for: .sortChanged)) { _ in
+            nudgeDeck()
             if case .category(let id) = filter,
                let cfg = loadCategoryConfig(for: id) {
                 sortOrder = LibrarySortOrder(rawValue: cfg.sortOrder) ?? sortOrder
@@ -808,6 +831,7 @@ struct LibraryGridView: View {
             handleNavigateToFilter(notification)
         }
         .onChange(of: filter) { oldFilter, newFilter in
+            nudgeDeck()
             if case .category(let oldID) = oldFilter {
                 saveCategoryConfig(for: oldID)
             }
@@ -830,12 +854,14 @@ struct LibraryGridView: View {
         }
         .onChange(of: activeFilters) { _, _ in
             guard !isLoadingConfig else { return }
+            nudgeDeck()
             if case .category(let id) = filter {
                 saveCategoryConfig(for: id)
             }
         }
         .onChange(of: selectedGenres) { _, _ in
             guard !isLoadingConfig else { return }
+            nudgeDeck()
             if case .category(let id) = filter {
                 saveCategoryConfig(for: id)
             }
@@ -851,6 +877,9 @@ struct LibraryGridView: View {
             )
         }
         .onChange(of: viewMode) { _, newMode in
+            // The floating section pill belongs to one grid; a mode swap must
+            // not carry the previous grid's section over.
+            visibleSection = nil
             if newMode != .tv { _previousViewMode = newMode }
             // Persist the *previous* (non-TV) mode when entering TV mode so
             // exiting TV restores grid/list/holo instead of falling back to grid.
@@ -961,7 +990,10 @@ struct LibraryGridView: View {
             },
             contextMenuProvider: { [self] rom in contextMenu(for: rom) },
             library: library,
-            categoryManager: categoryManager
+            categoryManager: categoryManager,
+            onVisibleSectionChange: { section in
+                setVisibleSection(section)
+            }
         )
         .onChange(of: gamepadNav.contentIndex) { _, newIndex in
             guard gamepadNav.activeZone == .content else { return }
@@ -996,7 +1028,10 @@ struct LibraryGridView: View {
             },
             contextMenuProvider: { [self] rom in contextMenu(for: rom) },
             library: library,
-            categoryManager: categoryManager
+            categoryManager: categoryManager,
+            onVisibleSectionChange: { section in
+                setVisibleSection(section)
+            }
         )
         .onChange(of: gamepadNav.contentIndex) { _, newIndex in
             guard gamepadNav.activeZone == .content else { return }
@@ -1602,17 +1637,9 @@ struct LibraryGridView: View {
                     .frame(maxWidth: 320)
                     .opacity(emptyStateAppeared ? 1 : 0)
                     .offset(y: emptyStateAppeared ? 0 : 8)
-                if activeFilters.isEmpty && searchText.isEmpty && library.roms.isEmpty {
-                    Button {
-                        pickFolder()
-                    } label: {
-                        Label(loc.localized("library.addRomFolder"), systemImage: "folder.badge.plus")
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .tint(AppColors.brandAccentSecondary)
+                emptyStateActions
                     .opacity(emptyStateAppeared ? 1 : 0)
                     .offset(y: emptyStateAppeared ? 0 : 8)
-                }
             }
             .padding()
         }
@@ -1627,6 +1654,97 @@ struct LibraryGridView: View {
             withAnimation(.easeOut(duration: 0.35).delay(0.1)) {
                 emptyStateAppeared = true
             }
+        }
+    }
+
+    /// One clear next step per empty-state flavour. A dead end is the one place
+    /// a library should never leave the player: search and filter dead ends get
+    /// a reset, an empty system gets a way back to the full shelf.
+    @ViewBuilder
+    private var emptyStateActions: some View {
+        let hasSearch = !searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        let hasFilters = !activeFilters.isEmpty || !selectedGenres.isEmpty
+
+        HStack(spacing: 8) {
+            if hasSearch {
+                Button {
+                    searchText = ""
+                } label: {
+                    Label(loc.localized("library.clearSearch"), systemImage: "xmark.circle")
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(AppColors.brandAccentSecondary)
+
+                if hasFilters {
+                    Button {
+                        clearEmptyStateFilters()
+                    } label: {
+                        Label(loc.localized("library.clearFilters"), systemImage: "line.3.horizontal.decrease.circle")
+                    }
+                    .buttonStyle(.bordered)
+                }
+            } else if hasFilters {
+                Button {
+                    clearEmptyStateFilters()
+                } label: {
+                    Label(loc.localized("library.clearFilters"), systemImage: "line.3.horizontal.decrease.circle")
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(AppColors.brandAccentSecondary)
+            } else if library.roms.isEmpty {
+                Button {
+                    pickFolder()
+                } label: {
+                    Label(loc.localized("library.addRomFolder"), systemImage: "folder.badge.plus")
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(AppColors.brandAccentSecondary)
+            } else if filter.id != LibraryFilter.all.id {
+                Button {
+                    filter = .all
+                } label: {
+                    Label(loc.localized("app.allGames"), systemImage: "square.grid.2x2")
+                }
+                .buttonStyle(.bordered)
+            }
+        }
+    }
+
+    private func clearEmptyStateFilters() {
+        activeFilters.removeAll()
+        selectedGenres.removeAll()
+        viewModel.updateFilters(
+            filter: effectiveFilter,
+            searchText: searchText,
+            activeFilters: activeFilters,
+            sortOrder: sortOrder,
+            sortAscending: sortAscending,
+            selectedGenres: selectedGenres
+        )
+    }
+
+    /// The grids report the section under the viewport top on every scroll.
+    /// Fade the floating pill in and out instead of popping it.
+    private func setVisibleSection(_ section: LibraryVisibleSection?) {
+        guard section != visibleSection else { return }
+        if reduceMotion {
+            visibleSection = section
+        } else {
+            withAnimation(.easeOut(duration: 0.18)) {
+                visibleSection = section
+            }
+        }
+    }
+
+    /// A short downward tap on the control deck confirms a filter or sort
+    /// change. The grid swaps in one frame, so the deck carries the
+    /// acknowledgement.
+    private func nudgeDeck() {
+        guard !reduceMotion else { return }
+        deckNudge = true
+        Task { @MainActor in
+            try? await Task.sleep(nanoseconds: 90_000_000)
+            deckNudge = false
         }
     }
     
@@ -2179,6 +2297,8 @@ struct LibraryGridView: View {
             .padding(.horizontal, 14)
             .padding(.top, 2)
             .padding(.bottom, 10)
+            .offset(y: deckNudge ? 2 : 0)
+            .animation(.spring(response: 0.26, dampingFraction: 0.6), value: deckNudge)
     }
 
     // Width-aware chip bar. Sort chips lead, then the user-configured filter

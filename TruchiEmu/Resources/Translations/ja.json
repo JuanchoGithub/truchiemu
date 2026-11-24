@@ -599,6 +599,7 @@
   "library.genre": "ジャンル",
   "library.otherFilters": "その他",
   "library.clearFilters": "クリア",
+  "library.clearSearch": "検索をクリア",
   "library.otherSort": "その他",
   "library.sectionGamesCount": "%d ゲーム",
   "library.region": "地域",

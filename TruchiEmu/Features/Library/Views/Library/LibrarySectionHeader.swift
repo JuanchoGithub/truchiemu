@@ -156,6 +156,61 @@ struct LibrarySectionHeaderView: View {
     }
 }
 
+/// Compact header that floats over a grouped grid once the section's own
+/// header row scrolls away. Same icon, title and count language as the row it
+/// stands in for, sized to sit lightly on top of the cards.
+struct LibraryFloatingSectionPill: View {
+    let section: LibraryVisibleSection
+
+    @Environment(\.colorScheme) private var colorScheme
+
+    var body: some View {
+        HStack(spacing: 7) {
+            icon
+                .frame(width: 15, height: 15)
+
+            Text(verbatim: section.title)
+                .font(.system(size: 11, weight: .bold, design: .rounded))
+                .foregroundStyle(AppColors.textPrimary(colorScheme))
+                .lineLimit(1)
+
+            Text(verbatim: section.count.formatted())
+                .font(.system(size: 9, weight: .bold, design: .rounded))
+                .monospacedDigit()
+                .foregroundStyle(AppColors.brandAccent)
+                .padding(.horizontal, 5)
+                .padding(.vertical, 1)
+                .background(
+                    Capsule().fill(AppColors.brandAccent.opacity(colorScheme == .dark ? 0.22 : 0.12))
+                )
+        }
+        .padding(.leading, 8)
+        .padding(.trailing, 10)
+        .padding(.vertical, 5)
+        .background(.regularMaterial, in: Capsule())
+        .overlay {
+            Capsule().strokeBorder(AppColors.cardBorder(colorScheme), lineWidth: 1)
+        }
+        .shadow(color: .black.opacity(colorScheme == .dark ? 0.32 : 0.10), radius: 8, y: 3)
+        .accessibilityHidden(true)
+    }
+
+    @ViewBuilder
+    private var icon: some View {
+        if let systemID = section.systemID,
+           let system = SystemDatabase.displaySystem(forInternalID: systemID),
+           let image = system.emuImage(size: 44) {
+            Image(nsImage: image)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+        } else {
+            Image(systemName: "gamecontroller")
+                .font(.system(size: 9, weight: .semibold))
+                .foregroundStyle(AppColors.brandAccent)
+        }
+    }
+}
+
 /// NSCollectionViewItem hosting a section header. Registered and recycled by
 /// both the boxart grid and the holo grid.
 final class LibrarySectionHeaderItem: NSCollectionViewItem {

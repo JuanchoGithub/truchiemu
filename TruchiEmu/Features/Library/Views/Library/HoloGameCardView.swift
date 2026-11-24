@@ -35,6 +35,7 @@ struct HoloGameCardView: View {
     // faster than the foil so the spotlight tracks the cursor crisply.
     @State private var glareIntensity: Double = 0
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 @ObservedObject private var prefs = SystemPreferences.shared
     @ObservedObject private var dragState = GameDragState.shared
     @ObservedObject private var boxArtService = BoxArtService.shared
@@ -314,7 +315,7 @@ struct HoloGameCardView: View {
     }
 
     private var translateY: CGFloat {
-        effectsActive ? -10 : 0
+        effectsActive && !reduceMotion ? -10 : 0
     }
 
     private var scale: CGFloat {
@@ -430,7 +431,9 @@ struct HoloGameCardView: View {
                 }
             }
             .onContinuousHover { phase in
-                guard !ScrollActivity.isScrolling else { return }
+                // Reduce Motion keeps the card flat: no pointer-driven tilt and
+                // no cursor glare, since both are movement.
+                guard !ScrollActivity.isScrolling, !reduceMotion else { return }
                 switch phase {
                 case .active(let location):
                     mousePosition = location
@@ -784,12 +787,18 @@ private func holoArtworkDefault(allowBump: Bool = true) -> some View {
             let w = geometry.size.width
             let h = geometry.size.height
 
-            let scale = isPressed ? 1.08 : (effectsActive ? 1.06 : 1.0)
+            let scale = isPressed ? 1.08 : (effectsActive && !reduceMotion ? 1.06 : 1.0)
 
             ZStack {
                 // Base box art — always visible, with gentle 3D tilt matching the
-                // holo effect.
-                BoxArtBaseView(image: image, normalizedMouseX: normalizedMouseX, normalizedMouseY: normalizedMouseY, isPressed: isPressed, w: w, h: h, tiltEnabled: !ScrollActivity.isScrolling)
+                // holo effect. Games without art use the same system plate as
+                // the normal grid card, so holo mode never shows a flat gray box.
+                if image == nil {
+                    placeholderArt
+                        .frame(width: w, height: h)
+                } else {
+                    BoxArtBaseView(image: image, normalizedMouseX: normalizedMouseX, normalizedMouseY: normalizedMouseY, isPressed: isPressed, w: w, h: h, tiltEnabled: !ScrollActivity.isScrolling)
+                }
 
                 // Native SwiftUI/Metal holo foil + glare. Built ONLY while the card
                 // is hovered (gated on `effectsActive`): constructing them for
@@ -802,6 +811,7 @@ private func holoArtworkDefault(allowBump: Bool = true) -> some View {
             }
             .frame(width: w, height: h)
             .scaleEffect(scale, anchor: .center)
+            .animation(reduceMotion ? nil : .easeOut(duration: 0.22), value: image != nil)
         }
         .clipShape(RoundedRectangle(cornerRadius: 8))
         .shadow(color: Color.black.opacity(isPressed ? 0.35 : 0.20), radius: isPressed ? 9 : 5, x: 0, y: isPressed ? 5 : 3)

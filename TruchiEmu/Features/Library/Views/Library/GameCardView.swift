@@ -38,6 +38,7 @@ struct GameCardView: View {
     @State private var tiltRotationX: Double = 0
     @State private var tiltRotationY: Double = 0
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @ObservedObject private var prefs = SystemPreferences.shared
     @ObservedObject private var dragState = GameDragState.shared
     @ObservedObject private var boxArtService = BoxArtService.shared
@@ -231,7 +232,7 @@ struct GameCardView: View {
     // the plain flag costs nothing and the `.libraryScrollActivityChanged`
     // notification resets transient hover/tilt state once per transition.
     private var pivotingEnabled: Bool {
-        prefs.boxArtPivotingEnabled() && !ScrollActivity.isScrolling
+        prefs.boxArtPivotingEnabled() && !ScrollActivity.isScrolling && !reduceMotion
     }
 
     // Normalized cursor position (0...1) within the artwork frame.
@@ -345,7 +346,7 @@ struct GameCardView: View {
                 tiltRotationY = 0
             }
         }
-        .scaleEffect(isPressed ? 0.97 : (isLaunching ? 1.05 : (isHovered ? 1.02 : 1.0)))
+        .scaleEffect(isPressed ? 0.97 : (isLaunching ? 1.05 : (isHovered && !reduceMotion ? 1.02 : 1.0)))
         .animation(AppMotion.micro, value: isHovered)
         .animation(AppMotion.feedback, value: isPressed)
         .animation(nil, value: isLaunching)
@@ -741,6 +742,10 @@ struct GameCardView: View {
                 }
             }
             .frame(width: geometry.size.width, height: geometry.size.height)
+            // Artwork lands asynchronously after the placeholder is already on
+            // screen. Cross-fade the swap so a recycled or freshly loaded cell
+            // settles instead of snapping from the system plate to the cover.
+            .animation(reduceMotion ? nil : .easeOut(duration: 0.22), value: image != nil)
         }
         .clipShape(RoundedRectangle(cornerRadius: 8))
         .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.black.opacity(0.10), lineWidth: 1))

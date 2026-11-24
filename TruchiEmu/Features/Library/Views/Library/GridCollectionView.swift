@@ -148,8 +148,15 @@ final class GridCollectionViewCoordinator: NSObject {
     var onDoubleClick: ((ROM) -> Void)?
     var onTap: ((ROM, Int) -> Void)?
     var contextMenuProvider: ((ROM) -> AnyView)?
+    /// Reports the section that owns the top of the viewport while a grouped
+    /// list scrolls, so the library can float a header pill.
+    var onVisibleSectionChange: ((LibraryVisibleSection?) -> Void)?
+    fileprivate var headerIndices: [Int] = []
+    fileprivate var lastVisibleSection: LibraryVisibleSection?
+    fileprivate var lastSectionProbe: TimeInterval = 0
 
     private weak var collectionView: NSCollectionView?
+    private weak var scrollView: NSScrollView?
     fileprivate let itemID = NSUserInterfaceItemIdentifier("GridCollectionViewItem")
     // Scroll detection (holo-grid parity): observes the enclosing scroll view
     // so the shared `ScrollActivity.isScrolling` flag flips true while the
@@ -187,6 +194,7 @@ final class GridCollectionViewCoordinator: NSObject {
 
     func setup(collectionView: NSCollectionView, scrollView: NSScrollView) {
         self.collectionView = collectionView
+        self.scrollView = scrollView
         // Register the item class so the collection view RECYCLES a bounded
         // pool of items instead of the data source instantiating a fresh
         // NSHostingView (with its own SwiftUI view tree) for every index path
@@ -214,6 +222,7 @@ final class GridCollectionViewCoordinator: NSObject {
             queue: .main
         ) { [weak self] _ in
             self?.markScrolling()
+            self?.reportVisibleSection()
         }
         liveScrollStartObserver = NotificationCenter.default.addObserver(
             forName: NSScrollView.willStartLiveScrollNotification,
@@ -232,6 +241,7 @@ final class GridCollectionViewCoordinator: NSObject {
                 self.scrollResetTimer?.invalidate()
                 self.scrollResetTimer = nil
                 ScrollActivity.isScrolling = false
+                self.reportVisibleSection(force: true)
             }
         }
 
@@ -243,12 +253,51 @@ final class GridCollectionViewCoordinator: NSObject {
 
     func reloadData() {
         collectionView?.reloadData()
+        // The display list may have changed under an unchanged scroll offset
+        // (filter switch, system sort, collapse). Re-resolve after AppKit has
+        // laid the new rows out.
+        DispatchQueue.main.async { [weak self] in
+            self?.reportVisibleSection(force: true)
+        }
     }
 
     /// Rebuilds the render-ready display list (headers + games) from the
     /// current `roms` and grouping flag. Must run before `reloadData`.
     func rebuildDisplayList() {
         displayList = LibrarySectionBuilder.displayList(for: roms, grouped: groupedBySystem, collapsedSystems: LibrarySectionCollapse.collapsedSystems)
+        headerIndices = displayList.entries.indices.filter { index in
+            if case .header = displayList.entries[index] { return true }
+            return false
+        }
+    }
+
+    /// Resolves the section at the top of the viewport and reports it when it
+    /// changes. Throttled because the bounds notification fires per frame;
+    /// `force` bypasses the throttle for gesture end and reloads.
+    fileprivate func reportVisibleSection(force: Bool = false) {
+        guard let collectionView, let scrollView, displayList.hasHeaders else {
+            publishVisibleSection(nil)
+            return
+        }
+        let now = ProcessInfo.processInfo.systemUptime
+        if !force {
+            guard now - lastSectionProbe >= 0.04 else { return }
+        }
+        lastSectionProbe = now
+
+        let section = libraryVisibleSection(
+            displayList: displayList,
+            headerIndices: headerIndices,
+            collectionView: collectionView,
+            scrollView: scrollView
+        )
+        publishVisibleSection(section)
+    }
+
+    fileprivate func publishVisibleSection(_ section: LibraryVisibleSection?) {
+        guard section != lastVisibleSection else { return }
+        lastVisibleSection = section
+        onVisibleSectionChange?(section)
     }
 
     /// Collapses/expands one system section. reloadData preserves selection
@@ -568,6 +617,7 @@ struct GridCollectionViewRepresentable: NSViewRepresentable {
     var contextMenuProvider: ((ROM) -> AnyView)?
     var library: ROMLibrary?
     var categoryManager: CategoryManager?
+    var onVisibleSectionChange: ((LibraryVisibleSection?) -> Void)?
 
     func makeCoordinator() -> GridCollectionViewCoordinator {
         let c = GridCollectionViewCoordinator()
@@ -590,6 +640,7 @@ struct GridCollectionViewRepresentable: NSViewRepresentable {
         c.contextMenuProvider = contextMenuProvider
         c.library = library
         c.categoryManager = categoryManager
+        c.onVisibleSectionChange = onVisibleSectionChange
         return c
     }
 
@@ -638,6 +689,7 @@ struct GridCollectionViewRepresentable: NSViewRepresentable {
     func updateNSView(_ nsView: NSScrollView, context: Context) {
         guard let cv = nsView.documentView as? NSCollectionView else { return }
         let c = context.coordinator
+        c.onVisibleSectionChange = onVisibleSectionChange
 
         let newFingerprint = roms.map { "\($0.id)|\($0.hasBoxArt)|\($0.raMatchStatus ?? "")|\($0.raGameId ?? 0)" }
         let versionChanged = romsVersion != c.previousRomsVersion
@@ -715,4 +767,48 @@ struct GridCollectionViewRepresentable: NSViewRepresentable {
 
         c.previousSelection = selection
     }
+}
+
+// MARK: - Floating section resolution
+
+/// The section whose games cross the top of the viewport, or nil while that
+/// section's own header row is still on screen (the row is already its label).
+/// Shared by the boxart grid and the holo grid so both float the same pill.
+func libraryVisibleSection(
+    displayList: LibraryDisplayList,
+    headerIndices: [Int],
+    collectionView: NSCollectionView,
+    scrollView: NSScrollView
+) -> LibraryVisibleSection? {
+    guard displayList.hasHeaders, !headerIndices.isEmpty else { return nil }
+    guard let topItem = collectionView.indexPathsForVisibleItems().map(\.item).min() else {
+        return nil
+    }
+
+    // Rightmost header at or before the top visible row.
+    var low = 0
+    var high = headerIndices.count - 1
+    var owner: Int?
+    while low <= high {
+        let mid = (low + high) / 2
+        if headerIndices[mid] <= topItem {
+            owner = headerIndices[mid]
+            low = mid + 1
+        } else {
+            high = mid - 1
+        }
+    }
+    guard let headerIndex = owner,
+          headerIndex < displayList.entries.count else { return nil }
+
+    let contentTop = scrollView.contentView.bounds.minY
+    if let attributes = collectionView.layoutAttributesForItem(at: IndexPath(item: headerIndex, section: 0)),
+       attributes.frame.minY >= contentTop - 2 {
+        return nil
+    }
+
+    guard case let .header(title, year, count, systemID) = displayList.entries[headerIndex] else {
+        return nil
+    }
+    return LibraryVisibleSection(title: title, year: year, count: count, systemID: systemID)
 }
