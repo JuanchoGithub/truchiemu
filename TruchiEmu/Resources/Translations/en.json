@@ -608,6 +608,7 @@
   "library.genre": "Genre",
   "library.otherFilters": "Other",
   "library.clearFilters": "Clear",
+  "library.clearGenreFilter": "Clear genre filter",
   "library.clearSearch": "Clear search",
   "library.otherSort": "Other",
   "library.sectionGamesCount": "%d games",

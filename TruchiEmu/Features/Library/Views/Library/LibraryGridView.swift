@@ -251,6 +251,7 @@ struct LibraryGridView: View {
     @State private var selectedGenres: Set<String> = []
     @State private var showGenrePicker: Bool = false
     @State private var showOtherFilters: Bool = false
+    @State private var genreClearHovered = false
     @State private var clearChipHovered = false
     @State private var showPillEditor: Bool = false
     @State private var pillWidths: [String: CGFloat] = [:]
@@ -2580,8 +2581,21 @@ struct LibraryGridView: View {
 
     private var filterStatusStrip: some View {
         HStack(spacing: 6) {
-            Image(systemName: "line.3.horizontal.decrease.circle.fill")
-                .font(.caption)
+            if selectedGenres.isEmpty {
+                Image(systemName: "line.3.horizontal.decrease.circle.fill")
+                    .font(.caption)
+            } else {
+                Button(action: clearGenreFilter) {
+                    Image(systemName: "xmark.circle.fill")
+                        .font(.caption)
+                        .foregroundStyle(genreClearHovered ? AppColors.brandAccent : AppColors.textSecondaryNeutral(colorScheme))
+                }
+                .buttonStyle(.plain)
+                .onHover { genreClearHovered = $0 }
+                .animation(reduceMotion ? nil : AppMotion.feedback, value: genreClearHovered)
+                .help(loc.localized("library.clearGenreFilter"))
+                .accessibilityLabel(loc.localized("library.clearGenreFilter"))
+            }
             Text(loc.localized("library.filtering"))
                 .font(.caption)
                 .layoutPriority(1)
@@ -2653,6 +2667,19 @@ struct LibraryGridView: View {
         filter = .category(category.id)
     }
     
+    private func clearGenreFilter() {
+        guard !selectedGenres.isEmpty else { return }
+        selectedGenres.removeAll()
+        viewModel.updateFilters(
+            filter: effectiveFilter,
+            searchText: searchText,
+            activeFilters: activeFilters,
+            sortOrder: sortOrder,
+            sortAscending: sortAscending,
+            selectedGenres: selectedGenres
+        )
+    }
+
     private func toggleFilter(_ option: GameFilterOption) {
         if activeFilters.contains(option.rawValue) {
             activeFilters.remove(option.rawValue)
@@ -2665,7 +2692,8 @@ struct LibraryGridView: View {
             searchText: searchText,
             activeFilters: activeFilters,
             sortOrder: sortOrder,
-            sortAscending: sortAscending
+            sortAscending: sortAscending,
+            selectedGenres: selectedGenres
         )
     }
 
