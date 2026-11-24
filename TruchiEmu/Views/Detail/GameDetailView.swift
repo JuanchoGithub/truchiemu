@@ -18,6 +18,7 @@ struct GameDetailView: View {
 	@StateObject var saveStateManager = SaveStateManager()
 	@StateObject var achievementsService = RetroAchievementsService.shared
 	@State var showBoxArtPicker = false
+    @State var showManualMatch = false
     @StateObject var gameLauncher = GameLauncher.shared
     @State var boxArtImage: NSImage? = nil
     @State var boxArtImageURL: URL? = nil
@@ -488,6 +489,23 @@ struct GameDetailView: View {
         }
         .sheet(isPresented: $showBoxArtPicker) { BoxArtPickerView(rom: currentROM)
             .gamepadDismissable { showBoxArtPicker = false }
+        }
+        .sheet(isPresented: $showManualMatch) {
+            ManualGameMatchSheet(rom: currentROM) { message in
+                let refreshed = library.rom(withID: rom.id)
+                if let description = refreshed?.metadata?.description, !description.isEmpty {
+                    gameDescription = description
+                } else if let title = refreshed?.metadata?.title, !title.isEmpty {
+                    gameDescription = refreshed?.metadata?.year.map { "\(title) (\($0))" } ?? title
+                } else {
+                    gameDescription = nil
+                }
+                showManualResult(message, tone: .success)
+                loadBoxArt()
+                loadTitleScreen()
+                loadScreenshots()
+            }
+            .gamepadDismissable { showManualMatch = false }
         }
         .sheet(isPresented: $showRAHashComparison) { raHashComparisonSheet
             .gamepadDismissable { showRAHashComparison = false }

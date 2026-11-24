@@ -419,6 +419,11 @@ struct ROMMetadata: Codable, Hashable {
     // If set, libretro library data will overwrite it (non-nil library data takes precedence).
     var userPlayerOverride: Int?
 
+    // True when the user selected this game by hand. Automatic identification
+    // must not replace the choice while the flag is set. Optional so metadata
+    // written by older builds still decodes.
+    var manualMatch: Bool?
+
     // ESRB & other ratings
     var esrbRating: String?
     var cooperative: Bool = false

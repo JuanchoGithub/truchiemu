@@ -93,7 +93,27 @@ final class LaunchBoxMetadataService: ObservableObject {
     }
 
     private var platformsDir: URL {
-        storageDir.appendingPathComponent("Platforms", isDirectory: true)
+        Self.platformsDirectoryURL
+    }
+
+    /// The folder with the platform lists. The path does not change, so the
+    /// main thread and the background threads can use it.
+    nonisolated static var platformsDirectoryURL: URL {
+        let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
+        return appSupport
+            .appendingPathComponent("TruchiEmu/LaunchBox", isDirectory: true)
+            .appendingPathComponent("Platforms", isDirectory: true)
+    }
+
+    /// Reads a platform list off the main thread. The JSON file can hold many
+    /// megabytes, so the main thread must not decode it.
+    nonisolated static func loadPlatformGames(platformName: String) -> [LaunchBoxGame] {
+        let fileName = "\(platformName.sanitizedForFilename).json"
+        let url = platformsDirectoryURL.appendingPathComponent(fileName)
+        guard let data = try? Data(contentsOf: url),
+              let games = try? JSONDecoder().decode([LaunchBoxGame].self, from: data)
+        else { return [] }
+        return games
     }
 
     private var zipLocalURL: URL {

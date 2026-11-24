@@ -57,7 +57,9 @@ final class LibraryAutomationCoordinator: ObservableObject {
             return
         }
 
-        let needIdentify = scope.filter { $0.needsAutomaticIdentification && !$0.isHidden }
+        let needIdentify = scope.filter {
+            $0.needsAutomaticIdentification && !$0.isHidden && $0.metadata?.manualMatch != true
+        }
         let needArt = scope.filter { $0.needsAutomaticBoxArt && !$0.isHidden }
         // Library-wide: rows from older scans missing Switch classification
         // heal on any scan, even ones that add no new files.
@@ -284,7 +286,8 @@ final class LibraryAutomationCoordinator: ObservableObject {
         // pattern as Phase 1, batches of 100.
         let romsMissingLibretroMetadata = scope.filter { rom in
             rom.metadata?.title != nil && !rom.metadata!.title!.isEmpty &&
-            rom.metadata?.genre == nil && !rom.isHidden
+            rom.metadata?.genre == nil && !rom.isHidden &&
+            rom.metadata?.manualMatch != true
         }
         
         let phase175Start = Date()

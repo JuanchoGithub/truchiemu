@@ -847,6 +847,7 @@ class ROMLibrary: ObservableObject {
                     updated.raMatchStatus = nil
                 }
                 if updated.metadata == nil { updated.metadata = ROMMetadata() }
+                updated.metadata?.manualMatch = nil
                 updated.metadata?.title = info.name; updated.metadata?.year = info.year
                 updated.metadata?.publisher = info.publisher; updated.metadata?.developer = info.developer; updated.metadata?.genre = info.genre
                 if updated.metadata?.userPlayerOverride == nil {
@@ -873,6 +874,7 @@ class ROMLibrary: ObservableObject {
                     updated.metadata?.title = nil; updated.metadata?.year = nil
                     updated.metadata?.publisher = nil; updated.metadata?.developer = nil; updated.metadata?.genre = nil
                 }
+                updated.metadata?.manualMatch = nil
                 updated = correctGBCExtensionSystem(rom: updated)
                 updateROM(updated, persist: persist, silent: silent)
                 return updated
@@ -884,6 +886,7 @@ class ROMLibrary: ObservableObject {
                     updated.metadata?.publisher = nil; updated.metadata?.developer = nil; updated.metadata?.genre = nil
                     updated.thumbnailLookupSystemID = nil
                 }
+                updated.metadata?.manualMatch = nil
                 updateROM(updated, persist: persist, silent: silent)
                 return updated
             
@@ -920,8 +923,85 @@ class ROMLibrary: ObservableObject {
             updated.metadata?.title = nil; updated.metadata?.year = nil
             updated.metadata?.publisher = nil; updated.metadata?.developer = nil; updated.metadata?.genre = nil
             updated.thumbnailLookupSystemID = nil
+            updated.metadata?.manualMatch = nil
             updateROM(updated, persist: persist)
         }
+    }
+
+    /// Applies the game that the user selected by hand. The result is locked:
+    /// the automatic identification and the post-scan phases skip the ROM
+    /// until the user removes the manual match.
+    @discardableResult
+    func applyManualMatch(_ candidate: GameMatchCandidate, to rom: ROM) -> ROM {
+        var updated = rom
+        let previousTitle = updated.metadata?.title
+        let gameChanged = previousTitle != candidate.name
+
+        if updated.metadata == nil { updated.metadata = ROMMetadata() }
+        updated.metadata?.title = candidate.name
+        updated.metadata?.manualMatch = true
+
+        if gameChanged {
+            // The values of the previous game do not describe the selected game.
+            updated.metadata?.year = candidate.year
+            updated.metadata?.publisher = candidate.publisher
+            updated.metadata?.developer = candidate.developer
+            updated.metadata?.genre = candidate.genre
+            updated.metadata?.description = candidate.description
+            updated.metadata?.esrbRating = candidate.esrbRating
+            updated.metadata?.cooperative = candidate.cooperative ?? false
+            updated.metadata?.openCriticScore = nil
+            updated.metadata?.openCriticTier = nil
+            updated.metadata?.openCriticPercentRecommended = nil
+            updated.metadata?.openCriticReviewCount = nil
+            updated.metadata?.openCriticID = nil
+            updated.metadata?.openCriticFetchAttempted = false
+            updated.metadata?.hltbGameID = nil
+            updated.metadata?.hltbMatchedTitle = nil
+            updated.metadata?.hltbMainStoryHours = nil
+            updated.metadata?.hltbMainPlusExtrasHours = nil
+            updated.metadata?.hltbCompletionistHours = nil
+            updated.metadata?.hltbAllStylesHours = nil
+            updated.metadata?.hltbLastNotFoundAt = nil
+        } else {
+            // The same game. Fill the values that are still missing.
+            if let year = candidate.year { updated.metadata?.year = year }
+            if let publisher = candidate.publisher { updated.metadata?.publisher = publisher }
+            if let developer = candidate.developer { updated.metadata?.developer = developer }
+            if let genre = candidate.genre { updated.metadata?.genre = genre }
+            if updated.metadata?.description == nil { updated.metadata?.description = candidate.description }
+            if updated.metadata?.esrbRating == nil { updated.metadata?.esrbRating = candidate.esrbRating }
+            if let cooperative = candidate.cooperative { updated.metadata?.cooperative = cooperative }
+        }
+
+        if updated.metadata?.userPlayerOverride == nil, let players = candidate.players {
+            updated.metadata?.players = players
+        }
+
+        updated.thumbnailLookupSystemID = candidate.thumbnailLookupSystemID
+        // A manual match is complete. The libretro metadata pass must not
+        // replace the player count with data from a different CRC.
+        updated.enrichmentAttempted = true
+        updated.enrichmentFailed = false
+
+        // The automatic identify button writes the result to customName. Do
+        // the same only when the custom name is missing or still holds the
+        // previous match, so a user-defined title is kept.
+        if updated.customName == nil || updated.customName == previousTitle {
+            updated.customName = candidate.name
+        }
+
+        updateROM(updated)
+        return updated
+    }
+
+    /// Removes the manual match lock. The fields stay as they are. The user can
+    /// now run the automatic identification again.
+    func unlockManualMatch(for rom: ROM) {
+        guard rom.metadata?.manualMatch == true else { return }
+        var updated = rom
+        updated.metadata?.manualMatch = nil
+        updateROM(updated)
     }
 
     private func updateGamesXML(for roms: [ROM], in folder: URL) {

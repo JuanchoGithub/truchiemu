@@ -412,16 +412,28 @@ enum LibretroThumbnailResolver {
         return urls
     }
 
-    // Resolve a display title: CRC/DAT (tier 1), else filename sanitization (tier 2).
+    // Resolve a display title: manual match (tier 0), CRC/DAT (tier 1), else filename sanitization (tier 2).
     static func resolveGameTitle(
         for rom: ROM,
         useCRC: Bool,
-        fallbackFilename: Bool
+        fallbackFilename: Bool,
+        titleOverride: String? = nil
     ) async -> String? {
         let systemID = rom.systemID ?? ""
         #if LOG_DEBUG
         LoggerService.debug(category: logCategory, "resolveGameTitle for '\(rom.name)': systemID='\(systemID)', useCRC=\(useCRC), fallbackFilename=\(fallbackFilename)")
         #endif
+
+        // A manual match or an explicit caller title wins. The CRC result can
+        // name a different game when the file is a hack or a bad dump.
+        if let override = titleOverride?.trimmingCharacters(in: .whitespacesAndNewlines), !override.isEmpty {
+            return override
+        }
+        if rom.metadata?.manualMatch == true,
+           let manualTitle = rom.metadata?.title?.trimmingCharacters(in: .whitespacesAndNewlines),
+           !manualTitle.isEmpty {
+            return manualTitle
+        }
 
         if useCRC, !systemID.isEmpty, SystemDatabase.system(forID: systemID) != nil {
             #if LOG_DEBUG

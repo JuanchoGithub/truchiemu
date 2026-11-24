@@ -14,6 +14,7 @@ extension GameDetailView {
     var technicalActionButtons: some View {
         HStack(spacing: AppSpacing.sm) {
             identifyButton
+            matchGameButton
             fetchBoxArtButton
             fetchMetadataButton
         }
@@ -24,6 +25,10 @@ extension GameDetailView {
             VStack(alignment: .leading, spacing: 0) {
                 gameSystemPicker
                 Divider().overlay(AppColors.divider(colorScheme))
+                if currentROM.metadata?.manualMatch == true {
+                    matchSourceRow
+                    Divider().overlay(AppColors.divider(colorScheme))
+                }
                 MetadataRow(label: loc.localized("gameInfo.fileName"), value: currentROM.path.lastPathComponent)
                 Divider().overlay(AppColors.divider(colorScheme))
                 MetadataRow(
@@ -119,9 +124,25 @@ extension GameDetailView {
         .padding(.vertical, AppSpacing.xs)
     }
 
+    var matchSourceRow: some View {
+        HStack {
+            Image(systemName: "hand.raised.fill").foregroundColor(AppColors.brandAccent).frame(width: 20)
+            Text(loc.localized("gameInfo.matchSource"))
+                .font(.subheadline)
+                .fontWeight(.medium)
+                .foregroundColor(AppColors.textPrimary(colorScheme))
+            Spacer()
+            Text(loc.localized("gameInfo.matchSourceManual"))
+                .font(.subheadline)
+                .fontWeight(.semibold)
+                .foregroundColor(AppColors.brandAccent)
+        }
+        .padding(.vertical, AppSpacing.xs)
+    }
+
     @ViewBuilder
     func gameMetadataRows(meta: ROMMetadata) -> some View {
-        if let original = meta.title, currentROM.customName != nil {
+        if let original = meta.title, let custom = currentROM.customName, custom != original {
             Divider().overlay(AppColors.divider(colorScheme))
             MetadataRow(label: loc.localized("gameInfo.originalName"), value: original)
         }
@@ -223,6 +244,25 @@ extension GameDetailView {
             .padding(.horizontal, AppSpacing.lg)
             .padding(.vertical, AppSpacing.sm)
             .background(AppColors.brandAccent)
+            .cornerRadius(AppRadius.md)
+        }
+        .buttonStyle(.plain)
+        .disabled(isIdentifyWorking)
+    }
+
+    var matchGameButton: some View {
+        Button {
+            showManualMatch = true
+        } label: {
+            HStack(spacing: 6) {
+                Image(systemName: "list.bullet.rectangle")
+                Text(loc.localized("gameInfo.matchGame"))
+            }
+            .font(.subheadline)
+            .foregroundColor(AppColors.textOnAccent(colorScheme))
+            .padding(.horizontal, AppSpacing.lg)
+            .padding(.vertical, AppSpacing.sm)
+            .background(AppColors.brandAccentSecondary)
             .cornerRadius(AppRadius.md)
         }
         .buttonStyle(.plain)

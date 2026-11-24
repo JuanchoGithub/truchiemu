@@ -264,10 +264,11 @@ class BoxArtService: ObservableObject {
 
     // MARK: - Art Fetching
 
-    func fetchBoxArt(for rom: ROM) async -> URL? {
+    func fetchBoxArt(for rom: ROM, preferredTitle: String? = nil, forceReplace: Bool = false) async -> URL? {
         // === OPTIMIZATION 1: Instant Local Check ===
         // Before hitting the network or identifying the ROM, check if we already have it locally!
-        if let localArt = resolveLocalBoxArt(for: rom) {
+        // A forced replace (manual match) must not return the old art.
+        if !forceReplace, let localArt = resolveLocalBoxArt(for: rom) {
             LoggerService.info(category: "BoxArt", "Fast Path: Found local boxart for '\(rom.name)' at \(localArt.lastPathComponent)")
             return localArt
         }
@@ -277,7 +278,12 @@ class BoxArtService: ObservableObject {
         // 1. Libretro Thumbnails CDN (primary)
         if useLibretroThumbnails {
             let regionSuffix = SystemPreferences.shared.systemLanguage.regionSuffix
-            let (libResult, _) = await fetchBoxArtLibretro(for: rom, regionSuffix: regionSuffix)
+            let (libResult, _) = await fetchBoxArtLibretro(
+                for: rom,
+                regionSuffix: regionSuffix,
+                preferredTitle: preferredTitle,
+                forceReplace: forceReplace
+            )
             if case .success(let lib) = libResult {
                 return lib
             }
@@ -286,7 +292,7 @@ class BoxArtService: ObservableObject {
         // 2. ScreenScraper (if credentials configured)
         if let creds = credentials {
             let ssSystemID = screenScraperSystemID(for: rom.systemID ?? "")
-            let query = rom.displayName.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+            let query = (preferredTitle ?? rom.displayName).addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
             var urlStr = "https://www.screenscraper.fr/api2/jeuRecherche.php"
             urlStr += "?devid=truchiemu&devpassword=truchiemu_dev"
             urlStr += "&ssid=\(creds.username)&sspassword=***"
@@ -301,7 +307,7 @@ class BoxArtService: ObservableObject {
                let medias = jeu["medias"] as? [[String: Any]] {
                 let box = medias.first(where: { ($0["type"] as? String) == "box-2D" })
                 if let urlString = box?["url"] as? String, let artURL = URL(string: urlString) {
-                    return await downloadAndCache(artURL: artURL, for: rom)
+                    return await downloadAndCache(artURL: artURL, for: rom, forceReplace: forceReplace)
                 }
             }
         }
@@ -310,12 +316,12 @@ class BoxArtService: ObservableObject {
         if LaunchBoxGamesDBService.shared.isEnabled,
            let platformName = LaunchBoxPlatformMapper.launchBoxPlatformName(for: rom.systemID ?? ""),
            let match = LaunchBoxMetadataService.shared.bestMatch(
-            for: rom.displayName,
+            for: preferredTitle ?? rom.displayName,
             platformName: platformName
            ),
            let imageRef = LaunchBoxMetadataService.shared.boxArtRef(for: match) {
             let cdnURL = LaunchBoxMetadataService.cdnURL(for: imageRef)
-            return await downloadAndCache(artURL: cdnURL, for: rom)
+            return await downloadAndCache(artURL: cdnURL, for: rom, forceReplace: forceReplace)
         }
 
         return nil
@@ -450,7 +456,12 @@ class BoxArtService: ObservableObject {
     // Returns (localFileURL, resolvedRegionTag). The region tag is extracted from the CDN URL
     // (e.g., "(USA)"), NOT from the local file path. Returns (.notFound, nil) on
     // definitive failure, (.transient, nil) on network/transient failure.
-    func fetchBoxArtLibretro(for rom: ROM, regionSuffix: String? = nil) async -> (ArtDownloadResult, String?) {
+    func fetchBoxArtLibretro(
+        for rom: ROM,
+        regionSuffix: String? = nil,
+        preferredTitle: String? = nil,
+        forceReplace: Bool = false
+    ) async -> (ArtDownloadResult, String?) {
         let romPathKey: String
         if let inner = rom.innerROMPath {
             romPathKey = URL(fileURLWithPath: inner).deletingPathExtension().lastPathComponent
@@ -463,7 +474,7 @@ class BoxArtService: ObservableObject {
         // Skip heavy CRC hashing completely if we already downloaded this boxart successfully
         // AND the region matches. Bypass cache when the region has changed so we re-download.
         let regionMatches = rom.boxArtRequestedRegion == regionSuffix
-        if regionMatches,
+        if regionMatches, !forceReplace,
            let cached = cacheRepo.getBoxArtResolution(romPathKey: romPathKey, source: source),
             cached.isValid,
             FileManager.default.fileExists(atPath: cached.resolvedURL) {
@@ -481,7 +492,8 @@ class BoxArtService: ObservableObject {
          guard let gameTitle = await LibretroThumbnailResolver.resolveGameTitle(
              for: rom,
              useCRC: useCRCMatchingForThumbnails,
-             fallbackFilename: fallbackToFilenameForThumbnails
+             fallbackFilename: fallbackToFilenameForThumbnails,
+             titleOverride: preferredTitle
          ), !gameTitle.isEmpty else { return (.notFound, nil) }
 
          let knownVariants: [String]
@@ -496,7 +508,8 @@ class BoxArtService: ObservableObject {
 
          for stem in [gameTitle, safeStem] where !stem.isEmpty {
              if let local = LibretroThumbnailResolver.resolveLocalThumbnail(named: stem, in: localBoxArtDir) {
-                 if Self.isValidImageFile(at: local) { return (.success(local), nil) }
+                 if !forceReplace, Self.isValidImageFile(at: local) { return (.success(local), nil) }
+                 else if forceReplace { continue }
                  else { try? FileManager.default.removeItem(at: local) }
              }
          }
@@ -521,7 +534,7 @@ class BoxArtService: ObservableObject {
 
             // Skip HEAD check for manifest-confirmed URLs — the manifest is authoritative,
             // so we avoid an extra CDN hit. Go straight to download.
-            switch await downloadAndCache(artURL: url, for: rom, to: rom.boxArtLocalPath, session: thumbnailURLSession) {
+            switch await downloadAndCache(artURL: url, for: rom, to: rom.boxArtLocalPath, session: thumbnailURLSession, forceReplace: forceReplace) {
             case .success(let saved):
                 cacheRepo.storeBoxArtResolution(romPathKey: romPathKey, systemID: sysID, gameTitle: gameTitle, resolvedURL: saved.path, source: source, httpStatus: 200, isValid: true)
                 return (.success(saved), regionTag)
@@ -564,7 +577,7 @@ class BoxArtService: ObservableObject {
                 }
             }
 
-            switch await downloadAndCache(artURL: url, for: rom, to: rom.boxArtLocalPath, session: thumbnailURLSession) {
+            switch await downloadAndCache(artURL: url, for: rom, to: rom.boxArtLocalPath, session: thumbnailURLSession, forceReplace: forceReplace) {
             case .success(let saved):
                 let resolvedRegionTag = LibretroThumbnailResolver.regionTag(from: url)
                 cacheRepo.storeBoxArtResolution(romPathKey: romPathKey, systemID: sysID, gameTitle: gameTitle, resolvedURL: saved.path, source: source, httpStatus: 200, isValid: true)
