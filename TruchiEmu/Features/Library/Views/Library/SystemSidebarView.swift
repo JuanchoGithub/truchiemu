@@ -17,7 +17,9 @@ struct SystemSidebarView: View {
     @EnvironmentObject var coreManager: CoreManager
     @Environment(SystemDatabaseWrapper.self) private var systemDatabase
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @ObservedObject private var loc = LocalizationManager.shared
+    @ObservedObject private var prefs = SystemPreferences.shared
     @ObservedObject private var raService = RetroAchievementsService.shared
     @ObservedObject private var gamepadNav = GamepadNavigationManager.shared
     @ObservedObject private var holo = HoloSaliencyService.shared
@@ -28,6 +30,10 @@ struct SystemSidebarView: View {
     var searchFocused: FocusState<Bool>.Binding
     @State private var hiddenCategoryRefreshToggle = false
     @State private var categoriesRefreshToggle = false
+    @State private var quickAccessSectionExpanded = true {
+        didSet { updateQuickAccessGamepadState() }
+    }
+    @State private var quickAccessHeaderHovered = false
 
     // Memoized sidebar list. The cache is updated through `.onChange`/`.onReceive`
     // listeners (NOT inside a computed property) so we never mutate @State while
@@ -285,7 +291,26 @@ struct SystemSidebarView: View {
 
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
-                quickAccessTiles
+                if prefs.showSidebarQuickAccess {
+                    VStack(alignment: .leading, spacing: 0) {
+                        sectionHeader(
+                            title: loc.localized("app.quickAccess"),
+                            isExpanded: $quickAccessSectionExpanded,
+                            isHeaderHovered: $quickAccessHeaderHovered,
+                            showDivider: false,
+                            onAction: nil,
+                            actionLabel: nil,
+                            showAction: false
+                        )
+
+                        if quickAccessSectionExpanded {
+                            quickAccessTiles
+                                .compositingGroup()
+                                .transition(.opacity)
+                        }
+                    }
+                    .transition(.move(edge: .top).combined(with: .opacity))
+                }
 
         sectionHeader(
                     title: loc.localized("app.categories"),
@@ -371,6 +396,8 @@ struct SystemSidebarView: View {
             .id(hiddenCategoryRefreshToggle)
             .padding(.horizontal, 8)
             .padding(.bottom, 12)
+            .animation(reduceMotion ? nil : AppMotion.stateChange, value: quickAccessSectionExpanded)
+            .animation(reduceMotion ? nil : AppMotion.stateChange, value: prefs.showSidebarQuickAccess)
         }
         .scrollContentBackground(.hidden)
 
@@ -414,6 +441,9 @@ struct SystemSidebarView: View {
         .onReceive(categoryManager.objectWillChange) { _ in
             categoriesRefreshToggle.toggle()
         }
+        .onChange(of: prefs.showSidebarQuickAccess) { _, _ in
+            updateQuickAccessGamepadState()
+        }
         .onChange(of: library.romCounts) { _, _ in
             cachedCombinedSystems = computeCombinedSystems()
             smartCategoryCounts = computeSmartCategoryCounts()
@@ -443,7 +473,19 @@ struct SystemSidebarView: View {
             // arrive through the .onChange listeners above.
             cachedCombinedSystems = computeCombinedSystems()
             smartCategoryCounts = computeSmartCategoryCounts()
+            updateQuickAccessGamepadState()
             SidebarScrollMonitor.install()
+        }
+    }
+
+    private func updateQuickAccessGamepadState() {
+        let coordinator = GamepadNavCoordinator.shared
+        coordinator.quickAccessVisible = prefs.showSidebarQuickAccess
+        coordinator.quickAccessExpanded = quickAccessSectionExpanded
+        coordinator.updateSidebarItems(coordinator.sidebarSelectableFilters)
+
+        if gamepadNav.isGamepadActive && gamepadNav.activeZone == .sidebar {
+            coordinator.syncSidebarIndex(to: selectedFilter)
         }
     }
 
@@ -481,7 +523,7 @@ struct SystemSidebarView: View {
     }
 
     @ViewBuilder
-    private func sectionHeader(title: String, isExpanded: Binding<Bool>, isHeaderHovered: Binding<Bool>, onAction: (() -> Void)?, actionLabel: String?, showAction: Bool) -> some View {
+    private func sectionHeader(title: String, isExpanded: Binding<Bool>, isHeaderHovered: Binding<Bool>, showDivider: Bool = true, onAction: (() -> Void)?, actionLabel: String?, showAction: Bool) -> some View {
         HStack(spacing: 8) {
             Button {
                 isExpanded.wrappedValue.toggle()
@@ -498,10 +540,12 @@ struct SystemSidebarView: View {
                         .tracking(1.0)
                         .lineLimit(1)
                         .fixedSize()
-                    Rectangle()
-                        .fill(AppColors.divider(colorScheme))
-                        .frame(height: 1)
-                        .padding(.leading, 2)
+                    if showDivider {
+                        Rectangle()
+                            .fill(AppColors.divider(colorScheme))
+                            .frame(height: 1)
+                            .padding(.leading, 2)
+                    }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .contentShape(Rectangle())
@@ -545,7 +589,7 @@ struct SystemSidebarView: View {
             }
         }
         .animation(.easeInOut(duration: 0.15), value: showAction)
-        .animation(AppMotion.micro, value: isExpanded.wrappedValue)
+        .animation(reduceMotion ? nil : AppMotion.micro, value: isExpanded.wrappedValue)
         .padding(.top, 14)
         .padding(.bottom, 6)
     }

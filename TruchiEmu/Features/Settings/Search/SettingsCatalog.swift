@@ -67,6 +67,15 @@ enum SettingsCatalog {
                 keywords: ["library", "hero", "header", "collection", "banner", "show", "hide", "collapse"]
             ),
             SettingsCatalogEntry(
+                page: .general, sectionID: "sidebarQuickAccess",
+                sectionTitle: "Quick Access",
+                optionTitles: ["Show Quick Access"],
+                optionSubSectionIDs: [
+                    "Show Quick Access": "sidebarQuickAccess"
+                ],
+                keywords: ["sidebar", "quick", "access", "tiles", "all", "favorites", "recent", "show", "hide", "collapse"]
+            ),
+            SettingsCatalogEntry(
                 page: .general, sectionID: "application",
                 sectionTitle: "Application",
                 optionTitles: ["Check updates automatically", "Enable system notifications"],

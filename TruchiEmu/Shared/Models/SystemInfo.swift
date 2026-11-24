@@ -693,6 +693,7 @@ class SystemPreferences: ObservableObject {
     private static let keyApplyCheatsOnLaunch = "applyCheatsOnLaunch"
     private static let keyShowCheatNotifications = "showCheatNotifications"
     private static let keyShowLibraryHero = "showLibraryHero"
+    private static let keyShowSidebarQuickAccess = "showSidebarQuickAccess"
     private static let keyBoxTypePrefix = "boxType_"
     private static let keyPreferredCorePrefix = "preferredCore_"
 
@@ -770,6 +771,10 @@ class SystemPreferences: ObservableObject {
         didSet { AppSettings.setBool(Self.keyShowLibraryHero, value: showLibraryHero); updateTrigger += 1 }
     }
 
+    @Published var showSidebarQuickAccess: Bool = true {
+        didSet { AppSettings.setBool(Self.keyShowSidebarQuickAccess, value: showSidebarQuickAccess); updateTrigger += 1 }
+    }
+
     func preferredCoreID(for systemID: String) -> String? {
         AppSettings.get("\(Self.keyPreferredCorePrefix)\(systemID)", type: String.self)
     }
@@ -798,6 +803,7 @@ class SystemPreferences: ObservableObject {
         self.applyCheatsOnLaunch = AppSettings.getBool(Self.keyApplyCheatsOnLaunch, defaultValue: false)
         self.showCheatNotifications = AppSettings.getBool(Self.keyShowCheatNotifications, defaultValue: true)
         self.showLibraryHero = AppSettings.getBool(Self.keyShowLibraryHero, defaultValue: true)
+        self.showSidebarQuickAccess = AppSettings.getBool(Self.keyShowSidebarQuickAccess, defaultValue: true)
     }
 }
 

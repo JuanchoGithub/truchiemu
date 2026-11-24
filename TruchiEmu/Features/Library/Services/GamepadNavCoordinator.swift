@@ -89,6 +89,8 @@ final class GamepadNavCoordinator: ObservableObject {
     private let navManager = GamepadNavigationManager.shared
 
     var sidebarSelectableFilters: [LibraryFilter] = []
+    var quickAccessVisible: Bool = true
+    var quickAccessExpanded: Bool = true
     var categoriesExpanded: Bool = true
     var systemsExpanded: Bool = true
 
@@ -111,6 +113,8 @@ final class GamepadNavCoordinator: ObservableObject {
         SidebarPerfCounters.noteVisibleList()
         return sidebarSelectableFilters.filter { filter in
             switch filter {
+            case .all, .favorites, .recent, .retroAchievements:
+                return quickAccessVisible && quickAccessExpanded
             case .category: return categoriesExpanded
             case .system: return systemsExpanded
             default: return true

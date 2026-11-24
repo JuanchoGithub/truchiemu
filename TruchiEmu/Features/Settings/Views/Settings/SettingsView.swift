@@ -165,7 +165,7 @@ struct SettingsView: View {
         var searchKeywords: String {
             switch self {
             case .general:
-                return "general app application version build notifications settings preferences library hero header collection banner"
+                return "general app application version build notifications settings preferences library hero header collection banner sidebar quick access tiles"
             case .saves:
                 return "saves save states files auto progressive slots manager"
             case .library:

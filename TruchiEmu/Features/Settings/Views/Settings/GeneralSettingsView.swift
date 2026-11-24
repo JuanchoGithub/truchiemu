@@ -195,6 +195,17 @@ LazyVGrid(columns: [GridItem(.adaptive(minimum: 60))], spacing: 2) {
                 .id("section-libraryHero")
             }
 
+            // ★ Sidebar Quick Access Section
+            if (!isSearching || matchesSearch("sidebar quick access tiles all games favorites recent show hide collapse")) && sectionVisible("section-sidebarQuickAccess") {
+                Section(header: Label(loc.localized("settings.sidebarQuickAccess.section"), systemImage: "square.grid.2x2")) {
+                    Toggle(loc.localized("settings.sidebarQuickAccess.show"), isOn: $prefs.showSidebarQuickAccess)
+                    Text("settings.sidebarQuickAccess.showDescription")
+                        .font(.caption)
+                        .foregroundStyle(AppColors.textSecondary(colorScheme))
+                }
+                .id("section-sidebarQuickAccess")
+            }
+
             // ★ Box Art Pivoting Section
             if (!isSearching || matchesSearch("boxArt pivoting 3D tilt cursor")) && sectionVisible("section-boxart-pivoting") {
                 Section(header: Label(loc.localized("boxArt.pivoting"), systemImage: "cube.transparent")) {
@@ -537,6 +548,7 @@ private struct CustomThemeButton: View {
         matchesSearch("Language Region systems language emulation core country localization") ||
         matchesSearch("Theme accent color appearance mode light dark gaming tinted surfaces toolbar") ||
         matchesSearch("library hero header collection banner show hide") ||
+        matchesSearch("sidebar quick access tiles all games favorites recent show hide collapse") ||
         matchesSearch("boxArt pivoting 3D tilt cursor") ||
         matchesSearch("categories category add game prompt ask create") ||
         matchesSearch("Application version build notifications updates")
