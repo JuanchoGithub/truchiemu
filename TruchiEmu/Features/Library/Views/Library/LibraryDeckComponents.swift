@@ -612,6 +612,7 @@ struct LibraryCollectionHero: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @ObservedObject private var loc = LocalizationManager.shared
     @State private var appeared = false
+    @State private var isCollapsed = false
     @State private var hoveredRecent: ROM?
     @State private var plateTilt: CGPoint = .zero
     @State private var ringSpin = false
@@ -644,6 +645,61 @@ struct LibraryCollectionHero: View {
     }
 
     var body: some View {
+        ZStack {
+            if isCollapsed {
+                collapsedTitle
+                    .transition(.opacity)
+            } else {
+                expandedContent
+                    .transition(.opacity.combined(with: .scale(scale: 0.98, anchor: .top)))
+            }
+        }
+        .frame(height: isCollapsed ? 38 : 108)
+        .clipped()
+        .overlay(alignment: .top) {
+            if !isCollapsed {
+                // Hairline catch-light where the hero meets the window chrome.
+                LinearGradient(
+                    colors: [
+                        Color.clear,
+                        AppColors.brandAccent.opacity(colorScheme == .dark ? 0.30 : 0.22),
+                        Color.clear
+                    ],
+                    startPoint: .leading,
+                    endPoint: .trailing
+                )
+                .frame(height: 1)
+                .padding(.horizontal, 24)
+                .opacity(appeared ? 1 : 0)
+            }
+        }
+        .overlay(alignment: .topLeading) {
+            if !isCollapsed {
+                Button(loc.localized("shell.hero.collapse"), systemImage: "chevron.up", action: collapseHero)
+                    .labelStyle(.iconOnly)
+                    .font(.system(size: 9, weight: .bold))
+                    .foregroundStyle(AppColors.textTertiary(colorScheme))
+                    .frame(width: 16, height: 16)
+                    .contentShape(Rectangle())
+                    .padding(4)
+                    .help(loc.localized("shell.hero.collapse"))
+            }
+        }
+        .opacity(appeared ? 1 : 0)
+        .offset(y: appeared ? 0 : 6)
+        .animation(reduceMotion ? nil : AppMotion.stateChange, value: isCollapsed)
+        .onAppear {
+            withAnimation(reduceMotion ? .linear(duration: 0) : AppMotion.entrance()) {
+                appeared = true
+            }
+            guard !reduceMotion else { return }
+            withAnimation(.linear(duration: 15).repeatForever(autoreverses: false)) {
+                ringSpin = true
+            }
+        }
+    }
+
+    private var expandedContent: some View {
         ZStack {
             HeroAura(colorScheme: colorScheme)
                 .equatable()
@@ -745,38 +801,51 @@ struct LibraryCollectionHero: View {
             .padding(.horizontal, 20)
             .padding(.vertical, 12)
         }
-        .frame(height: 108)
         .background {
             GeometryReader { geo in
                 Color.clear.preference(key: HeroWidthPreferenceKey.self, value: geo.size.width)
             }
         }
         .onPreferenceChange(HeroWidthPreferenceKey.self) { heroWidth = $0 }
-        .overlay(alignment: .top) {
-            // Hairline catch-light where the hero meets the window chrome.
-            LinearGradient(
-                colors: [
-                    Color.clear,
-                    AppColors.brandAccent.opacity(colorScheme == .dark ? 0.30 : 0.22),
-                    Color.clear
-                ],
-                startPoint: .leading,
-                endPoint: .trailing
-            )
-            .frame(height: 1)
-            .padding(.horizontal, 24)
-            .opacity(appeared ? 1 : 0)
+    }
+
+    private var collapsedTitle: some View {
+        Button(action: expandHero) {
+            Text(verbatim: title)
+                .font(.system(size: 27, weight: .bold, design: .rounded))
+                .tracking(-0.4)
+                .foregroundStyle(
+                    LinearGradient(
+                        colors: [
+                            AppColors.textPrimary(colorScheme),
+                            AppColors.textPrimary(colorScheme).opacity(0.74)
+                        ],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                )
+                .lineLimit(1)
+                .minimumScaleFactor(0.72)
+                .padding(.horizontal, 20)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .contentShape(Rectangle())
+                .contentTransition(.opacity)
+                .animation(reduceMotion ? nil : AppMotion.stateChange, value: title)
         }
-        .opacity(appeared ? 1 : 0)
-        .offset(y: appeared ? 0 : 6)
-        .onAppear {
-            withAnimation(reduceMotion ? .linear(duration: 0) : AppMotion.entrance()) {
-                appeared = true
-            }
-            guard !reduceMotion else { return }
-            withAnimation(.linear(duration: 15).repeatForever(autoreverses: false)) {
-                ringSpin = true
-            }
+        .buttonStyle(.plain)
+        .help(loc.localized("shell.hero.expand"))
+        .accessibilityLabel(Text(verbatim: "\(loc.localized("shell.hero.expand")): \(title)"))
+    }
+
+    private func collapseHero() {
+        withAnimation(reduceMotion ? .linear(duration: 0) : AppMotion.stateChange) {
+            isCollapsed = true
+        }
+    }
+
+    private func expandHero() {
+        withAnimation(reduceMotion ? .linear(duration: 0) : AppMotion.stateChange) {
+            isCollapsed = false
         }
     }
 

@@ -2222,20 +2222,23 @@ struct LibraryGridView: View {
     }
 
     private var libraryHeader: some View {
-        let stats = heroStats
-        return VStack(spacing: 0) {
-            LibraryCollectionHero(
-                title: heroTitle,
-                system: currentSystem,
-                icon: heroIcon,
-                eyebrow: heroEyebrow,
-                games: stats.games,
-                systems: stats.systems,
-                withArt: stats.withArt,
-                favorites: stats.favorites,
-                recent: stats.recent,
-                onLaunch: { rom in Task { await launchGame(rom) } }
-            )
+        VStack(spacing: 0) {
+            if prefs.showLibraryHero {
+                let stats = heroStats
+                LibraryCollectionHero(
+                    title: heroTitle,
+                    system: currentSystem,
+                    icon: heroIcon,
+                    eyebrow: heroEyebrow,
+                    games: stats.games,
+                    systems: stats.systems,
+                    withArt: stats.withArt,
+                    favorites: stats.favorites,
+                    recent: stats.recent,
+                    onLaunch: { rom in Task { await launchGame(rom) } }
+                )
+                .transition(.move(edge: .top).combined(with: .opacity))
+            }
 
             filterDeck
         }
@@ -2255,6 +2258,7 @@ struct LibraryGridView: View {
                 .fill(AppColors.divider(colorScheme))
                 .frame(height: 1)
         }
+        .animation(reduceMotion ? nil : AppMotion.stateChange, value: prefs.showLibraryHero)
     }
 
     // Rounded control deck that hosts the filter pills.

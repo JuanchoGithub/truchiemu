@@ -58,6 +58,15 @@ enum SettingsCatalog {
                 keywords: ["theme", "accent", "color", "appearance", "mode", "light", "dark", "gaming", "tinted", "surfaces", "toolbar", "preset"]
             ),
             SettingsCatalogEntry(
+                page: .general, sectionID: "libraryHero",
+                sectionTitle: "Library Hero",
+                optionTitles: ["Show Library Hero"],
+                optionSubSectionIDs: [
+                    "Show Library Hero": "libraryHero"
+                ],
+                keywords: ["library", "hero", "header", "collection", "banner", "show", "hide", "collapse"]
+            ),
+            SettingsCatalogEntry(
                 page: .general, sectionID: "application",
                 sectionTitle: "Application",
                 optionTitles: ["Check updates automatically", "Enable system notifications"],
