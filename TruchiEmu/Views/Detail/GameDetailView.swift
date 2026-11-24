@@ -22,6 +22,7 @@ struct GameDetailView: View {
     @StateObject var gameLauncher = GameLauncher.shared
     @State var boxArtImage: NSImage? = nil
     @State var boxArtImageURL: URL? = nil
+    @State var boxArtLoadID: UUID? = nil
     @State var screenshotImages: [NSImage] = []
     @State var crcHash: String? = nil
     @State var raHash: String? = nil
@@ -61,6 +62,9 @@ struct GameDetailView: View {
 
     @StateObject var fetchMetadata = ManualStatusController()
     @StateObject var fetchBoxArt = ManualStatusController()
+    @State var boxArtUndo: BoxArtUndoState? = nil
+    @State var boxArtOperationTask: Task<Void, Never>? = nil
+    @State var boxArtOperationID: UUID? = nil
     @State var currentBezelImage: NSImage? = nil
     @StateObject var cheatManagerService = CheatManagerService.shared
     @State var isLaunchingGame = false
@@ -399,6 +403,10 @@ struct GameDetailView: View {
     setupGamepadNavContext()
   }
   .onDisappear {
+      boxArtOperationTask?.cancel()
+      boxArtOperationTask = nil
+      boxArtOperationID = nil
+      boxArtLoadID = nil
       teardownGamepadNavContext()
   }
   // Own this window from the window that hosts the view. `NSApp.keyWindow`
@@ -408,7 +416,13 @@ struct GameDetailView: View {
   // presses meant for the detail window.
   .gamepadNavWindowOwner(gamepadTwoZoneContext)
     .onChange(of: currentROM.id) { _, _ in
+        boxArtOperationTask?.cancel()
+        boxArtOperationTask = nil
+        boxArtOperationID = nil
         manualAction.clear()
+        fetchBoxArt.clear()
+        boxArtUndo = nil
+        loadBoxArt()
         loadSlotInfo()
         loadTitleScreen()
         loadScreenshots()
@@ -994,14 +1008,22 @@ struct GameDetailView: View {
     }
 
     func loadBoxArt() {
+        let loadID = UUID()
+        boxArtLoadID = loadID
         Task { @MainActor in
-            if let resolvedPath = BoxArtService.shared.resolveLocalBoxArtIfNeeded(for: currentROM, library: library) {
+            let resolvedPath = BoxArtService.shared.resolveLocalBoxArtIfNeeded(for: currentROM, library: library)
+            if let resolvedPath {
+                let image = await ImageCache.shared.thumbnail(for: resolvedPath, preferredSize: .large)
+                guard boxArtLoadID == loadID else { return }
                 boxArtImageURL = resolvedPath
-                boxArtImage = await ImageCache.shared.thumbnail(for: resolvedPath, preferredSize: .large)
+                boxArtImage = image
             } else if currentROM.hasBoxArt {
+                let image = await ImageCache.shared.thumbnail(for: currentROM.boxArtLocalPath, preferredSize: .large)
+                guard boxArtLoadID == loadID else { return }
                 boxArtImageURL = currentROM.boxArtLocalPath
-                boxArtImage = await ImageCache.shared.thumbnail(for: currentROM.boxArtLocalPath, preferredSize: .large)
+                boxArtImage = image
             } else {
+                guard boxArtLoadID == loadID else { return }
                 boxArtImageURL = nil
                 boxArtImage = nil
             }

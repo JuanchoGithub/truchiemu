@@ -730,6 +730,15 @@ class ROMLibrary: ObservableObject {
 
     func stopScan() { scanCancellationToken.cancel(); isScanning = false }
 
+    /// Updates only the box-art state from the latest in-memory ROM record.
+    /// This avoids writing a stale copy captured before an async operation.
+    func updateBoxArt(hasBoxArt: Bool, for romID: UUID, persist: Bool = true) {
+        guard let currentROM = rom(withID: romID) else { return }
+        var updatedROM = currentROM
+        updatedROM.hasBoxArt = hasBoxArt
+        updateROM(updatedROM, persist: persist)
+    }
+
     func updateROM(_ rom: ROM, persist: Bool = true, silent: Bool = false) {
         if let idx = roms.firstIndex(where: { $0.id == rom.id }) {
             var updatedROM = rom

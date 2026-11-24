@@ -2,6 +2,42 @@ import Foundation
 import Combine
 import SwiftData
 import AppKit
+import ImageIO
+
+enum BoxArtUndoCaptureState: Sendable {
+    case none
+    case captured
+    case unavailable
+}
+
+struct BoxArtUndoSnapshot: Sendable {
+    let previousURL: URL?
+    let previousData: Data?
+    let captureState: BoxArtUndoCaptureState
+
+    var canSafelyReplace: Bool {
+        captureState != .unavailable
+    }
+
+    var hasPreviousArt: Bool {
+        captureState != .none
+    }
+}
+
+enum BoxArtReplacementOutcome {
+    case replaced(url: URL, undo: BoxArtUndoSnapshot)
+    case unchanged(url: URL)
+    case notFound(previousArtExists: Bool)
+    case captureUnavailable
+    case cancelled
+    case failed
+}
+
+enum BoxArtRestoreResult: Equatable {
+    case restored
+    case partial
+    case failed
+}
 
 @MainActor
 class BoxArtService: ObservableObject {
@@ -111,14 +147,22 @@ class BoxArtService: ObservableObject {
     // Lazily resolves local boxart for a single ROM on-demand.
     @MainActor
     func resolveLocalBoxArtIfNeeded(for rom: ROM, library: ROMLibrary) -> URL? {
-        if rom.hasBoxArt, FileManager.default.fileExists(atPath: rom.boxArtLocalPath.path) {
+        if rom.hasBoxArt,
+           FileManager.default.fileExists(atPath: rom.boxArtLocalPath.path),
+           Self.isDecodableImageFile(at: rom.boxArtLocalPath) {
             return rom.boxArtLocalPath
         }
 
-        if let localURL = resolveLocalBoxArt(for: rom) {
-            var updated = rom
-            updated.hasBoxArt = true
-            library.updateROM(updated, persist: false)
+        let localURL: URL?
+        if FileManager.default.fileExists(atPath: rom.boxArtLocalPath.path) {
+            localURL = Self.resolveLocalBoxArtUncached(for: rom)
+        } else {
+            localURL = resolveLocalBoxArt(for: rom)
+        }
+
+        if let localURL {
+            ResultCache.shared.set(rom.id, localURL)
+            library.updateBoxArt(hasBoxArt: true, for: rom.id, persist: false)
             LoggerService.info(category: "BoxArt", "✅ Local boxart found: \(localURL.lastPathComponent) for '\(rom.displayName)'")
             return localURL
         }
@@ -264,6 +308,149 @@ class BoxArtService: ObservableObject {
 
     // MARK: - Art Fetching
 
+    /// Captures the current local box art so a later replacement can be undone.
+    func captureBoxArtUndo(for rom: ROM) -> BoxArtUndoSnapshot {
+        let fileManager = FileManager.default
+        let resolvedURL = Self.resolveLocalBoxArtUncached(for: rom)
+        var seenPaths = Set<String>()
+        let candidateURLs = [rom.boxArtLocalPath, resolvedURL].compactMap { $0 }.filter {
+            seenPaths.insert($0.standardizedFileURL.path).inserted
+        }
+
+        for url in candidateURLs where fileManager.fileExists(atPath: url.path) {
+            guard Self.isDecodableImageFile(at: url),
+                  let data = try? Data(contentsOf: url) else { continue }
+            return BoxArtUndoSnapshot(
+                previousURL: url,
+                previousData: data,
+                captureState: .captured
+            )
+        }
+
+        let existingURL = candidateURLs.first {
+            fileManager.fileExists(atPath: $0.path)
+        }
+        if existingURL != nil {
+            return BoxArtUndoSnapshot(
+                previousURL: existingURL,
+                previousData: nil,
+                captureState: .unavailable
+            )
+        }
+
+        return BoxArtUndoSnapshot(
+            previousURL: nil,
+            previousData: nil,
+            captureState: .none
+        )
+    }
+
+    /// Replaces the current box art and returns an undo snapshot when the file changed.
+    func replaceBoxArt(for rom: ROM, preferredTitle: String? = nil) async -> BoxArtReplacementOutcome {
+        let snapshot = captureBoxArtUndo(for: rom)
+        guard snapshot.canSafelyReplace else { return .captureUnavailable }
+        guard !Task.isCancelled else { return .cancelled }
+
+        guard let artURL = await fetchBoxArt(
+            for: rom,
+            preferredTitle: preferredTitle,
+            forceReplace: true
+        ) else {
+            return Task.isCancelled ? .cancelled : .notFound(previousArtExists: snapshot.hasPreviousArt)
+        }
+
+        if Task.isCancelled {
+            _ = await restoreBoxArt(snapshot, replacing: artURL)
+            return .cancelled
+        }
+
+        guard let newData = try? Data(contentsOf: artURL),
+              Self.isDecodableImageFile(at: artURL) else {
+            _ = await restoreBoxArt(snapshot, replacing: artURL)
+            return .failed
+        }
+
+        if snapshot.captureState == .captured, snapshot.previousData == newData {
+            if let previousURL = snapshot.previousURL,
+               previousURL != artURL,
+               FileManager.default.fileExists(atPath: previousURL.path) {
+                do {
+                    try FileManager.default.removeItem(at: previousURL)
+                } catch {
+                    LoggerService.error(category: "BoxArt", "Failed to remove duplicate box art: \(error.localizedDescription)")
+                    _ = await restoreBoxArt(snapshot, replacing: artURL)
+                    return .failed
+                }
+            }
+            await invalidateBoxArtCaches(for: [artURL, snapshot.previousURL])
+            return .unchanged(url: artURL)
+        }
+
+        if let previousURL = snapshot.previousURL,
+           previousURL != artURL,
+           FileManager.default.fileExists(atPath: previousURL.path) {
+            do {
+                try FileManager.default.removeItem(at: previousURL)
+            } catch {
+                LoggerService.error(category: "BoxArt", "Failed to remove previous box art: \(error.localizedDescription)")
+                _ = await restoreBoxArt(snapshot, replacing: artURL)
+                return .failed
+            }
+        }
+
+        await invalidateBoxArtCaches(for: [artURL, snapshot.previousURL])
+        return .replaced(url: artURL, undo: snapshot)
+    }
+
+    /// Restores a captured box art and clears the caches for the replaced file.
+    func restoreBoxArt(_ snapshot: BoxArtUndoSnapshot, replacing artURL: URL) async -> BoxArtRestoreResult {
+        let fileManager = FileManager.default
+        var previousBytesRestored = false
+        let result: BoxArtRestoreResult
+
+        do {
+            if let previousURL = snapshot.previousURL {
+                guard let previousData = snapshot.previousData else {
+                    result = .failed
+                    await invalidateBoxArtCaches(for: [artURL, snapshot.previousURL])
+                    return result
+                }
+                try fileManager.createDirectory(
+                    at: previousURL.deletingLastPathComponent(),
+                    withIntermediateDirectories: true
+                )
+                try previousData.write(to: previousURL, options: .atomic)
+                previousBytesRestored = true
+                if previousURL != artURL, fileManager.fileExists(atPath: artURL.path) {
+                    try fileManager.removeItem(at: artURL)
+                }
+                result = .restored
+            } else if fileManager.fileExists(atPath: artURL.path) {
+                try fileManager.removeItem(at: artURL)
+                result = .restored
+            } else {
+                result = .restored
+            }
+        } catch {
+            LoggerService.error(category: "BoxArt", "Failed to restore box art: \(error.localizedDescription)")
+            result = previousBytesRestored ? .partial : .failed
+        }
+
+        await invalidateBoxArtCaches(for: [artURL, snapshot.previousURL])
+        return result
+    }
+
+    private func invalidateBoxArtCaches(for urls: [URL?]) async {
+        var seenPaths = Set<String>()
+        for url in urls.compactMap({ $0 }) {
+            let path = url.standardizedFileURL.path
+            guard seenPaths.insert(path).inserted else { continue }
+            await ImageCache.shared.removeImage(for: url)
+            await ImageCache.shared.removeThumbnail(for: url)
+            BoxArtThumbnailService.deleteThumbnails(for: url)
+        }
+    }
+
     func fetchBoxArt(for rom: ROM, preferredTitle: String? = nil, forceReplace: Bool = false) async -> URL? {
         // === OPTIMIZATION 1: Instant Local Check ===
         // Before hitting the network or identifying the ROM, check if we already have it locally!
@@ -287,6 +474,7 @@ class BoxArtService: ObservableObject {
             if case .success(let lib) = libResult {
                 return lib
             }
+            guard !Task.isCancelled else { return nil }
         }
 
         // 2. ScreenScraper (if credentials configured)
@@ -310,6 +498,7 @@ class BoxArtService: ObservableObject {
                     return await downloadAndCache(artURL: artURL, for: rom, forceReplace: forceReplace)
                 }
             }
+            guard !Task.isCancelled else { return nil }
         }
 
         // 3. LaunchBox GamesDB (CDN-backed via Metadata.xml)
@@ -375,12 +564,10 @@ class BoxArtService: ObservableObject {
             return .success(localURL)
         }
 
-        if FileManager.default.fileExists(atPath: localURL.path) {
-            try? FileManager.default.removeItem(at: localURL)
-        }
-
         do {
             let (tmpURL, response) = try await sess.download(from: artURL)
+            defer { try? FileManager.default.removeItem(at: tmpURL) }
+
             if let httpResponse = response as? HTTPURLResponse {
                 let status = httpResponse.statusCode
                 guard (200...299).contains(status) else {
@@ -391,7 +578,12 @@ class BoxArtService: ObservableObject {
                 let validImageTypes = ["image/png", "image/jpeg", "image/jpg", "image/gif", "image/webp", "image/bmp"]
                 guard validImageTypes.contains((httpResponse.mimeType ?? "").lowercased()) else { return .notFound }
             }
-            try FileManager.default.moveItem(at: tmpURL, to: localURL)
+
+            guard Self.isDecodableImageFile(at: tmpURL) else { return .notFound }
+            guard !Task.isCancelled else { return .transient }
+
+            let data = try Data(contentsOf: tmpURL)
+            try data.write(to: localURL, options: .atomic)
             if localURL == rom.boxArtLocalPath {
                 BoxArtThumbnailService.deleteThumbnails(for: localURL)
                 await ImageCache.shared.removeImage(for: localURL)
@@ -729,6 +921,13 @@ class BoxArtService: ObservableObject {
         req.httpMethod = method
         guard let (_, resp) = try? await session.data(for: req), let http = resp as? HTTPURLResponse else { return -1 }
         return http.statusCode
+    }
+
+    nonisolated private static func isDecodableImageFile(at url: URL) -> Bool {
+        guard isValidImageFile(at: url),
+              let source = CGImageSourceCreateWithURL(url as CFURL, nil),
+              CGImageSourceGetCount(source) > 0 else { return false }
+        return CGImageSourceCreateImageAtIndex(source, 0, nil) != nil
     }
 
     nonisolated private static func isValidImageFile(at url: URL) -> Bool {

@@ -22,7 +22,15 @@ actor ImageCache {
     private var imageCache = NSCache<NSString, NSImage>()
 
     // Tracks in-flight loading tasks to prevent duplicate loads for the same key.
-    private var inFlight = [String: Task<NSImage?, Never>]()
+    // The token lets an old task remove only its own dictionary entry.
+    private struct InFlightEntry {
+        let task: Task<NSImage?, Never>
+        let token: UUID
+    }
+    private var inFlight = [String: InFlightEntry]()
+
+    // Invalidates async work for one cache key without affecting other keys.
+    private var keyVersions = [String: UInt64]()
 
     // Limits concurrent image decoding to prevent task explosion and memory pressure crashes.
     private var activeLoadCount = 0
@@ -47,21 +55,27 @@ actor ImageCache {
         }
 
         if let existing = inFlight[key] {
-            return await existing.value
+            return await existing.task.value
         }
 
+        let version = currentVersion(for: key)
+        let token = UUID()
         let task = Task<NSImage?, Never> {
             let maxPx = max(maxWidth, maxHeight)
             let img = await self.loadAndDecode(at: url, maxPixelSize: maxPx)
+            guard self.isCurrentVersion(key, version: version), !Task.isCancelled else {
+                self.removeInFlightIfCurrent(key, token: token)
+                return nil
+            }
             if let img = img {
                 let c = cost(of: img)
                 self.thumbnailCache.setObject(img, forKey: key as NSString, cost: c)
             }
-            self.inFlight.removeValue(forKey: key)
+            self.removeInFlightIfCurrent(key, token: token)
             return img
         }
 
-        inFlight[key] = task
+        inFlight[key] = InFlightEntry(task: task, token: token)
         return await task.value
     }
 
@@ -76,12 +90,15 @@ actor ImageCache {
         }
 
         if let existing = inFlight[sizeKey] {
-            return await existing.value
+            return await existing.task.value
         }
 
+        let version = currentVersion(for: sizeKey)
+        let token = UUID()
         let task = Task<NSImage?, Never> {
             let thumbURL = BoxArtThumbnailService.thumbnailURL(for: url, size: preferredSize)
             var img: NSImage?
+            var loadedFromOriginal = false
 
             if FileManager.default.fileExists(atPath: thumbURL.path) {
                 img = await self.loadFromFile(at: thumbURL)
@@ -89,21 +106,27 @@ actor ImageCache {
 
             if img == nil {
                 img = await self.loadAndDecode(at: url, maxPixelSize: preferredSize.maxPixelSize)
+                loadedFromOriginal = img != nil
+            }
 
-                if img != nil {
-                    BoxArtThumbnailService.scheduleGeneration(forOriginal: url)
-                }
+            guard self.isCurrentVersion(sizeKey, version: version), !Task.isCancelled else {
+                self.removeInFlightIfCurrent(sizeKey, token: token)
+                return nil
+            }
+
+            if loadedFromOriginal {
+                BoxArtThumbnailService.scheduleGeneration(forOriginal: url)
             }
 
             if let img = img {
                 let c = cost(of: img)
                 self.thumbnailCache.setObject(img, forKey: sizeKey as NSString, cost: c)
             }
-            self.inFlight.removeValue(forKey: sizeKey)
+            self.removeInFlightIfCurrent(sizeKey, token: token)
             return img
         }
 
-        inFlight[sizeKey] = task
+        inFlight[sizeKey] = InFlightEntry(task: task, token: token)
         return await task.value
     }
 
@@ -147,11 +170,16 @@ actor ImageCache {
         // fileExists so we only touch disk for ROMs that actually have a thumb.
         if auditOnMain { ScrollPerfCounters.thumbnailSyncColdDiskReads += 1 }
         let thumbURL = BoxArtThumbnailService.thumbnailURL(for: url, size: preferredSize)
+        let sourceModificationDate = Self.fileModificationDate(at: url)
+        let thumbnailModificationDate = Self.fileModificationDate(at: thumbURL)
         if FileManager.default.fileExists(atPath: thumbURL.path),
            let source = CGImageSourceCreateWithURL(thumbURL as CFURL, nil),
            let cgImage = CGImageSourceCreateImageAtIndex(source, 0, [kCGImageSourceShouldCacheImmediately: true] as CFDictionary) {
             let img = NSImage(cgImage: cgImage, size: .zero)
-            thumbnailCache.setObject(img, forKey: sizeKey, cost: cost(of: img))
+            if Self.fileUnchanged(at: url, since: sourceModificationDate),
+               Self.fileUnchanged(at: thumbURL, since: thumbnailModificationDate) {
+                thumbnailCache.setObject(img, forKey: sizeKey, cost: cost(of: img))
+            }
             return img
         }
         // Last-resort fallback: decode the original boxart synchronously so a
@@ -159,6 +187,7 @@ actor ImageCache {
         // async path catches up. This only fires when te_thumbs hasn't been
         // generated yet (cold miss); once decoded it's cached. A single full
         // decode on the main thread is cheap and far better than the flash.
+        let fallbackSourceModificationDate = Self.fileModificationDate(at: url)
         guard FileManager.default.fileExists(atPath: url.path),
               let origSource = CGImageSourceCreateWithURL(url as CFURL, nil),
               let origCG = CGImageSourceCreateThumbnailAtIndex(origSource, 0, [
@@ -170,7 +199,9 @@ actor ImageCache {
             return nil
         }
         let origImg = NSImage(cgImage: origCG, size: .zero)
-        thumbnailCache.setObject(origImg, forKey: sizeKey, cost: cost(of: origImg))
+        if Self.fileUnchanged(at: url, since: fallbackSourceModificationDate) {
+            thumbnailCache.setObject(origImg, forKey: sizeKey, cost: cost(of: origImg))
+        }
         return origImg
     }
 
@@ -217,31 +248,33 @@ actor ImageCache {
             return cached
         }
         let thumbURL = BoxArtThumbnailService.thumbnailURL(for: url, size: preferredSize)
+        let sourceModificationDate = Self.fileModificationDate(at: url)
+        let thumbnailModificationDate = Self.fileModificationDate(at: thumbURL)
         if FileManager.default.fileExists(atPath: thumbURL.path),
            let source = CGImageSourceCreateWithURL(thumbURL as CFURL, nil),
            let cgImage = CGImageSourceCreateImageAtIndex(source, 0, [kCGImageSourceShouldCacheImmediately: true] as CFDictionary) {
             let image = NSImage(cgImage: cgImage, size: .zero)
-            thumbnailCache.setObject(image, forKey: sizeKey, cost: cost(of: image))
+            if Self.fileUnchanged(at: url, since: sourceModificationDate),
+               Self.fileUnchanged(at: thumbURL, since: thumbnailModificationDate) {
+                thumbnailCache.setObject(image, forKey: sizeKey, cost: cost(of: image))
+            }
             return image
         }
         return thumbnailCachedOrPregen(for: url, preferredSize: preferredSize)
     }
 
     func removeThumbnail(for url: URL) {
-        let key = thumbKey(url)
-        thumbnailCache.removeObject(forKey: key as NSString)
-        inFlight.removeValue(forKey: key)
+        var keys = [thumbKey(url)]
         for size in BoxArtThumbnailSize.allCases {
-            let sizeKey = thumbKey(url, size: size)
-            thumbnailCache.removeObject(forKey: sizeKey as NSString)
-            inFlight.removeValue(forKey: sizeKey)
-            let blurKey = blurredFillKey(url, size: size)
-            thumbnailCache.removeObject(forKey: blurKey as NSString)
-            inFlight.removeValue(forKey: blurKey)
+            keys.append(thumbKey(url, size: size))
+            keys.append(blurredFillKey(url, size: size))
         }
-        let backdropKey = blurredBackdropKey(url)
-        thumbnailCache.removeObject(forKey: backdropKey as NSString)
-        inFlight.removeValue(forKey: backdropKey)
+        keys.append(blurredBackdropKey(url))
+
+        for key in keys {
+            thumbnailCache.removeObject(forKey: key as NSString)
+            invalidate(key)
+        }
     }
 
     // MARK: - Blurred Fill (BoxArtDisplayMode.fillBlurred)
@@ -266,9 +299,11 @@ actor ImageCache {
         }
 
         if let existing = inFlight[key] {
-            return await existing.value
+            return await existing.task.value
         }
 
+        let version = currentVersion(for: key)
+        let token = UUID()
         let task = Task<NSImage?, Never> {
             // Reuse the already-decoded thumbnail as the blur source — no second
             // disk read. If the base thumbnail isn't cached yet, fall back to the
@@ -281,11 +316,11 @@ actor ImageCache {
                 base = await self.thumbnail(for: url, preferredSize: size)
             }
             guard let source = base, let cg = source.cgImage(forProposedRect: nil, context: nil, hints: nil) else {
-                self.inFlight.removeValue(forKey: key)
+                self.removeInFlightIfCurrent(key, token: token)
                 return nil
             }
 
-            let blurred = await Task.detached(priority: .userInitiated) { [thumbnailCache] () -> NSImage? in
+            let blurred = await Task.detached(priority: .userInitiated) { () -> NSImage? in
                 let ciSource = CIImage(cgImage: cg)
                 let filter = CIFilter.gaussianBlur()
                 filter.inputImage = ciSource
@@ -305,21 +340,22 @@ actor ImageCache {
 
                 let context = CIContext(options: [.useSoftwareRenderer: false])
                 guard let cgOut = context.createCGImage(composited, from: ciSource.extent) else { return nil }
-                let img = NSImage(cgImage: cgOut, size: .zero)
-
-                let rep = img.representations.first
-                let w = CGFloat(rep?.pixelsWide ?? Int(img.size.width))
-                let h = CGFloat(rep?.pixelsHigh ?? Int(img.size.height))
-                let c = Int(w * h * 4)
-                thumbnailCache.setObject(img, forKey: key as NSString, cost: c)
-                return img
+                return NSImage(cgImage: cgOut, size: .zero)
             }.value
 
-            self.inFlight.removeValue(forKey: key)
+            guard self.isCurrentVersion(key, version: version), !Task.isCancelled else {
+                self.removeInFlightIfCurrent(key, token: token)
+                return nil
+            }
+            if let blurred {
+                let c = self.cost(of: blurred)
+                self.thumbnailCache.setObject(blurred, forKey: key as NSString, cost: c)
+            }
+            self.removeInFlightIfCurrent(key, token: token)
             return blurred
         }
 
-        inFlight[key] = task
+        inFlight[key] = InFlightEntry(task: task, token: token)
         return await task.value
     }
 
@@ -358,9 +394,11 @@ actor ImageCache {
         }
 
         if let existing = inFlight[key] {
-            return await existing.value
+            return await existing.task.value
         }
 
+        let version = currentVersion(for: key)
+        let token = UUID()
         let task = Task<NSImage?, Never> {
             // Reuse the already-decoded .large thumbnail as the blur source —
             // no second disk read. Same fallback as `blurredFillImage`.
@@ -371,11 +409,11 @@ actor ImageCache {
                 base = await self.thumbnail(for: url, preferredSize: .large)
             }
             guard let source = base, let cg = source.cgImage(forProposedRect: nil, context: nil, hints: nil) else {
-                self.inFlight.removeValue(forKey: key)
+                self.removeInFlightIfCurrent(key, token: token)
                 return nil
             }
 
-            let blurred = await Task.detached(priority: .userInitiated) { [thumbnailCache] () -> NSImage? in
+            let blurred = await Task.detached(priority: .userInitiated) { () -> NSImage? in
                 let ciSource = CIImage(cgImage: cg)
                 let filter = CIFilter.gaussianBlur()
                 filter.inputImage = ciSource
@@ -399,21 +437,22 @@ actor ImageCache {
 
                 let context = CIContext(options: [.useSoftwareRenderer: false])
                 guard let cgOut = context.createCGImage(composited, from: ciSource.extent) else { return nil }
-                let img = NSImage(cgImage: cgOut, size: .zero)
-
-                let rep = img.representations.first
-                let w = CGFloat(rep?.pixelsWide ?? Int(img.size.width))
-                let h = CGFloat(rep?.pixelsHigh ?? Int(img.size.height))
-                let c = Int(w * h * 4)
-                thumbnailCache.setObject(img, forKey: key as NSString, cost: c)
-                return img
+                return NSImage(cgImage: cgOut, size: .zero)
             }.value
 
-            self.inFlight.removeValue(forKey: key)
+            guard self.isCurrentVersion(key, version: version), !Task.isCancelled else {
+                self.removeInFlightIfCurrent(key, token: token)
+                return nil
+            }
+            if let blurred {
+                let c = self.cost(of: blurred)
+                self.thumbnailCache.setObject(blurred, forKey: key as NSString, cost: c)
+            }
+            self.removeInFlightIfCurrent(key, token: token)
             return blurred
         }
 
-        inFlight[key] = task
+        inFlight[key] = InFlightEntry(task: task, token: token)
         return await task.value
     }
 
@@ -429,20 +468,26 @@ actor ImageCache {
         }
 
         if let existing = inFlight[key] {
-            return await existing.value
+            return await existing.task.value
         }
 
+        let version = currentVersion(for: key)
+        let token = UUID()
         let task = Task<NSImage?, Never> {
             let img = await self.loadAndDecode(at: url, maxPixelSize: 1024)
+            guard self.isCurrentVersion(key, version: version), !Task.isCancelled else {
+                self.removeInFlightIfCurrent(key, token: token)
+                return nil
+            }
             if let img = img {
                 let c = self.cost(of: img)
                 self.imageCache.setObject(img, forKey: key as NSString, cost: c)
             }
-            self.inFlight.removeValue(forKey: key)
+            self.removeInFlightIfCurrent(key, token: token)
             return img
         }
 
-        inFlight[key] = task
+        inFlight[key] = InFlightEntry(task: task, token: token)
         return await task.value
     }
 
@@ -457,8 +502,8 @@ actor ImageCache {
         let fullKey = fullResKey(url)
         imageCache.removeObject(forKey: key as NSString)
         imageCache.removeObject(forKey: fullKey as NSString)
-        inFlight.removeValue(forKey: key)
-        inFlight.removeValue(forKey: fullKey)
+        invalidate(key)
+        invalidate(fullKey)
     }
 
     // MARK: - Full Resolution API (zoom/fullscreen)
@@ -474,20 +519,26 @@ actor ImageCache {
         }
 
         if let existing = inFlight[key] {
-            return await existing.value
+            return await existing.task.value
         }
 
+        let version = currentVersion(for: key)
+        let token = UUID()
         let task = Task<NSImage?, Never> {
             let img = await self.loadAndDecode(at: url, maxPixelSize: nil)
+            guard self.isCurrentVersion(key, version: version), !Task.isCancelled else {
+                self.removeInFlightIfCurrent(key, token: token)
+                return nil
+            }
             if let img = img {
                 let c = self.cost(of: img)
                 self.imageCache.setObject(img, forKey: key as NSString, cost: c)
             }
-            self.inFlight.removeValue(forKey: key)
+            self.removeInFlightIfCurrent(key, token: token)
             return img
         }
 
-        inFlight[key] = task
+        inFlight[key] = InFlightEntry(task: task, token: token)
         return await task.value
     }
 
@@ -501,7 +552,12 @@ actor ImageCache {
         } else {
             maxPx = nil
         }
+        let key = thumbKey(url)
+        let version = currentVersion(for: key)
         let img = await loadAndDecode(at: url, maxPixelSize: maxPx)
+        guard isCurrentVersion(key, version: version), !Task.isCancelled else {
+            return nil
+        }
         if let img = img {
             cacheThumbnail(img, for: url)
         }
@@ -566,10 +622,49 @@ actor ImageCache {
 
     // MARK: - Cache Management
 
+    private func currentVersion(for key: String) -> UInt64 {
+        keyVersions[key] ?? 0
+    }
+
+    private func isCurrentVersion(_ key: String, version: UInt64) -> Bool {
+        currentVersion(for: key) == version
+    }
+
+    private func invalidate(_ key: String) {
+        let nextVersion = (keyVersions[key] ?? 0) &+ 1
+        keyVersions[key] = nextVersion
+        if let entry = inFlight.removeValue(forKey: key) {
+            entry.task.cancel()
+        }
+    }
+
+    private func removeInFlightIfCurrent(_ key: String, token: UUID) {
+        guard inFlight[key]?.token == token else { return }
+        inFlight.removeValue(forKey: key)
+    }
+
+    nonisolated private static func fileModificationDate(at url: URL) -> Date? {
+        guard let attributes = try? FileManager.default.attributesOfItem(atPath: url.path),
+              let date = attributes[.modificationDate] as? Date else {
+            return nil
+        }
+        return date
+    }
+
+    nonisolated private static func fileUnchanged(at url: URL, since date: Date?) -> Bool {
+        guard let date,
+              let currentDate = fileModificationDate(at: url) else {
+            return false
+        }
+        return currentDate == date
+    }
+
     func clear() {
         imageCache.removeAllObjects()
         thumbnailCache.removeAllObjects()
-        inFlight.removeAll()
+        for key in Array(inFlight.keys) {
+            invalidate(key)
+        }
     }
 
     // MARK: - Key helpers

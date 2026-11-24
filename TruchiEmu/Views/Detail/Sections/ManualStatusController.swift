@@ -19,9 +19,11 @@ final class ManualStatusController: ObservableObject {
         status = .working(message)
     }
 
-    func showResult(_ message: String, tone: ManualStatusTone, autoDismissAfter nanoseconds: UInt64) {
+    func showResult(_ message: String, tone: ManualStatusTone, autoDismissAfter nanoseconds: UInt64?) {
         autoDismiss?.cancel()
+        autoDismiss = nil
         status = .result(message, tone: tone)
+        guard let nanoseconds else { return }
         autoDismiss = Task { [weak self] in
             try? await Task.sleep(nanoseconds: nanoseconds)
             guard !Task.isCancelled else { return }

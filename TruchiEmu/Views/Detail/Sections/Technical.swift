@@ -1,5 +1,11 @@
 import SwiftUI
 
+struct BoxArtUndoState {
+    let romID: UUID
+    let snapshot: BoxArtUndoSnapshot
+    let newURL: URL
+}
+
 extension GameDetailView {
     var technicalSection: some View {
         VStack(spacing: AppSpacing.lg) {
@@ -333,63 +339,218 @@ extension GameDetailView {
     }
 
     var fetchBoxArtButton: some View {
-        Group {
-            switch fetchBoxArt.status {
-            case .hidden:
-                Button { Task { await fetchBoxArt() } } label: {
-                    HStack(spacing: 6) {
-                        Image(systemName: "arrow.down.circle")
-                        Text(loc.localized("gameInfo.fetchArt"))
+        HStack(spacing: AppSpacing.xs) {
+            Group {
+                switch fetchBoxArt.status {
+                case .hidden:
+                    Button { startBoxArtFetch() } label: {
+                        HStack(spacing: 6) {
+                            Image(systemName: "arrow.down.circle")
+                            Text(loc.localized("gameInfo.fetchArt"))
+                        }
+                        .font(.subheadline)
+                        .foregroundColor(AppColors.textOnAccent(colorScheme))
+                        .padding(.horizontal, AppSpacing.lg)
+                        .padding(.vertical, AppSpacing.sm)
+                        .background(AppColors.brandAccent)
+                        .cornerRadius(AppRadius.md)
                     }
-                    .font(.subheadline)
-                    .foregroundColor(AppColors.textOnAccent(colorScheme))
+                    .buttonStyle(.plain)
+                case .working(let msg):
+                    HStack(spacing: 6) {
+                        ProgressView().controlSize(.small)
+                        Text(verbatim: msg).font(.caption).foregroundColor(AppColors.textSecondary(colorScheme))
+                    }
                     .padding(.horizontal, AppSpacing.lg)
                     .padding(.vertical, AppSpacing.sm)
-                    .background(AppColors.brandAccent)
+                    .background(AppColors.accentTertiary.opacity(0.5))
                     .cornerRadius(AppRadius.md)
-                }
-                .buttonStyle(.plain)
-            case .working(let msg):
-                HStack(spacing: 6) {
-                    ProgressView().controlSize(.small)
-                    Text(msg).font(.caption).foregroundColor(AppColors.textSecondary(colorScheme))
-                }
-                .padding(.horizontal, AppSpacing.lg)
-                .padding(.vertical, AppSpacing.sm)
-                .background(AppColors.accentTertiary.opacity(0.5))
-                .cornerRadius(AppRadius.md)
-            case .result(let msg, let tone):
-                Button { clearFetchBoxArtStatus() } label: {
+                case .result(let msg, let tone):
                     HStack(spacing: 6) {
                         Image(systemName: tone.iconName).font(.caption).foregroundColor(tone.foregroundColor)
-                        Text(msg).font(.caption).foregroundColor(AppColors.textPrimary(colorScheme))
+                        Text(verbatim: msg).font(.caption).foregroundColor(AppColors.textPrimary(colorScheme))
                     }
                     .padding(.horizontal, AppSpacing.lg)
                     .padding(.vertical, AppSpacing.sm)
                     .background(tone.foregroundColor.opacity(0.15))
                     .cornerRadius(AppRadius.md)
                 }
+            }
+
+            if boxArtUndo?.romID == currentROM.id, !fetchBoxArt.isWorking {
+                Button { startBoxArtUndo() } label: {
+                    HStack(spacing: 4) {
+                        Image(systemName: "arrow.uturn.backward")
+                        Text("app.undo")
+                    }
+                    .font(.caption)
+                    .fontWeight(.semibold)
+                    .foregroundColor(AppColors.brandAccent)
+                    .padding(.horizontal, AppSpacing.sm)
+                    .padding(.vertical, AppSpacing.sm)
+                    .background(AppColors.brandAccent.opacity(0.12))
+                    .cornerRadius(AppRadius.md)
+                }
                 .buttonStyle(.plain)
+            }
+
+            if case .result = fetchBoxArt.status {
+                AppIconButton(icon: "xmark.circle.fill", help: loc.localized("search.dismiss")) {
+                    dismissFetchBoxArtStatus()
+                }
             }
         }
     }
 
-    func fetchBoxArt() async {
-        fetchBoxArt.showWorking(loc.localized("gameInfo.searching"))
-        if await BoxArtService.shared.fetchBoxArt(for: currentROM) != nil {
-            var u = currentROM
-            u.hasBoxArt = true
-            library.updateROM(u)
-            loadBoxArt()
-            loadTitleScreen()
-            loadScreenshots()
-            await MainActor.run { fetchBoxArt.showResult(loc.localized("gameInfo.artFound"), tone: .success, autoDismissAfter: 10_000_000_000) }
-        } else {
-            await MainActor.run { fetchBoxArt.showResult(loc.localized("gameInfo.noCoverArtFound"), tone: .warning, autoDismissAfter: 10_000_000_000) }
+    @MainActor
+    func startBoxArtFetch() {
+        boxArtOperationTask?.cancel()
+        let operationID = UUID()
+        boxArtOperationID = operationID
+        boxArtOperationTask = Task { @MainActor in
+            await performBoxArtFetch(operationID: operationID)
         }
     }
 
-    func clearFetchBoxArtStatus() {
+    @MainActor
+    func performBoxArtFetch(operationID: UUID) async {
+        defer { finishBoxArtOperation(operationID) }
+        let rom = currentROM
+        let previousUndo = boxArtUndo?.romID == rom.id ? boxArtUndo : nil
+        fetchBoxArt.showWorking(loc.localized("gameInfo.searching"))
+
+        let outcome = await BoxArtService.shared.replaceBoxArt(for: rom)
+        switch outcome {
+        case .replaced(let artURL, let snapshot):
+            if Task.isCancelled || currentROM.id != rom.id {
+                let restoreResult = await BoxArtService.shared.restoreBoxArt(snapshot, replacing: artURL)
+                if currentROM.id == rom.id, restoreResult != .restored {
+                    showBoxArtRestoreError(restoreResult)
+                }
+                return
+            }
+
+            BoxArtService.shared.invalidateResolvedBoxArtCache(for: rom.id)
+            library.updateBoxArt(hasBoxArt: true, for: rom.id)
+            BoxArtService.shared.signalBoxArtUpdated(for: rom.id, boxArtURL: artURL)
+            boxArtUndo = BoxArtUndoState(romID: rom.id, snapshot: snapshot, newURL: artURL)
+            loadBoxArt()
+            loadTitleScreen()
+            loadScreenshots()
+            fetchBoxArt.showResult(
+                loc.localized("gameInfo.artFound"),
+                tone: .success,
+                autoDismissAfter: nil
+            )
+
+        case .unchanged(let artURL):
+            guard !Task.isCancelled, currentROM.id == rom.id else { return }
+            BoxArtService.shared.invalidateResolvedBoxArtCache(for: rom.id)
+            library.updateBoxArt(hasBoxArt: true, for: rom.id)
+            BoxArtService.shared.signalBoxArtUpdated(for: rom.id, boxArtURL: artURL)
+            boxArtUndo = previousUndo
+            loadBoxArt()
+            fetchBoxArt.showResult(
+                loc.localized("gameInfo.artFound"),
+                tone: .success,
+                autoDismissAfter: 10_000_000_000
+            )
+
+        case .notFound(let previousArtExists):
+            guard !Task.isCancelled, currentROM.id == rom.id else { return }
+            boxArtUndo = previousUndo
+            fetchBoxArt.showResult(
+                loc.localized(previousArtExists ? "gameInfo.artSearchFailedPreviousKept" : "gameInfo.noCoverArtFound"),
+                tone: .warning,
+                autoDismissAfter: 10_000_000_000
+            )
+
+        case .captureUnavailable:
+            guard !Task.isCancelled, currentROM.id == rom.id else { return }
+            boxArtUndo = previousUndo
+            fetchBoxArt.showResult(
+                loc.localized("gameInfo.artUndoUnavailable"),
+                tone: .error,
+                autoDismissAfter: 10_000_000_000
+            )
+
+        case .cancelled:
+            if currentROM.id == rom.id {
+                fetchBoxArt.clear()
+            }
+
+        case .failed:
+            guard !Task.isCancelled, currentROM.id == rom.id else { return }
+            boxArtUndo = previousUndo
+            fetchBoxArt.showResult(
+                loc.localized("gameInfo.artReplaceFailed"),
+                tone: .error,
+                autoDismissAfter: 10_000_000_000
+            )
+        }
+    }
+
+    @MainActor
+    func startBoxArtUndo() {
+        guard boxArtUndo?.romID == currentROM.id else { return }
+        boxArtOperationTask?.cancel()
+        let operationID = UUID()
+        boxArtOperationID = operationID
+        boxArtOperationTask = Task { @MainActor in
+            await performBoxArtUndo(operationID: operationID)
+        }
+    }
+
+    @MainActor
+    func performBoxArtUndo(operationID: UUID) async {
+        defer { finishBoxArtOperation(operationID) }
+        guard let undo = boxArtUndo, undo.romID == currentROM.id else { return }
+        fetchBoxArt.showWorking(loc.localized("gameInfo.restoringArt"))
+
+        let result = await BoxArtService.shared.restoreBoxArt(undo.snapshot, replacing: undo.newURL)
+        switch result {
+        case .restored:
+            BoxArtService.shared.invalidateResolvedBoxArtCache(for: undo.romID)
+            library.updateBoxArt(hasBoxArt: undo.snapshot.hasPreviousArt, for: undo.romID)
+            BoxArtService.shared.signalBoxArtUpdated(
+                for: undo.romID,
+                boxArtURL: undo.snapshot.previousURL
+            )
+            if currentROM.id == undo.romID {
+                boxArtUndo = nil
+                loadBoxArt()
+                fetchBoxArt.showResult(
+                    loc.localized("gameInfo.artRestored"),
+                    tone: .success,
+                    autoDismissAfter: 5_000_000_000
+                )
+            }
+        case .partial, .failed:
+            if currentROM.id == undo.romID {
+                showBoxArtRestoreError(result)
+            }
+        }
+    }
+
+    @MainActor
+    func finishBoxArtOperation(_ operationID: UUID) {
+        guard boxArtOperationID == operationID else { return }
+        boxArtOperationID = nil
+        boxArtOperationTask = nil
+    }
+
+    @MainActor
+    func showBoxArtRestoreError(_ result: BoxArtRestoreResult) {
+        let messageKey = result == .partial ? "gameInfo.artRestorePartial" : "gameInfo.artRestoreFailed"
+        fetchBoxArt.showResult(
+            loc.localized(messageKey),
+            tone: .error,
+            autoDismissAfter: 10_000_000_000
+        )
+    }
+
+    @MainActor
+    func dismissFetchBoxArtStatus() {
         fetchBoxArt.clear()
     }
 

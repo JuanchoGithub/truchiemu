@@ -87,6 +87,20 @@ class BoxArtThumbnailService: ObservableObject {
         return originalURL.deletingLastPathComponent().appendingPathComponent("te_thumbs")
     }
 
+    private nonisolated static func modificationDate(for url: URL) -> Date? {
+        guard let attributes = try? FileManager.default.attributesOfItem(atPath: url.path),
+              let date = attributes[.modificationDate] as? Date else {
+            return nil
+        }
+        return date
+    }
+
+    private nonisolated static func sourceChanged(for originalURL: URL, since date: Date?) -> Bool {
+        guard let date else { return true }
+        guard let currentDate = modificationDate(for: originalURL) else { return true }
+        return currentDate != date
+    }
+
     // MARK: - On-Demand Background Generation
 
     nonisolated
@@ -151,6 +165,7 @@ class BoxArtThumbnailService: ObservableObject {
     nonisolated
     static func generateThumbnailsSynchronously(forOriginal originalURL: URL, sizes: [BoxArtThumbnailSize]? = nil) {
         let sizesToGenerate = sizes ?? BoxArtThumbnailSize.allCases
+        let sourceModificationDate = Self.modificationDate(for: originalURL)
         let thumbsDir = originalURL.deletingLastPathComponent().appendingPathComponent("te_thumbs")
 
         do {
@@ -192,11 +207,15 @@ class BoxArtThumbnailService: ObservableObject {
         }
 
         for size in sizesToGenerate {
+            guard !Self.sourceChanged(for: originalURL, since: sourceModificationDate) else {
+                return
+            }
+
             let thumbURL = Self.thumbnailURL(for: originalURL, size: size)
 
             if FileManager.default.fileExists(atPath: thumbURL.path) {
-                if let thumbMod = try? FileManager.default.attributesOfItem(atPath: thumbURL.path)[.modificationDate] as? Date,
-                   let origMod = try? FileManager.default.attributesOfItem(atPath: originalURL.path)[.modificationDate] as? Date,
+                if let thumbMod = Self.modificationDate(for: thumbURL),
+                   let origMod = sourceModificationDate,
                    thumbMod >= origMod {
                     continue
                 }
@@ -217,10 +236,24 @@ class BoxArtThumbnailService: ObservableObject {
                 continue
             }
 
+            guard !Self.sourceChanged(for: originalURL, since: sourceModificationDate) else {
+                return
+            }
+
             do {
                 try jpegData.write(to: thumbURL, options: .atomic)
             } catch {
                 LoggerService.error(category: "BoxArtThumbnails", "Failed to write \(thumbURL.lastPathComponent): \(error.localizedDescription)")
+                continue
+            }
+
+            if Self.sourceChanged(for: originalURL, since: sourceModificationDate) {
+                do {
+                    try FileManager.default.removeItem(at: thumbURL)
+                } catch {
+                    LoggerService.error(category: "BoxArtThumbnails", "Failed to remove stale \(thumbURL.lastPathComponent): \(error.localizedDescription)")
+                }
+                return
             }
         }
     }
