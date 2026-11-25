@@ -2,7 +2,7 @@
 
 <table>
 <tr>
-<img width="1117" height="783" alt="image" src="https://github.com/user-attachments/assets/4b6fa510-a07d-4a0a-815d-aee8da4562db" />
+<img width="1200" alt="TruchiEmu library with the redesigned collection view" src="https://raw.githubusercontent.com/JuanchoGithub/truchiemu/main/docs/media/screenshots/library-redesign-v1.18.0.png" />
 </tr>
 </table>
 
@@ -33,6 +33,32 @@ https://github.com/user-attachments/assets/c2613ee8-2c9c-40fb-805d-7e27081cb9e7
 ### 🎨 Beautifully Designed
 Forget clunky, outdated menus. TruchiEmu features a polished, native macOS interface. Browse your collection with high-quality box art, detailed game information, and a seamless, modern navigation experience.
 
+<table>
+<tr>
+<td width="50%"><img src="https://raw.githubusercontent.com/JuanchoGithub/truchiemu/main/docs/media/screenshots/library-grid.png" alt="TruchiEmu library with the box-art grid" /></td>
+<td width="50%"><img src="https://raw.githubusercontent.com/JuanchoGithub/truchiemu/main/docs/media/screenshots/library-row.png" alt="TruchiEmu library with the list view" /></td>
+</tr>
+<tr>
+<td align="center">Box-art grid</td>
+<td align="center">List view</td>
+</tr>
+</table>
+
+### 🕹️ Game Details
+
+The redesigned game information window keeps the important facts in view. It shows the box art, playtime, sessions, saved states, achievements, and similar games from your local library.
+
+<table>
+<tr>
+<td width="50%"><img src="https://raw.githubusercontent.com/JuanchoGithub/truchiemu/main/docs/media/screenshots/game-detail.png" alt="TruchiEmu game information window with game facts and achievement progress" /></td>
+<td width="50%"><img src="https://raw.githubusercontent.com/JuanchoGithub/truchiemu/main/docs/media/screenshots/similar-games-v1.18.0.png" alt="TruchiEmu game information window with similar-game recommendations" /></td>
+</tr>
+<tr>
+<td align="center">Game facts and achievement progress</td>
+<td align="center">Similar games from your library</td>
+</tr>
+</table>
+
 ### 📺 Immersive Visuals
 
 https://github.com/user-attachments/assets/6fc2ae7a-3013-417c-a0ca-7b4489a0b252
@@ -43,7 +69,7 @@ Relive the golden age of gaming with advanced Metal-powered shaders. Whether you
 
 17 accent color themes named after gaming legends, including Samus, Joker, Protoss, Kirby, and more. Each theme adapts its accent for both light and dark mode. Pick a built-in palette or choose any color with the Custom theme.
 
-<img width="1317" height="983" alt="image" src="https://github.com/user-attachments/assets/24000983-5181-41b1-9a29-fcdb3b314eea" />
+<img width="1317" height="983" alt="TruchiEmu library shown with different gaming themes" src="https://raw.githubusercontent.com/JuanchoGithub/truchiemu/main/docs/media/features/themes-showcase.png" />
 
 - **Gaming themes**: Mario, Sonic, Kratos, Kirby, Zelda, Pikachu, Master Chief, lots of others
 - **Tinted surfaces & accent toolbars**: Subtle theme blending across every window
@@ -68,6 +94,23 @@ A built-in game guide overlay for point-and-click adventures (DOS, ScummVM) that
 
 ### 🏆 RetroAchievements
 Take your nostalgia to the next level. TruchiEmu supports RetroAchievements with full auth, achievement tracking/unlocking, rich presence polling, and game data caching. **Hardcore Mode** enforces achievement integrity by blocking save states, rewind, slow motion, and cheats when active — the same restrictions as official RetroAchievements clients. Games with RA support are flagged in the library and filterable via a dedicated sidebar entry; the Game Detail view shows the RA hash used for identification.
+
+![RetroAchievements list inside the TruchiEmu game information window](https://raw.githubusercontent.com/JuanchoGithub/truchiemu/main/docs/media/screenshots/achievements-list.png)
+
+### 🧰 Cheats and Saved States
+
+Manage game-specific cheats and review saved states from the same game information window.
+
+<table>
+<tr>
+<td width="50%"><img src="https://raw.githubusercontent.com/JuanchoGithub/truchiemu/main/docs/media/screenshots/cheat-enabled.png" alt="TruchiEmu cheat manager with cheats enabled" /></td>
+<td width="50%"><img src="https://raw.githubusercontent.com/JuanchoGithub/truchiemu/main/docs/media/screenshots/save-state-browser.png" alt="TruchiEmu saved-state browser" /></td>
+</tr>
+<tr>
+<td align="center">Cheat manager</td>
+<td align="center">Saved-state browser</td>
+</tr>
+</table>
 
 ---
 
