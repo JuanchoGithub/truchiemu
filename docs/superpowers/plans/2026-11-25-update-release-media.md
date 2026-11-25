@@ -1,6 +1,6 @@
 # TruchiEmu Release Media Update Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** Repair the images on the v1.18.0 GitHub release page and show the current app interface in the repository README.
 
@@ -36,11 +36,11 @@
 - Consumes: The corrected screenshots in `docs/media/screenshots/`.
 - Produces: A README that shows the current library, game details, achievements, cheats, and save states.
 
-- [ ] **Step 1: Replace image links with repository paths**
+- [x] **Step 1: Replace image links with repository paths**
 
 Use the eight corrected screenshots from the latest commit. Keep the existing video links and the existing README text.
 
-- [ ] **Step 2: Verify the README image paths**
+- [x] **Step 2: Verify the README image paths**
 
 Run a path check for every local image reference. Expected: all referenced files exist.
 
@@ -53,15 +53,15 @@ Run a path check for every local image reference. Expected: all referenced files
 - Consumes: The current release body and the corrected screenshots.
 - Produces: A release page with renderable images and corrected downloadable image assets.
 
-- [ ] **Step 1: Replace the two release image URLs**
+- [x] **Step 1: Replace the two release image URLs**
 
 Use raw URLs for commit `71e26f0096f77089f7a002f0264ec046382bd1e9`.
 
-- [ ] **Step 2: Replace the two release image assets**
+- [x] **Step 2: Replace the two release image assets**
 
 Upload the corrected files with `gh release upload --clobber`.
 
-- [ ] **Step 3: Update the release notes**
+- [x] **Step 3: Update the release notes**
 
 Keep all release text unchanged except for the two image URLs.
 
@@ -75,14 +75,14 @@ Keep all release text unchanged except for the two image URLs.
 - Consumes: The updated README and release.
 - Produces: A published README update and a verified release page.
 
-- [ ] **Step 1: Verify the release assets and image responses**
+- [x] **Step 1: Verify the release assets and image responses**
 
 Expected: both release images return HTTP 200 with `image/png`, and their sizes and digests match the repository files.
 
-- [ ] **Step 2: Check the final diff**
+- [x] **Step 2: Check the final diff**
 
 Expected: the diff contains only documentation and plan changes. The unrelated Swift change remains unstaged.
 
-- [ ] **Step 3: Commit and push the README update**
+- [x] **Step 3: Commit and push the README update**
 
 Stage only `README.md` and the plan file. Do not stage `TruchiEmu/Views/Detail/GameDetailView.swift`.
