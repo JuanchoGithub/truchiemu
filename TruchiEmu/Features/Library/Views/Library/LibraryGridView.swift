@@ -3148,10 +3148,9 @@ private struct DeleteConfirmationView: View {
         self.onDelete = onDelete
         self.onHide = onHide
         self.onCancel = onCancel
-        // Pre-paint synchronously so the sheet never flashes the placeholder
-        // when the art is already cached (same fast path as the grid cards).
-        // thumbnailSync falls back to any cached size, so a zoom-bucket
-        // mismatch still hits. Miss returns nil and the .task below loads async.
+        // Pre-paint from the memory cache only. This path must not decode the
+        // original box art on the main thread. A cache miss returns nil and the
+        // async load below fills the image.
         let initialImage: NSImage? = rom.hasBoxArt
             ? ImageCache.shared.thumbnailSync(for: rom.boxArtLocalPath, preferredSize: .medium)
             : nil

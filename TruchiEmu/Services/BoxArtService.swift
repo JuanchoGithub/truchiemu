@@ -557,7 +557,7 @@ class BoxArtService: ObservableObject {
                 BoxArtThumbnailService.deleteThumbnails(for: localURL)
                 await ImageCache.shared.removeImage(for: localURL)
                 await ImageCache.shared.removeThumbnail(for: localURL)
-                BoxArtThumbnailService.generateThumbnailsSynchronously(forOriginal: localURL)
+                BoxArtThumbnailService.scheduleGeneration(forOriginal: localURL)
             } else {
                 await ImageCache.shared.removeImage(for: localURL)
             }
@@ -588,7 +588,7 @@ class BoxArtService: ObservableObject {
                 BoxArtThumbnailService.deleteThumbnails(for: localURL)
                 await ImageCache.shared.removeImage(for: localURL)
                 await ImageCache.shared.removeThumbnail(for: localURL)
-                BoxArtThumbnailService.generateThumbnailsSynchronously(forOriginal: localURL)
+                BoxArtThumbnailService.scheduleGeneration(forOriginal: localURL)
             } else {
                 await ImageCache.shared.removeImage(for: localURL)
             }
@@ -639,7 +639,7 @@ class BoxArtService: ObservableObject {
         BoxArtThumbnailService.deleteThumbnails(for: destination)
         await ImageCache.shared.removeImage(for: destination)
         await ImageCache.shared.removeThumbnail(for: destination)
-        BoxArtThumbnailService.generateThumbnailsSynchronously(forOriginal: destination)
+        BoxArtThumbnailService.scheduleGeneration(forOriginal: destination)
         return destination
     }
 
@@ -1254,7 +1254,7 @@ class BoxArtService: ObservableObject {
     func signalBoxArtUpdated(for romID: UUID, boxArtURL: URL? = nil) {
         if let url = boxArtURL {
             BoxArtThumbnailService.deleteThumbnails(for: url)
-            BoxArtThumbnailService.generateThumbnailsSynchronously(forOriginal: url)
+            BoxArtThumbnailService.scheduleGeneration(forOriginal: url)
             Task { await ImageCache.shared.removeImage(for: url); await ImageCache.shared.removeThumbnail(for: url) }
         }
         // Invalidate the per-ROM resolve cache so the next resolve re-scans.

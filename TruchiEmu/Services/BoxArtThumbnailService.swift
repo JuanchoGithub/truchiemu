@@ -64,12 +64,13 @@ class BoxArtThumbnailService: ObservableObject {
 
     private let generationQueue = DispatchQueue(label: "com.truchiemu.thumbnail-gen", qos: .utility, attributes: .concurrent)
     private var pendingGeneration: Set<String> = []
+    private var generationPathsInFlight: Set<String> = []
     private var activeGenerationCount = 0
-    // Higher concurrency so a large library's thumbnails finish warming
-    // (generated to disk) well before the user has scrolled through it —
-    // until then scrolling falls back to decoding the full original, which
-    // is what caused the cold-scroll lag.
-    private let maxConcurrentGeneration = 12
+    // Keep thumbnail decoding below the UI's CPU demand. Twelve concurrent
+    // ImageIO decodes saturated every core and made pointer-driven card
+    // rendering feel slow. Three workers still warm the library in the
+    // background without starving the main thread.
+    private let maxConcurrentGeneration = 3
 
     private init() {}
 
@@ -112,7 +113,8 @@ class BoxArtThumbnailService: ObservableObject {
 
     private func enqueueGeneration(for originalURL: URL, sizes: [BoxArtThumbnailSize]? = nil) {
         let path = originalURL.path
-        guard !pendingGeneration.contains(path) else { return }
+        guard !generationPathsInFlight.contains(path) else { return }
+        generationPathsInFlight.insert(path)
         pendingGeneration.insert(path)
 
         tryDrainGenerationQueue(sizes: sizes)
@@ -129,8 +131,10 @@ class BoxArtThumbnailService: ObservableObject {
             Self.generateThumbnailsSynchronously(forOriginal: url, sizes: sizes)
 
             Task { @MainActor [weak self] in
-                self?.activeGenerationCount -= 1
-                self?.tryDrainGenerationQueue(sizes: sizes)
+                guard let self else { return }
+                self.generationPathsInFlight.remove(nextPath)
+                self.activeGenerationCount -= 1
+                self.tryDrainGenerationQueue(sizes: sizes)
             }
         }
     }
@@ -139,7 +143,7 @@ class BoxArtThumbnailService: ObservableObject {
 
     func generateThumbnails(forOriginal originalURL: URL) {
         guard FileManager.default.fileExists(atPath: originalURL.path) else { return }
-        Self.generateThumbnailsSynchronously(forOriginal: originalURL)
+        Self.scheduleGeneration(forOriginal: originalURL)
     }
 
     /// Sizes actually painted by the grid/list cards. `.tiny` is only used as a
@@ -162,7 +166,7 @@ class BoxArtThumbnailService: ObservableObject {
         }
     }
 
-    nonisolated
+    private nonisolated
     static func generateThumbnailsSynchronously(forOriginal originalURL: URL, sizes: [BoxArtThumbnailSize]? = nil) {
         let sizesToGenerate = sizes ?? BoxArtThumbnailSize.allCases
         let sourceModificationDate = Self.modificationDate(for: originalURL)
@@ -335,7 +339,7 @@ class BoxArtThumbnailService: ObservableObject {
             await ImageCache.shared.removeImage(for: originalURL)
             await ImageCache.shared.removeThumbnail(for: originalURL)
         }
-        Self.generateThumbnailsSynchronously(forOriginal: originalURL)
+        Self.scheduleGeneration(forOriginal: originalURL)
     }
 
     func invalidateAndRegenerate(for originalURL: URL) {
@@ -344,7 +348,7 @@ class BoxArtThumbnailService: ObservableObject {
             await ImageCache.shared.removeImage(for: originalURL)
             await ImageCache.shared.removeThumbnail(for: originalURL)
         }
-        Self.generateThumbnailsSynchronously(forOriginal: originalURL)
+        Self.scheduleGeneration(forOriginal: originalURL)
     }
 
     // MARK: - File Watching

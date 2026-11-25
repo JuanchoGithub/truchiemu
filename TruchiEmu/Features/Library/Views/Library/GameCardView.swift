@@ -37,6 +37,7 @@ struct GameCardView: View {
     @State private var mousePosition: CGPoint?
     @State private var tiltRotationX: Double = 0
     @State private var tiltRotationY: Double = 0
+    @State private var pointerUpdateCoalescer = PointerUpdateCoalescer()
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @ObservedObject private var prefs = SystemPreferences.shared
@@ -269,6 +270,14 @@ struct GameCardView: View {
         (0.5 - normalizedMouseX) * 2 * maxTiltAngle
     }
 
+    private func applyPointerPosition(_ location: CGPoint?) {
+        mousePosition = location
+        withAnimation(AppMotion.tilt) {
+            tiltRotationX = location == nil ? 0 : tiltTargetRotationX
+            tiltRotationY = location == nil ? 0 : tiltTargetRotationY
+        }
+    }
+
     // SwiftUI `rotation3DEffect`'s `perspective` parameter is the reciprocal of
     // CSS's: SMALLER = flatter, LARGER = more dramatic. 0.5 gives a subtle,
     // clean pivot like simeydotme's `perspective: 600px` does in CSS.
@@ -307,12 +316,15 @@ struct GameCardView: View {
                 if !hovering { isHovered = false }
             } else {
                 isHovered = hovering
-                if !hovering { mousePosition = nil }
-                // Ease the card back to flat on exit.
-                if pivotingEnabled {
-                    withAnimation(AppMotion.tilt) {
-                        tiltRotationX = 0
-                        tiltRotationY = 0
+                if !hovering {
+                    pointerUpdateCoalescer.cancel()
+                    mousePosition = nil
+                    // Ease the card back to flat on exit.
+                    if pivotingEnabled {
+                        withAnimation(AppMotion.tilt) {
+                            tiltRotationX = 0
+                            tiltRotationY = 0
+                        }
                     }
                 }
             }
@@ -321,17 +333,12 @@ struct GameCardView: View {
             guard pivotingEnabled else { return }
             switch phase {
             case .active(let location):
-                mousePosition = location
-                // Spring the 3D tilt toward the cursor.
-                withAnimation(AppMotion.tilt) {
-                    tiltRotationX = tiltTargetRotationX
-                    tiltRotationY = tiltTargetRotationY
+                pointerUpdateCoalescer.submit(location) { location in
+                    applyPointerPosition(location)
                 }
             case .ended:
-                mousePosition = nil
-                withAnimation(AppMotion.tilt) {
-                    tiltRotationX = 0
-                    tiltRotationY = 0
+                pointerUpdateCoalescer.submit(nil) { location in
+                    applyPointerPosition(location)
                 }
             }
         }
@@ -340,6 +347,7 @@ struct GameCardView: View {
             // pivoting effect doesn't fire mid-scroll. Only cards that HAD
             // active state re-render (the rest write nothing).
             if ScrollActivity.isScrolling {
+                pointerUpdateCoalescer.cancel()
                 isHovered = false
                 mousePosition = nil
                 tiltRotationX = 0
@@ -580,7 +588,9 @@ struct GameCardView: View {
                     )
                     .shadow(color: AppColors.brandAccent.opacity(0.4), radius: 4, y: 2)
                     .overlay(
-                        Menu { menuContent() } label: {
+                        Menu {
+                            LibraryGridView.LazyContextMenuContent(build: { menuContent() })
+                        } label: {
                             Circle()
                                 .fill(Color.clear)
                                 .contentShape(Circle())

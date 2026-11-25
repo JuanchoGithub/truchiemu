@@ -1272,6 +1272,7 @@
 		CE1E5958D5DFA5649624A6B0 /* ExternalDisplayPromptManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C63329F8A5AAC634E147BB91 /* ExternalDisplayPromptManager.swift */; };
 		CE295966829D5520A8E902F1 /* CRTShader.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1BE3F4A24A723A9D34DC5BAB /* CRTShader.metal */; };
 		CE385DCA0BB224A7BDA869B4 /* holo_glitter_alpha.png in Resources */ = {isa = PBXBuildFile; fileRef = C077B1331B31733FB844DB00 /* holo_glitter_alpha.png */; };
+		CED255A0EF391E949B136380 /* PointerUpdateCoalescer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70BFD3130625A097C64C4EF6 /* PointerUpdateCoalescer.swift */; };
 		CEDEE26F9187602FC4A1BEEA /* MAMEMissingROMsAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = C15804655F28F2866DFA7C49 /* MAMEMissingROMsAlert.swift */; };
 		CF2022F4F944C17F5741AE01 /* CAVESTORY.png in Resources */ = {isa = PBXBuildFile; fileRef = B046DA0D84C6F163569AF09D /* CAVESTORY.png */; };
 		CF304079A8662B14B2BF9D27 /* input_coreLabels_mame.json in Resources */ = {isa = PBXBuildFile; fileRef = FA7BBD418F0D1637767DE7CA /* input_coreLabels_mame.json */; };
@@ -2301,6 +2302,7 @@
 		701DC9C7DAC7993EC30E4DE5 /* fightdata_fatfury3.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_fatfury3.json; sourceTree = "<group>"; };
 		7071672F4855616C9D2564D6 /* ModernSectionCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModernSectionCard.swift; sourceTree = "<group>"; };
 		70B077E4EEFEFF94C0EF6F75 /* poke@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "poke@132w.png"; sourceTree = "<group>"; };
+		70BFD3130625A097C64C4EF6 /* PointerUpdateCoalescer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PointerUpdateCoalescer.swift; sourceTree = "<group>"; };
 		70DC82C7E6FFA6CA65424CC3 /* dreamcast.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = dreamcast.zip; sourceTree = "<group>"; };
 		70F5A2C5794BC778659FF41E /* MoveDataCharactersView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoveDataCharactersView.swift; sourceTree = "<group>"; };
 		70F8AFB2483C52D0E0A0D1A1 /* fightdata_rbff1.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_rbff1.json; sourceTree = "<group>"; };
@@ -4404,6 +4406,7 @@
 				3BB12F3155291F4EC9C6EF84 /* LibraryViewModel.swift */,
 				F8403CFFF0198BA2B7A8BDBD /* ListTableView.swift */,
 				50C7DB253E3316EA31A3A1EC /* OtherFiltersPopover.swift */,
+				70BFD3130625A097C64C4EF6 /* PointerUpdateCoalescer.swift */,
 				1F60E22D959CC2F8FDFF91BD /* SaveSearchButton.swift */,
 				CBFE3A9E877C2D62FEDDB15E /* SetupWizardView.swift */,
 				AECA6A821D5AD2F2FBD719B3 /* SidebarRowButton.swift */,
@@ -7187,6 +7190,7 @@
 				1329ED4A19ECDCC2F04F9EA5 /* PerSystemSettingsView.swift in Sources */,
 				97532B79D1C03B1230BDB004 /* PersistenceMigrationFlag.swift in Sources */,
 				0CD244372E8158A9E2559772 /* PlayerController.swift in Sources */,
+				CED255A0EF391E949B136380 /* PointerUpdateCoalescer.swift in Sources */,
 				791402ABB260460A0380E845 /* ProgettoSnapsService.swift in Sources */,
 				60693F589F90C2D9CA80CE8B /* RAAchievementCacheEntry.swift in Sources */,
 				8659FD76142AA61568D6983A /* RABadgeCacheService.swift in Sources */,

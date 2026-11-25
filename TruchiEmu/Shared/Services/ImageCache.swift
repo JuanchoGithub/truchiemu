@@ -15,7 +15,7 @@ actor ImageCache {
 
     // Thumbnails: grid/list views — small images, many entries.
     // NSCache is thread-safe, so this can be accessed from both the actor
-    // isolation domain and the nonisolated thumbnailSync(...) fast path.
+    // isolation domain and the nonisolated cache-only fast paths.
     nonisolated(unsafe) private var thumbnailCache = NSCache<NSString, NSImage>()
 
     // Full images: detail views, zoom — larger images, fewer entries
@@ -136,17 +136,10 @@ actor ImageCache {
         thumbnailCache.setObject(image, forKey: key as NSString, cost: c)
     }
 
-    /// Synchronous fast path used by recycled NSCollectionViewItems to pre-paint
-    /// before the SwiftUI .task fires, eliminating placeholder flicker on scroll.
-    /// Order: in-memory NSCache first (instant), then a guarded disk read of the
-    /// pre-generated `te_thumbs` JPEG (sub-millisecond when the file is already
-    /// in the OS page cache, which it is once warmed). The `fileExists` guard
-    /// keeps the cold/uncached case cheap — only ROMs with a real thumb file pay
-    /// the decode, and that decode runs on the main thread but is tiny (400–800px
-    /// JPEG). This is what lets warmed libraries paint boxart with zero flash
-    /// and zero async round-trip, independent of NSCache residency.
+    /// Compatibility wrapper for callers that need a synchronous thumbnail.
+    /// It only reads the in-memory cache. It never reads the disk and never
+    /// decodes the original image on the main thread.
     nonisolated func thumbnailSync(for url: URL, preferredSize: BoxArtThumbnailSize) -> NSImage? {
-        // Scroll perf audit counters (main-thread-only; see ScrollPerfCounters).
         let auditOnMain = Thread.isMainThread
         let auditStart = auditOnMain ? DispatchTime.now().uptimeNanoseconds : 0
         defer {
@@ -155,54 +148,7 @@ actor ImageCache {
                 ScrollPerfCounters.thumbnailSyncMainThreadNs &+= Int64(DispatchTime.now().uptimeNanoseconds &- auditStart)
             }
         }
-        let sizeKey = "thumb:\(preferredSize.rawValue):\(url.path)" as NSString
-        if let cached = thumbnailCache.object(forKey: sizeKey) {
-            return cached
-        }
-        // Fall back to any cached size — a slightly wrong size is better than nil.
-        for size in BoxArtThumbnailSize.allCases where size != preferredSize {
-            let altKey = "thumb:\(size.rawValue):\(url.path)" as NSString
-            if let cached = thumbnailCache.object(forKey: altKey) {
-                return cached
-            }
-        }
-        // Cache miss: read the pre-generated thumb from disk. Guarded by
-        // fileExists so we only touch disk for ROMs that actually have a thumb.
-        if auditOnMain { ScrollPerfCounters.thumbnailSyncColdDiskReads += 1 }
-        let thumbURL = BoxArtThumbnailService.thumbnailURL(for: url, size: preferredSize)
-        let sourceModificationDate = Self.fileModificationDate(at: url)
-        let thumbnailModificationDate = Self.fileModificationDate(at: thumbURL)
-        if FileManager.default.fileExists(atPath: thumbURL.path),
-           let source = CGImageSourceCreateWithURL(thumbURL as CFURL, nil),
-           let cgImage = CGImageSourceCreateImageAtIndex(source, 0, [kCGImageSourceShouldCacheImmediately: true] as CFDictionary) {
-            let img = NSImage(cgImage: cgImage, size: .zero)
-            if Self.fileUnchanged(at: url, since: sourceModificationDate),
-               Self.fileUnchanged(at: thumbURL, since: thumbnailModificationDate) {
-                thumbnailCache.setObject(img, forKey: sizeKey, cost: cost(of: img))
-            }
-            return img
-        }
-        // Last-resort fallback: decode the original boxart synchronously so a
-        // recycled cell never paints the placeholder/stock gradient while the
-        // async path catches up. This only fires when te_thumbs hasn't been
-        // generated yet (cold miss); once decoded it's cached. A single full
-        // decode on the main thread is cheap and far better than the flash.
-        let fallbackSourceModificationDate = Self.fileModificationDate(at: url)
-        guard FileManager.default.fileExists(atPath: url.path),
-              let origSource = CGImageSourceCreateWithURL(url as CFURL, nil),
-              let origCG = CGImageSourceCreateThumbnailAtIndex(origSource, 0, [
-                kCGImageSourceCreateThumbnailFromImageAlways: true,
-                kCGImageSourceCreateThumbnailWithTransform: true,
-                kCGImageSourceShouldCacheImmediately: true,
-                kCGImageSourceThumbnailMaxPixelSize: Int(preferredSize.maxPixelSize)
-              ] as CFDictionary) else {
-            return nil
-        }
-        let origImg = NSImage(cgImage: origCG, size: .zero)
-        if Self.fileUnchanged(at: url, since: fallbackSourceModificationDate) {
-            thumbnailCache.setObject(origImg, forKey: sizeKey, cost: cost(of: origImg))
-        }
-        return origImg
+        return thumbnailCachedOrPregen(for: url, preferredSize: preferredSize)
     }
 
     /// Synchronous fast path for recycled cells, used to pre-paint boxart on
@@ -232,12 +178,12 @@ actor ImageCache {
     }
 
     /// Synchronous "cache or pre-generated thumb" load for callers that must
-    /// paint art on the very first frame (the TV-mode hero cover). Same as
-    /// `thumbnailSync`, minus its last-resort decode of the full source image:
-    /// only the in-memory thumbnail cache and the pre-generated `te_thumbs`
-    /// JPEG are used, so the cost is one `fileExists` probe plus a small JPEG
-    /// decode (measured 1–3 ms for `.large` once ImageIO is warm). A missing
-    /// pre-gen returns `nil` cheaply and the caller stays on the async path.
+    /// paint art on the very first frame (the TV-mode hero cover). It uses the
+    /// in-memory thumbnail cache and the pre-generated `te_thumbs` JPEG, so the
+    /// cost is one `fileExists` probe plus a small JPEG decode (measured 1–3 ms
+    /// for `.large` once ImageIO is warm). It never decodes the original image.
+    /// A missing pre-gen returns `nil` cheaply and the caller stays on the
+    /// async path.
     ///
     /// Order: exact-size memory hit, then the pre-gen file at the requested
     /// size (so a large hero never shows a 400 px grid thumb stretched), then
@@ -699,10 +645,8 @@ actor ImageCache {
         // cost limit, 2500 large thumbs could hold ~6GB; the 384MB cap lets NSCache
         // evict the largest entries under pressure before system OOM intervenes.
         // Thumbnail cache: 700MB / 5000 entries. Bounded so NSCache still evicts
-        // under memory pressure. Cache misses during scroll are covered by the
-        // disk-reading thumbnailSync fast path (reads the warmed te_thumbs JPEG,
-        // sub-ms from page cache), so we don't need to keep the whole library
-        // resident to avoid flashes.
+        // under memory pressure. Cache misses are filled by the async image
+        // loader, so the whole library does not need to remain resident.
         thumbnailCache.countLimit = 5000
         thumbnailCache.totalCostLimit = 700 * 1024 * 1024
 

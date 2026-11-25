@@ -761,7 +761,7 @@ final class LaunchBoxMetadataService: ObservableObject {
                     BoxArtThumbnailService.deleteThumbnails(for: localURL)
                     await ImageCache.shared.removeImage(for: localURL)
                     await ImageCache.shared.removeThumbnail(for: localURL)
-                    BoxArtThumbnailService.generateThumbnailsSynchronously(forOriginal: localURL)
+                    BoxArtThumbnailService.scheduleGeneration(forOriginal: localURL)
                     updated.hasBoxArt = true
                     downloadedBoxArt = true
                 } else {
