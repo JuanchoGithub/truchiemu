@@ -245,6 +245,8 @@ struct LibraryGridView: View {
     
     // Filter chips
     @State private var activeFilters: Set<String> = []
+    // Sorts selected from "Other" stay in the main row for this session.
+    @State private var promotedSorts: Set<LibrarySortOrder> = []
     @State private var sortOrder: LibrarySortOrder = .name
     @State private var sortAscending: Bool = false
     @State private var isLoadingConfig: Bool = false
@@ -2320,7 +2322,6 @@ struct LibraryGridView: View {
         let prefs = filterPillPrefs
         // Candidate pill list in the user's configured order, skipping
         // disabled pills and sort pills that make no sense in a system view.
-        // The active sort is always shown so its state stays visible.
         let candidates: [FilterPill] = prefs.order.filter { pill in
             if let order = pill.sortOrder {
                 if order == sortOrder { return true }
@@ -2328,11 +2329,30 @@ struct LibraryGridView: View {
             }
             return !prefs.disabled.contains(pill)
         }
-        let visibleCount = computeVisibleCount(candidates: candidates, barWidth: barWidth)
-        let overflowed = Array(candidates.dropFirst(visibleCount))
+        // Active filters and pills selected from "Other" always stay in the
+        // main row. Last Added is measured and rendered separately because it
+        // normally lives only in the popover.
+        let lastAddedPill = FilterPill.sort(.lastAdded)
+        var requiredPills = candidates.filter { pill in
+            switch pill {
+            case .filter(let option):
+                return activeFilters.contains(option.rawValue)
+            case .sort(let order):
+                return promotedSorts.contains(order)
+            }
+        }
+        if promotedSorts.contains(.lastAdded) {
+            requiredPills.append(lastAddedPill)
+        }
+        let visiblePills = computeVisiblePills(
+            candidates: candidates,
+            requiredPills: requiredPills,
+            barWidth: barWidth
+        )
+        let visiblePillSet = Set(visiblePills)
         // "Other" only hosts pills that don't fit. Disabled pills are removed
         // from the bar entirely (user choice, editable via Edit…).
-        let hiddenPills: [FilterPill] = overflowed
+        let hiddenPills: [FilterPill] = candidates.filter { !visiblePillSet.contains($0) }
 
         let otherActiveFilterCount = hiddenPills.reduce(0) { acc, pill in
             guard case .filter(let opt) = pill else { return acc }
@@ -2343,18 +2363,22 @@ struct LibraryGridView: View {
             return acc + (sortOrder == ord ? 1 : 0)
         }
         let otherSortActive = sortOrder == .lastAdded
+            && !visiblePillSet.contains(lastAddedPill)
         let otherBadgeCount = otherActiveFilterCount + otherActiveSortCount
             + (otherSortActive ? 1 : 0)
 
         let commitSort: (LibrarySortOrder, Bool) -> Void = { order, asc in
-            if case .category(let id) = filter {
-                saveCategoryConfig(for: id)
-                NotificationCenter.default.post(name: .sortChanged, object: nil)
-            } else {
-                AppSettings.setString(LibrarySortOrder.orderKey, value: order.rawValue)
-                AppSettings.setBool(LibrarySortOrder.ascendingKey, value: asc)
-                NotificationCenter.default.post(name: .sortChanged, object: nil)
+            if order == .name || !promotedSorts.contains(order) {
+                promotedSorts.removeAll()
             }
+            applySort(order: order, ascending: asc)
+        }
+        let commitPromotedSort: (LibrarySortOrder, Bool) -> Void = { order, asc in
+            promotedSorts.removeAll()
+            if order != .name {
+                promotedSorts.insert(order)
+            }
+            commitSort(order, asc)
         }
 
         // Hidden measurement row: laid out at ideal size inside a background
@@ -2365,6 +2389,15 @@ struct LibraryGridView: View {
                 pillView(pill, commitSort: commitSort)
                     .background(widthReporter(id: pill.rawValue))
             }
+            SortRow(
+                order: .lastAdded,
+                currentOrder: $sortOrder,
+                ascending: $sortAscending,
+                style: .chips,
+                keyboardShortcut: nil,
+                onCommit: commitSort
+            )
+            .background(widthReporter(id: lastAddedPill.rawValue))
             // Fixed (always-visible) elements measured as a group. Measure
             // "Other" with a representative badge so its width is stable and
             // never feeds back into the visible-count calc.
@@ -2372,18 +2405,9 @@ struct LibraryGridView: View {
                 .background(widthReporter(id: "other"))
             genreChip
                 .background(widthReporter(id: "genre"))
-            if !activeFilters.isEmpty || !selectedGenres.isEmpty {
+            if shouldShowClearFilterButton {
                 Button {
-                    activeFilters.removeAll()
-                    selectedGenres.removeAll()
-                    viewModel.updateFilters(
-                        filter: effectiveFilter,
-                        searchText: searchText,
-                        activeFilters: activeFilters,
-                        sortOrder: sortOrder,
-                        sortAscending: sortAscending,
-                        selectedGenres: selectedGenres
-                    )
+                    clearFilterChips()
                 } label: {
                     clearButtonLabel
                 }
@@ -2396,7 +2420,7 @@ struct LibraryGridView: View {
         .accessibilityHidden(true)
 
         return HStack(spacing: 6) {
-            ForEach(Array(candidates.prefix(visibleCount))) { pill in
+            ForEach(visiblePills) { pill in
                 pillView(pill, commitSort: commitSort)
                     .contextMenu { editPillsMenu.menuIconsAlwaysVisible() }
             }
@@ -2407,10 +2431,13 @@ struct LibraryGridView: View {
                 OtherFiltersPopover(
                     pills: hiddenPills,
                     activeFilters: $activeFilters,
-                    onToggle: { toggleFilter($0) },
+                    onToggle: { option in
+                        toggleFilter(option)
+                    },
                     sortOrder: $sortOrder,
                     sortAscending: $sortAscending,
-                    onCommit: commitSort
+                    excludedSortOrders: promotedSorts.contains(.lastAdded) ? [.lastAdded] : [],
+                    onCommit: commitPromotedSort
                 )
                 .gamepadDismissable { showOtherFilters = false }
             }
@@ -2438,18 +2465,9 @@ struct LibraryGridView: View {
                 .gamepadDismissable { showGenrePicker = false }
             }
 
-            if !activeFilters.isEmpty || !selectedGenres.isEmpty {
+            if shouldShowClearFilterButton {
                 Button {
-                    activeFilters.removeAll()
-                    selectedGenres.removeAll()
-                    viewModel.updateFilters(
-                        filter: effectiveFilter,
-                        searchText: searchText,
-                        activeFilters: activeFilters,
-                        sortOrder: sortOrder,
-                        sortAscending: sortAscending,
-                        selectedGenres: selectedGenres
-                    )
+                    clearFilterChips()
                 } label: {
                     clearButtonLabel
                 }
@@ -2470,11 +2488,15 @@ struct LibraryGridView: View {
 
     // MARK: - Filter chips helpers
 
-    private func computeVisibleCount(candidates: [FilterPill], barWidth: CGFloat) -> Int {
-        guard barWidth > 0, !pillWidths.isEmpty else { return 0 }
+    private func computeVisiblePills(
+        candidates: [FilterPill],
+        requiredPills: [FilterPill],
+        barWidth: CGFloat
+    ) -> [FilterPill] {
+        guard barWidth > 0, !pillWidths.isEmpty else { return [] }
         let otherW = pillWidths["other"] ?? 0
         let genreW = pillWidths["genre"] ?? 0
-        let clearShown = !(activeFilters.isEmpty && selectedGenres.isEmpty)
+        let clearShown = shouldShowClearFilterButton
         let clearW = clearShown ? (pillWidths["clear"] ?? 0) : 0
         let spacing: CGFloat = 6
         // Gaps inside the always-visible group + the gap joining it to the
@@ -2484,22 +2506,39 @@ struct LibraryGridView: View {
         fixedGaps += spacing // other -> genre
         let fixedCost = otherW + genreW + clearW + fixedGaps
         let horizontalPadding: CGFloat = 32
-        let joinGap: CGFloat = (candidates.count > 0) ? spacing : 0
+        let joinGap: CGFloat = (candidates.isEmpty && requiredPills.isEmpty) ? 0 : spacing
         let available = barWidth - fixedCost - horizontalPadding - joinGap
-        guard available > 0 else { return 0 }
-        var cumulative: CGFloat = 0
-        var count = 0
-        for pill in candidates {
-            let w = pillWidths[pill.rawValue] ?? 0
-            let gap: CGFloat = count == 0 ? 0 : spacing
-            if cumulative + gap + w <= available {
-                cumulative += gap + w
-                count += 1
+
+        // Required pills stay in the main row. Reserve their width before
+        // optional pills so an item selected from "Other" can move an optional
+        // pill back into the popover instead of hiding the selected item.
+        let requiredWidth = requiredPills.reduce(CGFloat.zero) { total, pill in
+            total + (pillWidths[pill.rawValue] ?? 0)
+        }
+        let requiredGaps = requiredPills.count > 1 ? CGFloat(requiredPills.count - 1) * spacing : 0
+        let optionalBudget = max(0, available - requiredWidth - requiredGaps)
+
+        var selectedOptionalPills = Set<FilterPill>()
+        var optionalCost: CGFloat = 0
+        for pill in candidates where !requiredPills.contains(pill) {
+            let width = pillWidths[pill.rawValue] ?? 0
+            // The first optional pill has no leading gap when there are no
+            // required pills. Every other optional pill adds one gap.
+            let gap = selectedOptionalPills.isEmpty && requiredPills.isEmpty ? 0 : spacing
+            let cost = width + gap
+            if optionalCost + cost <= optionalBudget {
+                selectedOptionalPills.insert(pill)
+                optionalCost += cost
             } else {
                 break
             }
         }
-        return count
+
+        var visiblePills = candidates.filter {
+            requiredPills.contains($0) || selectedOptionalPills.contains($0)
+        }
+        visiblePills.append(contentsOf: requiredPills.filter { !candidates.contains($0) })
+        return visiblePills
     }
 
     @ViewBuilder
@@ -2560,6 +2599,43 @@ struct LibraryGridView: View {
             isActive: !selectedGenres.isEmpty,
             action: { showGenrePicker.toggle() }
         )
+    }
+
+    private var shouldShowClearFilterButton: Bool {
+        !activeFilters.isEmpty || !selectedGenres.isEmpty || promotedSorts.contains(sortOrder)
+    }
+
+    private func clearFilterChips() {
+        let shouldResetSort = promotedSorts.contains(sortOrder)
+
+        activeFilters.removeAll()
+        selectedGenres.removeAll()
+        promotedSorts.removeAll()
+
+        if shouldResetSort {
+            sortOrder = .name
+            sortAscending = false
+            applySort(order: .name, ascending: false)
+        }
+
+        viewModel.updateFilters(
+            filter: effectiveFilter,
+            searchText: searchText,
+            activeFilters: activeFilters,
+            sortOrder: sortOrder,
+            sortAscending: sortAscending,
+            selectedGenres: selectedGenres
+        )
+    }
+
+    private func applySort(order: LibrarySortOrder, ascending: Bool) {
+        if case .category(let id) = filter {
+            saveCategoryConfig(for: id)
+        } else {
+            AppSettings.setString(LibrarySortOrder.orderKey, value: order.rawValue)
+            AppSettings.setBool(LibrarySortOrder.ascendingKey, value: ascending)
+        }
+        NotificationCenter.default.post(name: .sortChanged, object: nil)
     }
 
     private var clearButtonLabel: some View {

@@ -9,6 +9,7 @@ struct OtherFiltersPopover: View {
     let onToggle: (GameFilterOption) -> Void
     @Binding var sortOrder: LibrarySortOrder
     @Binding var sortAscending: Bool
+    var excludedSortOrders: Set<LibrarySortOrder> = []
     var onCommit: ((LibrarySortOrder, Bool) -> Void)? = nil
 
     @ObservedObject private var loc = LocalizationManager.shared
@@ -49,12 +50,13 @@ struct OtherFiltersPopover: View {
             .padding(.horizontal, 10)
             .padding(.bottom, 6)
 
-            // Last Added sort row — always lives here so the bar carries a
-            // single "Other" entry.
+            // Last Added normally lives here. It is excluded after the user
+            // promotes it to the main row.
             LibrarySortPicker(
                 currentOrder: $sortOrder,
                 ascending: $sortAscending,
                 style: .popover,
+                excludedSortOrders: excludedSortOrders,
                 onCommit: onCommit
             )
             .padding(.horizontal, 10)

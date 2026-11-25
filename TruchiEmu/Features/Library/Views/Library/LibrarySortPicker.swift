@@ -30,6 +30,9 @@ struct LibrarySortPicker: View {
     /// out of the rendered options — they only make sense where a collection
     /// can span multiple systems (callers hide them in system views).
     var includeSystemSorts: Bool = true
+    /// Orders that the caller renders elsewhere. This keeps a promoted pill
+    /// out of the "Other" popover after the user moves it to the main row.
+    var excludedSortOrders: Set<LibrarySortOrder> = []
     /// Optional commit handler. When provided, the picker updates the bindings
     /// and calls this instead of persisting to the global AppSettings keys and
     /// posting `.sortChanged`. Callers use this to scope persistence (e.g.
@@ -42,11 +45,12 @@ struct LibrarySortPicker: View {
         case popover
     }
 
-    /// Primary orders after the system-sort exclusion rule.
+    /// Primary orders after the system-sort and caller exclusion rules.
     private var visiblePrimary: [LibrarySortOrder] {
-        includeSystemSorts
+        let orders = includeSystemSorts
             ? LibrarySortOrder.primary
             : LibrarySortOrder.primary.filter { !$0.isSystemSort }
+        return orders.filter { !excludedSortOrders.contains($0) }
     }
 
     var body: some View {
@@ -78,7 +82,7 @@ struct LibrarySortPicker: View {
             Text(LocalizationManager.shared.localized("library.otherSort"))
                 .font(.system(size: 11, weight: .semibold))
                 .foregroundColor(.secondary)
-            ForEach(LibrarySortOrder.other) { order in
+            ForEach(LibrarySortOrder.other.filter { !excludedSortOrders.contains($0) }) { order in
                 SortRow(
                     order: order,
                     currentOrder: $currentOrder,
@@ -112,7 +116,7 @@ struct LibrarySortPicker: View {
 
     private var popoverBody: some View {
         VStack(alignment: .leading, spacing: 6) {
-            ForEach(LibrarySortOrder.other) { order in
+            ForEach(LibrarySortOrder.other.filter { !excludedSortOrders.contains($0) }) { order in
                 SortRow(
                     order: order,
                     currentOrder: $currentOrder,
