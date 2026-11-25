@@ -55,6 +55,7 @@ struct GameDetailView: View {
     @State var isEditingTitle: Bool = false
     @FocusState var titleFieldFocused: Bool
     @State var gameDescription: String? = nil
+    @State var similarGames: [SimilarGameMatch] = []
     @State var mostRecentSaveSlot: SlotInfo? = nil
     @State var titleScreenImage: NSImage? = nil
 
@@ -1090,26 +1091,35 @@ struct GameDetailView: View {
     }
 
     func launchGame(slotToLoad: Int? = nil, progressiveVersion: Int? = nil, disableAutoLoadOnStart: Bool = false) {
+        launchGame(
+            rom: currentROM,
+            slotToLoad: slotToLoad,
+            progressiveVersion: progressiveVersion,
+            disableAutoLoadOnStart: disableAutoLoadOnStart
+        )
+    }
+
+    func launchGame(rom targetROM: ROM, slotToLoad: Int? = nil, progressiveVersion: Int? = nil, disableAutoLoadOnStart: Bool = false) {
         guard !isLaunchingGame else { return }
-        guard let sysID = currentROM.systemID, let system = SystemDatabase.system(forID: sysID) else {
+        guard let sysID = targetROM.systemID, let system = SystemDatabase.system(forID: sysID) else {
             isLaunchingGame = false
             return
         }
 
         // Use centralized helper to resolve core ID (handles synthetic fallback)
-        let cid = coreManager.resolveCoreID(for: currentROM, system: system)
+        let cid = coreManager.resolveCoreID(for: targetROM, system: system)
         
         // DEBUG: Log the resolved coreID
         #if LOG_DEBUG
-        LoggerService.debug(category: "GameDetailView", "[LAUNCH]Helper resolved coreID: \(cid) for ROM: \(currentROM.displayName)")
+        LoggerService.debug(category: "GameDetailView", "[LAUNCH]Helper resolved coreID: \(cid) for ROM: \(targetROM.displayName)")
         #endif
         
         if !coreManager.isInstalled(coreID: cid) {
             // DEBUG: Log that core is not installed and download is being requested
             #if LOG_DEBUG
-            LoggerService.debug(category: "GameDetailView", "[LAUNCH] Core NOT installed: \(cid), initiating requestCoreDownload for ROM: \(currentROM.displayName)")
+            LoggerService.debug(category: "GameDetailView", "[LAUNCH] Core NOT installed: \(cid), initiating requestCoreDownload for ROM: \(targetROM.displayName)")
             #endif
-            coreManager.requestCoreDownload(for: cid, systemID: sysID, romID: currentROM.id, slotToLoad: slotToLoad)
+            coreManager.requestCoreDownload(for: cid, systemID: sysID, romID: targetROM.id, slotToLoad: slotToLoad)
             // DEBUG: Log after requestCoreDownload call
             #if LOG_DEBUG
             LoggerService.debug(category: "GameDetailView", "[LAUNCH] requestCoreDownload completed, returning (isLaunchingGame=false)")
@@ -1119,7 +1129,7 @@ struct GameDetailView: View {
         }
 
         isLaunchingGame = true
-        let freshROM = library.roms.first { $0.id == currentROM.id } ?? currentROM
+        let freshROM = library.rom(withID: targetROM.id) ?? targetROM
         let currentShaderUniforms = freshROM.settings.shaderUniformOverrides
         Task {
             await gameLauncher.launchGame(rom: freshROM, coreID: cid, slotToLoad: slotToLoad, progressiveVersion: progressiveVersion, disableAutoLoadOnStart: disableAutoLoadOnStart, library: library, shaderUniformOverrides: currentShaderUniforms) { _ in

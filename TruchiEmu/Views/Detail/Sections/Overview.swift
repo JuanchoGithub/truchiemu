@@ -12,6 +12,10 @@ extension GameDetailView {
                 mediaCard
             }
 
+            if !similarGames.isEmpty {
+                similarGamesCard
+            }
+
             playtimeCard
 
             recentSaveStatesPreview
@@ -19,6 +23,13 @@ extension GameDetailView {
             switchAddOnsCard
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+        .task(id: library.lastChangeDate) {
+            similarGames = SimilarGamesEngine.recommendations(
+                for: currentROM,
+                in: library.roms,
+                limit: 6
+            )
+        }
     }
 
     /// Fixed inspector rail: progress, the fact sheet, and completion times.
@@ -213,6 +224,16 @@ extension GameDetailView {
                 }
             }
         }
+    }
+
+    // MARK: - Similar games
+
+    private var similarGamesCard: some View {
+        SimilarGamesCard(
+            matches: similarGames,
+            onOpen: { openWindow(id: "game-info", value: $0.id) },
+            onPlay: { launchGame(rom: $0) }
+        )
     }
 
     // MARK: - Playtime

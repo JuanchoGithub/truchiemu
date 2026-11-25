@@ -1825,6 +1825,8 @@ struct LibraryGridView: View {
         let targetIDsSet = Set(targetIDs)
         // O(selection) lookups via the library index — was a full-ROMs filter.
         let menuTargetROMs = targetIDsSet.compactMap { library.rom(withID: $0) }
+        // The engine scans lightweight metadata; it only runs when the menu opens.
+        let similarGames = SimilarGamesEngine.recommendations(for: rom, in: library.roms, limit: 5)
 
         return AnyView(
             Group {
@@ -1851,6 +1853,23 @@ struct LibraryGridView: View {
                     }
                 } label: {
                     Label(loc.localized("contextMenu.launchGame"), systemImage: "play.fill")
+                }
+
+                if !similarGames.isEmpty {
+                    Menu {
+                        ForEach(similarGames) { match in
+                            Button {
+                                openWindow(id: "game-info", value: match.rom.id)
+                            } label: {
+                                Label(
+                                    match.rom.displayName,
+                                    systemImage: SystemDatabase.system(forID: match.rom.systemID ?? "")?.iconName ?? "gamecontroller"
+                                )
+                            }
+                        }
+                    } label: {
+                        Label(loc.localized("contextMenu.similarGames"), systemImage: "sparkles")
+                    }
                 }
 
                 Button {
