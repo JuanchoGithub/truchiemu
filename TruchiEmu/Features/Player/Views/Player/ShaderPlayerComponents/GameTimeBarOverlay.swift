@@ -6,12 +6,19 @@ struct GameTimeBarOverlay: View {
     @ObservedObject private var hotkeys = HotkeyConfigManager.shared
     @Environment(\.colorScheme) private var colorScheme
 
+    /// Called when the interactive area of the scrub bar changes. The window
+    /// controller uses the rectangle to route mouse events to the slider.
+    var onHitRectChanged: ((CGRect) -> Void)? = nil
+
     @State private var oldestFrame: UInt64 = 0
     @State private var newestFrame: UInt64 = 0
     @State private var entryCount: Int = 0
     @State private var hasBuffer: Bool = false
     @State private var sliderValue: Double = 0
     @State private var isDragging: Bool = false
+    /// Time of the last live seek. A live seek restores a full emulator
+    /// state, so a fast mouse drag must not queue many restores.
+    @State private var lastLiveSeekTime: Date = .distantPast
     @State private var overlayEnabled: Bool = true
     @State private var pollCancellable: AnyCancellable?
 
@@ -118,21 +125,41 @@ struct GameTimeBarOverlay: View {
                                         // seconds back from newest.
                                         isDragging ? sliderValue : scrubProgress
                                     },
-                                    set: { newValue in sliderValue = newValue }
+                                    set: { newValue in
+                                        sliderValue = newValue
+                                        // Follow the thumb while the user
+                                        // drags so the game shows the
+                                        // snapshot under the pointer.
+                                        seekToSliderPosition()
+                                    }
                                 ),
                                 in: 0...1,
                                 onEditingChanged: { editing in
                                     isDragging = editing
                                     if editing {
-                                        // Apply the new slider position immediately
-                                        // so live-feedback works while dragging.
-                                        seekToSliderPosition()
-                                    } else {
-                                        seekToSliderPosition()
+                                        // The first seek of a drag must not
+                                        // be thinned out.
+                                        lastLiveSeekTime = .distantPast
                                     }
+                                    // Apply the new slider position immediately
+                                    // so live-feedback works while dragging.
+                                    seekToSliderPosition(force: !editing)
                                 }
                             )
                             .frame(height: 20)
+                            .background(
+                                GeometryReader { proxy in
+                                    Color.clear.preference(
+                                        key: TimeBarHitRectPreferenceKey.self,
+                                        // The rectangle must include the
+                                        // offset below. The background is
+                                        // applied before the offset so that
+                                        // the offset moves the publisher too.
+                                        value: proxy.frame(in: .named("timeBarRoot"))
+                                            .insetBy(dx: 0, dy: -8)
+                                    )
+                                }
+                            )
                             .offset(y: 22)
                         }
                         .frame(height: 44)
@@ -169,6 +196,17 @@ struct GameTimeBarOverlay: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .coordinateSpace(name: "timeBarRoot")
+        .onPreferenceChange(TimeBarHitRectPreferenceKey.self) { rect in
+            onHitRectChanged?(rect)
+        }
+        .onChange(of: isOverlayVisible) { _, visible in
+            // The slider is gone when the bubble is hidden. Clear the
+            // rectangle so that the overlay does not block the game.
+            if !visible {
+                onHitRectChanged?(.zero)
+            }
+        }
         .animation(.easeInOut(duration: 0.2), value: hasBuffer)
         .animation(.easeInOut(duration: 0.2), value: runner.speedMultiplier)
         .animation(.easeInOut(duration: 0.2), value: runner.isRewinding)
@@ -279,8 +317,16 @@ struct GameTimeBarOverlay: View {
         hasBuffer = entryCount > 1
     }
 
-    private func seekToSliderPosition() {
+    /// Minimum time between two live seeks during a mouse drag.
+    private static let liveSeekInterval: TimeInterval = 0.05
+
+    private func seekToSliderPosition(force: Bool = false) {
         guard hasBuffer, newestFrame > oldestFrame else { return }
+        if !force {
+            let now = Date()
+            guard now.timeIntervalSince(lastLiveSeekTime) >= Self.liveSeekInterval else { return }
+            lastLiveSeekTime = now
+        }
         let target = oldestFrame + UInt64(sliderValue * Double(newestFrame - oldestFrame))
         Task { @MainActor in
             _ = runner.rewindToFrame(target)
@@ -292,5 +338,17 @@ struct GameTimeBarOverlay: View {
         let mins = seconds / 60
         let secs = seconds % 60
         return String(format: "%d:%02d", mins, secs)
+    }
+}
+
+/// Reports the interactive area of the scrub bar to the window controller.
+private struct TimeBarHitRectPreferenceKey: PreferenceKey {
+    static var defaultValue: CGRect = .zero
+
+    static func reduce(value: inout CGRect, nextValue: () -> CGRect) {
+        let next = nextValue()
+        if !next.isEmpty {
+            value = next
+        }
     }
 }

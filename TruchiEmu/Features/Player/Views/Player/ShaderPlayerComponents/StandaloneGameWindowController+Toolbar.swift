@@ -10,6 +10,13 @@ extension StandaloneGameWindowController {
         (toolbarView as? SafeHostingView<AnyView>)?.interactiveRect = rect
     }
 
+    /// Copy the interactive area of the Time Machine scrub bar into the
+    /// hosting view so that the slider receives mouse events.
+    @MainActor
+    func updateTimeBarHitRect(_ rect: CGRect) {
+        timeBarOverlayView?.interactiveRect = rect
+    }
+
     @MainActor
     func onMouseActivity() {
         guard !InputCaptureManager.shared.isCapturing else { return }

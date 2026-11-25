@@ -709,6 +709,7 @@ case "scummvm": runner = ScummVMRunner()
         LoggerService.info(category: "Runner", "Stopping emulation thread")
         isRunning = false
 
+        stopScrubRepeat()
         saveSRAMIfAvailable()
 
         timeMachineBuffer.clear()
@@ -876,6 +877,20 @@ case "scummvm": runner = ScummVMRunner()
     // tables expose data to non-MainActor code.
     nonisolated(unsafe) var isRewindingStorage: Bool = false
 
+    /// Direction that the user holds for the auto-repeat. -1 moves toward the
+    /// past, +1 moves toward the present, and 0 means that no direction is
+    /// held.
+    @MainActor private var scrubRepeatDirection: Int = 0
+
+    /// Timer that repeats the scrub step while a direction is held.
+    @MainActor private var scrubRepeatTimer: DispatchSourceTimer?
+
+    /// Delay before the first repeat. The first press always steps once at once.
+    private static let scrubRepeatInitialDelay: TimeInterval = 0.35
+
+    /// Interval between the repeated steps while a direction is held.
+    private static let scrubRepeatInterval: TimeInterval = 0.08
+
     // Settings availability helpers. Read at action time so mid-game
     // settings changes take effect for the next key/gamepad press.
     @MainActor
@@ -971,6 +986,7 @@ case "scummvm": runner = ScummVMRunner()
         XPCBridgeAdapter.shared.setSpeedMultiplier(1.0)
         // Enter scrub paused. If the game was already paused, remember that
         // so exiting scrub returns to the paused state instead of resuming.
+        stopScrubRepeat()
         applyPauseState(isPaused ? .scrubbingOverPaused : .scrubbing)
         timeMachineScrubFrameIndex = newest
         osdMessage = LocalizationManager.shared.localized("osd.rewind")
@@ -983,6 +999,7 @@ case "scummvm": runner = ScummVMRunner()
 
     @MainActor
     func exitTimeMachineMode() {
+        stopScrubRepeat()
         guard isRewinding else { return }
         // Restore the pause state that was in effect before scrub mode began.
         // Scrubbing over an already-paused game keeps it paused on exit;
@@ -1092,6 +1109,54 @@ case "scummvm": runner = ScummVMRunner()
         } else {
             LoggerService.warning(category: "TimeMachine", "step direction \(direction) failed at frame \(target)")
         }
+    }
+
+    /// Start, continue, or stop the auto-repeat of the scrub step.
+    /// `direction` is -1 for the past and +1 for the present.
+    /// A new direction steps once at once and then repeats.
+    @MainActor
+    func updateScrubRepeat(direction: Int) {
+        guard direction != 0 else {
+            stopScrubRepeat()
+            return
+        }
+        guard direction != scrubRepeatDirection else { return }
+        scrubRepeatDirection = direction
+        stopScrubRepeatTimer()
+        LoggerService.info(category: "TimeMachine", "Stepping gamepad → dir=\(direction)")
+        stepTimeMachine(direction: direction)
+        let timer = DispatchSource.makeTimerSource(queue: .main)
+        timer.schedule(deadline: .now() + Self.scrubRepeatInitialDelay,
+                       repeating: Self.scrubRepeatInterval)
+        timer.setEventHandler { [weak self] in
+            Task { @MainActor in self?.scrubRepeatTick() }
+        }
+        scrubRepeatTimer = timer
+        timer.resume()
+    }
+
+    /// Repeat the scrub step.
+    @MainActor
+    private func scrubRepeatTick() {
+        guard isRewinding, scrubRepeatDirection != 0 else {
+            stopScrubRepeat()
+            return
+        }
+        stepTimeMachine(direction: scrubRepeatDirection)
+    }
+
+    /// Stop the repeat. The playhead must not move after this call.
+    @MainActor
+    func stopScrubRepeat() {
+        stopScrubRepeatTimer()
+        scrubRepeatDirection = 0
+    }
+
+    /// Cancel the repeat timer without clearing the held direction.
+    @MainActor
+    private func stopScrubRepeatTimer() {
+        scrubRepeatTimer?.cancel()
+        scrubRepeatTimer = nil
     }
 
     @MainActor
@@ -2234,38 +2299,25 @@ weak var metalCoordinator: MetalCoordinator?
                 // step the playhead. The dpad element arrives as a
                 // GCControllerDirectionPad (read dpad.left/right sub-buttons
                 // directly); analog stick events arrive as their own
-                // GCControllerAxisInput/GCControllerButtonInput and route
-                // through timeMachineScrubDirection via the user's
-                // .lStickLeft/.lStickRight mappings. Inputs are NOT forwarded
-                // to the core while scrubbing.
+                // GCControllerAxisInput/GCControllerButtonInput. The physical
+                // D-pad and stick state is also read, because GameController
+                // reports only changes. A held direction therefore needs a
+                // repeat. Inputs are NOT forwarded to the core while scrubbing.
                 if self.isRewindingStorage {
-                    let dir: Int
-                    if let dpad = element as? GCControllerDirectionPad {
-                        let lPressed = dpad.left.isPressed
-                        let rPressed = dpad.right.isPressed
-                        #if LOG_DEBUG
-                        LoggerService.debug(category: "TimeMachine", "Gamepad dpad element: left pressed=\(lPressed) right pressed=\(rPressed)")
-                        #endif
-                        if lPressed { dir = -1 }
-                        else if rPressed { dir = 1 }
-                        else { dir = 0 }
-                    } else {
-                        #if LOG_DEBUG
-                        let nameForLog = element.localizedName ?? "<nil>"
-                        let kindForLog = String(describing: type(of: element))
-                        let computedDir = self.timeMachineScrubDirection(for: element, mapping: mapping, extendedGamepad: extendedGamepad)
-                        LoggerService.debug(category: "TimeMachine", "Gamepad non-dpad element: name='\(nameForLog)' kind=\(kindForLog) computedDir=\(computedDir)")
-                        dir = computedDir
-                        #else
-                        dir = self.timeMachineScrubDirection(for: element, mapping: mapping, extendedGamepad: extendedGamepad)
-                        #endif
-                    }
-                    if dir != 0 {
-                        let capturedDir = dir
-                        LoggerService.info(category: "TimeMachine", "Stepping gamepad → dir=\(capturedDir)")
-                        Task { @MainActor in self.stepTimeMachine(direction: capturedDir) }
+                    let elementDirection = self.timeMachineScrubDirection(for: element, mapping: mapping, extendedGamepad: extendedGamepad)
+                    let physicalDirection = self.timeMachineHeldScrubDirection(extendedGamepad: extendedGamepad)
+                    let direction = elementDirection != 0 ? elementDirection : physicalDirection
+                    #if LOG_DEBUG
+                    LoggerService.debug(category: "TimeMachine", "Gamepad element: elementDir=\(elementDirection) physicalDir=\(physicalDirection) dir=\(direction)")
+                    #endif
+                    if direction != 0 {
+                        let capturedDirection = direction
+                        Task { @MainActor in self.updateScrubRepeat(direction: capturedDirection) }
+                        // The core must not receive the scrub input.
                         return
                     }
+                    // No direction is held any more. Stop the repeat.
+                    Task { @MainActor in self.stopScrubRepeat() }
                 }
 
                 for port in ports {
@@ -2311,6 +2363,34 @@ weak var metalCoordinator: MetalCoordinator?
     /// updateGamepadButton is invoked from the GCController valueChangedHandler
     /// (which fires on a non-main queue).
     func timeMachineScrubDirection(for element: GCControllerElement, mapping: ControllerGamepadMapping, extendedGamepad: GCExtendedGamepad?) -> Int {
+        if let pad = extendedGamepad {
+            // A stick can arrive as a direction pad, as its axis, or as one of
+            // its direction buttons. The axis value gives the direction.
+            for stick in [pad.leftThumbstick, pad.rightThumbstick] {
+                if element === stick || element === stick.xAxis
+                    || element === stick.left || element === stick.right {
+                    return Self.stickDirection(stick)
+                }
+            }
+            // The D-pad can arrive as a direction pad or as one of its
+            // direction buttons.
+            let dpad = pad.dpad
+            if element === dpad {
+                if dpad.left.isPressed { return -1 }
+                if dpad.right.isPressed { return 1 }
+                return 0
+            }
+            if element === dpad.left { return dpad.left.isPressed ? -1 : 0 }
+            if element === dpad.right { return dpad.right.isPressed ? 1 : 0 }
+        }
+        // Any other direction pad gives the direction through its buttons.
+        if let directionPad = element as? GCControllerDirectionPad {
+            if directionPad.left.isPressed { return -1 }
+            if directionPad.right.isPressed { return 1 }
+            return 0
+        }
+        // The core mapping decides which physical control moves the playhead.
+        // Only the horizontal directions can scrub.
         for (btn, btnMapping) in mapping.buttons {
             guard btn == .left || btn == .right || btn == .lStickLeft || btn == .lStickRight ||
                   btn == .rStickLeft || btn == .rStickRight else { continue }
@@ -2321,6 +2401,39 @@ weak var metalCoordinator: MetalCoordinator?
             default: return 0
             }
         }
+        return 0
+    }
+
+    /// Current horizontal scrub direction from the physical gamepad state.
+    /// GameController reports only changes. A held direction therefore
+    /// produces no new event, so the state must be read directly from the
+    /// D-pad and from the sticks.
+    func timeMachineHeldScrubDirection(extendedGamepad: GCExtendedGamepad) -> Int {
+        let dpad = extendedGamepad.dpad
+        if dpad.left.isPressed { return -1 }
+        if dpad.right.isPressed { return 1 }
+        let leftDirection = Self.stickDirection(extendedGamepad.leftThumbstick)
+        if leftDirection != 0 { return leftDirection }
+        return Self.stickDirection(extendedGamepad.rightThumbstick)
+    }
+
+    /// Direction of a stick. The axis value gives the direction. The left and
+    /// right buttons are the fallback for a stick that reports only its
+    /// extreme positions.
+    private static func stickDirection(_ stick: GCControllerDirectionPad) -> Int {
+        let axisDirection = scrubDirection(forAxisValue: stick.xAxis.value)
+        if axisDirection != 0 { return axisDirection }
+        if stick.left.isPressed { return -1 }
+        if stick.right.isPressed { return 1 }
+        return 0
+    }
+
+    /// Direction for an analog axis value. Values inside the dead zone are
+    /// neutral.
+    private static func scrubDirection(forAxisValue value: Float) -> Int {
+        let deadZone: Float = 0.5
+        if value <= -deadZone { return -1 }
+        if value >= deadZone { return 1 }
         return 0
     }
 

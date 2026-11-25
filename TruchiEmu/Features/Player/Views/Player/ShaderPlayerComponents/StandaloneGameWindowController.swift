@@ -15,6 +15,10 @@ class SafeHostingView<Content: View>: NSHostingView<Content> {
 @objc var isGuideSidebar = false
 var usesInteractiveRect = false
 var interactiveRect: CGRect = .zero
+/// Pass all events through when `interactiveRect` is empty. The Time Machine
+/// overlay covers the whole window, so it must not block the game when the
+/// scrub bar is not visible.
+var passesThroughWhenInteractiveRectEmpty = false
 
 override func layout() {
     guard !XPCConnectionManager.isShuttingDown else { return }
@@ -31,7 +35,9 @@ override func hitTest(_ point: NSPoint) -> NSView? {
     }
 
     if usesInteractiveRect {
-        guard !interactiveRect.isEmpty else { return result }
+        guard !interactiveRect.isEmpty else {
+            return passesThroughWhenInteractiveRectEmpty ? nil : result
+        }
         let local = convert(point, from: superview)
         let normalized = isFlipped
             ? local
@@ -556,13 +562,17 @@ super.init(window: window)
         ])
 
         // Time machine / rewind bar overlay (bottom, shows scrubber + speed indicator)
-        let timeBarView = SafeHostingView(rootView: AnyView(GameTimeBarOverlay(runner: runner)))
+        let timeBarView = SafeHostingView(rootView: AnyView(GameTimeBarOverlay(runner: runner) { [weak self] rect in
+            self?.updateTimeBarHitRect(rect)
+        }))
         timeBarView.translatesAutoresizingMaskIntoConstraints = false
         timeBarView.wantsLayer = true
         // Allow the slider/buttons in this overlay to receive clicks while
         // empty regions pass through to the game view below.
         timeBarView.isPassThroughOverlay = false
         timeBarView.passesThroughEmptyAreas = true
+        timeBarView.usesInteractiveRect = true
+        timeBarView.passesThroughWhenInteractiveRectEmpty = true
         timeBarView.layer?.backgroundColor = NSColor.clear.cgColor
         containerView.addSubview(timeBarView, positioned: .above, relativeTo: osdView)
         self.timeBarOverlayView = timeBarView
