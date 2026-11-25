@@ -1,0 +1,67 @@
+---
+layout: default
+title: v1.18.0 - TruchiEmu Documentation
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/changelog.html' | relative_url }}">Changelog</a>
+        <span class="separator">/</span>
+        <span class="current">v1.18.0</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.18.0</h1>
+        <div class="release-meta">
+            <span class="release-date">November 25, 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>This release redesigns the library and game details, adds offline similar-game recommendations and manual game matching, makes RetroAchievements library matching much faster, and improves box art, TV mode, and Time Machine input.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Highlights</h2>
+        <ul class="feature-list">
+            <li><strong>A redesigned library and game details:</strong> The library now has a collection hero, Quick Access tiles with live counts, a recent-games shelf, clearer filter controls, and grouped section navigation. The game information window now has a cinematic backdrop, a fixed facts rail, achievement progress, and a screenshot gallery.</li>
+            <li><strong>Manual matching and offline similar games:</strong> You can now lock a game to a system DAT or LaunchBox match, download matching box art, and remove the lock later. TruchiEmu also recommends similar games from your local library by genre, developer, series, publisher, release year, and player count. This recommendation does not use the network.</li>
+            <li><strong>Much faster RetroAchievements matching:</strong> The app now fills an empty game-list cache and reuses stored file hashes. A library match uses an in-memory index and one continuous task group. In a test with 2,108 games, the match time fell from about ten minutes to about five seconds, or about three seconds when the hashes were already stored.</li>
+            <li><strong>Safer and faster box art:</strong> You can undo a box-art replacement. The app keeps the old art if the replacement fails and refreshes the image caches after a restore. Box-art hover work and thumbnail decoding also use less CPU.</li>
+            <li><strong>Smoother TV mode and gameplay:</strong> TV mode no longer runs hidden artwork animations behind the detail cover, and missing artwork downloads wait until browsing stops. The fight-game overlay also stops repeated move-list work on every controller event.</li>
+            <li><strong>Time Machine scrubbing works with more controls:</strong> You can now scrub with the D-pad, either analog stick, or the mouse. The new interface also respects Reduce Motion and includes synchronized English, Spanish, Portuguese, and Japanese text.</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Detailed Changes</h2>
+        <ul>
+            <li>Library — redesigned the shell with Quick Access tiles, live counts for All Games, Favorites, Recent, and Achievements, a collection hero, and a recent-games shelf that can launch a game directly.</li>
+            <li>Library — added settings and in-app controls to show, hide, or collapse the collection hero and Quick Access section. Gamepad sidebar navigation now follows the visible Quick Access state.</li>
+            <li>Library toolbar — grouped the controls into library, view, and utility sections. The zoom control now uses a compact percentage pill with step buttons, a slider popover, and a reset action. The notification button shows the unread count beside the bell.</li>
+            <li>Library filters — sort, filter, <em>Other</em>, and <em>Genre</em> controls now use one chip design. Active filters and sorts selected from <em>Other</em> stay in the main row. The genre strip has a separate clear button that keeps the other filters.</li>
+            <li>Library grids — added a floating section pill for grouped views, useful actions for empty results, and cross-fades for changed artwork and hero statistics. Pointer-driven card updates now run at most once per display interval, and the background thumbnail decoder limit is 3 instead of 12.</li>
+            <li>Accessibility — major card, hero, and sidebar motion now respects Reduce Motion. The redesigned controls include accessibility labels and values.</li>
+            <li>Game details — redesigned the information window with a blurred title-screen backdrop, a framed cover, live playtime and session statistics, a fixed facts rail, achievement progress, and a screenshot gallery. Screenshots now load when the window opens, the description has a fallback, and the title can be edited on double-click.</li>
+            <li>Settings and game chrome — extended the new hero bands, stat tiles, group labels, and glass surfaces to Settings, core download sheets, the update wizard, notification messages, and the in-game toolbar. The in-game toolbar now includes layered glass, hover plates, active underlines, and a recording pulse.</li>
+            <li>Game matching — added manual matching from the game information window. The user can search system DAT and LaunchBox lists, apply a locked match, download matching box art, and remove the lock to allow automatic identification again.</li>
+            <li>Similar games — added <code>SimilarGamesEngine</code>, which ranks games from the local library by genre, developer, series, publisher, release year, and player count. The game information window shows up to six matches, and the library context menu shows up to five. The engine makes no network request.</li>
+            <li>Box art — added an Undo action after replacement. The app captures the current image before it changes files, keeps the old art if the search or replacement fails, validates downloaded images, and refreshes thumbnails and caches after a restore.</li>
+            <li>RetroAchievements cache — fixed identification when the local game-list cache was empty. The app now fills the cache when the feature is enabled, at login, during a library match, or for one missing console list. It also imports fresh local list files after a database rebuild.</li>
+            <li>RetroAchievements matching — reworked the operation to use <code>RAHashIndex</code>, reuse stored file hashes, import only missing lists, and process files without fixed group barriers. List downloads use two workers, check HTTP status codes, and retry rate-limit responses with a longer wait. CDI files are hashed last so the other workers remain busy.</li>
+            <li>TV mode — removed hidden 20 Hz artwork animation, unnecessary row animation behind the detail cover, and unchanged settings writes. The detail cover now appears on the first frame, and missing title-screen or screenshot downloads wait until browsing stops.</li>
+            <li>Fight overlay — removed repeated move-list work on every controller event. The overlay now skips hidden panels, reuses resolved move data, and publishes only changed input values. This reduces visible game lag.</li>
+            <li>Time Machine — fixed scrubbing for D-pad buttons, analog sticks, and mouse dragging. Held directions repeat after 0.35 seconds, mouse seeks are limited to 20 per second during a drag, and the final mouse seek always runs.</li>
+            <li>Library maintenance — bundled ROM extension data is now authoritative. A normal Refresh removes stale archive-member rows when the inner file is no longer a valid ROM for the current extension data.</li>
+            <li>Recording — rolling buffer exports now use the current asynchronous <code>AVAssetExportSession</code> API. The existing re-encode fallback and failure behavior remain unchanged.</li>
+            <li>Localization — added 77 UI translation keys in English, Spanish, Portuguese, and Japanese. The new key set is complete in all four translation files. Three obsolete RetroAchievements manual-download strings were removed.</li>
+            <li>Bump marketing version to 1.18.0 and build number to 46 across <code>project.yml</code>, both <code>Info.plist</code>s, and <code>docs/_config.yml</code>.</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/changelog/v1.17.2.html' | relative_url }}" class="release-prev">&larr; v1.17.2</a>
+        <a href="{{ '/changelog.html' | relative_url }}" class="release-all">All Releases</a>
+    </nav>
+</div>

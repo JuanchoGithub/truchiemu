@@ -1,0 +1,67 @@
+---
+layout: default
+title: v1.18.0 - Documentación de TruchiEmu
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/es/changelog.html' | relative_url }}">Registro de cambios</a>
+        <span class="separator">/</span>
+        <span class="current">v1.18.0</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.18.0</h1>
+        <div class="release-meta">
+            <span class="release-date">25 de noviembre de 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>Esta versión rediseña la biblioteca y la información del juego, añade recomendaciones de juegos similares sin conexión y la asignación manual de juegos, hace mucho más rápida la vinculación de la biblioteca con RetroAchievements, y mejora las carátulas, el modo TV y la entrada de Time Machine.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Destacados</h2>
+        <ul class="feature-list">
+            <li><strong>Una biblioteca y una información del juego rediseñadas:</strong> La biblioteca ahora tiene una cabecera de colección, mosaicos de Acceso rápido con recuentos en vivo, un estante de juegos recientes, controles de filtro más claros y navegación por secciones. La ventana de información del juego ahora tiene un fondo cinematográfico, un panel fijo de datos, el progreso de los logros y una galería de capturas.</li>
+            <li><strong>Asignación manual y juegos similares sin conexión:</strong> Ahora puede vincular un juego de forma bloqueada a una lista DAT del sistema o de LaunchBox, descargar la carátula correspondiente y quitar el bloqueo más tarde. TruchiEmu también recomienda juegos similares de la biblioteca local por género, desarrollador, saga, distribuidora, año de lanzamiento y número de jugadores. Esta recomendación no usa la red.</li>
+            <li><strong>Vinculación con RetroAchievements mucho más rápida:</strong> La aplicación ahora llena una caché de listas de juegos vacía y reutiliza los hashes de archivo guardados. La vinculación usa un índice en memoria y un único grupo de tareas continuo. En una prueba con 2 108 juegos, el tiempo pasó de unos diez minutos a unos cinco segundos, o unos tres segundos cuando los hashes ya estaban guardados.</li>
+            <li><strong>Carátulas más seguras y rápidas:</strong> Ahora puede deshacer el reemplazo de una carátula. La aplicación conserva la carátula anterior si el reemplazo falla y actualiza las cachés de imágenes después de una restauración. El hover de las carátulas y la decodificación de miniaturas también usan menos CPU.</li>
+            <li><strong>Modo TV y juego más fluidos:</strong> El modo TV ya no ejecuta animaciones ocultas de carátulas detrás de la portada de detalle, y las descargas de arte que faltan esperan hasta que el usuario deja de navegar. La superposición de juegos de lucha también evita repetir el trabajo de la lista de movimientos en cada evento del mando.</li>
+            <li><strong>El desplazamiento de Time Machine funciona con más controles:</strong> Ahora puede desplazarse con la cruceta, cualquiera de las dos palancas analógicas o el ratón. La nueva interfaz también respeta «Reducir movimiento» e incluye texto sincronizado en inglés, español, portugués y japonés.</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Cambios detallados</h2>
+        <ul>
+            <li>Biblioteca — rediseñó la estructura con mosaicos de Acceso rápido, recuentos en vivo para Todos los juegos, Favoritos, Recientes y Logros, una cabecera de colección y un estante de juegos recientes que se pueden iniciar directamente.</li>
+            <li>Biblioteca — añadió opciones para mostrar, ocultar o contraer la cabecera de colección y la sección Acceso rápido. La navegación lateral con mando ahora respeta el estado visible de Acceso rápido.</li>
+            <li>Barra de la biblioteca — agrupó los controles en secciones de biblioteca, vista y utilidades. El control de zoom usa un contador compacto con botones, un panel de escala y una opción de restablecimiento. El botón de notificaciones muestra el número de mensajes no leídos junto a la campana.</li>
+            <li>Filtros de la biblioteca — los controles de orden, filtro, <em>Otros</em> y <em>Género</em> ahora usan el mismo diseño. Los filtros activos y las ordenaciones elegidas en <em>Otros</em> permanecen en la fila principal. El filtro de género tiene un botón para borrarlo sin eliminar los demás filtros.</li>
+            <li>Cuadrículas de la biblioteca — añadió una píldora flotante con la sección actual en las vistas agrupadas, acciones útiles para los estados vacíos y cambios de arte y estadísticas con fundido. Las actualizaciones de las tarjetas por el puntero se ejecutan como máximo una vez por intervalo de pantalla, y el límite de decodificadores de miniaturas en segundo plano cambió de 12 a 3.</li>
+            <li>Accesibilidad — las animaciones principales de las tarjetas, las cabeceras y la barra lateral ahora respetan «Reducir movimiento». Los nuevos controles incluyen etiquetas y valores de accesibilidad.</li>
+            <li>Información del juego — rediseñó la ventana con un fondo desenfocado de la pantalla de título, una carátula enmarcada, estadísticas de tiempo de juego y sesiones, un panel fijo de datos, el progreso de los logros y una galería de capturas. Las capturas se cargan al abrir la ventana, la descripción usa una alternativa y el título se puede editar con doble clic.</li>
+            <li>Ajustes y interfaz del juego — extendió las nuevas cabeceras, mosaicos de estadísticas, etiquetas de grupo y superficies de cristal a Ajustes, las ventanas de descarga de núcleos, el asistente de actualización, las notificaciones y la barra de herramientas del juego. La barra del juego ahora incluye cristal en capas, placas al pasar el puntero, líneas activas y un pulso de grabación.</li>
+            <li>Vinculación de juegos — añadió la asignación manual desde la ventana de información. El usuario puede buscar en las listas DAT del sistema y de LaunchBox, aplicar una asignación bloqueada, descargar la carátula correspondiente y quitar el bloqueo para permitir de nuevo la identificación automática.</li>
+            <li>Juegos similares — añadió <code>SimilarGamesEngine</code>, que ordena los juegos de la biblioteca local por género, desarrollador, saga, distribuidora, año de lanzamiento y número de jugadores. La ventana de información muestra hasta seis coincidencias, y el menú contextual de la biblioteca muestra hasta cinco. El motor no hace solicitudes de red.</li>
+            <li>Carátulas — añadió una acción Deshacer después del reemplazo. La aplicación guarda la imagen actual antes de cambiar los archivos, conserva la carátula anterior si falla la búsqueda o el reemplazo, valida las imágenes descargadas y actualiza las miniaturas y las cachés después de una restauración.</li>
+            <li>Caché de RetroAchievements — corrigió la identificación cuando la caché local de listas de juegos estaba vacía. La aplicación ahora llena la caché al activar la función, al iniciar sesión, durante una vinculación de la biblioteca o cuando falta la lista de una consola. También importa de nuevo los archivos locales frescos después de reconstruir la base de datos.</li>
+            <li>Vinculación de RetroAchievements — reorganicó la operación para usar <code>RAHashIndex</code>, reutilizar los hashes guardados, importar solo las listas que faltan y procesar los archivos sin barreras de grupos fijos. Las descargas de listas usan dos trabajadores, comprueban el estado HTTP y reintentan los límites de solicitudes con una espera mayor. Los archivos CDI se calculan al final para que los otros trabajadores sigan activos.</li>
+            <li>Modo TV — eliminó la animación de arte oculta a 20 Hz, la animación innecesaria de filas detrás de la portada de detalle y las escrituras de ajustes sin cambios. La portada de detalle aparece ahora en el primer fotograma, y las descargas de pantalla de título o capturas que faltan esperan hasta que el usuario deja de navegar.</li>
+            <li>Superposición de lucha — eliminó el trabajo repetido de la lista de movimientos en cada evento del mando. La superposición omite los paneles ocultos, reutiliza los movimientos resueltos y publica solo los valores de entrada que cambiaron. Esto reduce los tirones visibles durante el juego.</li>
+            <li>Time Machine — corrigió el desplazamiento con los botones de la cruceta, las palancas analógicas y el arrastre del ratón. Las direcciones mantenidas se repiten después de 0,35 segundos, las búsquedas del ratón se limitan a 20 por segundo durante el arrastre, y la búsqueda final siempre se ejecuta.</li>
+            <li>Mantenimiento de la biblioteca — los datos de extensiones incluidos ahora son la fuente de verdad. Actualizar elimina las filas obsoletas de miembros de archivo cuando el archivo interno ya no es un ROM válido para los datos de extensiones actuales.</li>
+            <li>Grabación — las exportaciones de la grabación en búfer usan ahora la API asíncrona actual de <code>AVAssetExportSession</code>. Se mantienen el mismo mecanismo de recodificación y el mismo comportamiento ante errores.</li>
+            <li>Localización — añadió 77 claves de traducción de la interfaz en inglés, español, portugués y japonés. El conjunto nuevo de claves está completo en los cuatro archivos. También eliminó tres cadenas obsoletas de descarga manual de RetroAchievements.</li>
+            <li>Subida de la versión de marketing a 1.18.0 y del número de compilación a 46 en <code>project.yml</code>, ambos <code>Info.plist</code> y <code>docs/_config.yml</code>.</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/es/changelog/v1.17.2.html' | relative_url }}" class="release-prev">&larr; v1.17.2</a>
+        <a href="{{ '/es/changelog.html' | relative_url }}" class="release-all">Todas las versiones</a>
+    </nav>
+</div>

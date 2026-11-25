@@ -1288,7 +1288,7 @@ class RetroAchievementsService: ObservableObject {
         // stops the other workers. The CDI files go last, so the other files
         // keep the processors busy until the end.
         pending.sort { first, second in
-            first.path.lowercased().hasSuffix(".cdi") && !second.path.lowercased().hasSuffix(".cdi")
+            !first.path.lowercased().hasSuffix(".cdi") && second.path.lowercased().hasSuffix(".cdi")
         }
 
         let progress = RAMatchProgress.shared
