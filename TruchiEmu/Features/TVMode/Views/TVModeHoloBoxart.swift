@@ -90,15 +90,11 @@ struct TVModeHoloBoxart: View {
                                 pointerY: py,
                                 tiltX: tiltX,
                                 tiltY: tiltY,
-                                isHovered: true,
-                                allowBump: false
+                                isHovered: true
                             )
                             .equatable()
                             .frame(width: artSize.width, height: artSize.height)
                         }
-
-                        HoloScratchLayer(w: artSize.width, h: artSize.height)
-                            .frame(width: artSize.width, height: artSize.height)
 
                         HoloSheenEffect(pointerX: px, pointerY: py)
                             .frame(width: artSize.width, height: artSize.height)

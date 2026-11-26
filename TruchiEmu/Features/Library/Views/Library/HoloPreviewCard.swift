@@ -154,13 +154,9 @@ struct HoloPreviewCard: View {
                             pointerY: py,
                             tiltX: tiltRotationX(px: px, py: py),
                             tiltY: tiltRotationY(px: px, py: py),
-                            isHovered: true,
-                            allowBump: false
+                            isHovered: true
                         )
                         .frame(width: artSize.width, height: artSize.height)
-
-                        HoloScratchLayer(w: artSize.width, h: artSize.height)
-                            .frame(width: artSize.width, height: artSize.height)
 
                         HoloSheenEffect(pointerX: px, pointerY: py)
                             .frame(width: artSize.width, height: artSize.height)

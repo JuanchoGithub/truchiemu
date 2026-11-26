@@ -221,8 +221,7 @@ if holoEnabled, let masks = holoMasks {
                              pointerY: normalizedMouseY,
                              tiltX: tiltRotationX,
                              tiltY: tiltRotationY,
-                             isHovered: isOverArtwork,
-                             allowBump: true
+                             isHovered: isOverArtwork
                          )
                          .frame(width: holoW, height: holoH)
                          .scaleEffect(scale)
@@ -236,18 +235,6 @@ if holoEnabled, let masks = holoMasks {
                          .allowsHitTesting(false)
 
                          HoloSheenEffect(pointerX: normalizedMouseX, pointerY: normalizedMouseY)
-                             .frame(width: holoW, height: holoH)
-                             .scaleEffect(scale)
-                             .offset(offset)
-                             .rotation3DEffect(
-                                 .degrees(tiltCombinedAngle),
-                                 axis: tiltCombinedAxis,
-                                 anchor: .center,
-                                 perspective: tiltPerspective
-                             )
-                             .allowsHitTesting(false)
-
-                         HoloScratchLayer(w: holoW, h: holoH)
                              .frame(width: holoW, height: holoH)
                              .scaleEffect(scale)
                              .offset(offset)

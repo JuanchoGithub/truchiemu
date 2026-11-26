@@ -170,7 +170,6 @@
 		1741C362D3DEC0F8D856EEE2 /* n64@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = B7AEE24751C8A0337877A2E0 /* n64@132w.png */; };
 		175914AA2909F5BE44E29AF4 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDFDD053E0B69ACF2A0BBE22 /* main.swift */; };
 		1764FB5120C4E768BDBB8A50 /* SearchMatch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C21A6516E56F19973BF82B7 /* SearchMatch.swift */; };
-		1766EDF8EB00B0B79DD51AAB /* HoloBumpRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3EC54C5F00E0137DF7FD10 /* HoloBumpRenderer.swift */; };
 		177BE0DC2254927EF27416DD /* fightdata_plsmaswd.json in Resources */ = {isa = PBXBuildFile; fileRef = 4F9FC5972102623C25005D1B /* fightdata_plsmaswd.json */; };
 		180EFFC22EA4AFA6DFF975E2 /* input_coreLabels_snes9x_2010.json in Resources */ = {isa = PBXBuildFile; fileRef = 2DE7D61AD683C83AD4BE33A7 /* input_coreLabels_snes9x_2010.json */; };
 		18812A0E92FC9F07A95CFE9C /* slang_shader_bridge.mm in Sources */ = {isa = PBXBuildFile; fileRef = C4BFFB66CF03271089D7FED6 /* slang_shader_bridge.mm */; };
@@ -1085,6 +1084,7 @@
 		AE62A2F0EA50F522CFC55194 /* SidebarScrollPerfAuditRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26C9A89A8C297915199F999A /* SidebarScrollPerfAuditRunner.swift */; };
 		AE78AB43037156AB2708A415 /* zelda_oot_japan_title.png in Resources */ = {isa = PBXBuildFile; fileRef = 559FD1E2D07F03B2D649CB91 /* zelda_oot_japan_title.png */; };
 		AEADA54E68FCC9420CF29AFF /* gb@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 0E8ED11C4AC892345874C43D /* gb@132w.png */; };
+		AECF3FE8F4D26E8D2B915B52 /* HoloFoilLight.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1153C7940C93E177FFAF165A /* HoloFoilLight.metal */; };
 		AECF8DDF72216FF183BECCE6 /* fightdata_groovef.json in Resources */ = {isa = PBXBuildFile; fileRef = F4AA64C094DEC99FDACE8E85 /* fightdata_groovef.json */; };
 		AEE277BBC795CF7CED1C4C76 /* fightdata_hvnsgate.json in Resources */ = {isa = PBXBuildFile; fileRef = BFD65EF82DE36060CB9098BC /* fightdata_hvnsgate.json */; };
 		AF3C739AA00CE110D83494B1 /* ControllerInputObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D9BB8DE134E83ABB5109B0F /* ControllerInputObserver.swift */; };
@@ -1514,7 +1514,6 @@
 		F49F3B3F2418B2B8C6A26783 /* input_systemLabels_ep128.json in Resources */ = {isa = PBXBuildFile; fileRef = A3FAC1959347AEA3B5972F5A /* input_systemLabels_ep128.json */; };
 		F4D71882261926BDE9266F6F /* fightdata_ggxxsla.json in Resources */ = {isa = PBXBuildFile; fileRef = CD7E630F116CE2B0716A34EE /* fightdata_ggxxsla.json */; };
 		F50147245F97B94933596430 /* input_systemLabels_craft.json in Resources */ = {isa = PBXBuildFile; fileRef = E8AF3225C83E5D89BC360652 /* input_systemLabels_craft.json */; };
-		F5476C3DB666A0A473FB2C30 /* HoloBump.metal in Sources */ = {isa = PBXBuildFile; fileRef = 9B697EA2D197AF7DAFA8D2BE /* HoloBump.metal */; };
 		F54BB5EB3F6026F1E1C323E2 /* fightdata_timekill.json in Resources */ = {isa = PBXBuildFile; fileRef = 719F002A9D487082ED007A6A /* fightdata_timekill.json */; };
 		F554BFFDE3B73BE6C45D014F /* HoloSaliencyService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3106E014AE1B506B650D96BA /* HoloSaliencyService.swift */; };
 		F555AB9C5D57234DBE573822 /* fightdata_captcomm.json in Resources */ = {isa = PBXBuildFile; fileRef = 24CA44B3215148A4B9D3912B /* fightdata_captcomm.json */; };
@@ -1697,6 +1696,7 @@
 		1138F2652DCA6D981274BB3E /* holo_galaxy.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = holo_galaxy.png; sourceTree = "<group>"; };
 		113AD4C753E61524836FF575 /* fightdata_wakuwak7.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_wakuwak7.json; sourceTree = "<group>"; };
 		11417D9821AF8E7D835C9025 /* TruchiEmuCoreHost.xpc */ = {isa = PBXFileReference; explicitFileType = "wrapper.xpc-service"; includeInIndex = 0; path = TruchiEmuCoreHost.xpc; sourceTree = BUILT_PRODUCTS_DIR; };
+		1153C7940C93E177FFAF165A /* HoloFoilLight.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = HoloFoilLight.metal; sourceTree = "<group>"; };
 		1180CC7C4E741E06F74FA501 /* OpenCriticService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenCriticService.swift; sourceTree = "<group>"; };
 		118C3C476FA18F110E167B39 /* input_coreOverrides_nxengine.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_nxengine.json; sourceTree = "<group>"; };
 		11DA3CCFB66270F6DF1983FB /* appIcon32.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = appIcon32.jpg; sourceTree = "<group>"; };
@@ -2184,7 +2184,6 @@
 		5D50869E1992FD361D9BCED5 /* zelda_oot_europe_background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = zelda_oot_europe_background.png; sourceTree = "<group>"; };
 		5D70975DBD07119CF82935ED /* fightdata_sf2ce.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_sf2ce.json; sourceTree = "<group>"; };
 		5DD14108CB59DFA0DA852B43 /* PORTS.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PORTS.png; sourceTree = "<group>"; };
-		5E3EC54C5F00E0137DF7FD10 /* HoloBumpRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HoloBumpRenderer.swift; sourceTree = "<group>"; };
 		5E5551604B613874ED01F84F /* fightdata_fghthist.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_fghthist.json; sourceTree = "<group>"; };
 		5E87F33C253900ECEF327206 /* MoveListOverlayViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoveListOverlayViewModel.swift; sourceTree = "<group>"; };
 		5E90C52AEDC3AC23BA35B915 /* vb@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "vb@132w.png"; sourceTree = "<group>"; };
@@ -2567,7 +2566,6 @@
 		9A72F0E6CB6DF76D18B9716A /* pokemini@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "pokemini@132w.png"; sourceTree = "<group>"; };
 		9B0459DA5C098B3E37B3656D /* UNKNOWN.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = UNKNOWN.png; sourceTree = "<group>"; };
 		9B06488DE005018FB65D9950 /* input_coreLabels_mesen-s.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "input_coreLabels_mesen-s.json"; sourceTree = "<group>"; };
-		9B697EA2D197AF7DAFA8D2BE /* HoloBump.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = HoloBump.metal; sourceTree = "<group>"; };
 		9B9365CD6FC031FDA5FC4E59 /* CPS1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = CPS1.png; sourceTree = "<group>"; };
 		9BF3FCFFDC359E04B222A690 /* game-icons-manifest.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "game-icons-manifest.json"; sourceTree = "<group>"; };
 		9C0E8F85B2C2893C2F36FAB0 /* MoveDataGamesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoveDataGamesView.swift; sourceTree = "<group>"; };
@@ -3781,7 +3779,7 @@
 				61128A5490F95F51CF67D3B9 /* GBA.metal */,
 				3C9C7DF8B3C788A24004D789 /* GlassOrb.metal */,
 				27C6D43ABC544BF059F6AE40 /* GlyphText.metal */,
-				9B697EA2D197AF7DAFA8D2BE /* HoloBump.metal */,
+				1153C7940C93E177FFAF165A /* HoloFoilLight.metal */,
 				EFD1D1521FD51B428CD6D464 /* LiteCRT.metal */,
 				3BD337DAF7B206DF941EB16D /* LottesCRT.metal */,
 				3C34BDAEDE14746BD3EF9E08 /* MorphCRT.metal */,
@@ -4836,7 +4834,6 @@
 				F41E405D5837D8139B4A0C69 /* GamepadNavContext.swift */,
 				C9AAF3924EF31E5708D15DD4 /* GamepadNavigationManager.swift */,
 				6F629B4D1FFE7D922563DAFE /* GameToolbarPreferences.swift */,
-				5E3EC54C5F00E0137DF7FD10 /* HoloBumpRenderer.swift */,
 				8C0A03394D956A91354E3574 /* InputStateTracker.swift */,
 				348FC44E8233983FBBE7319B /* MotionDetector.swift */,
 				9069327937C4BD5B3CED4E12 /* MoveForest.swift */,
@@ -7071,10 +7068,9 @@
 				104D7496A5BF50D24818AE3E /* HelpSheetView.swift in Sources */,
 				9E0E1EB96CD993ECBD2873AE /* HelpWindowView.swift in Sources */,
 				1A46304E3641B352E5FA9B18 /* HintTree.swift in Sources */,
-				F5476C3DB666A0A473FB2C30 /* HoloBump.metal in Sources */,
-				1766EDF8EB00B0B79DD51AAB /* HoloBumpRenderer.swift in Sources */,
 				7252CF2763DB1CB60A31BE8E /* HoloCardLayers.swift in Sources */,
 				D19EB4A6851C4F101B12B847 /* HoloColorSampler.swift in Sources */,
+				AECF3FE8F4D26E8D2B915B52 /* HoloFoilLight.metal in Sources */,
 				360E85B47542945CD6FE2D16 /* HoloGameCardView.swift in Sources */,
 				45EE5A222618B1A5B72A1EFD /* HoloGridCollectionView.swift in Sources */,
 				09FD8E39FF58D9B6B33EFAE7 /* HoloPatternStore.swift in Sources */,

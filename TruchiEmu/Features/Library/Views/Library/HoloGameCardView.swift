@@ -729,7 +729,7 @@ struct HoloGameCardView: View {
         .overlay(alignment: .center) {
             if holoSettings.showPlayButton, effectsActive, !isLaunching {
                 GlassOrbPlayButton(
-                    content: { holoArtworkView(allowBump: false) },
+                    content: { holoArtworkView() },
                     accent: brandAccent,
                     action: {
                         guard !isLaunching else { return }
@@ -779,18 +779,18 @@ struct HoloGameCardView: View {
     }
     
     @ViewBuilder
-    private func holoArtworkView(allowBump: Bool = true) -> some View {
+    private func holoArtworkView() -> some View {
         if let nsImage = image, useFillBlurredRendering {
             holoArtworkFillBlurred(nsImage)
         } else if isGroupView, let nsImage = image {
             holoArtworkCropSquare(nsImage)
         } else {
-            holoArtworkDefault(allowBump: allowBump)
+            holoArtworkDefault()
         }
     }
-    
+
     // Default artwork with holo layers
-private func holoArtworkDefault(allowBump: Bool = true) -> some View {
+private func holoArtworkDefault() -> some View {
         GeometryReader { geometry in
             let w = geometry.size.width
             let h = geometry.size.height
@@ -813,7 +813,7 @@ private func holoArtworkDefault(allowBump: Bool = true) -> some View {
                 // every visible cell rendered a foil tile + median-RGB sampling on
                 // the main thread per cell, which made fast scrolling hang.
                 if effectsActive {
-                    holoLayers(width: w, height: h, allowBump: allowBump)
+                    holoLayers(width: w, height: h)
                     holoGlare(width: w, height: h)
                 }
             }
@@ -826,33 +826,26 @@ private func holoArtworkDefault(allowBump: Bool = true) -> some View {
     }
     
     // Holo regions for one card. Per-launch, per-card randomization
-    // (`HoloCardRandomization`) picks a variant (regularHolo, cosmosHolo,
-    // rainbowHolo, ...) and a per-card intensity jitter, then `HoloFoilLayers`
-    // composes one foil layer per region using the variant's source-foil
-    // pattern and the card's mask.
+    // (`HoloCardRandomization`) picks a variant and a per-card intensity
+    // jitter, then `HoloFoilLayers` composes one physically-lit foil layer
+    // per region using the variant's etch pattern and the card's mask.
     //
-    // The foil is pre-rendered and its position is fixed — tiles clipped to
-    // the region masks stay glued to the art. The cursor drives the foil's
-    // *appearance*: the rainbow hue rotates and a specular sweep band glides
-    // across the masked regions, both following the cursor (see
+    // The etch stays glued to the art — the cursor moves the *light*, so the
+    // relief and its colour bands travel across the print (see
     // `HoloFoilLayers`).
-    private func holoLayers(width w: CGFloat, height h: CGFloat, allowBump: Bool = true) -> some View {
+    private func holoLayers(width w: CGFloat, height h: CGFloat) -> some View {
         var holoSnapshot = HoloSettingsSnapshot(from: holoSettings, romID: rom.id.uuidString)
         holoSnapshot.backgroundMedianRGB = image.flatMap { HoloColorSampler.medianRGB(romID: rom.id.uuidString, image: $0) }
-        return ZStack {
-            HoloFoilLayers(
-                masks: holoMasks,
-                settings: holoSnapshot,
-                w: w, h: h,
-                pointerX: normalizedMouseX,
-                pointerY: normalizedMouseY,
-                tiltX: tiltRotationX,
-                tiltY: tiltRotationY,
-                isHovered: effectsActive,
-                allowBump: allowBump
-            )
-            HoloScratchLayer(w: w, h: h)
-        }
+        return HoloFoilLayers(
+            masks: holoMasks,
+            settings: holoSnapshot,
+            w: w, h: h,
+            pointerX: normalizedMouseX,
+            pointerY: normalizedMouseY,
+            tiltX: tiltRotationX,
+            tiltY: tiltRotationY,
+            isHovered: effectsActive
+        )
         .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 

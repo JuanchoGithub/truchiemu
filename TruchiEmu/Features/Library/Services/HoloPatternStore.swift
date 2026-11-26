@@ -307,7 +307,6 @@ final class HoloSettingsStore: ObservableObject {
 
     // Storage keys (existing — kept compatible with prior releases).
     static let variantWeightsKey = "holo_variant_weights"
-    static let depthModeKey = "holo_depth_mode"
     static let specularPowerKey = "holo_specular_power"
     static let cursorInfluenceKey = "holo_cursor_influence"
     static let tiltInfluenceKey = "holo_tilt_influence"
@@ -332,34 +331,25 @@ final class HoloSettingsStore: ObservableObject {
         didSet { persistVariantWeights() }
     }
 
-    // Depth rendering mode. Default `.parallax` matches the prior effect
-    // exactly so existing users see no change after upgrading. Switching
-    // to `.bump` or `.both` engages the Metal bump shader.
-    @Published var depthMode: HoloDepthMode {
-        didSet { AppSettings.set(Self.depthModeKey, value: depthMode.rawValue) }
-    }
-    // Blinn-Phong specular exponent for the bump shader. 16 (broad) to
-    // 64 (sharp). Only used when `depthMode != .parallax`.
+    // Blinn-Phong specular exponent for the foil shader. 16 (broad) to
+    // 64 (sharp).
     @Published var specularPower: Double {
         didSet { AppSettings.setDouble(Self.specularPowerKey, value: specularPower) }
     }
-    // 0..1 — how strongly the cursor adds lateral offset to the bump
-    // light direction. 0 = pure card tilt drives the light; 1 = cursor
-    // dominates.
+    // 0..1 — how strongly the cursor adds lateral offset to the foil light
+    // direction. 0 = pure card tilt drives the light; 1 = cursor dominates.
     @Published var cursorInfluence: Double {
         didSet { AppSettings.setDouble(Self.cursorInfluenceKey, value: cursorInfluence) }
     }
-    // 0..1 — how strongly the card's 3D tilt rotates the bump light
+    // 0..1 — how strongly the card's 3D tilt rotates the foil light
     // direction. 0 = light stays fixed in world space; 1 = light is
     // fully anchored to the card (highlights follow the tilt).
     @Published var tiltInfluence: Double {
         didSet { AppSettings.setDouble(Self.tiltInfluenceKey, value: tiltInfluence) }
     }
-    // 0..1 — multiplier on the parallax shear applied to the
-    // non-bump `HoloFoilLayers` rendering. 0 = no shear (existing look);
-    // 1 = full source-faithful parallax multipliers (background-position
-    // shifts 2.6x/3.5x with the cursor). Used by both `.parallax` and
-    // `.both` modes.
+    // 0..1 — depth of the etch relief. 0 = a flat mirror (only the broad
+    // highlight moves); 1 = deeply embossed foil (the relief catches the
+    // light across the whole sheet).
     @Published var parallaxStrength: Double {
         didSet { AppSettings.setDouble(Self.parallaxStrengthKey, value: parallaxStrength) }
     }
@@ -414,7 +404,6 @@ final class HoloSettingsStore: ObservableObject {
 
     private init() {
         self.variantWeights = Self.loadVariantWeights()
-        self.depthMode = HoloDepthMode(rawValue: AppSettings.getString(Self.depthModeKey, defaultValue: HoloDepthMode.parallax.rawValue) ?? "") ?? .parallax
         self.specularPower = AppSettings.getDouble(Self.specularPowerKey, defaultValue: 32.0)
         self.cursorInfluence = AppSettings.getDouble(Self.cursorInfluenceKey, defaultValue: 0.6)
         self.tiltInfluence = AppSettings.getDouble(Self.tiltInfluenceKey, defaultValue: 0.8)
@@ -530,29 +519,6 @@ enum HoloRegion: String, CaseIterable {
     case title, chrome, hero, background
 }
 
-// How the holographic foil is rendered. `parallax` is the existing
-// pure-SwiftUI effect (rainbow gradient + texture mask + CSS blend modes);
-// `bump` swaps the per-region foil for a Metal fragment shader that
-// samples a procedural normal map and computes Blinn-Phong specular
-// against a light direction derived from cursor + tilt; `both` stacks
-// parallax under bump so the rainbow still hue-shifts while the bump
-// shader adds true specular highlights on top.
-enum HoloDepthMode: String, CaseIterable, Identifiable {
-    case parallax
-    case bump
-    case both
-
-    var id: String { rawValue }
-
-    var localizedKey: String {
-        switch self {
-        case .parallax: return "holo.depthMode.parallax"
-        case .bump:     return "holo.depthMode.bump"
-        case .both:     return "holo.depthMode.both"
-        }
-    }
-}
-
 // Colour source for the Reverse Holo variant's pattern sheen.
 //   - .solid: a user-chosen colour (with quick presets) tints the pattern.
 //   - .rainbow: an iridescent rainbow sheen, with its own intensity slider.
@@ -636,10 +602,6 @@ struct HoloReversePreset: Hashable {
 // HoloSettingsStore so behavior matches the @Published path used by SwiftUI.
 @MainActor
 enum HoloSettings {
-    static var depthMode: HoloDepthMode {
-        get { HoloSettingsStore.shared.depthMode }
-        set { HoloSettingsStore.shared.depthMode = newValue }
-    }
     static var specularPower: Double {
         get { HoloSettingsStore.shared.specularPower }
         set { HoloSettingsStore.shared.specularPower = newValue }
@@ -703,7 +665,6 @@ enum HoloSettings {
 // the cursor moves, the settings are unchanged and SwiftUI skips re-evaluating
 // the foil subtree entirely.
 struct HoloSettingsSnapshot: Equatable {
-    var depthMode: HoloDepthMode
     var specularPower: Double
     var cursorInfluence: Double
     var tiltInfluence: Double
@@ -740,7 +701,6 @@ struct HoloSettingsSnapshot: Equatable {
 
     @MainActor
     init(from store: HoloSettingsStore) {
-        self.depthMode = store.depthMode
         self.specularPower = store.specularPower
         self.cursorInfluence = store.cursorInfluence
         self.tiltInfluence = store.tiltInfluence
@@ -814,7 +774,6 @@ struct HoloSettingsSnapshot: Equatable {
     }
 
     static func == (lhs: HoloSettingsSnapshot, rhs: HoloSettingsSnapshot) -> Bool {
-        lhs.depthMode == rhs.depthMode &&
         lhs.specularPower == rhs.specularPower &&
         lhs.cursorInfluence == rhs.cursorInfluence &&
         lhs.tiltInfluence == rhs.tiltInfluence &&
@@ -902,19 +861,19 @@ struct HoloCardRandomization: Equatable {
     let chrome: Zone
     let title: Zone
     let hero: Zone
-    /// Per-card holo variant (regularHolo, cosmosHolo, rainbowHolo, ...).
-    /// Rolled from `HoloSettingsStore.variantWeights` at launch. Drives the
-    /// shine-layer composition (`HoloVariantTileCache`) instead of the
-    /// single-pattern texture overlay.
+    /// Per-card holo variant. Rolled from `HoloSettingsStore.variantWeights`
+    /// at launch. Drives the foil colourway (`HoloFoilColourway`).
     let variant: HoloVariant
+    /// Per-card static offset of the thin-film spectrum, so two cards with
+    /// the same variant do not show the exact same colour bands.
+    let hueOffset: Double
 
     init(seed: UInt64, variantWeights: [HoloVariant: Double]) {
         var rng = SplitMix64(seed: seed)
 
-        // The variant is rolled first so its source-faithful foil + baseline
-        // strength drive the whole card. The WKWebView CSS path is fully
-        // deterministic per variant; we keep only a subtle per-card variance so
-        // the swift render reads like the web render instead of swinging wildly.
+        // The variant is rolled first so its foil colourway and baseline
+        // strength drive the whole card. We keep only a subtle per-card
+        // variance so the cards do not read pixel-identical.
         let variant = HoloVariantRoller.pick(rng: &rng, weights: variantWeights)
         let foilPattern = variant.sourceFoilPattern
         let baseIntensity = variant.sourceIntensity
@@ -929,15 +888,17 @@ struct HoloCardRandomization: Equatable {
             return Zone(active: active, intensity: intensity, pattern: foilPattern)
         }
 
-        // Background always foils (the CSS foils the whole card uniformly).
+        // Background always foils.
         self.background = zone(active: true)
-        // Every other region uses the SAME fixed foil + baseline strength; only a
+        // Every other region uses the SAME fixed etch + baseline strength; only a
         // small independent jitter keeps cards of one variant from looking
-        // pixel-identical. Hero stays un-foiled (matches CSS hero exclusion).
+        // pixel-identical. Hero stays un-foiled.
         self.chrome = zone(active: true)
         self.title = zone(active: true)
         self.hero = zone(active: false)
         self.variant = variant
+        // Static spectrum offset for this card.
+        self.hueOffset = Double(rng.nextFloat())
     }
 
     func active(_ region: HoloRegion) -> Bool {

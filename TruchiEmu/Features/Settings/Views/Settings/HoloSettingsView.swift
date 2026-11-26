@@ -10,7 +10,6 @@ struct HoloSettingsView: View {
     @ObservedObject private var loc = LocalizationManager.shared
     @ObservedObject private var settings = HoloSettingsStore.shared
 
-    @State private var depthMode: HoloDepthMode = HoloSettings.depthMode
     @State private var specularPower: Double = HoloSettings.specularPower
     @State private var cursorInfluence: Double = HoloSettings.cursorInfluence
     @State private var tiltInfluence: Double = HoloSettings.tiltInfluence
@@ -134,23 +133,8 @@ struct HoloSettingsView: View {
 
     @ViewBuilder
     private var depthSection: some View {
-        if (!isSearching || matchesSearch("depth bump parallax specular light cursor tilt holo shader mode")) && sectionVisible("section-depth") {
+        if (!isSearching || matchesSearch("depth relief specular light cursor tilt holo shader mode")) && sectionVisible("section-depth") {
             Section(content: {
-                SettingsRow(
-                    loc.localized("holo.depthMode"),
-                    description: loc.localized("holo.depthModeDescription")
-                ) {
-                    Picker(loc.localized("holo.depthMode"), selection: $depthMode) {
-                        ForEach(HoloDepthMode.allCases) { mode in
-                            Text(loc.localized(mode.localizedKey)).tag(mode)
-                        }
-                    }
-                    .labelsHidden()
-                    .frame(width: 180)
-                    .onChange(of: depthMode) { _, newValue in
-                        HoloSettings.depthMode = newValue
-                    }
-                }
                 SettingsRow(
                     loc.localized("holo.specularPower"),
                     description: loc.localized("holo.specularPowerDescription")
@@ -158,7 +142,6 @@ struct HoloSettingsView: View {
                     HStack(spacing: 8) {
                         Slider(value: $specularPower, in: 16.0...64.0)
                             .frame(width: 140)
-                            .disabled(depthMode == .parallax)
                         Text(String(Int(specularPower.rounded())))
                             .font(.system(size: 12, weight: .medium, design: .rounded))
                             .foregroundStyle(AppColors.textSecondary(colorScheme))
@@ -175,7 +158,6 @@ struct HoloSettingsView: View {
                     HStack(spacing: 8) {
                         Slider(value: $cursorInfluence, in: 0.0...1.0)
                             .frame(width: 140)
-                            .disabled(depthMode == .parallax)
                         Text("\(Int((cursorInfluence * 100).rounded()))%")
                             .font(.system(size: 12, weight: .medium, design: .rounded))
                             .foregroundStyle(AppColors.textSecondary(colorScheme))
@@ -192,7 +174,6 @@ struct HoloSettingsView: View {
                     HStack(spacing: 8) {
                         Slider(value: $tiltInfluence, in: 0.0...1.0)
                             .frame(width: 140)
-                            .disabled(depthMode == .parallax)
                         Text("\(Int((tiltInfluence * 100).rounded()))%")
                             .font(.system(size: 12, weight: .medium, design: .rounded))
                             .foregroundStyle(AppColors.textSecondary(colorScheme))
@@ -203,13 +184,12 @@ struct HoloSettingsView: View {
                     }
                 }
                 SettingsRow(
-                    loc.localized("holo.parallaxStrength"),
-                    description: loc.localized("holo.parallaxStrengthDescription")
+                    loc.localized("holo.reliefDepth"),
+                    description: loc.localized("holo.reliefDepthDescription")
                 ) {
                     HStack(spacing: 8) {
                         Slider(value: $parallaxStrength, in: 0.0...1.0)
                             .frame(width: 140)
-                            .disabled(depthMode == .bump)
                         Text("\(Int((parallaxStrength * 100).rounded()))%")
                             .font(.system(size: 12, weight: .medium, design: .rounded))
                             .foregroundStyle(AppColors.textSecondary(colorScheme))
@@ -476,8 +456,12 @@ private struct HoloVariantWeightRow: View {
             // composite against transparent and disappear.
             ZStack {
                 Color.black
-                VariantTileView(recipe: variant.recipe, width: 72, height: 72)
-                    .frame(width: 36, height: 36)
+                VariantTileView(
+                    variant: variant,
+                    settings: HoloSettingsSnapshot(from: settings),
+                    width: 36,
+                    height: 36
+                )
             }
             .frame(width: 36, height: 36)
             .clipShape(RoundedRectangle(cornerRadius: 6))
