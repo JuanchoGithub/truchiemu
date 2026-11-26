@@ -189,6 +189,11 @@ private struct DeckAura: View, Equatable {
 /// Header band that frames a page: icon plate, eyebrow, rounded title, an
 /// optional caption and a rail of live stat tiles. Optional trailing content
 /// keeps room for a page-level action.
+///
+/// `compact` folds the band to a thin strip that keeps only the plate and the
+/// title, and overrides `height`. Page content uses it while the user scrolls
+/// down, so the band stops taking vertical room without losing the page
+/// identity.
 struct DeckHeroBand: View {
     let icon: String
     let eyebrow: String
@@ -196,6 +201,7 @@ struct DeckHeroBand: View {
     var subtitle: String? = nil
     var stats: [DeckStatItem] = []
     var height: CGFloat = 88
+    var compact = false
     var trailing: AnyView? = nil
 
     @Environment(\.colorScheme) private var colorScheme
@@ -207,14 +213,18 @@ struct DeckHeroBand: View {
         title.isEmpty && subtitle == nil && stats.isEmpty
     }
 
+    private var resolvedHeight: CGFloat {
+        compact ? 44 : height
+    }
+
     var body: some View {
         ZStack {
-            if !flatLayer {
+            if !flatLayer && !compact {
                 DeckAura(colorScheme: colorScheme)
                     .equatable()
             }
 
-            HStack(alignment: .center, spacing: 14) {
+            HStack(alignment: .center, spacing: compact ? 10 : 14) {
                 iconPlate
                     .rotation3DEffect(.degrees(plateTilt.y * -7), axis: (1, 0, 0), perspective: 0.5)
                     .rotation3DEffect(.degrees(plateTilt.x * 10), axis: (0, 1, 0), perspective: 0.5)
@@ -232,20 +242,20 @@ struct DeckHeroBand: View {
                     }
                     .animation(reduceMotion ? nil : AppMotion.tilt, value: plateTilt)
 
-                VStack(alignment: .leading, spacing: 3) {
-                    if !eyebrow.isEmpty {
+                VStack(alignment: .leading, spacing: compact ? 0 : 3) {
+                    if !compact && !eyebrow.isEmpty {
                         DeckEyebrow(text: eyebrow)
                     }
 
                     Text(verbatim: title)
-                        .font(.system(size: 26, weight: .bold, design: .rounded))
+                        .font(.system(size: compact ? 15 : 26, weight: .bold, design: .rounded))
                         .tracking(-0.4)
                         .foregroundStyle(AppColors.textPrimary(colorScheme))
                         .lineLimit(1)
                         .minimumScaleFactor(0.7)
                         .contentTransition(.opacity)
 
-                    if let subtitle, !subtitle.isEmpty {
+                    if !compact, let subtitle, !subtitle.isEmpty {
                         Text(verbatim: subtitle)
                             .font(.system(size: 11, weight: .medium))
                             .foregroundStyle(AppColors.textTertiary(colorScheme))
@@ -256,7 +266,7 @@ struct DeckHeroBand: View {
 
                 Spacer(minLength: 8)
 
-                if !stats.isEmpty {
+                if !compact && !stats.isEmpty {
                     HStack(spacing: 6) {
                         ForEach(stats) { DeckStatTile(item: $0) }
                     }
@@ -267,10 +277,10 @@ struct DeckHeroBand: View {
                     trailing
                 }
             }
-            .padding(.horizontal, 24)
-            .padding(.vertical, 12)
+            .padding(.horizontal, compact ? 18 : 24)
+            .padding(.vertical, compact ? 5 : 12)
         }
-        .frame(height: height)
+        .frame(height: resolvedHeight)
         .opacity(appeared ? 1 : 0)
         .offset(y: appeared ? 0 : 6)
         .onAppear {
@@ -287,24 +297,24 @@ struct DeckHeroBand: View {
                 colors: [AppColors.brandAccent.opacity(0.22), .clear],
                 center: .center,
                 startRadius: 2,
-                endRadius: 44
+                endRadius: compact ? 22 : 44
             )
-            .frame(width: 88, height: 88)
+            .frame(width: compact ? 44 : 88, height: compact ? 44 : 88)
             .allowsHitTesting(false)
 
-            RoundedRectangle(cornerRadius: 14, style: .continuous)
+            RoundedRectangle(cornerRadius: compact ? 9 : 14, style: .continuous)
                 .fill(AppColors.accentBackground(colorScheme))
                 .overlay {
-                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                    RoundedRectangle(cornerRadius: compact ? 9 : 14, style: .continuous)
                         .strokeBorder(AppColors.brandAccent.opacity(0.18), lineWidth: 1)
                 }
-                .frame(width: 52, height: 52)
+                .frame(width: compact ? 30 : 52, height: compact ? 30 : 52)
 
             Image(systemName: icon.isEmpty ? "square.grid.2x2" : icon)
-                .font(.system(size: 22, weight: .semibold))
+                .font(.system(size: compact ? 14 : 22, weight: .semibold))
                 .foregroundStyle(AppColors.brandAccent)
         }
-        .frame(width: 56, height: 56)
+        .frame(width: compact ? 32 : 56, height: compact ? 32 : 56)
     }
 }
 

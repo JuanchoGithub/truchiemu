@@ -10,6 +10,7 @@ struct GameDetailView: View {
     @ObservedObject private var boxArtService = BoxArtService.shared
     @Environment(\.dismiss) var dismiss
     @Environment(\.colorScheme) var colorScheme
+    @Environment(\.accessibilityReduceMotion) var reduceMotion
     @Environment(\.openWindow) var openWindow
     @Environment(\.openSettings) var openSettings
 	var rom: ROM
@@ -71,6 +72,19 @@ struct GameDetailView: View {
     @State var isLaunchingGame = false
     @State var showSystemPicker: Bool = false
     @State var gamepadTwoZoneContext: GamepadTwoZoneContext?
+
+    // MARK: - Scroll-driven chrome
+    /// The hero folds its stat deck away while the section content scrolls
+    /// down, so the facts band does not eat the window on every section.
+    @State var isHeaderCollapsed: Bool = false
+    /// The section band shrinks to a thin strip while scrolling down and only
+    /// unfolds again once the upward gesture has ended.
+    @State var isSectionHeroCompact: Bool = false
+    @State var lastScrollWasDown: Bool = false
+
+    /// Height the hero gives back when its stat deck folds away. Matches the
+    /// deck (66pt) plus its 12pt top gap, minus the slack the spacer absorbs.
+    private static let collapsedHeroReduction: CGFloat = 70
 
 // MARK: - RA Hash Comparison State
 @State var showRAHashComparison = false
@@ -177,6 +191,10 @@ struct GameDetailView: View {
             .padding(24)
         }
         .scrollContentBackground(.hidden)
+        .detailScrollActivity(
+            directionChanged: handleScrollDirection,
+            settled: handleScrollSettled
+        )
     }
 
     private var gameInfoInspector: some View {
@@ -299,8 +317,10 @@ struct GameDetailView: View {
             icon: selectedSection.sectionIcon,
             eyebrow: systemName.isEmpty ? loc.localized("gameInfo.system") : systemName,
             title: selectedSection.localizedTitle,
-            stats: detailSectionHeroStats
+            stats: detailSectionHeroStats,
+            compact: isSectionHeroCompact
         )
+        .animation(reduceMotion ? nil : AppMotion.stateChange, value: isSectionHeroCompact)
         .overlay(alignment: .bottom) {
             Rectangle()
                 .fill(AppColors.divider(colorScheme))
@@ -317,6 +337,33 @@ struct GameDetailView: View {
             .padding(24)
         }
         .scrollContentBackground(.hidden)
+        .detailScrollActivity(
+            directionChanged: handleScrollDirection,
+            settled: handleScrollSettled
+        )
+    }
+
+    /// Scrolling down folds the window chrome so the section gets the room.
+    /// Scrolling up restores it, and the section band waits for the gesture to
+    /// end before it unfolds.
+    private func handleScrollDirection(_ isDown: Bool) {
+        // Only act on a real flip: assigning the same state every scroll frame
+        // would re-render the whole detail view 60 times a second.
+        guard isDown != lastScrollWasDown else { return }
+        withAnimation(reduceMotion ? .linear(duration: 0) : AppMotion.stateChange) {
+            lastScrollWasDown = isDown
+            isHeaderCollapsed = isDown
+            if isDown {
+                isSectionHeroCompact = true
+            }
+        }
+    }
+
+    private func handleScrollSettled() {
+        guard !lastScrollWasDown else { return }
+        withAnimation(reduceMotion ? .linear(duration: 0) : AppMotion.stateChange) {
+            isSectionHeroCompact = false
+        }
     }
 
     @ViewBuilder
@@ -359,10 +406,14 @@ struct GameDetailView: View {
 
     var body: some View {
         GeometryReader { geo in
-            let headerHeight = min(max(geo.size.height * 0.38, 250), 300)
+            let expandedHeaderHeight = min(max(geo.size.height * 0.38, 250), 300)
+            let headerHeight = isHeaderCollapsed
+                ? expandedHeaderHeight - Self.collapsedHeroReduction
+                : expandedHeaderHeight
             VStack(spacing: 0) {
                 compactHeaderSection
                     .frame(height: headerHeight)
+                    .animation(reduceMotion ? nil : AppMotion.stateChange, value: isHeaderCollapsed)
 
                 Divider()
                     .overlay(AppColors.divider(colorScheme))
@@ -436,6 +487,12 @@ struct GameDetailView: View {
   .onChange(of: currentROM.lastPlayed) { _, _ in
             // Refresh slot info when user returns from playing the game
             loadSlotInfo()
+        }
+        .onChange(of: selectedSection) { _, _ in
+            // A new section starts at its top, so the chrome starts unfolded.
+            isHeaderCollapsed = false
+            isSectionHeroCompact = false
+            lastScrollWasDown = false
         }
         .onChange(of: raMatchKey) { _, _ in
             // The "Vincular biblioteca" operation found this game. Load the
@@ -1161,5 +1218,57 @@ struct GameDetailView: View {
             GamepadNavContextStack.shared.remove(ctx)
             gamepadTwoZoneContext = nil
         }
+    }
+}
+
+// MARK: - Scroll activity
+
+/// Reports the vertical scroll direction of the content it is attached to.
+/// `directionChanged` fires while the content moves (true = down) and
+/// `settled` fires once the gesture has stopped, so chrome can unfold only
+/// after the user is done scrolling up.
+///
+/// Attach it to the `ScrollView` itself. On macOS the modifier observes
+/// nothing when it is applied to the scroll view's content.
+private struct DetailScrollActivity: ViewModifier {
+    let directionChanged: (Bool) -> Void
+    let settled: () -> Void
+
+    @State private var settleTask: Task<Void, Never>?
+
+    func body(content: Content) -> some View {
+        content
+            .onScrollGeometryChange(for: CGFloat.self) { geometry in
+                // Clamp to the real scroll range: the rubber band at either
+                // end must not read as a direction change, or a fling that
+                // hits the bottom would pop the chrome open again.
+                let top = geometry.contentInsets.top
+                let maxOffset = geometry.contentSize.height
+                    + geometry.contentInsets.top
+                    + geometry.contentInsets.bottom
+                    - geometry.containerSize.height
+                let bottom = maxOffset > top ? maxOffset : .greatestFiniteMagnitude
+                return min(max(geometry.contentOffset.y, top), bottom)
+            } action: { oldValue, newValue in
+                let delta = newValue - oldValue
+                // A resting trackpad reports sub-pixel jitter; ignore it.
+                guard abs(delta) > 1 else { return }
+                directionChanged(delta > 0)
+                settleTask?.cancel()
+                settleTask = Task { @MainActor in
+                    try? await Task.sleep(for: .milliseconds(250))
+                    guard !Task.isCancelled else { return }
+                    settled()
+                }
+            }
+    }
+}
+
+private extension View {
+    func detailScrollActivity(
+        directionChanged: @escaping (Bool) -> Void,
+        settled: @escaping () -> Void
+    ) -> some View {
+        modifier(DetailScrollActivity(directionChanged: directionChanged, settled: settled))
     }
 }

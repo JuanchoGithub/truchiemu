@@ -43,10 +43,11 @@ extension GameDetailView {
                         Spacer(minLength: 0)
                     }
 
-                    if !headerStatItems.isEmpty {
+                    if !isHeaderCollapsed && !headerStatItems.isEmpty {
                         DetailHeroStatDeck(items: headerStatItems)
                             .frame(maxWidth: 470)
                             .padding(.top, 12)
+                            .transition(.opacity)
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
