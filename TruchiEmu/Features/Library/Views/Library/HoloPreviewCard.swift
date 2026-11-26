@@ -137,12 +137,8 @@ struct HoloPreviewCard: View {
                     ZStack {
                         BoxArtBaseView(
                             image: image,
-                            normalizedMouseX: px,
-                            normalizedMouseY: py,
-                            isPressed: false,
                             w: artSize.width,
-                            h: artSize.height,
-                            tiltEnabled: false
+                            h: artSize.height
                         )
 
                         HoloFoilLayers(

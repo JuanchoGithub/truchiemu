@@ -817,7 +817,7 @@ private func holoArtworkDefault() -> some View {
                     placeholderArt
                         .frame(width: w, height: h)
                 } else {
-                    BoxArtBaseView(image: image, normalizedMouseX: normalizedMouseX, normalizedMouseY: normalizedMouseY, isPressed: isPressed, w: w, h: h, tiltEnabled: !ScrollActivity.isScrolling)
+                    BoxArtBaseView(image: image, w: w, h: h)
                 }
 
                 // Native SwiftUI/Metal holo foil + glare. Built ONLY while the card
@@ -948,7 +948,7 @@ private func holoArtworkDefault() -> some View {
                  // is not zoomed/cropped to fill the vertical card and matches the
                  // fitted holo mask above.
                  ZStack {
-                     BoxArtBaseView(image: image, normalizedMouseX: normalizedMouseX, normalizedMouseY: normalizedMouseY, isPressed: isPressed, w: artSize.width, h: artSize.height, tiltEnabled: !ScrollActivity.isScrolling)
+                     BoxArtBaseView(image: image, w: artSize.width, h: artSize.height)
                          .frame(width: artSize.width, height: artSize.height)
                  }
                  .frame(width: w, height: h)
@@ -984,7 +984,7 @@ private func holoArtworkDefault() -> some View {
 
             ZStack {
                 // Base box art for holo blend modes.
-                BoxArtBaseView(image: image, normalizedMouseX: normalizedMouseX, normalizedMouseY: normalizedMouseY, isPressed: isPressed, w: w, h: h, tiltEnabled: !ScrollActivity.isScrolling)
+                BoxArtBaseView(image: image, w: w, h: h)
 
                 // Native holo layers & glare. Built ONLY while hovered (gated on
                 // `effectsActive`): constructing them for every visible cell

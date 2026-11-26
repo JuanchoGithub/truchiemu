@@ -69,12 +69,8 @@ struct TVModeHoloBoxart: View {
                         // foil rotate together as one unit, like the wizard.
                         BoxArtBaseView(
                             image: image,
-                            normalizedMouseX: px,
-                            normalizedMouseY: py,
-                            isPressed: false,
                             w: artSize.width,
-                            h: artSize.height,
-                            tiltEnabled: false
+                            h: artSize.height
                         )
 
                         if let masks = holoMasks, let snapshot {
