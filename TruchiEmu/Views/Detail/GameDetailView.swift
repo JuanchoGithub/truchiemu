@@ -1238,19 +1238,39 @@ private struct DetailScrollActivity: ViewModifier {
 
     func body(content: Content) -> some View {
         content
-            .onScrollGeometryChange(for: CGFloat.self) { geometry in
+            .onScrollGeometryChange(for: DetailScrollSample.self) { geometry in
                 // Clamp to the real scroll range: the rubber band at either
                 // end must not read as a direction change, or a fling that
                 // hits the bottom would pop the chrome open again.
+                //
+                // The range must never invert. A short section can be shorter
+                // than the viewport, and the viewport grows when a hero
+                // collapses. Once `maxOffset` drops below `top` the content
+                // fits entirely, the scroll view resets its offset to zero,
+                // and that reset reads as a scroll up. Pin the bottom to the
+                // top instead, so the clamp keeps working.
                 let top = geometry.contentInsets.top
                 let maxOffset = geometry.contentSize.height
                     + geometry.contentInsets.top
                     + geometry.contentInsets.bottom
                     - geometry.containerSize.height
-                let bottom = maxOffset > top ? maxOffset : .greatestFiniteMagnitude
-                return min(max(geometry.contentOffset.y, top), bottom)
+                let bottom = max(maxOffset, top)
+                return DetailScrollSample(
+                    offset: min(max(geometry.contentOffset.y, top), bottom),
+                    viewportHeight: geometry.containerSize.height,
+                    contentHeight: geometry.contentSize.height
+                )
             } action: { oldValue, newValue in
-                let delta = newValue - oldValue
+                // The heroes sit above the scroll view, so collapsing one
+                // resizes the viewport and moves the clamped offset on its
+                // own. That looks like a scroll, so the hero fights the
+                // layout: it collapses, the offset jumps, the hero expands,
+                // the offset jumps back, and the pair fight forever. Ignore
+                // samples where the layout changed; only the user can move
+                // the content.
+                guard abs(newValue.viewportHeight - oldValue.viewportHeight) < 0.5,
+                      abs(newValue.contentHeight - oldValue.contentHeight) < 0.5 else { return }
+                let delta = newValue.offset - oldValue.offset
                 // A resting trackpad reports sub-pixel jitter; ignore it.
                 guard abs(delta) > 1 else { return }
                 directionChanged(delta > 0)
@@ -1262,6 +1282,17 @@ private struct DetailScrollActivity: ViewModifier {
                 }
             }
     }
+}
+
+/// One reading of the scroll view geometry.
+///
+/// `offset` is the clamped scroll position. The heights describe the layout
+/// around it, so the action can tell a user scroll apart from a layout
+/// change.
+private struct DetailScrollSample: Equatable {
+    let offset: CGFloat
+    let viewportHeight: CGFloat
+    let contentHeight: CGFloat
 }
 
 private extension View {
