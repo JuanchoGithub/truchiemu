@@ -15,8 +15,9 @@ extension GameDetailView {
             icon: "computermouse.fill",
             badge: isAnalogMouseCustomized ? loc.localized("analogMouse.custom") : nil
         ) {
-            VStack(alignment: .leading, spacing: 0) {
-                HStack {
+            VStack(alignment: .leading, spacing: AppSpacing.md) {
+                // MARK: - Enable toggle
+                HStack(spacing: AppSpacing.md) {
                     Image(systemName: "computermouse")
                         .foregroundColor(AppColors.brandAccent)
                         .frame(width: 20)
@@ -29,7 +30,7 @@ extension GameDetailView {
                             .font(.caption)
                             .foregroundColor(AppColors.textTertiary(colorScheme))
                     }
-                    Spacer()
+                    Spacer(minLength: 0)
                     Toggle("", isOn: Binding(
                         get: { currentROM.settings.analogMouseEnabled ?? systemAnalogMouseDefault },
                         set: { newValue in
@@ -40,28 +41,25 @@ extension GameDetailView {
                     .toggleStyle(SwitchToggleStyle())
                     .labelsHidden()
                 }
-                .padding(.vertical, AppSpacing.xs)
 
-                Divider().overlay(AppColors.divider(colorScheme))
-
-                HStack {
+                // MARK: - System default
+                HStack(spacing: AppSpacing.md) {
                     VStack(alignment: .leading, spacing: 2) {
                         Text(loc.localized("analogMouse.systemDefault"))
                             .font(.caption)
                             .foregroundColor(AppColors.textSecondary(colorScheme))
                         Text(systemAnalogMouseDefault
-                             ? loc.localized("analogMouse.resetToDefaultEnabled")
-                             : loc.localized("analogMouse.resetToDefaultDisabled"))
+                            ? loc.localized("analogMouse.resetToDefaultEnabled")
+                            : loc.localized("analogMouse.resetToDefaultDisabled"))
                             .font(.caption)
                             .foregroundColor(AppColors.textTertiary(colorScheme))
                     }
-                    Spacer()
+                    Spacer(minLength: 0)
                     SettingsActionButton(loc.localized("analogMouse.useDefault")) {
                         updateSettings { $0.analogMouseEnabled = nil }
                     }
                     .disabled(!isAnalogMouseCustomized)
                 }
-                .padding(.vertical, AppSpacing.xs)
             }
         }
     }

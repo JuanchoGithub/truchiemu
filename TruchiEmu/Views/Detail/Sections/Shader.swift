@@ -4,69 +4,127 @@ extension GameDetailView {
     var shaderSection: some View {
         ModernSectionCard(
             title: loc.localized("gameDetail.shader"),
-            icon: "tv",
+            icon: "display",
             badge: isShaderCustomized ? loc.localized("shader.custom") : nil
         ) {
-VStack(alignment: .leading, spacing: 0) {
-HStack {
-VStack(alignment: .leading, spacing: 2) {
-Text(loc.localized("shader.currentShader"))
-.font(.subheadline)
-.fontWeight(.medium)
-.foregroundColor(AppColors.textPrimary(colorScheme))
-Text(ShaderManager.displayName(for: ShaderManager.effectivePresetID(for: currentROM)))
-.font(.caption)
-.foregroundColor(AppColors.textSecondary(colorScheme))
-}
-Spacer()
-        SettingsActionButton(loc.localized("shader.customize"), prominent: true) { presentShaderWindow() }
-
-        SettingsActionButton(loc.localized("shader.liveShaderEdit")) { presentLiveShaderEdit() }
-}
-.padding(.vertical, AppSpacing.xs)
+            VStack(alignment: .leading, spacing: AppSpacing.md) {
+                // MARK: - Current shader stat
+                HStack(spacing: AppSpacing.md) {
+                    let currentPresetID = ShaderManager.effectivePresetID(for: currentROM)
+                    let currentPresetType = ShaderPreset.preset(id: currentPresetID)?.shaderType ?? .custom
+                    DetailStatBadge(
+                        icon: shaderIcon(for: currentPresetType),
+                        value: ShaderManager.displayName(for: currentPresetID),
+                        unit: loc.localized("gameDetail.shader"),
+                        tint: isShaderCustomized ? AppColors.warning(colorScheme) : AppColors.brandAccent
+                    )
+                    Spacer(minLength: 0)
+                    SettingsActionButton(loc.localized("shader.customize"), prominent: true) { presentShaderWindow() }
+                    SettingsActionButton(loc.localized("shader.liveShaderEdit")) { presentLiveShaderEdit() }
+                }
 
                 Divider().overlay(AppColors.divider(colorScheme))
 
-                VStack(spacing: 6) {
-                    let recommended = shaderManager.recommendedPresets(for: currentROM.systemID ?? "")
-                    let presetsToShow = recommended.isEmpty ? Array(ShaderPreset.allPresets.prefix(4)) : recommended
-                    ForEach(presetsToShow.prefix(4), id: \.id) { preset in
-                        Button { updateSettings { $0.shaderPresetID = preset.id } } label: {
-                            HStack {
-                                Image(systemName: shaderIcon(for: preset.shaderType))
-                                    .foregroundColor(AppColors.brandAccent).frame(width: 20)
-                                Text(preset.name).font(.subheadline).foregroundColor(AppColors.textPrimary(colorScheme))
-                                Spacer()
-                                if currentROM.settings.shaderPresetID == preset.id {
-                                    Image(systemName: "checkmark.circle.fill").foregroundColor(AppColors.brandAccent)
-                                }
-                                if !preset.localizedDescription.isEmpty {
-                                    Text(preset.localizedDescription).font(.caption).foregroundColor(AppColors.textTertiary(colorScheme)).lineLimit(1)
+                // MARK: - Preset gallery
+                VStack(alignment: .leading, spacing: AppSpacing.sm) {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: AppSpacing.sm) {
+                            let recommended = shaderManager.recommendedPresets(for: currentROM.systemID ?? "")
+                            let presetsToShow = recommended.isEmpty ? Array(ShaderPreset.allPresets.prefix(6)) : recommended
+                            ForEach(presetsToShow, id: \.id) { preset in
+                                ShaderPresetChip(
+                                    preset: preset,
+                                    icon: shaderIcon(for: preset.shaderType),
+                                    isSelected: currentROM.settings.shaderPresetID == preset.id
+                                ) {
+                                    updateSettings { $0.shaderPresetID = preset.id }
                                 }
                             }
-.padding(.vertical, AppSpacing.xs)
-.padding(.horizontal, AppSpacing.lg)
-.background(currentROM.settings.shaderPresetID == preset.id ? AppColors.brandAccent.opacity(0.5) : Color.clear)
-.cornerRadius(AppRadius.sm)
                         }
-                        .buttonStyle(.plain)
-}
-}
-.padding(.vertical, AppSpacing.xs)
+                        .padding(.horizontal, 1)
+                    }
+                }
 
-Divider().overlay(AppColors.divider(colorScheme))
+                Divider().overlay(AppColors.divider(colorScheme))
 
-HStack {
+                // MARK: - System default
+                HStack {
                     VStack(alignment: .leading, spacing: 2) {
-                        Text(loc.localized("shader.systemDefault")).font(.caption).foregroundColor(AppColors.textSecondary(colorScheme))
-                        Text(loc.localized("shader.resetToDefault")).font(.caption).foregroundColor(AppColors.textTertiary(colorScheme))
+                        Text(loc.localized("shader.systemDefault"))
+                            .font(.subheadline)
+                            .fontWeight(.medium)
+                            .foregroundColor(AppColors.textPrimary(colorScheme))
+                        Text(loc.localized("shader.resetToDefault"))
+                            .font(.caption)
+                            .foregroundColor(AppColors.textTertiary(colorScheme))
                     }
                     Spacer()
-        SettingsActionButton(loc.localized("shader.useDefault")) { updateSettings { $0.resetShaderSettings() } }
-        .disabled(!isShaderCustomized)
-}
-.padding(.vertical, AppSpacing.xs)
+                    SettingsActionButton(loc.localized("shader.useDefault")) {
+                        updateSettings { $0.resetShaderSettings() }
+                    }
+                    .disabled(!isShaderCustomized)
+                }
             }
+        }
+    }
+
+    private struct ShaderPresetChip: View {
+        let preset: ShaderPreset
+        let icon: String
+        let isSelected: Bool
+        let action: () -> Void
+
+        @Environment(\.colorScheme) private var colorScheme
+        @Environment(\.accessibilityReduceMotion) private var reduceMotion
+        @State private var isHovered = false
+
+        var body: some View {
+            Button(action: action) {
+                VStack(alignment: .leading, spacing: AppSpacing.xs) {
+                    HStack(spacing: AppSpacing.xs) {
+                        Image(systemName: icon)
+                            .font(.system(size: 10, weight: .semibold))
+                            .foregroundStyle(isSelected ? AppColors.textOnAccent(colorScheme) : AppColors.brandAccent)
+                            .frame(width: 16, height: 16)
+                        if isSelected {
+                            Image(systemName: "checkmark.circle.fill")
+                                .font(.system(size: 10, weight: .semibold))
+                                .foregroundStyle(AppColors.textOnAccent(colorScheme))
+                        }
+                    }
+
+                    Text(preset.name)
+                        .font(.system(size: 11, weight: .semibold, design: .rounded))
+                        .foregroundStyle(isSelected ? AppColors.textOnAccent(colorScheme) : AppColors.textPrimary(colorScheme))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
+
+                    if !preset.localizedDescription.isEmpty {
+                        Text(preset.localizedDescription)
+                            .font(.system(size: 8, weight: .medium, design: .rounded))
+                            .foregroundStyle(isSelected ? AppColors.textOnAccent(colorScheme).opacity(0.8) : AppColors.textTertiary(colorScheme))
+                            .lineLimit(2)
+                            .multilineTextAlignment(.leading)
+                    }
+                }
+                .padding(AppSpacing.sm)
+                .frame(width: 150, alignment: .leading)
+                .background(
+                    RoundedRectangle(cornerRadius: AppRadius.md, style: .continuous)
+                        .fill(isSelected ? AppColors.brandAccent : AppColors.cardBackgroundSubtle(colorScheme))
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: AppRadius.md, style: .continuous)
+                        .strokeBorder(
+                            isSelected ? AppColors.brandAccent : AppColors.cardBorder(colorScheme),
+                            lineWidth: 1
+                        )
+                )
+                .scaleEffect(isHovered && !reduceMotion ? 1.03 : 1.0)
+                .animation(AppMotion.micro, value: isHovered)
+            }
+            .buttonStyle(.plain)
+            .onHover { isHovered = $0 }
         }
     }
 

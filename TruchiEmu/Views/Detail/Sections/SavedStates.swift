@@ -7,7 +7,7 @@ extension GameDetailView {
             icon: "externaldrive",
             badge: slotInfoList.filter { $0.exists }.isEmpty ? nil : "\(slotInfoList.filter { $0.exists }.count)"
         ) {
-            VStack(alignment: .leading, spacing: 0) {
+            VStack(alignment: .leading, spacing: AppSpacing.md) {
                 let autoSlot = slotInfoList.first { $0.id == -1 }
                 let userSlots = slotInfoList.filter { $0.id >= 0 }
                 let existingSlots = slotInfoList.filter { $0.exists }
@@ -15,79 +15,141 @@ extension GameDetailView {
                 let showUserSlots = userSlots.isEmpty ? Array(emptyUserSlots) : userSlots
 
                 if slotInfoList.isEmpty {
-                    VStack(spacing: 8) {
-                        Image(systemName: "externaldrive.slash").font(.system(size: 30)).foregroundColor(AppColors.textTertiary(colorScheme))
-                        Text(loc.localized("savedStates.noSavedStates")).font(.subheadline).foregroundColor(AppColors.textSecondary(colorScheme))
-                        Text(loc.localized("savedStates.savedStatesCreatedDuringGameplay")).font(.caption).foregroundColor(AppColors.textTertiary(colorScheme))
-                    }
-                    .padding(.vertical, AppSpacing.xs)
+                    emptyState
                 } else {
-                    VStack(spacing: 12) {
-                        if let autoSlot = autoSlot {
-                            HStack {
-                                Spacer()
-                                slotView(for: autoSlot)
-                                Spacer()
-                            }
+                    if let autoSlot = autoSlot {
+                        autoSlotRow(autoSlot)
 
-                            if expandedProgressiveSlotID == autoSlot.id {
-                                ProgressiveSaveStateExpandedView(
-                                    slot: autoSlot,
-                                    progressives: progressiveSlots[autoSlot.id] ?? [],
-                                    rom: currentROM,
-                                    saveStateManager: saveStateManager,
-                                    onDelete: { loadSlotInfo() },
-                                    onLaunchSlot: { slotId, progVersion in
-                                        launchGame(slotToLoad: slotId, progressiveVersion: progVersion)
-                                    }
-                                )
-                                .transition(.opacity)
+                        if expandedProgressiveSlotID == autoSlot.id {
+                            ProgressiveSaveStateExpandedView(
+                                slot: autoSlot,
+                                progressives: progressiveSlots[autoSlot.id] ?? [],
+                                rom: currentROM,
+                                saveStateManager: saveStateManager,
+                                onDelete: { loadSlotInfo() },
+                                onLaunchSlot: { slotId, progVersion in
+                                    launchGame(slotToLoad: slotId, progressiveVersion: progVersion)
+                                }
+                            )
+                            .transition(.opacity)
+                        }
+                    }
+
+                    let columns = Array(repeating: GridItem(.flexible(), spacing: 12), count: 5)
+                    let chunkSize = 5
+                    ForEach(Array(stride(from: 0, to: showUserSlots.count, by: chunkSize)), id: \.self) { rowIndex in
+                        let chunk = Array(showUserSlots[rowIndex..<min(rowIndex + chunkSize, showUserSlots.count)])
+
+                        LazyVGrid(columns: columns, spacing: 12) {
+                            ForEach(chunk, id: \.id) { slot in
+                                slotView(for: slot)
                             }
                         }
 
-                        let columns = Array(repeating: GridItem(.flexible(), spacing: 12), count: 5)
-                        let chunkSize = 5
-                        ForEach(Array(stride(from: 0, to: showUserSlots.count, by: chunkSize)), id: \.self) { rowIndex in
-                            let chunk = Array(showUserSlots[rowIndex..<min(rowIndex + chunkSize, showUserSlots.count)])
-
-                            LazyVGrid(columns: columns, spacing: 12) {
-                                ForEach(chunk, id: \.id) { slot in
-                                    slotView(for: slot)
+                        if let expandedID = expandedProgressiveSlotID,
+                           let expandedSlot = chunk.first(where: { $0.id == expandedID }) {
+                            ProgressiveSaveStateExpandedView(
+                                slot: expandedSlot,
+                                progressives: progressiveSlots[expandedSlot.id] ?? [],
+                                rom: currentROM,
+                                saveStateManager: saveStateManager,
+                                onDelete: { loadSlotInfo() },
+                                onLaunchSlot: { slotId, progVersion in
+                                    launchGame(slotToLoad: slotId, progressiveVersion: progVersion)
                                 }
-                            }
-
-                            if let expandedID = expandedProgressiveSlotID,
-                               let expandedSlot = chunk.first(where: { $0.id == expandedID }) {
-                                ProgressiveSaveStateExpandedView(
-                                    slot: expandedSlot,
-                                    progressives: progressiveSlots[expandedSlot.id] ?? [],
-                                    rom: currentROM,
-                                    saveStateManager: saveStateManager,
-                                    onDelete: { loadSlotInfo() },
-                                    onLaunchSlot: { slotId, progVersion in
-                                        launchGame(slotToLoad: slotId, progressiveVersion: progVersion)
-                                    }
-                                )
-                                .transition(.opacity)
-                            }
+                            )
+                            .transition(.opacity)
                         }
                     }
                 }
 
                 if !existingSlots.isEmpty {
-                    Divider().overlay(AppColors.divider(colorScheme))
-                    HStack {
-                        Text("\(existingSlots.count) \(loc.localized("savedStates.saveStateCount"))").font(.caption).foregroundColor(AppColors.textSecondary(colorScheme))
-                        Spacer()
-                        let totalSize = existingSlots.reduce(0) { $0 + ($1.fileSize ?? 0) }
-                        if totalSize > 0 {
-                            Text(Int64(totalSize).formattedByteSize).font(.caption).foregroundColor(AppColors.textSecondary(colorScheme))
-                        }
-                    }
-                    .padding(.vertical, AppSpacing.xs)
+                    footerRow(existingSlots: existingSlots)
                 }
             }
         }
+    }
+
+    private var emptyState: some View {
+        VStack(spacing: AppSpacing.md) {
+            Image(systemName: "externaldrive.slash")
+                .font(.system(size: 40))
+                .foregroundColor(AppColors.textTertiary(colorScheme))
+            Text(loc.localized("savedStates.noSavedStates"))
+                .font(.subheadline)
+                .fontWeight(.medium)
+                .foregroundColor(AppColors.textSecondary(colorScheme))
+            Text(loc.localized("savedStates.savedStatesCreatedDuringGameplay"))
+                .font(.caption)
+                .foregroundColor(AppColors.textTertiary(colorScheme))
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, AppSpacing.lg)
+    }
+
+    private func autoSlotRow(_ slot: SlotInfo) -> some View {
+        HStack(spacing: AppSpacing.md) {
+            slotView(for: slot)
+                .frame(width: 120)
+
+            VStack(alignment: .leading, spacing: AppSpacing.xs) {
+                Text(loc.localized("savedStates.recentSaveHint"))
+                    .font(.subheadline)
+                    .foregroundColor(AppColors.textPrimary(colorScheme))
+
+                if let date = slot.modificationDate {
+                    Text(loc.localized("gameDetail.lastSavedAt")
+                        .replacingOccurrences(of: "{date}", with: Self.relativeDateFormatter.localizedString(for: date, relativeTo: Date())))
+                        .font(.caption)
+                        .foregroundColor(AppColors.textSecondary(colorScheme))
+                }
+
+                Button {
+                    launchGame(slotToLoad: slot.id)
+                } label: {
+                    HStack(spacing: 5) {
+                        Image(systemName: "play.circle.fill")
+                            .font(.system(size: 11, weight: .semibold))
+                        Text(loc.localized("header.continue"))
+                            .font(.system(size: 11, weight: .semibold, design: .rounded))
+                    }
+                    .foregroundColor(AppColors.textOnAccent(colorScheme))
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 5)
+                    .background(AppColors.brandAccent)
+                    .clipShape(Capsule())
+                }
+                .buttonStyle(.plain)
+                .liquidGlassSheen()
+            }
+
+            Spacer(minLength: 0)
+        }
+        .padding(AppSpacing.md)
+        .background(AppColors.cardBackgroundSubtle(colorScheme))
+        .clipShape(RoundedRectangle(cornerRadius: AppRadius.lg, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: AppRadius.lg, style: .continuous)
+                .stroke(AppColors.cardBorder(colorScheme), lineWidth: 1)
+        )
+    }
+
+    private func footerRow(existingSlots: [SlotInfo]) -> some View {
+        HStack(spacing: AppSpacing.md) {
+            Text("\(existingSlots.count) \(loc.localized("savedStates.saveStateCount"))")
+                .font(.caption)
+                .foregroundColor(AppColors.textSecondary(colorScheme))
+
+            Spacer(minLength: 0)
+
+            let totalSize = existingSlots.reduce(0) { $0 + ($1.fileSize ?? 0) }
+            if totalSize > 0 {
+                Text(Int64(totalSize).formattedByteSize)
+                    .font(.caption)
+                    .foregroundColor(AppColors.textSecondary(colorScheme))
+            }
+        }
+        .padding(.vertical, AppSpacing.xs)
     }
 
     @ViewBuilder
@@ -118,6 +180,8 @@ extension GameDetailView {
         }
     }
 }
+
+// MARK: - Progressive slot stack view
 
 private struct ProgressiveSlotStackView: View {
     let slot: SlotInfo
@@ -194,13 +258,13 @@ private struct ProgressiveSlotStackView: View {
         }
         .contextMenu {
             Group {
-            if slot.id >= 0 {
-                Button {
-                    requestRename = true
-                } label: {
-                    Label(loc.localized("savedStates.rename"), systemImage: "pencil")
+                if slot.id >= 0 {
+                    Button {
+                        requestRename = true
+                    } label: {
+                        Label(loc.localized("savedStates.rename"), systemImage: "pencil")
+                    }
                 }
-            }
             }
             .menuIconsAlwaysVisible()
         }
@@ -211,6 +275,8 @@ private struct ProgressiveSlotStackView: View {
         }
     }
 }
+
+// MARK: - Progressive save state expanded view
 
 private struct ProgressiveSaveStateExpandedView: View {
     let slot: SlotInfo
@@ -268,13 +334,13 @@ private struct ProgressiveSaveStateExpandedView: View {
         }
         .contextMenu {
             Group {
-            if slot.id >= 0 {
-                Button {
-                    requestRename = true
-                } label: {
-                    Label(loc.localized("savedStates.rename"), systemImage: "pencil")
+                if slot.id >= 0 {
+                    Button {
+                        requestRename = true
+                    } label: {
+                        Label(loc.localized("savedStates.rename"), systemImage: "pencil")
+                    }
                 }
-            }
             }
             .menuIconsAlwaysVisible()
         }
@@ -327,6 +393,8 @@ private struct ProgressiveSaveStateExpandedView: View {
     }
 }
 
+// MARK: - Progressive thumbnail view
+
 private struct ProgressiveThumbnailView: View {
     let saveStateManager: SaveStateManager
     let rom: ROM
@@ -378,20 +446,20 @@ private struct ProgressiveThumbnailView: View {
         )
         .contextMenu {
             Group {
-            if slotID >= 0 {
-                Button {
-                    onRequestRename()
-                } label: {
-                    Label(loc.localized("savedStates.rename"), systemImage: "pencil")
+                if slotID >= 0 {
+                    Button {
+                        onRequestRename()
+                    } label: {
+                        Label(loc.localized("savedStates.rename"), systemImage: "pencil")
+                    }
                 }
-            }
-            Button(action: {
-                let candidates = rom.stateKeyCandidates
-                saveStateManager.deleteProgressiveEverywhere(primaryKey: candidates.primary, fallbackKeys: candidates.fallbacks, systemID: rom.systemID ?? "", slot: slotID, version: version)
-                onDelete()
-            }) {
-                Label(loc.localized("saveState.delete"), systemImage: "trash")
-            }
+                Button(action: {
+                    let candidates = rom.stateKeyCandidates
+                    saveStateManager.deleteProgressiveEverywhere(primaryKey: candidates.primary, fallbackKeys: candidates.fallbacks, systemID: rom.systemID ?? "", slot: slotID, version: version)
+                    onDelete()
+                }) {
+                    Label(loc.localized("saveState.delete"), systemImage: "trash")
+                }
             }
             .menuIconsAlwaysVisible()
         }

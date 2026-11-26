@@ -376,6 +376,8 @@
   "display.allSystems": "Todos los sistemas",
   "display.noMatchingSettings": "No hay ajustes para",
   "cheats.title": "Trucos",
+  "cheats.noCheatsFound": "No se encontraron trucos",
+  "cheats.downloadCheats": "Descargar trucos",
   "cheats.librarySummary": "Resumen de trucos",
   "cheats.files": "Archivos",
   "cheats.storage": "Almacenamiento",

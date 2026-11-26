@@ -15,8 +15,9 @@ extension GameDetailView {
             icon: "gamecontroller.fill",
             badge: isDOSJoystickCustomized ? loc.localized("analogMouse.custom") : nil
         ) {
-            VStack(alignment: .leading, spacing: 0) {
-                HStack {
+            VStack(alignment: .leading, spacing: AppSpacing.md) {
+                // MARK: - Per-game preset
+                HStack(spacing: AppSpacing.md) {
                     Image(systemName: "gamecontroller")
                         .foregroundColor(AppColors.brandAccent)
                         .frame(width: 20)
@@ -29,7 +30,7 @@ extension GameDetailView {
                             .font(.caption)
                             .foregroundColor(AppColors.textTertiary(colorScheme))
                     }
-                    Spacer()
+                    Spacer(minLength: 0)
                     Picker(loc.localized("settings.dosJoystick.preset"), selection: Binding(
                         get: { currentROM.settings.dosJoystickPreset ?? systemDOSJoystickPreset },
                         set: { newValue in
@@ -44,11 +45,9 @@ extension GameDetailView {
                     .labelsHidden()
                     .frame(width: 180)
                 }
-                .padding(.vertical, AppSpacing.xs)
 
-                Divider().overlay(AppColors.divider(colorScheme))
-
-                HStack {
+                // MARK: - System default
+                HStack(spacing: AppSpacing.md) {
                     VStack(alignment: .leading, spacing: 2) {
                         Text(loc.localized("analogMouse.systemDefault"))
                             .font(.caption)
@@ -57,22 +56,12 @@ extension GameDetailView {
                             .font(.caption)
                             .foregroundColor(AppColors.textTertiary(colorScheme))
                     }
-                    Spacer()
-                    Button {
+                    Spacer(minLength: 0)
+                    SettingsActionButton(loc.localized("analogMouse.useDefault")) {
                         updateSettings { $0.dosJoystickPreset = nil }
-                    } label: {
-                        Text(loc.localized("analogMouse.useDefault"))
-                            .font(.caption)
-                            .foregroundColor(AppColors.brandAccent)
-                            .padding(.horizontal, AppSpacing.lg)
-                            .padding(.vertical, AppSpacing.xs)
-                            .background(AppColors.brandAccent.opacity(0.15))
-                            .cornerRadius(AppRadius.sm)
                     }
-                    .buttonStyle(.plain)
                     .disabled(!isDOSJoystickCustomized)
                 }
-                .padding(.vertical, AppSpacing.xs)
             }
         }
     }

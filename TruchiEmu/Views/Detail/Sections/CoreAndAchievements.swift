@@ -3,8 +3,9 @@ import SwiftUI
 extension GameDetailView {
     var coreSection: some View {
         ModernSectionCard(title: loc.localized("core.title"), icon: "cpu") {
-            VStack(alignment: .leading, spacing: 0) {
-                HStack {
+            VStack(alignment: .leading, spacing: AppSpacing.md) {
+                // MARK: - Emulation core
+                HStack(spacing: AppSpacing.md) {
                     Image(systemName: "cpu").foregroundColor(AppColors.brandAccent).frame(width: 20)
                     Text(loc.localized("core.emulationCore"))
                         .font(.subheadline)
@@ -24,11 +25,9 @@ extension GameDetailView {
                         .frame(width: 220)
                     }
                 }
-                .padding(.vertical, AppSpacing.xs)
 
-                Divider().overlay(AppColors.divider(colorScheme))
-
-                HStack {
+                // MARK: - Apply to system
+                HStack(spacing: AppSpacing.md) {
                     Image(systemName: "globe").foregroundColor(AppColors.brandAccent).frame(width: 20)
                     VStack(alignment: .leading, spacing: 2) {
                         Text(loc.localized("core.applyToSystemDefault"))
@@ -41,23 +40,21 @@ extension GameDetailView {
                         .toggleStyle(SwitchToggleStyle())
                         .labelsHidden()
                 }
-                .padding(.vertical, AppSpacing.xs)
 
-                HStack(spacing: AppSpacing.sm) {
-                    Image(systemName: "info.circle").foregroundColor(AppColors.textMuted(colorScheme)).font(.caption)
-                    Text(applyCoreToSystem
-                         ? loc.localized("core.changeSystemCoreWarning").replacingOccurrences(of: "{0}", with: systemName)
-                         : loc.localized("core.onlyThisGameUsesSelectedCore"))
-                        .font(.caption)
-                        .foregroundColor(AppColors.textTertiary(colorScheme))
-                        .lineSpacing(2)
+                if !installedCores.isEmpty {
+                    HStack(spacing: AppSpacing.sm) {
+                        Image(systemName: "info.circle").foregroundColor(AppColors.textMuted(colorScheme)).font(.caption)
+                        Text(applyCoreToSystem
+                             ? loc.localized("core.changeSystemCoreWarning").replacingOccurrences(of: "{0}", with: systemName)
+                             : loc.localized("core.onlyThisGameUsesSelectedCore"))
+                            .font(.caption)
+                            .foregroundColor(AppColors.textTertiary(colorScheme))
+                            .lineSpacing(2)
+                    }
                 }
-                .padding(.vertical, AppSpacing.xs)
 
-                Divider().overlay(AppColors.divider(colorScheme))
-
-                HStack {
-                    Spacer()
+                // MARK: - Actions
+                HStack(spacing: AppSpacing.sm) {
                     SettingsActionButton(loc.localized("gameInfo.coreOptions"), systemImage: "slider.horizontal.3") {
                         if let coreID = activeCoreID {
                             let context = CoreOptionsContext(coreID: coreID, systemID: currentROM.systemID, gameFilename: currentROM.filenameWithoutExtension)
@@ -81,7 +78,6 @@ extension GameDetailView {
                     .buttonStyle(.plain)
                     .disabled(selectedCoreID == nil || installedCores.isEmpty)
                 }
-                .padding(.vertical, AppSpacing.xs)
             }
         }
         .onAppear { applyCoreToSystem = !currentROM.useCustomCore }
@@ -108,7 +104,7 @@ extension GameDetailView {
             badge: gameAchievements.isEmpty ? nil : "\(unlockedAchievementCount)/\(gameAchievements.count)",
             headerTrailing: achievementsHeaderTrailing
     ) {
-        VStack(alignment: .leading, spacing: 0) {
+        VStack(alignment: .leading, spacing: AppSpacing.md) {
             if achievementsService.isEnabled, currentROM.raMatchStatus == "matched" {
                 HStack {
                     Image(systemName: "shield.lefthalf.filled").foregroundColor(AppColors.brandAccent).frame(width: 20)
@@ -136,9 +132,6 @@ extension GameDetailView {
                     .toggleStyle(SwitchToggleStyle())
                     .labelsHidden()
                 }
-                .padding(.vertical, AppSpacing.xs)
-
-                Divider().overlay(AppColors.divider(colorScheme))
             }
 
             if raVerification.isVisible {
@@ -175,8 +168,6 @@ extension GameDetailView {
                 .background(AppColors.success(colorScheme).opacity(0.08))
                 .cornerRadius(AppRadius.sm)
                 .padding(.bottom, AppSpacing.sm)
-
-                Divider().overlay(AppColors.divider(colorScheme))
             }
 
             if isAchievementsLoading {
@@ -291,7 +282,7 @@ Label(loc.localized("achievement.searchRetroAchievements"), systemImage: "checkm
  }
  Spacer()
  let progress = gameAchievements.isEmpty ? 0.0 : Double(unlockedAchievementCount) / Double(gameAchievements.count)
- ProgressView(value: progress).frame(width: 100)
+ DetailProgressRing(fraction: progress, tint: AppColors.warning(colorScheme), size: 64, lineWidth: 6)
 
  Picker(selection: $achievementViewMode) {
  ForEach(AchievementViewMode.allCases, id: \.self) { mode in
@@ -309,9 +300,7 @@ Label(loc.localized("achievement.searchRetroAchievements"), systemImage: "checkm
  }
  }
 
- Divider().overlay(AppColors.divider(colorScheme))
-
-                    if achievementViewMode == .grid {
+                if achievementViewMode == .grid {
                         achievementGridView
                     } else {
                         achievementListView

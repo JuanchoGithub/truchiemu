@@ -376,6 +376,8 @@
   "display.allSystems": "Todos os sistemas",
   "display.noMatchingSettings": "Nenhuma configuração correspondente encontrada para",
   "cheats.title": "Cheats",
+  "cheats.noCheatsFound": "Nenhum trapaça encontrado",
+  "cheats.downloadCheats": "Baixar trapaças",
   "cheats.librarySummary": "Resumo da Biblioteca de Cheats",
   "cheats.files": "Arquivos",
   "cheats.storage": "Armazenamento",

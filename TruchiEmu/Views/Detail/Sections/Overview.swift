@@ -574,7 +574,7 @@ private struct DetailFactCell: View {
 
 /// Ring gauge for the achievement summary. The trim is animated so a refresh
 /// after a play session sweeps to the new value instead of jumping.
-private struct DetailProgressRing: View {
+struct DetailProgressRing: View {
     let fraction: Double
     var tint: Color = AppColors.brandAccent
     var size: CGFloat = 78

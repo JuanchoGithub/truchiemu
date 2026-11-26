@@ -8,73 +8,59 @@ struct BoxArtUndoState {
 
 extension GameDetailView {
     var technicalSection: some View {
-        VStack(spacing: AppSpacing.lg) {
-            technicalActionButtons
+        ModernSectionCard(
+            title: loc.localized("gameDetail.technical"),
+            icon: "doc.text.magnifyingglass"
+        ) {
+            VStack(alignment: .leading, spacing: AppSpacing.md) {
+                technicalActionButtons
 
-            gameMetadataCard
-
-            MAMEDependencyStatusView(rom: currentROM, coreID: activeCoreID)
-        }
-    }
-
-    var technicalActionButtons: some View {
-        HStack(spacing: AppSpacing.sm) {
-            identifyButton
-            matchGameButton
-            fetchBoxArtButton
-            fetchMetadataButton
-        }
-    }
-
-    var gameMetadataCard: some View {
-        ModernSectionCard(showHeader: false) {
-            VStack(alignment: .leading, spacing: 0) {
                 gameSystemPicker
-                Divider().overlay(AppColors.divider(colorScheme))
+
                 if currentROM.metadata?.manualMatch == true {
                     matchSourceRow
-                    Divider().overlay(AppColors.divider(colorScheme))
                 }
-                MetadataRow(label: loc.localized("gameInfo.fileName"), value: currentROM.path.lastPathComponent)
-                Divider().overlay(AppColors.divider(colorScheme))
-                MetadataRow(
-                    label: loc.localized("gameInfo.path"),
-                    value: currentROM.path.deletingLastPathComponent().path,
-                    copyAction: {
-                        NSPasteboard.general.clearContents()
-                        NSPasteboard.general.setString(currentROM.path.path, forType: .string)
+
+                // MARK: - File info
+                VStack(alignment: .leading, spacing: AppSpacing.xs) {
+                    MetadataRow(label: loc.localized("gameInfo.fileName"), value: currentROM.path.lastPathComponent)
+                    MetadataRow(
+                        label: loc.localized("gameInfo.path"),
+                        value: currentROM.path.deletingLastPathComponent().path,
+                        copyAction: {
+                            NSPasteboard.general.clearContents()
+                            NSPasteboard.general.setString(currentROM.path.path, forType: .string)
+                        }
+                    )
+                    if let size = fileSize {
+                        MetadataRow(label: loc.localized("gameInfo.fileSize"), value: size)
                     }
-                )
-                if let size = fileSize {
-                    Divider().overlay(AppColors.divider(colorScheme))
-                    MetadataRow(label: loc.localized("gameInfo.fileSize"), value: size)
+                    if let crc = crcHash {
+                        MetadataRow(
+                            label: loc.localized("gameInfo.crc32"),
+                            value: crc,
+                            isMonospaced: true,
+                            copyAction: {
+                                NSPasteboard.general.clearContents()
+                                NSPasteboard.general.setString(crc, forType: .string)
+                            }
+                        )
+                    }
+                    if achievementsService.isEnabled, let hash = raHash {
+                        MetadataRow(
+                            label: loc.localized("gameInfo.raHash"),
+                            value: hash,
+                            isMonospaced: true,
+                            copyAction: {
+                                NSPasteboard.general.clearContents()
+                                NSPasteboard.general.setString(hash, forType: .string)
+                            }
+                        )
+                    }
                 }
-                if let crc = crcHash {
-                    Divider().overlay(AppColors.divider(colorScheme))
-                    MetadataRow(
-                        label: loc.localized("gameInfo.crc32"),
-                        value: crc,
-                        isMonospaced: true,
-                        copyAction: {
-                            NSPasteboard.general.clearContents()
-                            NSPasteboard.general.setString(crc, forType: .string)
-                        }
-                    )
-                }
-                if achievementsService.isEnabled, let hash = raHash {
-                    Divider().overlay(AppColors.divider(colorScheme))
-                    MetadataRow(
-                        label: loc.localized("gameInfo.raHash"),
-                        value: hash,
-                        isMonospaced: true,
-                        copyAction: {
-                            NSPasteboard.general.clearContents()
-                            NSPasteboard.general.setString(hash, forType: .string)
-                        }
-                    )
-                }
+
+                // MARK: - RetroAchievements
                 if achievementsService.isEnabled, currentROM.raMatchStatus == "matched" {
-                    Divider().overlay(AppColors.divider(colorScheme))
                     HStack {
                         Image(systemName: "trophy.fill").foregroundColor(AppColors.brandAccent).frame(width: 20)
                         Text(loc.localized("gameInfo.retroAchievements"))
@@ -96,17 +82,29 @@ extension GameDetailView {
                         .background(AppColors.success(colorScheme).opacity(0.12))
                         .cornerRadius(AppRadius.xs)
                     }
-                    .padding(.vertical, AppSpacing.xs)
                 }
+
+                // MARK: - Game metadata
                 if let meta = currentROM.metadata {
                     gameMetadataRows(meta: meta)
                 }
+
+                MAMEDependencyStatusView(rom: currentROM, coreID: activeCoreID)
             }
         }
     }
 
+    var technicalActionButtons: some View {
+        HStack(spacing: AppSpacing.sm) {
+            identifyButton
+            matchGameButton
+            fetchBoxArtButton
+            fetchMetadataButton
+        }
+    }
+
     var gameSystemPicker: some View {
-        HStack {
+        HStack(spacing: AppSpacing.md) {
             Image(systemName: "gamecontroller").foregroundColor(AppColors.brandAccent).frame(width: 20)
             Text(loc.localized("gameInfo.system"))
                 .font(.subheadline)
@@ -127,11 +125,10 @@ extension GameDetailView {
             }
             .buttonStyle(.plain)
         }
-        .padding(.vertical, AppSpacing.xs)
     }
 
     var matchSourceRow: some View {
-        HStack {
+        HStack(spacing: AppSpacing.md) {
             Image(systemName: "hand.raised.fill").foregroundColor(AppColors.brandAccent).frame(width: 20)
             Text(loc.localized("gameInfo.matchSource"))
                 .font(.subheadline)
@@ -143,47 +140,42 @@ extension GameDetailView {
                 .fontWeight(.semibold)
                 .foregroundColor(AppColors.brandAccent)
         }
-        .padding(.vertical, AppSpacing.xs)
     }
 
     @ViewBuilder
     func gameMetadataRows(meta: ROMMetadata) -> some View {
-        if let original = meta.title, let custom = currentROM.customName, custom != original {
-            Divider().overlay(AppColors.divider(colorScheme))
-            MetadataRow(label: loc.localized("gameInfo.originalName"), value: original)
-        }
-        if let dev = meta.developer {
-            Divider().overlay(AppColors.divider(colorScheme))
-            MetadataRow(label: loc.localized("gameInfo.developer"), value: dev)
-        }
-        if let pub = meta.publisher {
-            Divider().overlay(AppColors.divider(colorScheme))
-            MetadataRow(label: loc.localized("gameInfo.publisher"), value: pub)
-        }
-        if meta.genre != nil {
-            Divider().overlay(AppColors.divider(colorScheme))
-            MetadataRow(label: loc.localized("gameInfo.genre"), value: GenreManager.shared.effectiveDisplayName(for: meta.genre))
-        }
-        playersRow
-        if let esrb = meta.esrbRating {
-            Divider().overlay(AppColors.divider(colorScheme))
-            HStack {
-                Image(systemName: "shield.fill").foregroundColor(AppColors.brandAccent).frame(width: 20)
-                Text(loc.localized("gameInfo.esrb"))
-                    .font(.subheadline)
-                    .fontWeight(.medium)
-                    .foregroundColor(AppColors.textPrimary(colorScheme))
-                Spacer()
-                Text(esrb)
-                    .font(.subheadline)
-                    .fontWeight(.semibold)
-                    .foregroundColor(AppColors.textPrimary(colorScheme))
-                    .padding(.horizontal, AppSpacing.sm)
-                    .padding(.vertical, AppSpacing.xxs)
-                    .background(esrbBadgeColor(for: esrb))
-                    .cornerRadius(AppRadius.xs)
+        VStack(alignment: .leading, spacing: AppSpacing.xs) {
+            if let original = meta.title, let custom = currentROM.customName, custom != original {
+                MetadataRow(label: loc.localized("gameInfo.originalName"), value: original)
             }
-            .padding(.vertical, AppSpacing.xs)
+            if let dev = meta.developer {
+                MetadataRow(label: loc.localized("gameInfo.developer"), value: dev)
+            }
+            if let pub = meta.publisher {
+                MetadataRow(label: loc.localized("gameInfo.publisher"), value: pub)
+            }
+            if meta.genre != nil {
+                MetadataRow(label: loc.localized("gameInfo.genre"), value: GenreManager.shared.effectiveDisplayName(for: meta.genre))
+            }
+            playersRow
+            if let esrb = meta.esrbRating {
+                HStack {
+                    Image(systemName: "shield.fill").foregroundColor(AppColors.brandAccent).frame(width: 20)
+                    Text(loc.localized("gameInfo.esrb"))
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                        .foregroundColor(AppColors.textPrimary(colorScheme))
+                    Spacer()
+                    Text(esrb)
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+                        .foregroundColor(AppColors.textPrimary(colorScheme))
+                        .padding(.horizontal, AppSpacing.sm)
+                        .padding(.vertical, AppSpacing.xxs)
+                        .background(esrbBadgeColor(for: esrb))
+                        .cornerRadius(AppRadius.xs)
+                }
+            }
         }
     }
 
@@ -569,14 +561,11 @@ extension GameDetailView {
             if let meta = currentROM.metadata, meta.players > 0 {
                 let playersIdentifiedFromLibretro = meta.userPlayerOverride == nil && meta.players > 1
                 if playersIdentifiedFromLibretro {
-                    Divider().overlay(AppColors.divider(colorScheme))
                     MetadataRow(label: loc.localized("gameInfo.players"), value: String(meta.players))
                     if meta.players > 1 {
-                        Divider().overlay(AppColors.divider(colorScheme))
                         MetadataRow(label: loc.localized("gameInfo.coop"), value: meta.cooperative ? loc.localized("gameInfo.yes") : loc.localized("gameInfo.no"))
                     }
                 } else {
-                    Divider().overlay(AppColors.divider(colorScheme))
                     playersPickerView(meta: meta)
                 }
             }
@@ -584,7 +573,7 @@ extension GameDetailView {
     }
 
     private func playersPickerView(meta: ROMMetadata) -> some View {
-        HStack {
+        HStack(spacing: AppSpacing.md) {
             Image(systemName: "person.2").foregroundColor(AppColors.brandAccent).frame(width: 20)
             Text(loc.localized("gameInfo.players"))
                 .font(.subheadline)
@@ -611,6 +600,5 @@ extension GameDetailView {
             .labelsHidden()
             .frame(width: 160)
         }
-        .padding(.vertical, AppSpacing.xs)
     }
 }

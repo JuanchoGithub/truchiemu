@@ -7,74 +7,99 @@ extension GameDetailView {
             icon: "picture.inset.filled",
             badge: currentBezelStatusText.isEmpty ? nil : currentBezelStatusText
         ) {
-            VStack(alignment: .leading, spacing: 0) {
-                if let bezelImage = currentBezelImage {
-                    Image(nsImage: bezelImage)
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(maxHeight: 200)
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                        .overlay(RoundedRectangle(cornerRadius: 8).stroke(AppColors.cardBorder(colorScheme), lineWidth: 1))
-                } else {
-                    HStack(spacing: 8) {
-                        Image(systemName: "photo.on.rectangle.angled")
-                            .font(.system(size: 24)).foregroundColor(AppColors.textTertiary(colorScheme))
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(currentBezelDisplayName).font(.subheadline).foregroundColor(AppColors.textSecondary(colorScheme))
-                            Text(loc.localized("bezel.noPreviewAvailable")).font(.caption).foregroundColor(AppColors.textTertiary(colorScheme))
-                        }
+            VStack(alignment: .leading, spacing: AppSpacing.md) {
+                // MARK: - Preview
+                bezelPreviewRow
+
+                // MARK: - Current bezel
+                HStack(spacing: AppSpacing.md) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(loc.localized("bezel.currentBezel"))
+                            .font(.subheadline)
+                            .fontWeight(.medium)
+                            .foregroundColor(AppColors.textPrimary(colorScheme))
+                        Text(currentBezelDisplayName)
+                            .font(.caption)
+                            .foregroundColor(AppColors.textSecondary(colorScheme))
                     }
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 16)
-                    .background(AppColors.brandAccent.opacity(0.12))
-            .cornerRadius(8)
-            }
+                    Spacer(minLength: 0)
+                    SettingsActionButton(loc.localized("bezel.browseBezels"), prominent: true) { presentBezelSelectorWindow() }
+                }
 
-            Divider().overlay(AppColors.divider(colorScheme))
-
-HStack {
-VStack(alignment: .leading, spacing: 2) {
-Text(loc.localized("bezel.currentBezel")).font(.subheadline).fontWeight(.medium).foregroundColor(AppColors.textPrimary(colorScheme))
-Text(currentBezelDisplayName).font(.caption).foregroundColor(AppColors.textSecondary(colorScheme))
-}
-Spacer()
-        SettingsActionButton(loc.localized("bezel.browseBezels"), prominent: true) { presentBezelSelectorWindow() }
-}
-.padding(.vertical, AppSpacing.xs)
-
+                // MARK: - Enable toggle
                 Toggle(isOn: isBezelEnabledBinding) {
-                    HStack {
+                    HStack(spacing: AppSpacing.sm) {
                         Image(systemName: "eye").frame(width: 20)
                         Text(loc.localized("bezel.enableBezels"))
                             .font(.subheadline)
                             .fontWeight(.medium)
                             .foregroundColor(AppColors.textPrimary(colorScheme))
-                        Spacer()
                     }
                 }
                 .toggleStyle(.switch)
                 .padding(.vertical, AppSpacing.xs)
 
-            Divider().overlay(AppColors.divider(colorScheme))
+                // MARK: - Actions
+                VStack(spacing: AppSpacing.sm) {
+                    SettingsActionButton(loc.localized("bezel.autoMatchBezel"), systemImage: "magnifyingglass", prominent: true, fullWidth: true) { autoMatchBezel() }
+                    .disabled(currentROM.settings.bezelFileName == "none")
 
-VStack(spacing: 8) {
-            SettingsActionButton(loc.localized("bezel.autoMatchBezel"), systemImage: "magnifyingglass", prominent: true, fullWidth: true) { autoMatchBezel() }
-            .disabled(currentROM.settings.bezelFileName == "none")
+                    SettingsActionButton(loc.localized("bezel.clearBezel"), systemImage: "nosign", role: .destructive, fullWidth: true) { clearBezel() }
+                    .disabled(currentROM.settings.bezelFileName == "none")
+                }
 
-            SettingsActionButton(loc.localized("bezel.clearBezel"), systemImage: "nosign", role: .destructive, fullWidth: true) { clearBezel() }
-            .disabled(currentROM.settings.bezelFileName == "none")
-}
-.padding(.vertical, AppSpacing.xs)
-
-                Divider().overlay(AppColors.divider(colorScheme))
-
-Text(loc.localized("bezel.bezelsPreDownloaded"))
-.font(.caption).foregroundColor(AppColors.textTertiary(colorScheme))
-.padding(.vertical, AppSpacing.xs)
+                // MARK: - Hint
+                HStack(spacing: AppSpacing.sm) {
+                    Image(systemName: "info.circle")
+                        .font(.caption)
+                        .foregroundColor(AppColors.textMuted(colorScheme))
+                    Text(loc.localized("bezel.bezelsPreDownloaded"))
+                        .font(.caption)
+                        .foregroundColor(AppColors.textTertiary(colorScheme))
+                }
+                .padding(.vertical, AppSpacing.xs)
             }
         }
         .task(id: currentROM.id) {
             await loadCurrentBezelImage()
+        }
+    }
+
+    private var bezelPreviewRow: some View {
+        Group {
+            if let bezelImage = currentBezelImage {
+                Image(nsImage: bezelImage)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(maxHeight: 200)
+                    .clipShape(RoundedRectangle(cornerRadius: AppRadius.lg, style: .continuous))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: AppRadius.lg, style: .continuous)
+                            .stroke(AppColors.cardBorder(colorScheme), lineWidth: 1)
+                    )
+                    .shadow(color: .black.opacity(colorScheme == .dark ? 0.3 : 0.1), radius: 8, y: 4)
+            } else {
+                VStack(spacing: AppSpacing.sm) {
+                    Image(systemName: "photo.on.rectangle.angled")
+                        .font(.system(size: 32))
+                        .foregroundColor(AppColors.textTertiary(colorScheme))
+                    Text(currentBezelDisplayName)
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                        .foregroundColor(AppColors.textSecondary(colorScheme))
+                    Text(loc.localized("bezel.noPreviewAvailable"))
+                        .font(.caption)
+                        .foregroundColor(AppColors.textTertiary(colorScheme))
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, AppSpacing.lg)
+                .background(AppColors.brandAccent.opacity(0.12))
+                .clipShape(RoundedRectangle(cornerRadius: AppRadius.lg, style: .continuous))
+                .overlay(
+                    RoundedRectangle(cornerRadius: AppRadius.lg, style: .continuous)
+                        .stroke(AppColors.cardBorder(colorScheme), lineWidth: 1)
+                )
+            }
         }
     }
 

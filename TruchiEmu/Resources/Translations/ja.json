@@ -376,6 +376,8 @@
   "display.allSystems": "すべてのシステム",
   "display.noMatchingSettings": "一致する設定が見つかりません:",
   "cheats.title": "チート",
+  "cheats.noCheatsFound": "チートが見つかりません",
+  "cheats.downloadCheats": "チートをダウンロード",
   "cheats.librarySummary": "チートライブラリの概要",
   "cheats.files": "ファイル",
   "cheats.storage": "ストレージ",

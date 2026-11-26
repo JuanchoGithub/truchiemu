@@ -376,6 +376,8 @@
   "display.allSystems": "All systems",
   "display.noMatchingSettings": "No matching settings found for",
   "cheats.title": "Cheats",
+  "cheats.noCheatsFound": "No cheats found",
+  "cheats.downloadCheats": "Download Cheats",
   "cheats.librarySummary": "Cheat Library Summary",
   "cheats.files": "Files",
   "cheats.storage": "Storage",

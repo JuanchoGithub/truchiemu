@@ -7,15 +7,14 @@ extension GameDetailView {
 
     var gbColorizationSection: some View {
         ModernSectionCard(title: loc.localized("gameInfo.gameBoyColorization"), icon: "paintpalette") {
-            VStack(alignment: .leading, spacing: 0) {
-                HStack {
+            VStack(alignment: .leading, spacing: AppSpacing.md) {
+                // MARK: - Enable colorization
+                HStack(spacing: AppSpacing.md) {
                     Image(systemName: "paintpalette.fill").foregroundColor(AppColors.brandAccent).frame(width: 20)
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(loc.localized("gameInfo.enableColorization"))
-                            .font(.subheadline)
-                            .fontWeight(.medium)
-                            .foregroundColor(AppColors.textPrimary(colorScheme))
-                    }
+                    Text(loc.localized("gameInfo.enableColorization"))
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                        .foregroundColor(AppColors.textPrimary(colorScheme))
                     Spacer()
                     Toggle("", isOn: Binding(
                         get: { gbColorizationEnabled },
@@ -27,14 +26,13 @@ extension GameDetailView {
                     .toggleStyle(SwitchToggleStyle())
                     .labelsHidden()
                 }
-                .padding(.vertical, AppSpacing.xs)
 
                 if gbColorizationEnabled {
-                    Divider().overlay(AppColors.divider(colorScheme))
+                    // MARK: - Palette mode
                     gbPaletteModeRow
 
+                    // MARK: - Internal palette
                     if gbColorizationMode == "internal" {
-                        Divider().overlay(AppColors.divider(colorScheme))
                         if isGambatteCore {
                             gbInternalPaletteRow
                         } else {
@@ -43,10 +41,10 @@ extension GameDetailView {
                         }
                     }
 
-                    Divider().overlay(AppColors.divider(colorScheme))
+                    // MARK: - SGB borders
                     gbSGBBordersRow
 
-                    Divider().overlay(AppColors.divider(colorScheme))
+                    // MARK: - Color correction
                     if isGambatteCore {
                         gbColorCorrectionRow
                     } else {
@@ -54,7 +52,7 @@ extension GameDetailView {
                             .help(loc.localized("gameInfo.gambatteCoreOnlyColorCorrection"))
                     }
 
-                    Divider().overlay(AppColors.divider(colorScheme))
+                    // MARK: - Info
                     HStack(spacing: AppSpacing.sm) {
                         Image(systemName: "info.circle").foregroundColor(AppColors.textMuted(colorScheme)).font(.caption)
                         Text(loc.localized("gameInfo.applyColorPalettes"))
@@ -62,7 +60,7 @@ extension GameDetailView {
                     }
                     .padding(.vertical, AppSpacing.xs)
                 } else {
-                    Divider().overlay(AppColors.divider(colorScheme))
+                    // MARK: - Monochrome info
                     HStack(spacing: AppSpacing.sm) {
                         Image(systemName: "info.circle").foregroundColor(AppColors.textMuted(colorScheme)).font(.caption)
                         Text(loc.localized("gameInfo.gamesDisplayMonochrome"))
