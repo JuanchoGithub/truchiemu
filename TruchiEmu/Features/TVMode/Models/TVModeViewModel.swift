@@ -277,7 +277,11 @@ final class TVModeViewModel: ObservableObject {
     private func unitStepEntry(_ dir: Int, duration: Double, linear: Bool = false, deferGames: Bool = false) {
         guard !row1Entries.isEmpty else { return }
         let count = row1Entries.count
-        let newIndex = (((selectedEntryIndex + dir) % count) + count) % count
+        // The systems rail is a vertical list, not a carousel: clamp at the
+        // ends instead of wrapping. Wrapping made the rail slide the whole
+        // list from the last system back to the first, which reads as a glitch
+        // in a vertical layout.
+        let newIndex = min(max(selectedEntryIndex + dir, 0), count - 1)
         guard newIndex != selectedEntryIndex else { return }
         let stepAnimation: Animation = linear ? .linear(duration: duration) : .easeOut(duration: duration)
         withAnimation(stepAnimation) {
@@ -523,6 +527,16 @@ final class TVModeViewModel: ObservableObject {
 
     // MARK: - Internal
 
+    /// Primary action on the games rail (A). Resolves the most recent save
+    /// slot first so the button behaves like the detail page's Continue when a
+    /// save exists, without forcing the user through the detail page.
+    func launchFromRail() async {
+        guard page != .detail, let rom = selectedGame else { return }
+        refreshMostRecentSaveSlot(for: rom)
+        let slot = mostRecentSaveSlot
+        await launchSelected(slotToLoad: slot?.id, progressiveVersion: slot?.progressiveVersion)
+    }
+
     private func observeChanges() {
         library.$roms
             .receive(on: RunLoop.main)
@@ -616,6 +630,9 @@ final class TVModeViewModel: ObservableObject {
                 entries.append(TVModeEntry(filter: .system(sys)))
             }
         }
+        let previousEntryID = row1Entries.indices.contains(selectedEntryIndex)
+            ? row1Entries[selectedEntryIndex].id
+            : nil
         row1Entries = entries
 
         if let initialEntryID,
@@ -628,6 +645,12 @@ final class TVModeViewModel: ObservableObject {
             // opened TV mode on.
             selectedEntryIndex = index
             self.initialEntryID = nil
+        } else if let previousEntryID,
+                  let index = entries.firstIndex(where: { $0.id == previousEntryID }) {
+            // A background scan/refresh can add or drop entries. Keep the
+            // user on the same system by identity: holding the old index
+            // silently jumped the rail to whatever entry now sat there.
+            selectedEntryIndex = index
         } else if selectedEntryIndex >= entries.count {
             selectedEntryIndex = max(0, entries.count - 1)
         }
@@ -688,8 +711,14 @@ final class TVModeViewModel: ObservableObject {
             } else {
                 selectedGameIndex = 0
             }
-        } else if selectedGameIndex >= roms.count {
-            selectedGameIndex = max(0, roms.count - 1)
+        } else if let savedID = rememberedGameByEntry[entry.id],
+                  let idx = games.firstIndex(where: { $0.id == savedID }) {
+            // Same entry, refreshed list: a background scan can insert or
+            // remove games, which shifted the index onto a different game.
+            // Follow the selected game by identity.
+            selectedGameIndex = idx
+        } else if selectedGameIndex >= games.count {
+            selectedGameIndex = max(0, games.count - 1)
         }
         // Keep the saved game in step with in-place refreshes (library
         // publishes, sort changes, clamps) for the entry currently shown.

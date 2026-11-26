@@ -1,29 +1,25 @@
 import SwiftUI
 import AppKit
 
-/// Tile shown in row 1 for a smart collection or system. Icon-only with no
-/// container card. The focused icon scales up strongly and shows its name
-/// and ROM count below; side icons show art alone.
+/// Icon shown for a smart collection, category or system in the vertical
+/// systems rail. Icon-only: the rail draws the fixed focus frame, and the
+/// page header carries the focused entry's name and game count.
 struct TVModeEntryTile: View {
     let entry: TVModeEntry
     let count: Int
-    /// Center focus from `1` (exact center) to `0` (one slot away or row not
-    /// active). Applied with NO animation modifier: motion comes from the row
-    /// sweep itself, so each icon grows big passing through center and back
-    /// to normal size leaving it.
+    /// Continuous focus from `1` (sitting in the rail's focus frame) to `0`
+    /// (far away). Driven by the rail's animated centre so icons brighten as
+    /// they slide into the frame.
     let focus: CGFloat
     let theme: TVModeSettings.Theme
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.tvModeScale) private var scale
-    @ObservedObject private var loc = LocalizationManager.shared
-    /// Observed so a category tile re-renders with its real game-icons.net
-    /// image once the icon library finishes unpacking on first launch.
     @ObservedObject private var gamingIcons = GamingIconService.shared
     @State private var systemImage: NSImage?
     @State private var controllerImage: NSImage?
     @State private var customCategoryIcon: NSImage?
 
-    private var size: CGFloat { 168 * scale }
+    private var size: CGFloat { 52 * scale }
 
     /// Controller-style icons never change at runtime: one synchronous disk
     /// read per system total. Without this, every tile mount re-read its
@@ -52,35 +48,32 @@ struct TVModeEntryTile: View {
         return img
     }
 
-    /// Fixed label area so the row does not jump when focus moves between
-    /// icons. Only the centered icon fills it; side slots keep it empty.
-    private var labelHeight: CGFloat { 72 * scale }
-
     var body: some View {
-        VStack(spacing: 10 * scale) {
+        ZStack(alignment: .bottomTrailing) {
             iconView
                 .frame(width: size, height: size)
-                .shadow(color: shadowColor, radius: (8 + 16 * focus) * scale, y: (4 + 8 * focus) * scale)
-                .scaleEffect(0.9 + 0.55 * focus)
+                .foregroundStyle(iconColor)
+                .shadow(color: shadowColor, radius: (4 + 10 * focus) * scale, y: (2 + 4 * focus) * scale)
 
-            // Name and count stay mounted and crossfade with focus. Inserting
-            // and removing them per step popped text in and out at flight
-            // cadence, which read as choppiness.
-            VStack(spacing: 4 * scale) {
-                Text(entry.displayName)
-                    .font(.system(size: 28 * scale, weight: .bold))
-                    .foregroundStyle(textColor)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.65)
-                if count > 0 {
-                    Text("\(count)")
-                        .font(.system(size: 22 * scale, weight: .semibold))
-                        .foregroundStyle(textColor.opacity(0.7))
-                }
+            if count > 0 {
+                Text(verbatim: "\(count)")
+                    .font(.system(size: 9 * scale, weight: .bold, design: .rounded))
+                    .foregroundStyle(theme == .bold ? AppColors.accentForScheme(colorScheme) : .white)
+                    .padding(.horizontal, 5 * scale)
+                    .padding(.vertical, 2 * scale)
+                    .background(
+                        Capsule().fill(
+                            theme == .bold
+                                ? AppColors.accentForScheme(colorScheme).opacity(0.18)
+                                : Color.white.opacity(0.14)
+                        )
+                    )
+                    .opacity(max(0, focus * 2 - 1))
             }
-            .frame(width: size + 60 * scale, height: labelHeight)
-            .opacity(focus)
         }
+        .frame(width: size, height: size)
+        .scaleEffect(0.80 + 0.20 * focus)
+        .opacity(0.50 + 0.50 * focus)
         .accessibilityLabel(accessibilityLabel)
         .onAppear { loadSystemImage() }
         .onChange(of: entry.id) { _, _ in loadSystemImage() }
@@ -98,31 +91,31 @@ struct TVModeEntryTile: View {
                 .resizable()
                 .interpolation(.high)
                 .aspectRatio(contentMode: .fit)
-                .padding(12 * scale)
+                .padding(4 * scale)
         } else if entry.system != nil, let img = systemImage {
             Image(nsImage: img)
                 .resizable()
                 .interpolation(.high)
                 .aspectRatio(contentMode: .fit)
-                .padding(8 * scale)
+                .padding(2 * scale)
         } else if let category = entry.category {
             // Mirror the main sidebar's `GameCategoryIconView`: custom uploaded
             // icon, game-icons.net template image, or SF Symbol — tinted with
             // the category's own color.
             categoryIcon(category)
-                .padding(20 * scale)
+                .padding(8 * scale)
                 .foregroundStyle(categoryColor(category))
         } else if let symbol = entry.sfSymbol {
             Image(systemName: symbol)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
-                .padding(20 * scale)
+                .padding(8 * scale)
                 .foregroundStyle(iconColor)
         } else {
             Image(systemName: "gamecontroller")
                 .resizable()
                 .aspectRatio(contentMode: .fit)
-                .padding(20 * scale)
+                .padding(8 * scale)
                 .foregroundStyle(iconColor)
         }
     }
@@ -159,26 +152,18 @@ struct TVModeEntryTile: View {
         if theme == .bold {
             return AppColors.accentForScheme(colorScheme)
         } else {
-            return .primary.opacity(0.85)
-        }
-    }
-
-    private var textColor: Color {
-        if theme == .bold {
-            return AppColors.textPrimary(colorScheme)
-        } else {
-            return .primary
+            return .white.opacity(0.9)
         }
     }
 
     private var shadowColor: Color {
         if let category = entry.category {
-            return categoryColor(category).opacity(0.65 * focus)
+            return categoryColor(category).opacity(0.55 * focus)
         }
         if theme == .bold {
-            return AppColors.accentForScheme(colorScheme).opacity(0.55 * focus)
+            return AppColors.accentForScheme(colorScheme).opacity(0.45 * focus)
         } else {
-            return .black.opacity(0.15 + 0.25 * focus)
+            return .black.opacity(0.10 + 0.25 * focus)
         }
     }
 

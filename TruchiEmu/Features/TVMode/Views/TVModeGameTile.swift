@@ -1,43 +1,73 @@
 import SwiftUI
 import AppKit
 
-/// Flat boxart tile shown in row 2 (games). Sized to the actual boxart
-/// aspect (loaded from the image or, failing that, the system `BoxType`) so
-/// SNES/Genesis/DOS landscape covers aren't crammed into a portrait canvas.
-/// Focused state scales up by 30% and gains a soft accent halo whose size
-/// follows the tile's own bounds — not a fixed rectangle.
+/// Compact box art poster in the games rail. No caption: the hero stage
+/// carries the selected game's title, so the rail stays clean and shows more
+/// art per screen.
+///
+/// The art keeps its own aspect (SNES/Genesis/DOS landscape covers are not
+/// crammed into a portrait canvas) and is centred inside the rail slot. Focus
+/// adds a thin accent ring and a soft halo whose size follows the art, not the
+/// slot.
 struct TVModeGameTile: View {
     let rom: ROM
     /// Center focus from `1` (exact center) to `0` (one slot away or row not
     /// active). Applied with NO animation modifier: motion comes from the row
-    /// sweep itself, so each game grows big passing through center and back
-    /// to normal size leaving it.
+    /// sweep itself.
     let focus: CGFloat
     let theme: TVModeSettings.Theme
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.tvModeScale) private var scale
     @State private var image: NSImage?
 
-    private var preferredWidth: CGFloat { 240 * scale }
-
     var body: some View {
-        VStack(spacing: 8 * scale) {
-            tileContent
-                .scaleEffect(1.0 + 0.30 * focus, anchor: .bottom)
+        GeometryReader { geo in
+            let palette = TVModePalette(theme: theme, colorScheme: colorScheme)
+            let size = fittedSize(in: geo.size)
+            let radius = cornerRadius(for: size)
 
-            Text(rom.displayName)
-                .font(.system(size: 13 * scale, weight: .semibold))
-                .foregroundStyle(theme == .bold ? AppColors.textPrimary(colorScheme) : .primary)
-                .lineLimit(1)
-                .frame(width: imageDisplaySize.width + 40 * scale)
+            ZStack {
+                if let img = image {
+                    TVModeHoloBoxart(
+                        image: img,
+                        romID: rom.id.uuidString,
+                        cornerRadius: radius,
+                        showBackingFill: true,
+                        animate: focus > 0.6
+                    )
+                    .frame(width: size.width, height: size.height)
+                    .clipShape(RoundedRectangle(cornerRadius: radius, style: .continuous))
+                } else {
+                    RoundedRectangle(cornerRadius: radius, style: .continuous)
+                        .fill(palette.panelFill)
+                        .overlay(
+                            Image(systemName: "gamecontroller.fill")
+                                .font(.system(size: 22 * scale))
+                                .foregroundStyle(palette.textTertiary)
+                        )
+                        .frame(width: size.width, height: size.height)
+                }
+            }
+            .overlay(
+                RoundedRectangle(cornerRadius: radius, style: .continuous)
+                    .strokeBorder(palette.focusRing, lineWidth: 2 * scale)
+                    .opacity(focus)
+            )
+            .shadow(
+                color: palette.shadow.opacity(0.55 + 0.45 * focus),
+                radius: (7 + 16 * focus) * scale,
+                y: (3 + 7 * focus) * scale
+            )
+            .shadow(
+                color: palette.accent.opacity(0.50 * focus),
+                radius: 30 * scale
+            )
+            .position(x: geo.size.width / 2, y: geo.size.height / 2)
         }
         .onAppear { preloadImage() }
         .onChange(of: rom.id) { _, _ in preloadImage() }
     }
 
-    /// Aspect ratio of the displayed image. Falls back to the system's
-    /// declared `BoxType` when the image hasn't loaded yet (avoiding a
-    /// transient portrait flash before the cover arrives).
     private var imageAspect: CGFloat {
         if let img = image, img.size.width > 0, img.size.height > 0 {
             return img.size.width / img.size.height
@@ -46,124 +76,30 @@ struct TVModeGameTile: View {
         return boxType.aspectRatio
     }
 
-    /// Width of the loaded cover at our preferred display width. Landscape /
-    /// box / portrait boxart keep its own aspect — no more 3:4 squashing.
-    private var imageDisplaySize: CGSize {
+    /// Largest rect with the cover's aspect that fits the rail slot.
+    private func fittedSize(in available: CGSize) -> CGSize {
         let aspect = imageAspect
-        let width = preferredWidth
-        return CGSize(width: width, height: width / aspect)
+        guard aspect > 0, available.width > 0, available.height > 0 else { return available }
+        let byHeight = CGSize(width: available.height * aspect, height: available.height)
+        if byHeight.width <= available.width { return byHeight }
+        return CGSize(width: available.width, height: available.width / aspect)
     }
 
     /// Corner radius scales with the actual image dimensions, so portrait
     /// covers keep moderately rounded corners and landscape covers get a
     /// proportionally shallower arc.
-    private var boxCornerRadius: CGFloat {
-        let size = imageDisplaySize
-        let base = min(size.width, size.height) * 0.07
-        return min(max(base, 6 * scale), 22 * scale)
-    }
-
-    @ViewBuilder
-    private var tileContent: some View {
-        ZStack {
-            // Subtle background fill that shows through any letterboxing the
-            // image doesn't cover, plus shadows live behind it. Pinned to
-            // imageSize so the opaque container doesn't grow past the cover
-            // and swallow the halo's outward bleed.
-            RoundedRectangle(cornerRadius: boxCornerRadius, style: .continuous)
-                .fill(boxBackground)
-                .frame(width: imageDisplaySize.width, height: imageDisplaySize.height)
-                .shadow(color: shadowColor, radius: (5 + 23 * focus) * scale, y: (2 + 10 * focus) * scale)
-
-            // Halo behind the tile — sized to the tile, not a fixed box, so
-            // each cover's accent glow matches its own proportions. Mounts at
-            // the edge while nearly invisible, then ramps: no mid-flight pop.
-            if focus > 0.05 {
-                RoundedRectangle(cornerRadius: boxCornerRadius + 10 * scale, style: .continuous)
-                    .fill(haloColor)
-                    .blur(radius: 32 * scale)
-                    .opacity(0.55 * focus)
-                    .padding(-18 * scale)
-                    .frame(
-                        width: imageDisplaySize.width + 36 * scale,
-                        height: imageDisplaySize.height + 36 * scale
-                    )
-                    .allowsHitTesting(false)
-            }
-
-            // Base art stays mounted; holo fades in over it near center, so
-            // there is never a mid-flight view swap. The holo component draws
-            // the base art itself (user's weighted random variant, wizard
-            // self-driven light + card motion).
-            boxartView
-                .frame(width: imageDisplaySize.width, height: imageDisplaySize.height)
-                .clipShape(RoundedRectangle(cornerRadius: boxCornerRadius, style: .continuous))
-            if focus > 0.05, let img = image {
-                TVModeHoloBoxart(
-                    image: img,
-                    romID: rom.id.uuidString,
-                    cornerRadius: boxCornerRadius
-                )
-                .opacity(min(1, focus * 3))
-                .frame(width: imageDisplaySize.width, height: imageDisplaySize.height)
-                .clipShape(RoundedRectangle(cornerRadius: boxCornerRadius, style: .continuous))
-            }
-        }
-        .frame(
-            width: imageDisplaySize.width + 36 * focus * scale,
-            height: imageDisplaySize.height + 36 * focus * scale
-        )
-    }
-
-    @ViewBuilder
-    private var boxartView: some View {
-        if let img = image {
-            Image(nsImage: img)
-                .resizable()
-                .interpolation(.high)
-                .aspectRatio(contentMode: .fit)
-        } else {
-            // Placeholder: dark rounded rect with a small game icon.
-            RoundedRectangle(cornerRadius: boxCornerRadius - 2 * scale, style: .continuous)
-                .fill(boxBackground)
-                .overlay(
-                    Image(systemName: "gamecontroller.fill")
-                        .resizable()
-                        .scaledToFit()
-                        .padding(imageDisplaySize.width * 0.18)
-                        .foregroundStyle(.white.opacity(0.25))
-                )
-        }
-    }
-
-    private var boxBackground: Color {
-        if theme == .bold {
-            return AppColors.cardBackground(colorScheme).opacity(0.4)
-        }
-        return Color.gray.opacity(0.15)
-    }
-
-    private var shadowColor: Color {
-        if theme == .bold {
-            return AppColors.accentForScheme(colorScheme).opacity(0.45 * focus)
-        }
-        return .black.opacity(0.2 + 0.3 * focus)
-    }
-
-    private var haloColor: Color {
-        if theme == .bold {
-            return AppColors.accentForScheme(colorScheme).opacity(0.6)
-        }
-        return Color.white.opacity(0.35)
+    private func cornerRadius(for size: CGSize) -> CGFloat {
+        let base = min(size.width, size.height) * 0.06
+        return min(max(base, 5 * scale), 18 * scale)
     }
 
     private func preloadImage() {
         let thumb = BoxArtThumbnailSize.medium
         guard rom.hasBoxArt else { image = nil; return }
         // Memory-only peek. `thumbnailSync` would decode the source image on
-        // the main thread on a cache miss (its last-resort branch), which shows
-        // up as a multi-hundred-millisecond UI stall per cold tile. A miss here
-        // shows the placeholder for one frame and is filled asynchronously.
+        // the main thread on a cache miss, which shows up as a multi-hundred-
+        // millisecond UI stall per cold tile. A miss here shows the placeholder
+        // for one frame and is filled asynchronously.
         if let cached = ImageCache.shared.thumbnailCachedOrPregen(for: rom.boxArtLocalPath, preferredSize: thumb) {
             image = cached
             return

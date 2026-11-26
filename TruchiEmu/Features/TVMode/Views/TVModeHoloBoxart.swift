@@ -20,6 +20,12 @@ struct TVModeHoloBoxart: View {
     /// flat TV-mode move-list tiles). Defaults to `true` for the letterboxed
     /// card look.
     var showBackingFill: Bool = true
+    /// When `false`, the synthetic light/card motion is paused and the foil is
+    /// rendered once at its current position. Used by the TV-mode hero while
+    /// the systems rail owns input and while the detail page covers the
+    /// browse surface, so the app never pays for a full-size 20 Hz holo that
+    /// nobody can see.
+    var animate: Bool = true
 
     @State private var holoMasks: HoloMaskSet?
     /// Settings snapshot for this card, built once per `romID`. It used to be
@@ -50,7 +56,7 @@ struct TVModeHoloBoxart: View {
                         .fill(AppColors.cardBackground(colorScheme))
                 }
 
-                TimelineView(.animation(minimumInterval: 0.05, paused: !animationActive)) { ctx in
+                TimelineView(.animation(minimumInterval: 0.05, paused: !animationActive || !animate)) { ctx in
                     let t = ctx.date.timeIntervalSince1970
                     // Slow synthetic orbit — mirrors HoloPreviewCard's motion.
                     let px = 0.5 + 0.35 * sin(t * 0.9)

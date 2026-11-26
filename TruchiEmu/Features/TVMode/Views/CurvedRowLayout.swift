@@ -28,8 +28,9 @@ struct RowMove: Equatable {
 /// downward "smile" arc. The center item sits highest; items farther from
 /// center drop and shrink. There is no 3D rotation — items stay flat.
 ///
-/// Infinite scrolling is achieved by wrapping the data with `modulo`. The
-/// caller drives `centerIndex` and is responsible for clamping it.
+/// The row wraps through the data with `modulo`, so long lists scroll forever
+/// and a short list still shows each game once (it does not tile duplicates:
+/// two copies of the same cover read as two copies of the game).
 ///
 /// The internal `animatedCenter` is a `CGFloat` mirror of `centerIndex`. It is
 /// advanced inside `withAnimation` whenever `centerIndex` changes so that the
@@ -66,30 +67,20 @@ struct CurvedRowLayout<Item: Identifiable & Hashable, Content: View>: View {
 
     @Environment(\.tvModeScale) private var scale
     @State private var animatedCenter: CGFloat = 0
-    /// `moveSeq` value handled by the last `centerIndex` change. Compared
-    /// against the incoming `moveSeq` to detect an intentional slide.
+    /// `move.seq` value handled by the last `centerIndex` change. Compared
+    /// against the incoming `move.seq` to detect an intentional slide.
     @State private var lastHandledSeq: Int = 0
 
     var body: some View {
         GeometryReader { geo in
             let width = geo.size.width
             ZStack {
-                if !items.isEmpty && needsExpansion {
-                    // Short-list mode: source items are too few to cover the
-                    // visible window standalone, so we tile (duplicate) them.
-                    // We render each occurrence as a distinct SwiftUI view
-                    // (stable `id`) so the row slides smoothly: as
-                    // `expandedCenter` advances from N → N+1, each view's
-                    // `.offset` interpolates rather than the content snapping
-                    // at the slot's teeth.
-                    ForEach(occurrencesInRange, id: \.id) { occ in
-                        renderExpanded(occurrence: occ, width: width)
-                    }
-                } else if !items.isEmpty {
-                    // Long-list mode: original behaviour. Iterate over
-                    // `items.indices`; each item keeps view identity as
-                    // `animatedCenter` slides, so SwiftUI smoothly interpolates
-                    // `.offset` / `.scaleEffect` / `.opacity`.
+                if !items.isEmpty {
+                    // Each item keeps view identity as `animatedCenter`
+                    // slides, so SwiftUI smoothly interpolates `.offset` /
+                    // `.scaleEffect` / `.opacity`. Items farther than the
+                    // visible window are skipped, which keeps a short list
+                    // free of duplicated covers.
                     ForEach(items.indices, id: \.self) { index in
                         render(index: index, width: width)
                     }
@@ -100,9 +91,6 @@ struct CurvedRowLayout<Item: Identifiable & Hashable, Content: View>: View {
         .frame(height: itemHeight + maxSag + 24 * scale)
         .onAppear {
             animatedCenter = CGFloat(centerIndex)
-            if needsExpansion {
-                expandedCenter = CGFloat(centerIndex)
-            }
             lastHandledSeq = move.seq
         }
         .onChange(of: centerIndex) { _, newValue in
@@ -115,7 +103,7 @@ struct CurvedRowLayout<Item: Identifiable & Hashable, Content: View>: View {
                 // repeat interval — the delta only covers one of them, and the
                 // row then sits one slot away from the selection forever: the
                 // center tile shows one game while the detail page opens
-                // another. The renderers use modulo math, so any unwrapped
+                // another. The renderer uses modulo math, so any unwrapped
                 // representative of `centerIndex` is correct (and keeps the
                 // slide direction across wrap edges).
                 lastHandledSeq = move.seq
@@ -125,17 +113,11 @@ struct CurvedRowLayout<Item: Identifiable & Hashable, Content: View>: View {
                     : .easeOut(duration: move.duration)
                 withAnimation(stepAnimation) {
                     animatedCenter = target
-                    if needsExpansion {
-                        expandedCenter = target
-                    }
                 }
             } else {
                 // External index change (list rebuild, restore, clamp). The
                 // content under the index changed, so snap without animation.
                 animatedCenter = CGFloat(newValue)
-                if needsExpansion {
-                    expandedCenter = CGFloat(newValue)
-                }
             }
         }
         .onChange(of: items.count) { _, count in
@@ -145,7 +127,6 @@ struct CurvedRowLayout<Item: Identifiable & Hashable, Content: View>: View {
             // value, which is only congruent modulo the *previous* count and
             // would land on a different slot than the selection.
             animatedCenter = CGFloat(centerIndex)
-            expandedCenter = CGFloat(centerIndex)
         }
     }
 
@@ -166,48 +147,8 @@ struct CurvedRowLayout<Item: Identifiable & Hashable, Content: View>: View {
         return current + diff
     }
 
-    /// True when the source list is too small to cover the visible window on
-    /// its own. We then tile (duplicate) items to fill every slot.
-    private var needsExpansion: Bool {
-        !items.isEmpty && items.count < visibleEachSide * 2 + 1
-    }
-
-    /// Continuous (non-wrapping) center coordinate for short-list mode.
-    /// Tracks the user's net navigation forwards/backwards so the row keeps
-    /// sliding in the requested direction across wrap boundaries.
-    @State private var expandedCenter: CGFloat = 0
-
-    /// One item occurrence rendered in the short-list carousel. Each
-    /// occurrence has a stable integer identifier so SwiftUI interpolates the
-    /// view's `.offset` smoothly as `expandedCenter` animates — instead of
-    /// snapping content at slot boundaries (which happened when we keyed off
-    /// slot only and recomputed `items[...]` each frame).
-    struct Occurrence: Identifiable, Hashable {
-        let id: Int       // stable unique level-wide index
-        let sourceIndex: Int
-    }
-
-    /// Visible occurrences for the current `expandedCenter`. We render a
-    /// window `±(visibleEachSide + 1)` wide around the current rounded center
-    /// so a sliver of content always sits ready to slide in from each edge.
-    /// `id` is the global occurrence index (stable, never wraps); the
-    /// source item index is `id mod items.count` — so short source lists
-    /// duplicate naturally. As `expandedCenter` advances, occurrences enter
-    /// and exit the visible window, but each one's view identity holds
-    /// while it remains within range — yielding a smooth slide animation.
-    private var occurrencesInRange: [Occurrence] {
-        let count = items.count
-        guard count > 0 else { return [] }
-        let mid = Int(expandedCenter.rounded())
-        let range = (mid - visibleEachSide - 1)...(mid + visibleEachSide + 1)
-        return range.map { i in
-            let wrapped = ((i % count) + count) % count
-            return Occurrence(id: i, sourceIndex: wrapped)
-        }
-    }
-
-    /// Original long-list renderer — item index is its view identity, slot
-    /// distance is the nearest-modulo offset from `animatedCenter`.
+    /// Item index is its view identity, slot distance is the nearest-modulo
+    /// offset from `animatedCenter`.
     @ViewBuilder
     private func render(index: Int, width: CGFloat) -> some View {
         let count = items.count
@@ -232,42 +173,6 @@ struct CurvedRowLayout<Item: Identifiable & Hashable, Content: View>: View {
                 let focus = max(0.0, 1.0 - absOff)
 
                 content(items[index], focus)
-                    .frame(width: itemWidth, height: itemHeight)
-                    .scaleEffect(scale, anchor: .bottom)
-                    .opacity(opacity)
-                    .offset(x: xPosition - width / 2, y: sag)
-            }
-        }
-    }
-
-    /// Short-list renderer keyed by **occurrence** (global non-wrapping
-    /// slot index). As `expandedCenter` animates from N → N+1, each
-    /// occurrence's view identity is preserved and its `.offset` /
-    /// `.scaleEffect` / `.opacity` smoothly interpolates — exactly like
-    /// the long-list `render(index:)` path. Source items tile (duplicate) via
-    /// `occurrence.id mod items.count`.
-    @ViewBuilder
-    private func renderExpanded(occurrence: Occurrence, width: CGFloat) -> some View {
-        let count = items.count
-        if count == 0 || !items.indices.contains(occurrence.sourceIndex) {
-            EmptyView()
-        } else {
-            // Slot offset = visual distance from center. The fractional part
-            // of `expandedCenter` lets the row slide continuously.
-            let slotOffset = CGFloat(occurrence.id) - expandedCenter
-            let absOff = abs(slotOffset)
-
-            if absOff > CGFloat(visibleEachSide) + 0.5 {
-                EmptyView()
-            } else {
-                let xPosition = width / 2 + slotOffset * (itemWidth + spacing)
-                let dist = min(1.0, absOff / CGFloat(visibleEachSide))
-                let sag = maxSag * dist
-                let scale = 1.0 - (0.22 * dist)
-                let opacity = max(0.0, 1.0 - 0.55 * dist)
-                let focus = max(0.0, 1.0 - absOff)
-
-                content(items[occurrence.sourceIndex], focus)
                     .frame(width: itemWidth, height: itemHeight)
                     .scaleEffect(scale, anchor: .bottom)
                     .opacity(opacity)

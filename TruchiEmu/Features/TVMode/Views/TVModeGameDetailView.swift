@@ -57,7 +57,10 @@ struct TVModeGameDetailView: View {
                 .frame(width: 440 * scale, alignment: .topLeading)
                 .frame(maxHeight: .infinity, alignment: .topLeading)
         }
-        .padding(40 * scale)
+        // The TV-mode shell already applies the screen-edge padding (and the
+        // hint bar sits below this view), so only a small vertical inset is
+        // needed here.
+        .padding(.vertical, 8 * scale)
         .onAppear { loadArt() }
         .onChange(of: rom.id) { _, _ in resetArt(); loadArt() }
         .onDisappear { artDownloadTask?.cancel() }
@@ -196,14 +199,20 @@ struct TVModeGameDetailView: View {
                 Text(loc.localized("tvMode.detail.snaps"))
                     .font(.system(size: 16 * scale, weight: .semibold))
                     .foregroundStyle(theme == .bold ? AppColors.textPrimary(colorScheme) : .primary)
-                HStack(spacing: 10 * scale) {
+                // Two columns keep every thumbnail inside the 440pt info column.
+                // A single row of four 220pt images overflowed the column.
+                LazyVGrid(
+                    columns: Array(repeating: GridItem(.flexible(), spacing: 10 * scale), count: 2),
+                    spacing: 10 * scale
+                ) {
                     ForEach(snaps.indices, id: \.self) { i in
                         let img = snaps[i]
                         Image(nsImage: img)
                             .resizable()
                             .interpolation(.high)
                             .aspectRatio(contentMode: .fill)
-                            .frame(width: 220 * scale, height: 165 * scale)
+                            .frame(maxWidth: .infinity, maxHeight: 124 * scale)
+                            .clipped()
                             .clipShape(RoundedRectangle(cornerRadius: 8 * scale, style: .continuous))
                             .overlay(
                                 RoundedRectangle(cornerRadius: 8 * scale, style: .continuous)

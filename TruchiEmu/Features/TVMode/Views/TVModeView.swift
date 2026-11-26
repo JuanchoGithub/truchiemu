@@ -34,14 +34,6 @@ final class TVModeNavContext: GamepadNavContext {
 /// gamepad/keyboard input meant for the game (e.g. Enter as Start, Esc as
 /// menu pause, arrows for navigation). When the game window closes, the
 /// monitor resumes so TV-mode is once again keyboard-operable.
-/// Maps keyboard arrows + Enter + Esc to GamepadNavAction so TV mode can be
-/// operated from the keyboard while developing.
-///
-/// The local monitor quietly forwards all `keyDown` events. While a game
-/// window is running we tear the monitor down so TV-mode doesn't swallow
-/// gamepad/keyboard input meant for the game (e.g. Enter as Start, Esc as
-/// menu pause, arrows for navigation). When the game window closes, the
-/// monitor resumes so TV-mode is once again keyboard-operable.
 ///
 /// Routed through `GamepadNavContextStack.shared.topActive()` so an
 /// overlay with higher priority (e.g. `TVModeCoreDownloadSheetContext`)
@@ -134,40 +126,45 @@ struct TVModeView: View {
     }
 
     var body: some View {
+        let palette = TVModePalette(theme: viewModel.theme, colorScheme: colorScheme)
         ZStack {
-            contentLayer
-                // Rows blur/dim quickly on a page change (0.10 s) so the
-                // enter-detail stagger only has to wait that long before the
-                // detail view is revealed. The detail-ROM animation covers
-                // `shiftDetailGame`, where `page` doesn't change but
-                // `.id(rom.id)` recreates the detail view; it crossfades over
-                // the already-blurred rows.
-                .animation(.easeInOut(duration: 0.10), value: viewModel.page)
-                .animation(.easeInOut(duration: 0.20), value: viewModel.downloadedDetailROM?.id)
-                // Enter-detail stagger: hold the detail view back until the
-                // rows have finished their fast blur/dim, then reveal it. On
-                // exit, drop the gate immediately so the detail view fades
-                // out while the rows unblur.
-                .onChange(of: viewModel.page) { _, newPage in
-                    detailRevealTask?.cancel()
-                    detailRevealTask = nil
-                    guard newPage == .detail else {
-                        detailVisible = false
-                        return
-                    }
-                    detailVisible = false
-                    detailRevealTask = Task { @MainActor in
-                        try? await Task.sleep(nanoseconds: 100_000_000)
-                        guard !Task.isCancelled else { return }
-                        withAnimation(.easeInOut(duration: 0.20)) {
-                            detailVisible = true
-                        }
+            background
+                .ignoresSafeArea()
+            scrims(palette)
+
+            VStack(spacing: 0) {
+                ZStack {
+                    browseLayer(palette)
+                    if viewModel.page == .detail, detailVisible, let rom = viewModel.downloadedDetailROM {
+                        detailScrim(palette)
+                        TVModeGameDetailView(
+                            rom: rom,
+                            theme: viewModel.theme,
+                            focused: true,
+                            mostRecentSaveSlot: viewModel.mostRecentSaveSlot
+                        )
+                        .environmentObject(library)
+                        .id(rom.id)
+                        .transition(.opacity.combined(with: .scale(scale: 0.97)))
                     }
                 }
-            topBar
-            bottomHint
+
+                TVModeHintBar(
+                    hints: hints(),
+                    sortLabel: sortLabel,
+                    theme: viewModel.theme
+                )
+            }
+            .padding(.horizontal, 40 * scale)
+            .padding(.top, 22 * scale)
+            .padding(.bottom, 12 * scale)
+            .sheet(isPresented: $showTVSettingsOverlay, onDismiss: restoreKeyWindowAfterSettings) {
+                TVModeSettingsView()
+                    .environmentObject(loc)
+            }
+
             if let hudLabel = viewModel.sortHudLabel {
-                sortHUD(label: hudLabel)
+                sortHUD(label: hudLabel, palette: palette)
                     .transition(.opacity)
                     .zIndex(200)
             }
@@ -199,7 +196,6 @@ struct TVModeView: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(background.ignoresSafeArea())
         .environment(\.tvModeScale, scale)
         // Stop every TV-mode animation while a game runs. `MTKView` draws the
         // game on the main thread, so a busy TV-mode animation freezes game
@@ -227,7 +223,7 @@ struct TVModeView: View {
                 TVModeEntryTile.warmIcons(for: viewModel.row1Entries, scale: scale)
             }
             navContext.handler = { [self] action in handle(action: action) }
-            // Honor an already-running game so we don't double-rout `select` /
+            // Honor an already-running game so we don't double-route `select` /
             // `launchGame` into the launch pipeline and surface a duplicate-
             // launch notification.
             if runningGames.runningGames.isEmpty {
@@ -289,8 +285,31 @@ struct TVModeView: View {
             if noGameRunning { navContext.resumeFromGameplay() }
             else { navContext.suspendForGameplay() }
         }
+        // Enter-detail stagger: hold the detail view back until the browse
+        // surface has finished its fast blur/dim, then reveal it. On exit, drop
+        // the gate immediately so the detail view fades out while the rows
+        // unblur.
+        .onChange(of: viewModel.page) { _, newPage in
+            detailRevealTask?.cancel()
+            detailRevealTask = nil
+            guard newPage == .detail else {
+                detailVisible = false
+                return
+            }
+            detailVisible = false
+            detailRevealTask = Task { @MainActor in
+                try? await Task.sleep(nanoseconds: 100_000_000)
+                guard !Task.isCancelled else { return }
+                withAnimation(.easeInOut(duration: 0.20)) {
+                    detailVisible = true
+                }
+            }
+        }
+        .animation(.easeInOut(duration: 0.20), value: viewModel.downloadedDetailROM?.id)
         .modifier(TVModeKeyMonitor())
     }
+
+    // MARK: - Background
 
     @ViewBuilder
     private var background: some View {
@@ -307,12 +326,58 @@ struct TVModeView: View {
                 .allowsHitTesting(false)
         } else {
             ZStack {
-                Color(red: 0.07, green: 0.07, blue: 0.08)
-                RadialGradient(colors: [Color.white.opacity(0.04), .clear], center: .center, startRadius: 0, endRadius: 500 * scale)
+                LinearGradient(
+                    colors: [
+                        Color(red: 0.065, green: 0.070, blue: 0.085),
+                        Color(red: 0.030, green: 0.032, blue: 0.040)
+                    ],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                RadialGradient(
+                    colors: [AppColors.accentForScheme(colorScheme).opacity(0.14), .clear],
+                    center: .topLeading,
+                    startRadius: 0,
+                    endRadius: 760 * scale
+                )
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .allowsHitTesting(false)
         }
+    }
+
+    /// Top/bottom scrims and a soft vignette. They keep the header, hero text
+    /// and hint bar legible over a bright boxart backdrop, and give the screen
+    /// the cinematic letterbox feel the flat two-row layout lacked.
+    private func scrims(_ palette: TVModePalette) -> some View {
+        ZStack {
+            LinearGradient(
+                colors: [palette.scrimTop, .clear],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .frame(height: 240 * scale)
+            .frame(maxHeight: .infinity, alignment: .top)
+
+            LinearGradient(
+                colors: [.clear, palette.scrimBottom],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .frame(height: 380 * scale)
+            .frame(maxHeight: .infinity, alignment: .bottom)
+
+            if palette.isDarkCanvas {
+                RadialGradient(
+                    colors: [.clear, .black.opacity(0.32)],
+                    center: .center,
+                    startRadius: 260 * scale,
+                    endRadius: 980 * scale
+                )
+            }
+        }
+        .ignoresSafeArea()
+        .allowsHitTesting(false)
     }
 
     /// The ROM whose boxart should fill the backdrop. On the detail page we
@@ -341,56 +406,172 @@ struct TVModeView: View {
         }
     }
 
-    @ViewBuilder
-    private var contentLayer: some View {
-        VStack {
-            row1
-            row2
+    // MARK: - Browse surface
+
+    private func browseLayer(_ palette: TVModePalette) -> some View {
+        VStack(spacing: 0) {
+            header(palette)
+
+            if viewModel.row1Entries.isEmpty {
+                emptyLibrary(palette)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else {
+                // The systems rail only spans the hero stage. It used to share
+                // the full column height with the poster row, so its lower
+                // icons rendered on top of the posters.
+                HStack(alignment: .top, spacing: 26 * scale) {
+                    TVModeSystemRail(
+                        entries: viewModel.row1Entries,
+                        selectedIndex: viewModel.selectedEntryIndex,
+                        move: viewModel.entryMove,
+                        theme: viewModel.theme,
+                        active: viewModel.page == .row1,
+                        countFor: { viewModel.count(for: $0.filter) }
+                    )
+
+                    VStack(spacing: 0) {
+                        titleBlock(palette)
+                        TVModeHeroPanel(
+                            rom: viewModel.selectedGame,
+                            page: viewModel.page,
+                            theme: viewModel.theme,
+                            emptyMessage: loc.localized("tvMode.empty.noGames")
+                        )
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .opacity(viewModel.page == .row1 ? 0.80 : 1)
+                        .animation(.easeInOut(duration: 0.2), value: viewModel.page)
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+
+                // Full-width poster row: it centres on the screen and bleeds
+                // under the rail column, which is empty at this height.
+                gamesRail
+            }
         }
         .blur(radius: viewModel.page == .detail ? 18 * scale : 0)
         .opacity(viewModel.page == .detail ? 0.25 : 1)
-
-        if viewModel.page == .detail, detailVisible, let rom = viewModel.downloadedDetailROM {
-            TVModeGameDetailView(
-                rom: rom,
-                theme: viewModel.theme,
-                focused: true,
-                mostRecentSaveSlot: viewModel.mostRecentSaveSlot
-            )
-                .environmentObject(library)
-                .id(rom.id)
-                .transition(.opacity.combined(with: .scale(scale: 0.97)))
-        }
+        .animation(.easeInOut(duration: 0.10), value: viewModel.page)
     }
 
-    @ViewBuilder
-    private var row1: some View {
-        CurvedRowLayout(
-            items: viewModel.row1Entries,
-            centerIndex: Binding(
-                get: { viewModel.selectedEntryIndex },
-                set: { viewModel.selectedEntryIndex = $0 }
-            ),
-            move: viewModel.entryMove,
-            itemWidth: 200 * scale,
-            itemHeight: 270 * scale,
-            spacing: 22 * scale,
-            maxSag: 28 * scale,
-            visibleEachSide: 5
-        ) { entry, focus in
-            let count = viewModel.count(for: entry.filter)
-            TVModeEntryTile(
-                entry: entry,
-                count: count,
-                focus: viewModel.page == .row1 ? focus : 0,
-                theme: viewModel.theme
-            )
+    private func header(_ palette: TVModePalette) -> some View {
+        HStack(spacing: 12 * scale) {
+            HStack(spacing: 8 * scale) {
+                Circle()
+                    .fill(palette.accent)
+                    .frame(width: 6 * scale, height: 6 * scale)
+                Text(verbatim: loc.localized("tvMode.title").uppercased())
+                    .font(.system(size: 11 * scale, weight: .semibold))
+                    .tracking(2.4 * scale)
+                    .foregroundStyle(palette.textSecondary)
+            }
+
+            zoneChip(palette)
+
+            Spacer()
+
+            themeToggle(palette)
+            settingsButton(palette)
         }
-        .padding(.vertical, 16 * scale)
+        .padding(.bottom, 16 * scale)
     }
 
-    @ViewBuilder
-    private var row2: some View {
+    private func themeToggle(_ palette: TVModePalette) -> some View {
+        HStack(spacing: 2 * scale) {
+            ForEach(TVModeSettings.Theme.allCases) { t in
+                Button {
+                    TVModeSettings.setTheme(t)
+                    NotificationCenter.default.post(name: .tvModeSettingsChanged, object: nil)
+                } label: {
+                    Text(verbatim: loc.localized("tvMode.theme.\(t.rawValue)"))
+                        .font(.system(size: 11 * scale, weight: .semibold))
+                        .padding(.horizontal, 12 * scale)
+                        .padding(.vertical, 6 * scale)
+                        .background(
+                            Capsule().fill(
+                                viewModel.theme == t
+                                    ? (t == .bold ? palette.accent.opacity(0.22) : palette.panelFillStrong)
+                                    : Color.clear
+                            )
+                        )
+                        .foregroundStyle(viewModel.theme == t ? palette.textPrimary : palette.textTertiary)
+                }
+                .buttonStyle(.plain)
+            }
+        }
+        .padding(3 * scale)
+        .background(Capsule().fill(palette.panelFill))
+        .overlay(Capsule().strokeBorder(palette.panelStroke, lineWidth: 1 * scale))
+    }
+
+    private func settingsButton(_ palette: TVModePalette) -> some View {
+        Button {
+            showTVSettingsOverlay = true
+        } label: {
+            Image(systemName: "gearshape.fill")
+                .font(.system(size: 12 * scale, weight: .semibold))
+                .foregroundStyle(palette.textPrimary)
+                .frame(width: 30 * scale, height: 30 * scale)
+                .background(Circle().fill(palette.panelFill))
+                .overlay(Circle().strokeBorder(palette.panelStroke, lineWidth: 1 * scale))
+        }
+        .buttonStyle(.plain)
+    }
+
+    private func titleBlock(_ palette: TVModePalette) -> some View {
+        let entry = viewModel.selectedEntry
+        let isSystem = entry?.system != nil
+        return VStack(alignment: .leading, spacing: 3 * scale) {
+            Text(verbatim: loc.localized(isSystem ? "tvMode.eyebrow.system" : "tvMode.eyebrow.collection"))
+                .font(.system(size: 10 * scale, weight: .bold))
+                .tracking(2 * scale)
+                .foregroundStyle(palette.accent)
+
+            // The count shares the title's baseline. As a separate top-right
+            // block it read as a detached header label, far from the title it
+            // counts.
+            HStack(alignment: .firstTextBaseline, spacing: 24 * scale) {
+                Text(verbatim: entry?.displayName ?? loc.localized("tvMode.page.games"))
+                    .font(.system(size: 42 * scale, weight: .bold))
+                    .foregroundStyle(palette.textPrimary)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.55)
+
+                Spacer(minLength: 20 * scale)
+
+                Text(verbatim: gameCountLabel(viewModel.games.count))
+                    .font(.system(size: 12 * scale, weight: .medium))
+                    .foregroundStyle(palette.textSecondary)
+            }
+        }
+        .padding(.bottom, 8 * scale)
+    }
+
+    private func zoneChip(_ palette: TVModePalette) -> some View {
+        let key: String
+        switch viewModel.page {
+        case .row1: key = "tvMode.page.systems"
+        case .row2: key = "tvMode.page.games"
+        case .detail: key = "tvMode.page.detail"
+        }
+        return Text(verbatim: loc.localized(key).uppercased())
+            .font(.system(size: 9.5 * scale, weight: .bold))
+            .tracking(1.4 * scale)
+            .foregroundStyle(palette.accent)
+            .padding(.horizontal, 10 * scale)
+            .padding(.vertical, 4 * scale)
+            .background(Capsule().fill(palette.accent.opacity(0.14)))
+            .overlay(Capsule().strokeBorder(palette.accent.opacity(0.35), lineWidth: 1 * scale))
+    }
+
+    private func gameCountLabel(_ count: Int) -> String {
+        if count == 1 { return loc.localized("tvMode.meta.gamesOne") }
+        return loc.localized("tvMode.meta.gamesMany")
+            .replacingOccurrences(of: "{count}", with: "\(count)")
+    }
+
+    private var gamesRail: some View {
         CurvedRowLayout(
             items: viewModel.games,
             centerIndex: Binding(
@@ -398,134 +579,134 @@ struct TVModeView: View {
                 set: { viewModel.selectedGameIndex = $0 }
             ),
             move: viewModel.gameMove,
-            itemWidth: 280 * scale,
-            itemHeight: 360 * scale,
-            spacing: 6 * scale,
-            maxSag: 28 * scale,
-            visibleEachSide: 4
+            itemWidth: 160 * scale,
+            itemHeight: 224 * scale,
+            spacing: 12 * scale,
+            maxSag: 10 * scale,
+            visibleEachSide: 5
         ) { rom, focus in
             TVModeGameTile(
                 rom: rom,
-                // Only the active row shows focus. On the detail page row 2
-                // sits behind the hero, blurred and dimmed, so its growth,
-                // halo and 20 Hz holo animation are invisible — and that holo
-                // tick re-rasterized the full-screen blur of this row 20 times
-                // a second. Same rule row 1 already uses.
+                // Only the games rail shows focus while it owns input. On the
+                // systems rail and on the detail page the poster row sits
+                // behind other content, so its 20 Hz holo is paused.
                 focus: viewModel.page == .row2 ? focus : 0,
                 theme: viewModel.theme
             )
         }
         // Fades the games row in for the final system of a fast flight
-        // (see `pulseGamesFade`). Only triggers on that flag; sweeps and
-        // page changes are unaffected.
-        .opacity(viewModel.gamesDimmed ? 0 : 1)
+        // (see `pulseGamesFade`), and dims it while the systems rail owns
+        // input. Both are one opacity so the two states never fight.
+        .opacity((viewModel.gamesDimmed ? 0 : 1) * (viewModel.page == .row1 ? 0.62 : 1))
         .animation(.easeOut(duration: 0.25), value: viewModel.gamesDimmed)
-        .padding(.vertical, 30 * scale)
+        .animation(.easeInOut(duration: 0.2), value: viewModel.page)
+        // Soft edge fade: the row bleeds past both window edges, and cut
+        // posters looked accidental. Matches the systems rail's edge fade.
+        .mask(
+            LinearGradient(
+                stops: [
+                    .init(color: .clear, location: 0),
+                    .init(color: .black, location: 0.045),
+                    .init(color: .black, location: 0.955),
+                    .init(color: .clear, location: 1)
+                ],
+                startPoint: .leading,
+                endPoint: .trailing
+            )
+        )
     }
 
-    @ViewBuilder
-    private var topBar: some View {
-        VStack {
-            HStack {
-                Text(loc.localized("tvMode.title"))
-                    .font(.system(size: 22 * scale, weight: .bold))
-                    .foregroundStyle(viewModel.theme == .bold ? AppColors.accentForScheme(colorScheme) : .white)
-                Spacer()
-                themeToggle
-                Button {
-                    showTVSettingsOverlay = true
-                } label: {
-                    Image(systemName: "gearshape.fill")
-                        .font(.system(size: 18 * scale))
-                        .foregroundStyle(.primary)
-                }
-                .buttonStyle(.plain)
-                .padding(.leading, 12 * scale)
-            }
-            .padding(.horizontal, 40 * scale)
-            .padding(.top, 24 * scale)
-            Spacer()
-        }
-        .sheet(isPresented: $showTVSettingsOverlay, onDismiss: restoreKeyWindowAfterSettings) {
-            TVModeSettingsView()
-                .environmentObject(loc)
-        }
-    }
-
-    @ViewBuilder
-    private var themeToggle: some View {
-        HStack(spacing: 6 * scale) {
-            ForEach(TVModeSettings.Theme.allCases) { t in
-                Button {
-                    TVModeSettings.setTheme(t)
-                    NotificationCenter.default.post(name: .tvModeSettingsChanged, object: nil)
-                } label: {
-                    Text(loc.localized("tvMode.theme.\(t.rawValue)"))
-                        .font(.system(size: 12 * scale, weight: .semibold))
-                        .padding(.horizontal, 14 * scale).padding(.vertical, 6 * scale)
-                        .background(
-                            Capsule().fill(viewModel.theme == t
-                                ? (viewModel.theme == .bold ? AppColors.accentForScheme(colorScheme).opacity(0.25) : Color.white.opacity(0.12))
-                                : Color.clear)
-                        )
-                        .foregroundStyle(.primary)
-                }
-                .buttonStyle(.plain)
-            }
+    private func emptyLibrary(_ palette: TVModePalette) -> some View {
+        VStack(spacing: 14 * scale) {
+            Image(systemName: "externaldrive.badge.plus")
+                .font(.system(size: 42 * scale, weight: .light))
+                .foregroundStyle(palette.textTertiary)
+            Text(verbatim: loc.localized("tvMode.empty.libraryTitle"))
+                .font(.system(size: 24 * scale, weight: .bold))
+                .foregroundStyle(palette.textPrimary)
+            Text(verbatim: loc.localized("tvMode.empty.libraryMessage"))
+                .font(.system(size: 14 * scale))
+                .foregroundStyle(palette.textSecondary)
+                .multilineTextAlignment(.center)
+                .frame(maxWidth: 420 * scale)
         }
     }
 
-    @ViewBuilder
-    private var bottomHint: some View {
-        VStack {
-            Spacer()
-            HStack(spacing: 24 * scale) {
-                hintChip(loc.localized("tvMode.page.systems"), active: viewModel.page == .row1)
-                hintChip(loc.localized("tvMode.page.games"), active: viewModel.page == .row2)
-                if viewModel.page == .detail {
-                    hintChip(loc.localized("tvMode.page.detail"), active: true)
-                }
+    private func detailScrim(_ palette: TVModePalette) -> some View {
+        Group {
+            if palette.isDarkCanvas {
+                Color.black.opacity(0.38)
+            } else {
+                AppColors.windowBackground(colorScheme).opacity(0.55)
             }
-            .padding(.bottom, 20 * scale)
         }
+        .ignoresSafeArea()
+    }
+
+    // MARK: - Hints
+
+    private func hints() -> [TVModeHint] {
+        switch viewModel.page {
+        case .row1:
+            return [
+                TVModeHint(glyph: "A", label: loc.localized("tvMode.hint.open")),
+                TVModeHint(glyph: "↕", label: loc.localized("tvMode.hint.systems")),
+                TVModeHint(glyph: "→", label: loc.localized("tvMode.hint.games")),
+                TVModeHint(glyph: "Y", label: loc.localized("app.settings")),
+                TVModeHint(glyph: "X", label: loc.localized("settings.theme"))
+            ]
+        case .row2:
+            return [
+                TVModeHint(glyph: "A", label: loc.localized("header.play")),
+                TVModeHint(glyph: "↓", label: loc.localized("tvMode.hint.details")),
+                TVModeHint(glyph: "B", label: loc.localized("tvMode.hint.back")),
+                TVModeHint(glyph: "Y", label: loc.localized("app.settings")),
+                TVModeHint(glyph: "X", label: loc.localized("settings.theme"))
+            ]
+        case .detail:
+            let hasSave = viewModel.mostRecentSaveSlot?.exists == true
+            var items: [TVModeHint] = [
+                TVModeHint(glyph: "A", label: loc.localized(hasSave ? "header.continue" : "header.play")),
+                TVModeHint(glyph: "B", label: loc.localized("tvMode.hint.back")),
+                TVModeHint(glyph: "←→", label: loc.localized("tvMode.hint.browse"), wide: true)
+            ]
+            if hasSave {
+                items.append(TVModeHint(glyph: "Y", label: loc.localized("tvMode.hint.playFromStart")))
+            }
+            items.append(TVModeHint(glyph: "X", label: loc.localized("settings.theme")))
+            return items
+        }
+    }
+
+    private var sortLabel: String? {
+        guard viewModel.page != .detail else { return nil }
+        return loc.localized(viewModel.sortMode.localizationKey)
     }
 
     /// Brief sort-mode pill that surfaces on L3 / L3+R3 to confirm the new
     /// mode. Sits at top-centre of the screen; auto-hides per
     /// `TVModeViewModel.flashSortHud()`.
-    private func sortHUD(label: String) -> some View {
+    private func sortHUD(label: String, palette: TVModePalette) -> some View {
         VStack {
             HStack(spacing: 8 * scale) {
                 Image(systemName: "arrow.up.arrow.down.circle.fill")
                     .font(.system(size: 16 * scale, weight: .semibold))
+                    .foregroundStyle(palette.accent)
                 Text(verbatim: loc.localized("app.sortBy"))
                     .font(.system(size: 13 * scale, weight: .medium))
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(palette.textSecondary)
                 Text(verbatim: label)
                     .font(.system(size: 14 * scale, weight: .semibold))
-                    .foregroundStyle(.primary)
+                    .foregroundStyle(palette.textPrimary)
             }
-            .padding(.horizontal, 18 * scale).padding(.vertical, 10 * scale)
-            .background(
-                Capsule().fill(AppColors.windowBackground(colorScheme, tinted: false).opacity(0.92))
-            )
-            .overlay(
-                Capsule().strokeBorder(AppColors.brandAccent.opacity(0.5), lineWidth: 1 * scale)
-            )
-            .shadow(color: .black.opacity(0.35), radius: 12, y: 4)
+            .padding(.horizontal, 18 * scale)
+            .padding(.vertical, 10 * scale)
+            .background(Capsule().fill(palette.panelFillStrong))
+            .overlay(Capsule().strokeBorder(palette.accent.opacity(0.5), lineWidth: 1 * scale))
+            .shadow(color: palette.shadow, radius: 12 * scale, y: 4 * scale)
             .padding(.top, 28 * scale)
             Spacer()
         }
-    }
-
-    @ViewBuilder
-    private func hintChip(_ label: String, active: Bool) -> some View {
-        Text(label)
-            .font(.system(size: 12 * scale, weight: .semibold))
-            .padding(.horizontal, 12 * scale).padding(.vertical, 5 * scale)
-            .background(Capsule().fill(active && viewModel.theme == .bold ? AppColors.accentForScheme(colorScheme).opacity(0.22) : Color.white.opacity(active ? 0.10 : 0.04)))
-            .overlay(Capsule().strokeBorder(active && viewModel.theme == .bold ? AppColors.accentForScheme(colorScheme) : Color.white.opacity(active ? 0.3 : 0.1), lineWidth: 1 * scale))
-            .foregroundStyle(.primary)
     }
 }
 
@@ -534,31 +715,35 @@ struct TVModeView: View {
 extension TVModeView {
     fileprivate func handle(action: GamepadNavAction) {
         switch action {
-        case .navigateLeft:
+        // The systems rail is vertical, so up/down walk the rail and
+        // left/right move between the rail and the games rail. This mirrors
+        // the on-screen geometry: the old horizontal system carousel used
+        // left/right for systems, which no longer matches the layout.
+        case .navigateUp:
             switch viewModel.page {
             case .row1: viewModel.selectEntryByOffset(-1)
+            case .row2: viewModel.exitRow2()
+            case .detail: viewModel.exitDetail()
+            }
+        case .navigateDown:
+            switch viewModel.page {
+            case .row1: viewModel.selectEntryByOffset(1)
+            case .row2: viewModel.enterDetail()
+            case .detail: break
+            }
+        case .navigateLeft:
+            switch viewModel.page {
+            case .row1: break
             case .row2: viewModel.selectGameByOffset(-1)
             case .detail: viewModel.shiftDetailGame(by: -1)
             }
         case .navigateRight:
             switch viewModel.page {
-            case .row1: viewModel.selectEntryByOffset(1)
+            case .row1: viewModel.moveDownFromRow1()
             case .row2: viewModel.selectGameByOffset(1)
             case .detail: viewModel.shiftDetailGame(by: 1)
             }
-        case .navigateUp:
-            switch viewModel.page {
-            case .row2: viewModel.exitRow2()
-            case .detail: viewModel.exitDetail()
-            case .row1: break
-            }
-        case .navigateDown:
-            switch viewModel.page {
-            case .row1: viewModel.moveDownFromRow1()
-            case .row2: viewModel.enterDetail()
-            case .detail: break
-            }
-        // L1 / R1 — move 5 at a time
+        // L1 / R1 — move 5 at a time along the active axis
         case .focusPrevZone:
             switch viewModel.page {
             case .row1: viewModel.selectEntryByOffset(-5)
@@ -571,7 +756,7 @@ extension TVModeView {
             case .row2: viewModel.selectGameByOffset(5)
             case .detail: viewModel.shiftDetailGame(by: 5)
             }
-        // L2 / R2 — move 10 at a time
+        // L2 / R2 — move 10 at a time along the active axis
         case .pageUp:
             switch viewModel.page {
             case .row1: viewModel.selectEntryByOffset(-10)
@@ -599,7 +784,10 @@ extension TVModeView {
         case .select:
             switch viewModel.page {
             case .row1: viewModel.moveDownFromRow1()
-            case .row2: viewModel.enterDetail()
+            // A on the games rail launches immediately (Continue when a save
+            // exists). The detail page is one press away on Down, so the
+            // primary button no longer costs a detour through it.
+            case .row2: Task { await viewModel.launchFromRail() }
             case .detail:
                 // A on the detail page acts as "Continue": when the selected
                 // ROM has a save state the most recent slot is restored, so the
