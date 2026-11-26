@@ -205,6 +205,22 @@ struct SystemSidebarView: View {
         .padding(.bottom, 10)
     }
 
+    /// When Quick Access is collapsed, render its items as a normal sidebar
+    /// list (one row per item) instead of hiding them entirely, matching the
+    /// categories and systems sections.
+    @ViewBuilder
+    private var quickAccessList: some View {
+        ForEach(quickAccessItems) { item in
+            sidebarRow(
+                icon: item.icon,
+                label: item.label,
+                count: item.count,
+                tint: item.tint,
+                filter: item.filter
+            )
+        }
+    }
+
     private var retroAchievementsMatchCount: Int {
         guard raService.isEnabled else { return 0 }
         if searchText.isEmpty {
@@ -306,6 +322,9 @@ struct SystemSidebarView: View {
                         if quickAccessSectionExpanded {
                             quickAccessTiles
                                 .compositingGroup()
+                                .transition(.opacity)
+                        } else {
+                            quickAccessList
                                 .transition(.opacity)
                         }
                     }
