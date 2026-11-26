@@ -443,15 +443,27 @@ struct HoloGameCardView: View {
                 }
             }
             .onContinuousHover { phase in
-                // Reduce Motion keeps the card flat: no pointer-driven tilt and
-                // no cursor glare, since both are movement.
-                guard !ScrollActivity.isScrolling, !reduceMotion else { return }
                 switch phase {
                 case .active(let location):
+                    // `onHover` only reports entering and leaving. Scrolling
+                    // clears the hover state, and SwiftUI does not send another
+                    // enter event when the pointer remains over the card. Restore
+                    // it from the continuous event so the next mouse movement
+                    // works without leaving and re-entering the card.
+                    guard !ScrollActivity.isScrolling else { return }
+                    if !isHovered {
+                        isHovered = true
+                        holoMaskTrigger = true
+                    }
+                    // Reduce Motion keeps the card flat: no pointer-driven tilt
+                    // and no cursor glare, since both are movement.
+                    guard !reduceMotion else { return }
                     pointerUpdateCoalescer.submit(location) { location in
                         applyPointerPosition(location)
                     }
                 case .ended:
+                    isHovered = false
+                    guard !reduceMotion else { return }
                     pointerUpdateCoalescer.submit(nil) { location in
                         applyPointerPosition(location)
                     }

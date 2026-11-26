@@ -330,13 +330,23 @@ struct GameCardView: View {
             }
         }
         .onContinuousHover { phase in
-            guard pivotingEnabled else { return }
             switch phase {
             case .active(let location):
+                // `onHover` only reports entering and leaving. Scrolling clears
+                // the hover state, and SwiftUI does not send another enter event
+                // when the pointer remains over the card. Restore the state from
+                // the continuous event so the next mouse movement works.
+                guard !ScrollActivity.isScrolling else { return }
+                if !isHovered {
+                    isHovered = true
+                }
+                guard pivotingEnabled else { return }
                 pointerUpdateCoalescer.submit(location) { location in
                     applyPointerPosition(location)
                 }
             case .ended:
+                isHovered = false
+                guard pivotingEnabled else { return }
                 pointerUpdateCoalescer.submit(nil) { location in
                     applyPointerPosition(location)
                 }
