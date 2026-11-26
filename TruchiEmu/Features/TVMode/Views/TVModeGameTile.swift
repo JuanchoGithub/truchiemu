@@ -28,15 +28,30 @@ struct TVModeGameTile: View {
 
             ZStack {
                 if let img = image {
-                    TVModeHoloBoxart(
-                        image: img,
-                        romID: rom.id.uuidString,
-                        cornerRadius: radius,
-                        showBackingFill: true,
-                        animate: focus > 0.6
-                    )
-                    .frame(width: size.width, height: size.height)
-                    .clipShape(RoundedRectangle(cornerRadius: radius, style: .continuous))
+                    // Base art stays mounted; the holo stack (masked blend
+                    // layers + a 20 Hz timeline) only mounts for the tile near
+                    // the center, fading in over the base. Without this gate
+                    // every visible tile kept a static holo stack alive, so the
+                    // whole bottom bar re-composited a dozen foil layers on each
+                    // systems-row step — the fast up/down sweep crawled.
+                    Image(nsImage: img)
+                        .resizable()
+                        .interpolation(.high)
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: size.width, height: size.height)
+                        .clipShape(RoundedRectangle(cornerRadius: radius, style: .continuous))
+
+                    if focus > 0.05 {
+                        TVModeHoloBoxart(
+                            image: img,
+                            romID: rom.id.uuidString,
+                            cornerRadius: radius,
+                            showBackingFill: true
+                        )
+                        .opacity(min(1, focus * 3))
+                        .frame(width: size.width, height: size.height)
+                        .clipShape(RoundedRectangle(cornerRadius: radius, style: .continuous))
+                    }
                 } else {
                     RoundedRectangle(cornerRadius: radius, style: .continuous)
                         .fill(palette.panelFill)
