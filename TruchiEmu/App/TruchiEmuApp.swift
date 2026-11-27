@@ -818,6 +818,20 @@ struct ContentWithPrepopulationView: View {
         if let release = await AppUpdateService.shared.checkForUpdates() {
             updateService.pendingStartupUpdate = release
         }
+
+        // Check for core updates on startup (respects 24-hour interval)
+        if CoreManager.shared.shouldCheckCoreUpdates {
+            await CoreManager.shared.checkForCoreUpdates()
+            let outdated = CoreManager.shared.coresNeedingUpdate
+            if !outdated.isEmpty {
+                let names = outdated.prefix(3).map { $0.displayName }.joined(separator: ", ")
+                let more = outdated.count > 3 ? " and \(outdated.count - 3) more" : ""
+                NotificationService.shared.sendNotification(
+                    title: LocalizationManager.shared.localized("coreUpdates.availableTitle"),
+                    body: String(format: LocalizationManager.shared.localized("coreUpdates.availableBody"), names + more)
+                )
+            }
+        }
     }
 }
 

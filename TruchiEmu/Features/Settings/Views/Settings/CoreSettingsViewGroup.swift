@@ -269,24 +269,26 @@ struct CoreSettingsView: View {
 
             Spacer()
 
-            if coreManager.isFetchingCoreList {
+            if coreManager.isFetchingCoreList || coreManager.isCheckingCoreUpdates {
                 HStack(spacing: AppSpacing.md) {
                     ProgressView()
                         .controlSize(.small)
-                    Text(loc.localized("cores.fetchingCoreList"))
-                        .foregroundStyle(AppColors.textSecondary(colorScheme))
-                        .font(.caption)
+                    Text(coreManager.isCheckingCoreUpdates
+                        ? loc.localized("coreUpdates.checkingForUpdates")
+                        : loc.localized("cores.fetchingCoreList"))
+                    .foregroundStyle(AppColors.textSecondary(colorScheme))
+                    .font(.caption)
                 }
-            } else if coreManager.isFetchingCoreList || LibretroInfoManager.shared.isRefreshing {
+            } else if LibretroInfoManager.shared.isRefreshing {
                 HStack {
                     ProgressView().controlSize(.small)
                     Text(loc.localized("cores.updatingSystemsCores"))
                 }
             } else {
                 SettingsActionButton(loc.localized("cores.checkForUpdates"), systemImage: "arrow.triangle.2.circlepath") {
-                    Task { await coreManager.performFullSystemUpdate() }
+                    Task { await coreManager.checkForCoreUpdates() }
                 }
-                .disabled(coreManager.isFetchingCoreList || LibretroInfoManager.shared.isRefreshing)
+                .disabled(coreManager.isFetchingCoreList || LibretroInfoManager.shared.isRefreshing || coreManager.isCheckingCoreUpdates)
                 SettingsActionButton(loc.localized("cores.importCustom"), systemImage: "square.and.arrow.down") {
                     showCoreImporter = true
                 }
@@ -575,6 +577,36 @@ struct InstalledCoreRowView: View {
                             Text("v\(version)")
                                 .font(.caption2)
                                 .foregroundColor(AppColors.textMuted(colorScheme))
+                        }
+
+                        if coreManager.hasUpdate(for: core.id) {
+                            Button(action: {
+                                Task {
+                                    if let remote = coreManager.availableCores.first(where: { $0.coreID == core.id }) {
+                                        await coreManager.downloadCore(remote)
+                                    }
+                                }
+                            }) {
+                                HStack(spacing: AppSpacing.xs) {
+                                    Image(systemName: "arrow.down.circle")
+                                        .font(.caption2)
+                                    Text(loc.localized("coreUpdates.updateButton"))
+                                        .font(.caption2)
+                                        .fontWeight(.semibold)
+                                }
+                                .foregroundColor(AppColors.warning(colorScheme))
+                            }
+                            .buttonStyle(.plain)
+                            .disabled(coreManager.isDownloadingCore)
+                        } else if coreManager.hasCheckedForUpdates {
+                            HStack(spacing: AppSpacing.xs) {
+                                Image(systemName: "checkmark.seal")
+                                    .font(.caption2)
+                                Text(loc.localized("coreUpdates.upToDate"))
+                                    .font(.caption2)
+                                    .fontWeight(.medium)
+                            }
+                            .foregroundColor(AppColors.success(colorScheme))
                         }
                     }
 

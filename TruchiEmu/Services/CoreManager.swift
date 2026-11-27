@@ -185,6 +185,9 @@ class CoreManager: ObservableObject {
     @Published var installedCores: [LibretroCore] = []
     @Published var availableCores: [RemoteCoreInfo] = []
     @Published var isFetchingCoreList: Bool = false
+    @Published var isCheckingCoreUpdates: Bool = false
+    @Published var hasCheckedForUpdates: Bool = false
+    @Published var coresNeedingUpdate: [LibretroCore] = []
     @Published var pendingDownload: PendingCoreDownload? = nil
     @Published var downloadPhase: CoreDownloadPhase = .idle
     @Published var downloadCoreName: String = ""
@@ -196,6 +199,7 @@ class CoreManager: ObservableObject {
     private let coresKey = "installed_cores_v2"
     private let availableCoresKey = "available_cores_v1"
     private let coresInitialFetchDoneKey = "cores_initial_fetch_done_v1"
+    private let coreUpdateCheckKey = "cores_last_core_update_check_v1"
     private let encoder = JSONEncoder()
     private let decoder = JSONDecoder()
 
@@ -212,6 +216,13 @@ class CoreManager: ObservableObject {
         let hasCache = !availableCores.isEmpty
         let hasBeenFetched = AppSettings.getBool(coresInitialFetchDoneKey, defaultValue: false)
         return !hasCache && !hasBeenFetched
+    }
+
+    /// Whether enough time has passed since the last core update check to run another one.
+    var shouldCheckCoreUpdates: Bool {
+        let interval: TimeInterval = 86400 // 24 hours
+        guard let lastCheck = AppSettings.getDate(coreUpdateCheckKey) else { return true }
+        return Date().timeIntervalSince(lastCheck) > interval
     }
 
     var buildbotBase: URL {
@@ -349,6 +360,49 @@ class CoreManager: ObservableObject {
         #if LOG_DEBUG
         LoggerService.debug(category: "CoreManager", "Available cores initial fetch done")
         #endif
+    }
+
+    // MARK: - Core Update Check
+
+    /// Checks whether any installed core has a newer version available on the buildbot.
+    /// Fetches the available core list first (if needed), then compares each installed
+    /// core's active version tag against the remote version.
+    func checkForCoreUpdates() async {
+        guard !isCheckingCoreUpdates else { return }
+        isCheckingCoreUpdates = true
+        defer {
+            isCheckingCoreUpdates = false
+            AppSettings.setDate(coreUpdateCheckKey, value: Date())
+        }
+
+        LoggerService.info(category: "CoreManager", "Checking for core updates...")
+
+        // Ensure we have an up-to-date list of available cores
+        await fetchAvailableCores()
+
+        var outdated: [LibretroCore] = []
+        for installed in installedCores {
+            guard let activeTag = installed.activeVersionTag, !activeTag.isEmpty else { continue }
+            guard let remote = availableCores.first(where: { $0.coreID == installed.id }),
+                  let remoteVersion = remote.version, !remoteVersion.isEmpty else { continue }
+
+            // Buildbot nightlies are dated builds; if the version string differs, an update is available.
+            if activeTag != remoteVersion {
+                outdated.append(installed)
+                #if LOG_DEBUG
+                LoggerService.debug(category: "CoreManager", "Update available for \(installed.displayName): installed \(activeTag), available \(remoteVersion)")
+                #endif
+            }
+        }
+
+        coresNeedingUpdate = outdated
+        hasCheckedForUpdates = true
+        LoggerService.info(category: "CoreManager", "Core update check complete: \(outdated.count) core(s) need updating")
+    }
+
+    /// Returns true if the given core has a newer version available.
+    func hasUpdate(for coreID: String) -> Bool {
+        coresNeedingUpdate.contains { $0.id == coreID }
     }
 
     // MARK: - Info File Processing
@@ -1322,6 +1376,28 @@ class CoreManager: ObservableObject {
         self.loadAvailableCores()
         self.loadInstalledCores()
         SystemPreferences.shared.updateTrigger += 1
+
+        // Refresh the outdated-cores list after a full system update
+        await refreshOutdatedCores()
     }
 
+    /// Compares installed cores against the available core list and populates
+    /// `coresNeedingUpdate` with any core whose active version is outdated.
+    private func refreshOutdatedCores() {
+        var outdated: [LibretroCore] = []
+        for installed in installedCores {
+            guard let activeTag = installed.activeVersionTag, !activeTag.isEmpty else { continue }
+            guard let remote = availableCores.first(where: { $0.coreID == installed.id }),
+                  let remoteVersion = remote.version, !remoteVersion.isEmpty else { continue }
+
+            if activeTag != remoteVersion {
+                outdated.append(installed)
+            }
+        }
+        coresNeedingUpdate = outdated
+        #if LOG_DEBUG
+        LoggerService.debug(category: "CoreManager", "Refreshed outdated cores: \(outdated.count) need updating")
+        #endif
+    }
 }
+

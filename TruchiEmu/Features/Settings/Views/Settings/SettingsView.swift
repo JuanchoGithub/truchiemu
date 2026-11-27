@@ -35,7 +35,7 @@ struct SettingsView: View {
     enum Page: Hashable, Codable, RawRepresentable, Identifiable {
 
         var id: String { rawValue }
-        case general, saves, library, controllers, analogMouse, dosJoystick, boxArt, holo, gameToolbar, cheats, bezels, retroAchievements, genre, logging, moveList, hotkeys, timeMachine, perSystem, streaming, tvMode, help, about, reset
+        case general, saves, library, controllers, analogMouse, dosJoystick, boxArt, holo, gameToolbar, cheats, bezels, retroAchievements, genre, logging, moveList, hotkeys, timeMachine, perSystem, streaming, tvMode, help, about, reset, coreManager
 
         var rawValue: String {
             switch self {
@@ -62,6 +62,7 @@ struct SettingsView: View {
             case .help: return "help"
             case .about: return "about"
             case .reset: return "reset"
+            case .coreManager: return "coreManager"
             }
         }
 
@@ -90,13 +91,14 @@ struct SettingsView: View {
             case "help": self = .help
             case "about": self = .about
             case "reset": self = .reset
+            case "coreManager": self = .coreManager
             default: return nil
             }
         }
 
         var sidebarSection: SidebarSection {
             switch self {
-            case .general, .saves, .boxArt, .holo, .gameToolbar, .bezels, .perSystem, .tvMode:
+            case .general, .saves, .boxArt, .holo, .gameToolbar, .bezels, .perSystem, .tvMode, .coreManager:
                 return .general
             case .library, .controllers, .analogMouse, .dosJoystick, .hotkeys:
                 return .library
@@ -132,6 +134,7 @@ struct SettingsView: View {
             case .help: return "questionmark.circle.fill"
             case .about: return "info.circle"
             case .reset: return "arrow.uturn.backward"
+            case .coreManager: return "cpu.fill"
             }
         }
 
@@ -160,6 +163,7 @@ struct SettingsView: View {
             case .help: return LocalizationManager.shared.localized("settings.help")
             case .about: return LocalizationManager.shared.localized("settings.about")
             case .reset: return LocalizationManager.shared.localized("settings.reset.title")
+            case .coreManager: return LocalizationManager.shared.localized("settings.coreManager")
             }
         }
 
@@ -211,6 +215,8 @@ struct SettingsView: View {
                 return "about info version truchie emu emulator"
             case .reset:
                 return "reset restore defaults factory clear wipe"
+            case .coreManager:
+                return "core cores manager installed update version systems delete all"
             }
         }
     }
@@ -230,7 +236,7 @@ struct SettingsView: View {
         .general, .saves, .boxArt, .holo, .gameToolbar, .bezels, .perSystem, .tvMode,
         .library, .controllers, .analogMouse, .dosJoystick, .hotkeys,
         .cheats, .retroAchievements, .moveList, .streaming, .genre, .timeMachine,
-        .logging, .reset, .help, .about
+        .logging, .reset, .help, .about, .coreManager
     ]
 
     @State private var selectedPage: Page = .general
@@ -1003,6 +1009,7 @@ struct SettingsView: View {
             case .help: HelpSettingsView(searchText: $searchText, focusedSectionID: $focusedSectionID, scopedSectionID: $scopedSectionID)
             case .about: AboutView(focusedSectionID: $focusedSectionID, scopedSectionID: $scopedSectionID)
             case .reset: ResetSettingsView(searchText: $searchText, focusedSectionID: $focusedSectionID, scopedSectionID: $scopedSectionID)
+            case .coreManager: CoreManagerView(searchText: $searchText, focusedSectionID: $focusedSectionID, scopedSectionID: $scopedSectionID)
             }
         }
         .frame(minWidth: 450, minHeight: 350)

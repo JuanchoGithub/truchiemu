@@ -1351,6 +1351,7 @@
 		DA94BAE9800BC86097DC6138 /* sfc@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D9174F064E6B3F316C9AFDB /* sfc@132w.png */; };
 		DAA7D00D03C90DDF0DD7D031 /* AchievementToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B45C4797CC22995053ADA4 /* AchievementToastView.swift */; };
 		DAB669E3BDEA87EADF3AF042 /* gb.ico in Resources */ = {isa = PBXBuildFile; fileRef = AFE2965FAA27F897E6415688 /* gb.ico */; };
+		DAB7404585048363FE8F1E1E /* CoreManagerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FDDC20056BC9494DAE2CE6E /* CoreManagerView.swift */; };
 		DAFE857499FFE1F3765B1593 /* DOSJoystickSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA27E493562B273F8D1C121 /* DOSJoystickSettingsView.swift */; };
 		DB0A6A98E6E40A9838E49ECD /* input_systemLabels_colecovision.json in Resources */ = {isa = PBXBuildFile; fileRef = 0131AF2732320A89574B49A3 /* input_systemLabels_colecovision.json */; };
 		DB9C6B84818F0494C9D193F9 /* LibretroBridgeImpl.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5C71FA314D9C45318540B2DB /* LibretroBridgeImpl.mm */; };
@@ -1683,6 +1684,7 @@
 		0F4DA247EB32B5A9BEC74766 /* fightdata_dino.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_dino.json; sourceTree = "<group>"; };
 		0FBB5464D1AC9C49D889EF43 /* pcecd.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = pcecd.ico; sourceTree = "<group>"; };
 		0FBEF4A0EC322C901446D4C9 /* input_coreLabels_pocketcdg.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_pocketcdg.json; sourceTree = "<group>"; };
+		0FDDC20056BC9494DAE2CE6E /* CoreManagerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreManagerView.swift; sourceTree = "<group>"; };
 		0FF63BFF980BE337C49CF0B7 /* CoreOverrideService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreOverrideService.swift; sourceTree = "<group>"; };
 		1004B788B680D89D08A2C4B6 /* ffplay@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ffplay@132w.png"; sourceTree = "<group>"; };
 		1012D50E404A9BC829D2EB03 /* SYOBONACTION.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SYOBONACTION.png; sourceTree = "<group>"; };
@@ -5278,6 +5280,7 @@
 				D726A1A82A05EEFA659AF95D /* ControllerHotkeyCaptureButton.swift */,
 				3230EB435232A6B5AC4FBC1E /* ControllerSettingsViewGroup.swift */,
 				F7FF9A7DBD158DEC791E5D2E /* ControllerTestSheet.swift */,
+				0FDDC20056BC9494DAE2CE6E /* CoreManagerView.swift */,
 				8CFD1DFC1E63A628D89B5DF7 /* CoreOptionsView.swift */,
 				50F0C395AC7AC42E3144C256 /* CoreSettingsViewGroup.swift */,
 				7BA27E493562B273F8D1C121 /* DOSJoystickSettingsView.swift */,
@@ -6980,6 +6983,7 @@
 				9175C767F01BBA408C2256AA /* CoreDownloadStatusBar.swift in Sources */,
 				9299402B15F58D978EC2ABE6 /* CoreHostProtocol.swift in Sources */,
 				20BA97ABF5B6C7FBD1ECF76E /* CoreManager.swift in Sources */,
+				DAB7404585048363FE8F1E1E /* CoreManagerView.swift in Sources */,
 				18F648B9ABBD542F67F8578A /* CoreOption.swift in Sources */,
 				C0BF7D965A680A168FACC3BB /* CoreOptionsManager.swift in Sources */,
 				7E0AE511450BD2A5FE2820A5 /* CoreOptionsSection.swift in Sources */,
