@@ -4,27 +4,6 @@ import SwiftUI
 /// between the in-TV-mode `TVModeSettingsView` sheet and the two leftover
 /// `GeneralSettingsView` sections. Built so the user has one obvious place
 /// to configure the launcher experience before (or instead of) entering it.
-///
-/// Sections:
-///   1. Behavior — launch in TV Mode by default, show systems in the sidebar
-///   2. Theme — bold / muted / boxart preview cards inline with the
-///      system-tile icon style picker; both give visual feedback of what
-///      the user is choosing.
-///   3. Display — screen-selection mode, remembered screen, pick default
-///   4. Visible collections — multi-toggle for `SmartEntry`s + systems
-///      (collapsed by default, expands when search hits it)
-///   5. Gamepad buttons — remap X / Y / SELECT / Enter-TV-Mode for TV Mode
-///      (collapsed by default, expands when search hits it)
-///
-/// Design notes:
-///   - The theme and screen sections are NEW here — neither exists in the
-///     in-TV-mode sheet today.
-///   - The visible-collections and screen-selection rows mirror
-///     `TVModeSettingsView` so a user who tweaks one place and then enters
-///     TV Mode sees the same value, and vice versa.
-///   - Gamepad remapping writes through `GamepadNavConfigManager`, the same
-///     store used by the Hotkeys page; TV-Mode-specific UI on top is just a
-///     curated list of actions.
 struct TVModeMainSettingsView: View {
     @Environment(\.colorScheme) private var colorScheme
     @Binding var searchText: String
@@ -71,163 +50,206 @@ struct TVModeMainSettingsView: View {
     }
 
     var body: some View {
-        ScrollViewReader { proxy in
-            Form {
-                // ★ Behavior
-                if (!isSearching || matchesSearch("launch TV Mode default startup systems sidebar"))
-                    && sectionVisible("section-tvModeBehavior") {
-                    Section(header: Label(loc.localized("settings.tvModeBehavior"), systemImage: "play.rectangle")) {
-                        Toggle(loc.localized("tvMode.settings.launchInTVMode"), isOn: Binding(
-                            get: { TVModeSettings.launchInTVMode },
-                            set: { TVModeSettings.setLaunchInTVMode($0) }
-                        ))
-                        Text(loc.localized("tvMode.settings.launchInTVModeDescription"))
-                            .font(.caption)
-                            .foregroundStyle(AppColors.textSecondary(colorScheme))
-                    }
-                    .id("section-tvModeBehavior")
-                }
-
-                // ★ Theme (with visual preview cards) + inline system-icon style picker
-                if (!isSearching || matchesSearch("theme bold muted boxart style appearance")
-                       || matchesSearch("system icon controller emulator tile"))
-                    && sectionVisible("section-tvModeTheme") {
-                    Section(header: Label(loc.localized("settings.tvModeTheme"), systemImage: "paintpalette.fill")) {
-                        themePreviewRow
-
-                        iconStyleRow
-
-                        Text(loc.localized("settings.tvModeThemeDescription"))
-                            .font(.caption)
-                            .foregroundStyle(AppColors.textSecondary(colorScheme))
-                    }
-                    .id("section-tvModeTheme")
-                }
-
-                // ★ Display
-                if (!isSearching || matchesSearch("display screen external monitor multi display remember reset"))
-                    && sectionVisible("section-tvModeDisplay") {
-                    Section(header: Label(loc.localized("settings.tvModeDisplay"), systemImage: "display")) {
-                        Picker(loc.localized("tvMode.settings.screenSelection"), selection: Binding(
-                            get: { TVModeSettings.screenSelectionMode },
-                            set: { TVModeSettings.setScreenSelectionMode($0) }
-                        )) {
-                            ForEach(TVModeSettings.ScreenSelectionMode.allCases) { mode in
-                                Text(loc.localized(mode.locKey)).tag(mode)
-                            }
-                        }
-                        .pickerStyle(.menu)
-
-                        LabeledContent(loc.localized("tvMode.settings.rememberedScreen")) {
-                            Text(rememberedScreenSummary)
-                                .foregroundStyle(.secondary)
-                                .lineLimit(1)
-                                .truncationMode(.middle)
-                        }
-
-                        HStack {
-                            SettingsActionButton(loc.localized("settings.tvModePickDefaultScreen")) {
-                                showScreenPicker = true
-                            }
-
-                            SettingsActionButton(loc.localized("tvMode.settings.resetScreen")) {
-                                TVModeSettings.resetRememberedScreen()
-                                generation &+= 1
-                            }
-                            .disabled(TVModeSettings.rememberedScreenID == nil)
-                        }
-
-                        Text(loc.localized("settings.tvModeDisplayDescription"))
-                            .font(.caption)
-                            .foregroundStyle(AppColors.textSecondary(colorScheme))
-                    }
-                    .id("section-tvModeDisplay")
-                }
-
-                // ★ Visible collections (collapsed by default, expands on search hit)
-                if (!isSearching || matchesSearch("collections smart entries favorites recent retro achievements hidden mame systems"))
-                    && sectionVisible("section-tvModeCollections") {
-                    DependencySection(
-                        title: loc.localized("tvMode.settings.shownEntries"),
-                        isExpanded: Binding(
-                            get: { isSearching || expandedSections.contains("section-tvModeCollections") },
-                            set: { isOn in toggleSection("section-tvModeCollections", isOn: isOn) }
-                        )
-                    ) {
-                        ForEach(TVModeSettings.SmartEntry.allCases) { entry in
-                            Toggle(loc.localized(entry.locKey), isOn: Binding(
-                                get: { _ = generation; return TVModeSettings.shownSmartEntries.contains(entry) },
-                                set: { isOn in
-                                    var current = Set(TVModeSettings.shownSmartEntries)
-                                    if isOn { current.insert(entry) } else { current.remove(entry) }
-                                    TVModeSettings.setShownSmartEntries(Array(current).sorted { $0.rawValue < $1.rawValue })
-                                    NotificationCenter.default.post(name: .tvModeSettingsChanged, object: nil)
-                                }
+        Group {
+            ScrollView {
+                ScrollViewReader { proxy in
+                    VStack(alignment: .leading, spacing: AppSpacing.lg) {
+                        // ★ Behavior
+                        settingsCard(
+                            id: "section-tvModeBehavior",
+                            title: loc.localized("settings.tvModeBehavior"),
+                            icon: "play.rectangle",
+                            keywords: "launch TV Mode default startup systems sidebar"
+                        ) {
+                            Toggle(loc.localized("tvMode.settings.launchInTVMode"), isOn: Binding(
+                                get: { TVModeSettings.launchInTVMode },
+                                set: { TVModeSettings.setLaunchInTVMode($0) }
                             ))
+                            Text(loc.localized("tvMode.settings.launchInTVModeDescription"))
+                                .font(.caption)
+                                .foregroundStyle(AppColors.textSecondary(colorScheme))
                         }
-                        Toggle(loc.localized("tvMode.settings.systems"), isOn: Binding(
-                            get: { TVModeSettings.showSystems },
-                            set: { TVModeSettings.setShowSystems($0) }
-                        ))
-                        Text(loc.localized("settings.tvModeCollectionsDescription"))
-                            .font(.caption)
-                            .foregroundStyle(AppColors.textSecondary(colorScheme))
-                    }
-                    .padding(.vertical, AppSpacing.sm)
-                    .id("section-tvModeCollections")
-                }
 
-                // ★ Gamepad buttons (collapsed by default, expands on search hit)
-                if (!isSearching || matchesSearch("gamepad controller button remap X Y SELECT enter TV mode"))
-                    && sectionVisible("section-tvModeGamepad") {
-                    DependencySection(
-                        title: loc.localized("settings.tvModeGamepad"),
-                        isExpanded: Binding(
-                            get: { isSearching || expandedSections.contains("section-tvModeGamepad") },
-                            set: { isOn in toggleSection("section-tvModeGamepad", isOn: isOn) }
-                        )
-                    ) {
-                        ForEach(tvModeGamepadActions, id: \.self) { action in
-                            gamepadActionRow(action)
+                        // ★ Theme (with visual preview cards) + inline system-icon style picker
+                        settingsCard(
+                            id: "section-tvModeTheme",
+                            title: loc.localized("settings.tvModeTheme"),
+                            icon: "paintpalette.fill",
+                            keywords: "theme bold muted boxart style appearance system icon controller emulator tile"
+                        ) {
+                            themePreviewRow
+                            iconStyleRow
+                            Text(loc.localized("settings.tvModeThemeDescription"))
+                                .font(.caption)
+                                .foregroundStyle(AppColors.textSecondary(colorScheme))
                         }
-                        Text(loc.localized("settings.tvModeGamepadDescription"))
-                            .font(.caption)
-                            .foregroundStyle(AppColors.textSecondary(colorScheme))
-                    }
-                    .padding(.vertical, AppSpacing.sm)
-                    .id("section-tvModeGamepad")
-                }
 
-                if isSearching && !hasMatchingSections {
-                    Section {
-                        Text("\(loc.localized("general.noMatchingSettings")) \"\(searchText)\"")
-                            .font(.caption)
-                            .foregroundStyle(AppColors.textSecondary(colorScheme))
-                            .frame(maxWidth: .infinity, alignment: .center)
-                            .padding(.vertical, AppSpacing.xl2)
+                        // ★ Display
+                        settingsCard(
+                            id: "section-tvModeDisplay",
+                            title: loc.localized("settings.tvModeDisplay"),
+                            icon: "display",
+                            keywords: "display screen external monitor multi display remember reset"
+                        ) {
+                            Picker(loc.localized("tvMode.settings.screenSelection"), selection: Binding(
+                                get: { TVModeSettings.screenSelectionMode },
+                                set: { TVModeSettings.setScreenSelectionMode($0) }
+                            )) {
+                                ForEach(TVModeSettings.ScreenSelectionMode.allCases) { mode in
+                                    Text(loc.localized(mode.locKey)).tag(mode)
+                                }
+                            }
+                            .pickerStyle(.menu)
+
+                            LabeledContent(loc.localized("tvMode.settings.rememberedScreen")) {
+                                Text(rememberedScreenSummary)
+                                    .foregroundStyle(.secondary)
+                                    .lineLimit(1)
+                                    .truncationMode(.middle)
+                            }
+
+                            HStack {
+                                SettingsActionButton(loc.localized("settings.tvModePickDefaultScreen")) {
+                                    showScreenPicker = true
+                                }
+
+                                SettingsActionButton(loc.localized("tvMode.settings.resetScreen")) {
+                                    TVModeSettings.resetRememberedScreen()
+                                    generation &+= 1
+                                }
+                                .disabled(TVModeSettings.rememberedScreenID == nil)
+                            }
+
+                            Text(loc.localized("settings.tvModeDisplayDescription"))
+                                .font(.caption)
+                                .foregroundStyle(AppColors.textSecondary(colorScheme))
+                        }
+
+                        // ★ Visible collections (collapsed by default, expands on search hit)
+                        settingsCard(
+                            id: "section-tvModeCollections",
+                            title: loc.localized("tvMode.settings.shownEntries"),
+                            icon: "square.stack.3d.up.fill",
+                            keywords: "collections smart entries favorites recent retro achievements hidden mame systems"
+                        ) {
+                            DependencySection(
+                                title: loc.localized("tvMode.settings.shownEntries"),
+                                isExpanded: Binding(
+                                    get: { isSearching || expandedSections.contains("section-tvModeCollections") },
+                                    set: { isOn in toggleSection("section-tvModeCollections", isOn: isOn) }
+                                )
+                            ) {
+                                ForEach(TVModeSettings.SmartEntry.allCases) { entry in
+                                    Toggle(loc.localized(entry.locKey), isOn: Binding(
+                                        get: { _ = generation; return TVModeSettings.shownSmartEntries.contains(entry) },
+                                        set: { isOn in
+                                            var current = Set(TVModeSettings.shownSmartEntries)
+                                            if isOn { current.insert(entry) } else { current.remove(entry) }
+                                            TVModeSettings.setShownSmartEntries(Array(current).sorted { $0.rawValue < $1.rawValue })
+                                            NotificationCenter.default.post(name: .tvModeSettingsChanged, object: nil)
+                                        }
+                                    ))
+                                }
+                                Toggle(loc.localized("tvMode.settings.systems"), isOn: Binding(
+                                    get: { TVModeSettings.showSystems },
+                                    set: { TVModeSettings.setShowSystems($0) }
+                                ))
+                                Text(loc.localized("settings.tvModeCollectionsDescription"))
+                                    .font(.caption)
+                                    .foregroundStyle(AppColors.textSecondary(colorScheme))
+                            }
+                            .padding(.vertical, AppSpacing.sm)
+                        }
+
+                        // ★ Gamepad buttons (collapsed by default, expands on search hit)
+                        settingsCard(
+                            id: "section-tvModeGamepad",
+                            title: loc.localized("settings.tvModeGamepad"),
+                            icon: "gamecontroller",
+                            keywords: "gamepad controller button remap X Y SELECT enter TV mode"
+                        ) {
+                            DependencySection(
+                                title: loc.localized("settings.tvModeGamepad"),
+                                isExpanded: Binding(
+                                    get: { isSearching || expandedSections.contains("section-tvModeGamepad") },
+                                    set: { isOn in toggleSection("section-tvModeGamepad", isOn: isOn) }
+                                )
+                            ) {
+                                ForEach(tvModeGamepadActions, id: \.self) { action in
+                                    gamepadActionRow(action)
+                                }
+                                Text(loc.localized("settings.tvModeGamepadDescription"))
+                                    .font(.caption)
+                                    .foregroundStyle(AppColors.textSecondary(colorScheme))
+                            }
+                            .padding(.vertical, AppSpacing.sm)
+                        }
+
+                        if isSearching && !hasMatchingSections {
+                            noResultsView
+                        }
+
+                        Spacer(minLength: AppSpacing.xl5)
+                    }
+                    .padding(.horizontal, AppSpacing.lg)
+                    .padding(.top, AppSpacing.md)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .onChange(of: focusedSectionID) { _, newID in
+                        guard let id = newID else { return }
+                        withAnimation { proxy.scrollTo("section-\(id)", anchor: .top) }
+                    }
+                    .onChange(of: scopedSectionID) { _, newScope in
+                        guard let id = newScope else { return }
+                        DispatchQueue.main.async {
+                            withAnimation { proxy.scrollTo("section-\(id)", anchor: .top) }
+                        }
                     }
                 }
             }
             .scrollContentBackground(.hidden)
-            .formStyle(.grouped)
-            .onAppear {
-                tvModeSystemIconStyle = AppSettings.getString("tvMode_systemIconStyle", defaultValue: "default") ?? "default"
-            }
-            .onChange(of: focusedSectionID) { _, newID in
-                guard let id = newID else { return }
-                withAnimation { proxy.scrollTo("section-\(id)", anchor: .top) }
-            }
-            .onChange(of: scopedSectionID) { _, newScope in
-                guard let id = newScope else { return }
-                DispatchQueue.main.async {
-                    withAnimation { proxy.scrollTo("section-\(id)", anchor: .top) }
-                }
-            }
+            .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
             .sheet(isPresented: $showScreenPicker) {
                 screenPickerSheet
             }
             .navigationTitle(loc.localized("settings.tvMode"))
+            .onAppear {
+                tvModeSystemIconStyle = AppSettings.getString("tvMode_systemIconStyle", defaultValue: "default") ?? "default"
+            }
         }
+    }
+
+    // MARK: - Card Helper
+
+    @ViewBuilder
+    private func settingsCard<Content: View>(
+        id: String,
+        title: String,
+        icon: String,
+        keywords: String,
+        @ViewBuilder content: () -> Content
+    ) -> some View {
+        VStack(alignment: .leading, spacing: AppSpacing.md) {
+            HStack(spacing: AppSpacing.sm) {
+                Image(systemName: icon)
+                    .font(.body)
+                    .foregroundStyle(AppColors.textTertiary(colorScheme))
+                Text(title)
+                    .font(AppTypography.headingSmall)
+                    .foregroundStyle(AppColors.textPrimary(colorScheme))
+            }
+            content()
+        }
+        .padding(AppSpacing.xl)
+        .background(
+            RoundedRectangle(cornerRadius: AppRadius.xl)
+                .fill(AppColors.cardBackgroundSubtle(colorScheme))
+                .overlay(
+                    RoundedRectangle(cornerRadius: AppRadius.xl)
+                        .stroke(AppColors.cardBorder(colorScheme), lineWidth: 1)
+                )
+        )
+        .cardHoverEffect(colorScheme: colorScheme)
+        .id(id)
     }
 
     // MARK: - Gamepad row
@@ -264,9 +286,6 @@ struct TVModeMainSettingsView: View {
     // MARK: - Theme / icon-style preview rows
 
     /// Horizontal row of three theme preview cards (bold / muted / boxart).
-    /// Each card renders a miniature of the runtime background the user sees
-    /// inside TV Mode for that theme, so the choice has immediate visual
-    /// feedback instead of being a bare segmented label.
     @ViewBuilder
     private var themePreviewRow: some View {
         HStack(spacing: AppSpacing.lg) {
@@ -286,10 +305,7 @@ struct TVModeMainSettingsView: View {
         .padding(.vertical, AppSpacing.xs)
     }
 
-    /// Inline system-tile icon-style picker, rendered as two preview tiles
-    /// directly under the theme cards so it lives next to the theme it
-    /// decorates. Replaces the standalone "System tile icons" section that
-    /// previously used a `.menu` Picker of black-box string tags.
+    /// Inline system-tile icon-style picker.
     @ViewBuilder
     private var iconStyleRow: some View {
         Divider().padding(.vertical, AppSpacing.xs)
@@ -329,8 +345,6 @@ struct TVModeMainSettingsView: View {
 
     // MARK: - Collapsible-section helpers
 
-    /// Toggle the expansion state of a collapsible section, animating the
-    /// reveal/hide. Driven by the `DependencySection` binding declared above.
     private func toggleSection(_ id: String, isOn: Bool) {
         withAnimation(.easeInOut(duration: 0.2)) {
             if isOn {
@@ -343,10 +357,6 @@ struct TVModeMainSettingsView: View {
 
     // MARK: - Helpers
 
-    /// Live read of the remembered screen. Reads via `ScreenCatalog.shared`
-    /// so the label tracks the current display setup — if the user unplugs
-    /// the remembered display, we surface "Disconnected" instead of stale
-    /// data. The `generation` bump on reset also forces a re-render.
     private var rememberedScreenSummary: String {
         _ = generation
         guard let id = TVModeSettings.rememberedScreenID else {
@@ -358,13 +368,19 @@ struct TVModeMainSettingsView: View {
         return loc.localized("tvMode.settings.rememberedScreen.unavailable")
     }
 
+    private var noResultsView: some View {
+        VStack {
+            Text("\(loc.localized("general.noMatchingSettings")) \"\(searchText)\"")
+                .font(.caption)
+                .foregroundStyle(AppColors.textSecondary(colorScheme))
+                .frame(maxWidth: .infinity, alignment: .center)
+                .padding(.vertical, AppSpacing.xl2)
+        }
+        .frame(maxWidth: .infinity)
+    }
+
     // MARK: - Screen picker sheet
 
-    /// Reuses `TVModeScreenPickerView` (the same component shown when
-    /// entering TV Mode). On pick, persists the chosen screen as the
-    /// remembered default and — if the user's selection mode is `.alwaysMain`
-    /// or `.ask` — promotes the mode to `.lastUsed` so the choice actually
-    /// takes effect on the next TV-Mode entry. Picking never starts TV Mode.
     @ViewBuilder
     private var screenPickerSheet: some View {
         let screens = ScreenCatalog.shared.screens
@@ -400,10 +416,6 @@ struct TVModeMainSettingsView: View {
 
 // MARK: - Theme preview card
 
-/// Single theme preview tile. Renders a miniature of the TV-Mode runtime
-/// background the user will actually see for the given `theme`, with an
-/// accent ring + checkmark badge when selected — matching the visual
-/// idiom of the AccentColorTheme icon buttons in `GeneralSettingsView`.
 private struct TVModeThemePreviewCard: View {
     let theme: TVModeSettings.Theme
     let colorScheme: ColorScheme
@@ -429,17 +441,17 @@ private struct TVModeThemePreviewCard: View {
                                 lineWidth: isSelected ? 2 : 1
                             )
                     )
-                    .overlay(alignment: .topTrailing) {
-                        if isSelected {
-                            Image(systemName: "checkmark.circle.fill")
-                                .font(.system(size: 14, weight: .bold))
-                                .foregroundStyle(.white)
-                                .background(Circle().fill(Color.black.opacity(0.55)))
-                                .padding(4)
-                        }
+                .overlay(alignment: .topTrailing) {
+                    if isSelected {
+                        Image(systemName: "checkmark.circle.fill")
+                            .font(.system(size: 14, weight: .bold))
+                            .foregroundStyle(.white)
+                            .background(Circle().fill(Color.black.opacity(0.55)))
+                            .padding(4)
                     }
-                    .scaleEffect(isHovered ? 1.04 : 1.0)
-                    .animation(AppMotion.micro, value: isHovered)
+                }
+                .scaleEffect(isHovered ? 1.04 : 1.0)
+                .animation(AppMotion.micro, value: isHovered)
 
                 Text(label)
                     .font(.system(size: 10))
@@ -453,9 +465,6 @@ private struct TVModeThemePreviewCard: View {
         .onHover { isHovered = $0 }
     }
 
-    /// Miniature render of the theme's actual TV-mode background. Static
-    /// (non-animated) version of `TVModeView.background` so the preview is
-    /// cheap to render and doesn't run a `Task` inside the Settings form.
     @ViewBuilder
     private var previewBackground: some View {
         switch theme {
@@ -493,9 +502,6 @@ private struct TVModeThemePreviewCard: View {
             }
         case .boxart:
             ZStack {
-                // Static placeholder for the blurred-boxart backdrop. A
-                // dark gradient evokes the dimmed photo treatment used by
-                // `TVModeBoxartBackdrop` without depending on a live ROM.
                 LinearGradient(
                     colors: [
                         Color(red: 0.18, green: 0.20, blue: 0.26),
@@ -520,11 +526,6 @@ private struct TVModeThemePreviewCard: View {
 
 // MARK: - System tile icon-style preview tile
 
-/// Single icon-style preview tile for the system-tile icon picker. Shows a
-/// representative rendering of either "default" (emulator icon square grid)
-/// or "controller" (gamepad glyph), matching the runtime system-tile icon
-/// styles used in TV Mode. Same selected-ring + checkmark treatment as
-/// the theme preview cards.
 private struct TVModeIconStyleTile: View {
     let style: String
     let colorScheme: ColorScheme

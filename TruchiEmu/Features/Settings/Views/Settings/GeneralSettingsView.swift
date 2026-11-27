@@ -1,5 +1,10 @@
 import SwiftUI
 
+// MARK: - Main Settings Page (General)
+
+// Redesigned settings page inspired by modern design inspiration platforms:
+// card-based layout, stat pill chips at the top, large rounded corners,
+// strong typography hierarchy, and interactive hover states.
 struct GeneralSettingsView: View {
     @Environment(\.colorScheme) private var colorScheme
     @EnvironmentObject var library: ROMLibrary
@@ -62,320 +67,143 @@ struct GeneralSettingsView: View {
     var body: some View {
         Group {
             if contentLoaded {
-                ScrollViewReader { proxy in
-                    Form {
-                    // ★ Language & Region
-            if (!isSearching || matchesSearch("Language Region systems language emulation core country localization")) && sectionVisible("section-languageRegion") {
-                Section(header: Label(loc.localized("settings.languageRegion"), systemImage: "globe")) {
-                    Picker(loc.localized("settings.selectLanguage"), selection: Binding<String>(
-                        get: { loc.currentLanguage },
-                        set: { loc.setLanguage($0) })
-                    ) {
-                        ForEach(loc.availableLanguages, id: \.self) { lang in
-                            Text("\(languageFlag(for: lang)) \(languageDisplayName(for: lang))")
-                                .tag(lang)
-                        }
-                    }
-                    .pickerStyle(.menu)
-
-                    Picker(loc.localized("library.gameRegion"), selection: $prefs.systemLanguage) {
-                        ForEach(EmulatorLanguage.allCases) { lang in
-                            Text("\(lang.flagEmoji) \(lang.name)").tag(lang)
-                        }
-                    }
-                    Text(loc.localized("library.regionDescription"))
-                        .font(.caption)
-                        .foregroundStyle(AppColors.textSecondary(colorScheme))
-                }
-                .id("section-languageRegion")
-            }
-
-            // ★ Theme section
-            if (!isSearching || matchesSearch("Theme accent color appearance mode light dark gaming")) && sectionVisible("section-theme") {
-                Section(header: Label(loc.localized("settings.theme"), systemImage: "paintpalette")) {
-
-                    VStack(alignment: .leading, spacing: AppSpacing.md) {
-                        Text(loc.localized("settings.appearance"))
-                            .font(.caption)
-                            .foregroundStyle(AppColors.textSecondary(colorScheme))
-
-                        Picker(loc.localized("settings.appearance"), selection: Binding<AppearanceMode>(
-                            get: { pending.appearanceMode },
-                            set: { pending.appearanceMode = $0 }
-                        )) {
-                            ForEach(AppearanceMode.allCases, id: \.self) { mode in
-                                Label(mode.displayName, systemImage: mode.systemImageName).tag(mode)
+                ScrollView {
+                    ScrollViewReader { proxy in
+                        VStack(alignment: .leading, spacing: AppSpacing.lg) {
+                            // Stat pill chips (inspired by the number pills on the
+                            // design inspiration page). Only shown when not searching.
+                            if !isSearching {
+                                statPillsRow
                             }
-                        }
-        .pickerStyle(.segmented)
-        }
 
-LazyVGrid(columns: [GridItem(.adaptive(minimum: 60))], spacing: 2) {
-            CustomThemeButton(isSelected: pending.theme == .custom) {
-                pending.theme = .custom
-            }
-
-            ForEach(AccentColorTheme.allCases.filter { !$0.isCustom }, id: \.self) { theme in
-                themeGridButton(theme)
-            }
-        }
-
-        if pending.theme == .custom {
-            ColorPicker(loc.localized("settings.customColor"), selection: $pending.customColor, supportsOpacity: false)
-        }
-
-                    HStack(alignment: .firstTextBaseline, spacing: AppSpacing.xl) {
-                        Toggle(loc.localized("settings.toolbarAccent"), isOn: $pending.toolbarAccent)
-                        Spacer(minLength: AppSpacing.md)
-                        Toggle(loc.localized("settings.tintedSurfaces"), isOn: $pending.tintedSurfaces)
-                    }
-                    HStack(alignment: .top, spacing: AppSpacing.xl) {
-                        Text(loc.localized("settings.toolbarAccentDescription"))
-                            .font(.caption)
-                            .foregroundStyle(AppColors.textSecondary(colorScheme))
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                        Text(loc.localized("settings.tintedSurfacesDescription"))
-                            .font(.caption)
-                            .foregroundStyle(AppColors.textSecondary(colorScheme))
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                    }
-
-        VStack(alignment: .leading, spacing: AppSpacing.sm) {
-            Text(loc.localized("settings.theme.previewTitle"))
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(AppColors.textSecondary(colorScheme))
-
-            ThemePreviewCard(
-                accent: previewAccent,
-                accentDimmed: previewAccentDimmed,
-                accentDark: previewAccentDark,
-                accentSecondary: previewAccentSecondary,
-                mode: pending.appearanceMode,
-                tinted: pending.tintedSurfaces
-            )
-        }
-        }
-
-        // Apply
-        Section {
-        Button(loc.localized("settings.theme.applyTheme")) {
-                themeManager.applyTheme(pending.theme, customColor: pending.theme == .custom ? pending.customColor : nil)
-                themeManager.setToolbarAccent(pending.toolbarAccent)
-                themeManager.applyAppearanceMode(pending.appearanceMode)
-                hasPendingChanges = false
-                showRestartConfirmation = true
-            }
-            .buttonStyle(.borderedProminent)
-            .disabled(!themeHasChanged)
-            .frame(maxWidth: .infinity)
-                    .confirmationDialog(
-                        loc.localized("settings.theme.restartRequired"),
-                        isPresented: $showRestartConfirmation,
-                        titleVisibility: .visible
-                    ) {
-                        Button(loc.localized("settings.theme.restartNow")) {
-                            ThemeManager.relaunchApp()
-                        }
-                        Button(loc.localized("settings.theme.later"), role: .cancel) {}
-                    } message: {
-                        Text(loc.localized("settings.theme.restartMessage"))
-                    }
-                }
-                .id("section-theme")
-            }
-
-            // ★ Library Hero Section
-            if (!isSearching || matchesSearch("library hero header collection banner show hide")) && sectionVisible("section-libraryHero") {
-                Section(header: Label(loc.localized("settings.libraryHero.section"), systemImage: "rectangle.grid.1x2")) {
-                    Toggle(loc.localized("settings.libraryHero.show"), isOn: $prefs.showLibraryHero)
-                    Text(loc.localized("settings.libraryHero.showDescription"))
-                        .font(.caption)
-                        .foregroundStyle(AppColors.textSecondary(colorScheme))
-                }
-                .id("section-libraryHero")
-            }
-
-            // ★ Sidebar Quick Access Section
-            if (!isSearching || matchesSearch("sidebar quick access tiles all games favorites recent show hide collapse")) && sectionVisible("section-sidebarQuickAccess") {
-                Section(header: Label(loc.localized("settings.sidebarQuickAccess.section"), systemImage: "square.grid.2x2")) {
-                    Toggle(loc.localized("settings.sidebarQuickAccess.show"), isOn: $prefs.showSidebarQuickAccess)
-                    Text("settings.sidebarQuickAccess.showDescription")
-                        .font(.caption)
-                        .foregroundStyle(AppColors.textSecondary(colorScheme))
-                }
-                .id("section-sidebarQuickAccess")
-            }
-
-            // ★ Box Art Pivoting Section
-            if (!isSearching || matchesSearch("boxArt pivoting 3D tilt cursor")) && sectionVisible("section-boxart-pivoting") {
-                Section(header: Label(loc.localized("boxArt.pivoting"), systemImage: "cube.transparent")) {
-                    Toggle(loc.localized("boxArt.pivotingEnabled"), isOn: $boxArtPivotingEnabled)
-                    Toggle(loc.localized("settings.hltb.enabled"), isOn: $hltbEnabled)
-                    Text(loc.localized("settings.hltb.enabledDescription"))
-                        .font(.caption)
-                        .foregroundStyle(AppColors.textSecondary(colorScheme))
-
-                    Text(loc.localized("boxArt.pivotingDescription"))
-                        .font(.caption)
-                        .foregroundStyle(AppColors.textSecondary(colorScheme))
-                }
-                .id("section-boxart-pivoting")
-            }
-
-            // ★ Categories Section
-            if (!isSearching || matchesSearch("categories category add game prompt ask create")) && sectionVisible("section-categories") {
-                Section(header: Label(loc.localized("app.categories"), systemImage: "folder")) {
-                    Toggle(loc.localized("settings.categories.askToAddAfterCreate"), isOn: $categoryAskToAddAfterCreate)
-                    Text(loc.localized("settings.categories.askToAddAfterCreateDescription"))
-                        .font(.caption)
-                        .foregroundStyle(AppColors.textSecondary(colorScheme))
-                }
-                .id("section-categories")
-            }
-
-            // ★ Application Section
-            if (!isSearching || matchesSearch("Application version build notifications updates")) && sectionVisible("section-application") {
-                Section(header: Label(loc.localized("settings.application"), systemImage: "app.badge")) {
-                    LabeledContent(loc.localized("settings.version")) {
-                        Text(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0")
-                    }
-                    LabeledContent(loc.localized("settings.build")) {
-                        Text(Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "1")
-                    }
-
-                    Divider()
-
-                    Toggle(loc.localized("settings.autoCheckUpdates"), isOn: $autoCheckUpdates)
-                    Text(loc.localized("settings.autoCheckUpdatesDescription"))
-                        .font(.caption)
-                        .foregroundStyle(AppColors.textSecondary(colorScheme))
-
-                    SettingsRow(loc.localized("settings.systemNotifications")) {
-                        HStack(spacing: AppSpacing.sm) {
-                            if NotificationService.shared.isAuthorized {
-                                SettingsActionButton(loc.localized("settings.notificationsTest")) {
-                                    NotificationService.shared.sendNotification(
-                                        title: loc.localized("settings.notificationsTestTitle"),
-                                        body: loc.localized("settings.notificationsTestBody")
-                                    )
-                                }
+                            // MARK: - Language & Region
+                            settingsCard(
+                                id: "section-languageRegion",
+                                title: loc.localized("settings.languageRegion"),
+                                icon: "globe",
+                                keywords: "Language Region systems language emulation core country localization"
+                            ) {
+                                languageRegionContent
                             }
-                            SettingsActionButton(NotificationService.shared.isAuthorized ? loc.localized("settings.enabled") : loc.localized("settings.enable")) {
-                                Task {
-                                    let granted = await NotificationService.shared.requestAuthorization()
-                                    if granted {
-                                        NotificationService.shared.sendNotification(
-                                            title: loc.localized("settings.notificationsTestTitle"),
-                                            body: loc.localized("settings.notificationsTestBody")
-                                        )
-                                    }
-                                }
-                            }
-                            .disabled(NotificationService.shared.isAuthorized)
-                        }
-                    }
-                }
-                .id("section-application")
-            }
 
-            // ★ OpenCritic Section
-            if (!isSearching || matchesSearch("OpenCritic API key truchiemu reviews scores")) && sectionVisible("section-openCritic") {
-                Section(header: Label(loc.localized("settings.openCritic"), systemImage: "star")) {
-                    SecureField(loc.localized("settings.openCritic.apiKey"), text: $openCriticAPIKey)
-                        .textFieldStyle(.roundedBorder)
-                        .font(.system(size: 12))
-                    HStack(alignment: .firstTextBaseline, spacing: AppSpacing.xl) {
-                        Text(loc.localized("settings.openCritic.apiKeyDescription"))
-                            .font(.caption)
-                            .foregroundStyle(AppColors.textSecondary(colorScheme))
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                        if openCritic.isTestingConnection {
-                            ProgressView()
-                                .controlSize(.small)
-                        }
-                        SettingsActionButton(openCritic.isTestingConnection
-                               ? loc.localized("settings.openCritic.testing")
-                               : loc.localized("settings.openCritic.testConnection")) {
-                            Task {
-                                await OpenCriticService.shared.testAPIConnection()
+                            // MARK: - Theme
+                            settingsCard(
+                                id: "section-theme",
+                                title: loc.localized("settings.theme"),
+                                icon: "paintpalette",
+                                keywords: "Theme accent color appearance mode light dark gaming tinted surfaces toolbar"
+                            ) {
+                                themeContent
                             }
-                        }
-                        .disabled(openCritic.isTestingConnection)
-                    }
-                    if let msg = openCritic.connectionTestMessage {
-                        HStack(alignment: .firstTextBaseline, spacing: 6) {
-                            Image(systemName: openCritic.connectionTestSuccess == true
-                                  ? "checkmark.circle.fill" : "xmark.circle.fill")
-                                .foregroundStyle(openCritic.connectionTestSuccess == true ? .green : .red)
-                            Text(msg)
-                                .font(.caption2)
-                        }
-                        .foregroundStyle(AppColors.textTertiary(colorScheme))
-                    }
-                    if let attributed = try? AttributedString(
-                        markdown: loc.localized("settings.openCritic.apiKeyWarning"),
-                        options: .init(interpretedSyntax: .inlineOnlyPreservingWhitespace)
-                    ) {
-                        Text(attributed)
-                            .font(.caption2)
-                            .foregroundStyle(AppColors.textTertiary(colorScheme))
-                    } else {
-                        Text(loc.localized("settings.openCritic.apiKeyWarning"))
-                            .font(.caption2)
-                            .foregroundStyle(AppColors.textTertiary(colorScheme))
-                    }
-                }
-                .id("section-openCritic")
-            }
 
-            // No results message
-            if isSearching && !hasMatchingSections {
-                Section {
-                    Text("\(loc.localized("general.noMatchingSettings")) \"\(searchText)\"")
-                        .font(.caption)
-                        .foregroundStyle(AppColors.textSecondary(colorScheme))
-                        .frame(maxWidth: .infinity, alignment: .center)
-                        .padding(.vertical, AppSpacing.xl2)
-                }
-            }
-                }
-                    .onChange(of: focusedSectionID) { _, newID in
-                        guard let id = newID else { return }
-                        withAnimation { proxy.scrollTo("section-\(id)", anchor: .top) }
-                    }
-                    .onChange(of: scopedSectionID) { _, newScope in
-                        guard let id = newScope else { return }
-                        DispatchQueue.main.async {
+                            // MARK: - Library Hero
+                            settingsCard(
+                                id: "section-libraryHero",
+                                title: loc.localized("settings.libraryHero.section"),
+                                icon: "rectangle.grid.1x2",
+                                keywords: "library hero header collection banner show hide"
+                            ) {
+                                libraryHeroContent
+                            }
+
+                            // MARK: - Quick Access
+                            settingsCard(
+                                id: "section-sidebarQuickAccess",
+                                title: loc.localized("settings.sidebarQuickAccess.section"),
+                                icon: "square.grid.2x2",
+                                keywords: "sidebar quick access tiles all games favorites recent show hide collapse"
+                            ) {
+                                quickAccessContent
+                            }
+
+                            // MARK: - Box Art Pivoting
+                            settingsCard(
+                                id: "section-boxart-pivoting",
+                                title: loc.localized("boxArt.pivoting"),
+                                icon: "cube.transparent",
+                                keywords: "boxArt pivoting 3D tilt cursor"
+                            ) {
+                                boxArtContent
+                            }
+
+                            // MARK: - Categories
+                            settingsCard(
+                                id: "section-categories",
+                                title: loc.localized("app.categories"),
+                                icon: "folder",
+                                keywords: "categories category add game prompt ask create"
+                            ) {
+                                categoriesContent
+                            }
+
+                            // MARK: - Application
+                            settingsCard(
+                                id: "section-application",
+                                title: loc.localized("settings.application"),
+                                icon: "app.badge",
+                                keywords: "Application version build notifications updates"
+                            ) {
+                                applicationContent
+                            }
+
+                            // MARK: - OpenCritic
+                            settingsCard(
+                                id: "section-openCritic",
+                                title: loc.localized("settings.openCritic"),
+                                icon: "star",
+                                keywords: "OpenCritic API key truchiemu reviews scores"
+                            ) {
+                                openCriticContent
+                            }
+
+                            // No results message
+                            if isSearching && !hasMatchingSections {
+                                noResultsView
+                            }
+
+                            Spacer(minLength: AppSpacing.xl5)
+                        }
+                        .padding(.horizontal, AppSpacing.lg)
+                        .padding(.top, AppSpacing.md)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .onChange(of: focusedSectionID) { _, newID in
+                            guard let id = newID else { return }
                             withAnimation { proxy.scrollTo("section-\(id)", anchor: .top) }
                         }
+                        .onChange(of: scopedSectionID) { _, newScope in
+                            guard let id = newScope else { return }
+                            DispatchQueue.main.async {
+                                withAnimation { proxy.scrollTo("section-\(id)", anchor: .top) }
+                            }
+                        }
                     }
                 }
-        } else {
-            Color.clear
-                .frame(maxWidth: .infinity, minHeight: 400)
+                .scrollContentBackground(.hidden)
+                .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+            } else {
+                Color.clear
+                    .frame(maxWidth: .infinity, minHeight: 400)
+            }
         }
-        }
-        .scrollContentBackground(.hidden)
-        .formStyle(.grouped)
         .navigationTitle("General")
         .onAppear {
-        NotificationService.shared.refreshAuthorizationStatus()
-        autoCheckUpdates = AppUpdateService.shared.autoCheckEnabled
-        notificationsEnabled = NotificationService.shared.isAuthorized
-        boxArtPivotingEnabled = prefs.boxArtPivotingEnabled()
-        hltbEnabled = AppSettings.getBool("hltbEnabled", defaultValue: true)
-        categoryAskToAddAfterCreate = AppSettings.getBool(GameCategory.askToAddAfterCreateSettingsKey, defaultValue: true)
-        openCriticAPIKey = OpenCriticService.shared.apiKey ?? ""
+            NotificationService.shared.refreshAuthorizationStatus()
+            autoCheckUpdates = AppUpdateService.shared.autoCheckEnabled
+            notificationsEnabled = NotificationService.shared.isAuthorized
+            boxArtPivotingEnabled = prefs.boxArtPivotingEnabled()
+            hltbEnabled = AppSettings.getBool("hltbEnabled", defaultValue: true)
+            categoryAskToAddAfterCreate = AppSettings.getBool(GameCategory.askToAddAfterCreateSettingsKey, defaultValue: true)
+            openCriticAPIKey = OpenCriticService.shared.apiKey ?? ""
             pending.theme = themeManager.currentTheme
             pending.appearanceMode = themeManager.appearanceMode
             pending.customColor = themeManager.customAccentColor
-        pending.toolbarAccent = themeManager.toolbarAccentEnabled
-        pending.tintedSurfaces = themeManager.tintedSurfacesEnabled
-        activePending = pending
-        hasPendingChanges = false
-        DispatchQueue.main.async {
-            contentLoaded = true
-        }
+            pending.toolbarAccent = themeManager.toolbarAccentEnabled
+            pending.tintedSurfaces = themeManager.tintedSurfacesEnabled
+            activePending = pending
+            hasPendingChanges = false
+            DispatchQueue.main.async {
+                contentLoaded = true
+            }
         }
         .onChange(of: autoCheckUpdates) { _, newValue in
             AppUpdateService.shared.autoCheckEnabled = newValue
@@ -429,19 +257,413 @@ LazyVGrid(columns: [GridItem(.adaptive(minimum: 60))], spacing: 2) {
             hasPendingChanges = false
             ThemeManager.relaunchApp()
         }
+        .confirmationDialog(
+            loc.localized("settings.theme.restartRequired"),
+            isPresented: $showRestartConfirmation,
+            titleVisibility: .visible
+        ) {
+            Button(loc.localized("settings.theme.restartNow")) {
+                ThemeManager.relaunchApp()
+            }
+            Button(loc.localized("settings.theme.later"), role: .cancel) {}
+        } message: {
+            Text(loc.localized("settings.theme.restartMessage"))
+        }
+    }
+
+    // MARK: - Stat Pills Row
+
+    /// A horizontal row of stat pill chips echoing the number pills on the
+    /// design inspiration page (e.g. "168 blocks", "261 finds").
+    private var statPillsRow: some View {
+        HStack(spacing: AppSpacing.md) {
+            ForEach(statPills) { pill in
+                SettingsStatPill(item: pill)
+            }
+        }
+        .padding(.bottom, AppSpacing.xs)
+    }
+
+    private var statPills: [SettingsStatPill.Item] {
+        var items: [SettingsStatPill.Item] = []
+        items.append(SettingsStatPill.Item(
+            id: "theme",
+            number: ThemeManager.shared.currentTheme.displayName,
+            label: loc.localized("settings.unit.theme"),
+            icon: "paintpalette.fill"
+        ))
+        items.append(SettingsStatPill.Item(
+            id: "language",
+            number: loc.currentLanguage.uppercased(),
+            label: loc.localized("settings.unit.language"),
+            icon: "globe"
+        ))
+        items.append(SettingsStatPill.Item(
+            id: "version",
+            number: "v\(AppVersion.current)",
+            label: loc.localized("settings.unit.version"),
+            icon: "tag.fill"
+        ))
+        return items
+    }
+
+    // MARK: - Card Helper
+
+    /// Wraps a settings section in a rounded card with an icon + title header,
+    /// matching the inspiration page's card aesthetic.
+    @ViewBuilder
+    private func settingsCard<Content: View>(
+        id: String,
+        title: String,
+        icon: String,
+        keywords: String,
+        @ViewBuilder content: () -> Content
+    ) -> some View {
+        if sectionVisible(id) && matchesSearch(keywords) {
+            VStack(alignment: .leading, spacing: AppSpacing.md) {
+                HStack(spacing: AppSpacing.sm) {
+                    Image(systemName: icon)
+                        .font(.body)
+                        .foregroundStyle(AppColors.textTertiary(colorScheme))
+                    Text(title)
+                        .font(AppTypography.headingSmall)
+                        .foregroundStyle(AppColors.textPrimary(colorScheme))
+                }
+                content()
+            }
+            .padding(AppSpacing.xl)
+            .background(
+                RoundedRectangle(cornerRadius: AppRadius.xl)
+                    .fill(AppColors.cardBackgroundSubtle(colorScheme))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: AppRadius.xl)
+                            .stroke(AppColors.cardBorder(colorScheme), lineWidth: 1)
+                    )
+            )
+            .cardHoverEffect(colorScheme: colorScheme)
+            .id(id)
+        }
+    }
+
+    // MARK: - Section Content
+
+    private var languageRegionContent: some View {
+        Group {
+            Picker(loc.localized("settings.selectLanguage"), selection: Binding<String>(
+                get: { loc.currentLanguage },
+                set: { loc.setLanguage($0) })
+            ) {
+                ForEach(loc.availableLanguages, id: \.self) { lang in
+                    Text("\(languageFlag(for: lang)) \(languageDisplayName(for: lang))")
+                        .tag(lang)
+                }
+            }
+            .pickerStyle(.menu)
+
+            Picker(loc.localized("library.gameRegion"), selection: $prefs.systemLanguage) {
+                ForEach(EmulatorLanguage.allCases) { lang in
+                    Text("\(lang.flagEmoji) \(lang.name)").tag(lang)
+                }
+            }
+            Text(loc.localized("library.regionDescription"))
+                .font(.caption)
+                .foregroundStyle(AppColors.textSecondary(colorScheme))
+        }
+    }
+
+    private var themeContent: some View {
+        Group {
+            VStack(alignment: .leading, spacing: AppSpacing.md) {
+                Text(loc.localized("settings.appearance"))
+                    .font(.caption)
+                    .foregroundStyle(AppColors.textSecondary(colorScheme))
+
+                Picker(loc.localized("settings.appearance"), selection: Binding<AppearanceMode>(
+                    get: { pending.appearanceMode },
+                    set: { pending.appearanceMode = $0 }
+                )) {
+                    ForEach(AppearanceMode.allCases, id: \.self) { mode in
+                        Label(mode.displayName, systemImage: mode.systemImageName).tag(mode)
+                    }
+                }
+                .pickerStyle(.segmented)
+            }
+
+            LazyVGrid(columns: [GridItem(.adaptive(minimum: 76))], spacing: AppSpacing.md) {
+                CustomThemeButton(isSelected: pending.theme == .custom) {
+                    pending.theme = .custom
+                }
+
+                ForEach(AccentColorTheme.allCases.filter { !$0.isCustom }, id: \.self) { theme in
+                    themeGridButton(theme)
+                }
+            }
+
+            if pending.theme == .custom {
+                ColorPicker(loc.localized("settings.customColor"), selection: $pending.customColor, supportsOpacity: false)
+            }
+
+            HStack(alignment: .firstTextBaseline, spacing: AppSpacing.xl) {
+                Toggle(loc.localized("settings.toolbarAccent"), isOn: $pending.toolbarAccent)
+                Spacer(minLength: AppSpacing.md)
+                Toggle(loc.localized("settings.tintedSurfaces"), isOn: $pending.tintedSurfaces)
+            }
+            HStack(alignment: .top, spacing: AppSpacing.xl) {
+                Text(loc.localized("settings.toolbarAccentDescription"))
+                    .font(.caption)
+                    .foregroundStyle(AppColors.textSecondary(colorScheme))
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                Text(loc.localized("settings.tintedSurfacesDescription"))
+                    .font(.caption)
+                    .foregroundStyle(AppColors.textSecondary(colorScheme))
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+
+            VStack(alignment: .leading, spacing: AppSpacing.sm) {
+                Text(loc.localized("settings.theme.previewTitle"))
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(AppColors.textSecondary(colorScheme))
+
+                ThemePreviewCard(
+                    accent: previewAccent,
+                    accentDimmed: previewAccentDimmed,
+                    accentDark: previewAccentDark,
+                    accentSecondary: previewAccentSecondary,
+                    mode: pending.appearanceMode,
+                    tinted: pending.tintedSurfaces
+                )
+            }
+
+            Button(loc.localized("settings.theme.applyTheme")) {
+                themeManager.applyTheme(pending.theme, customColor: pending.theme == .custom ? pending.customColor : nil)
+                themeManager.setToolbarAccent(pending.toolbarAccent)
+                themeManager.applyAppearanceMode(pending.appearanceMode)
+                hasPendingChanges = false
+                showRestartConfirmation = true
+            }
+            .buttonStyle(.borderedProminent)
+            .disabled(!themeHasChanged)
+            .frame(maxWidth: .infinity)
+        }
+    }
+
+    private var libraryHeroContent: some View {
+        Group {
+            Toggle(loc.localized("settings.libraryHero.show"), isOn: $prefs.showLibraryHero)
+            Text(loc.localized("settings.libraryHero.showDescription"))
+                .font(.caption)
+                .foregroundStyle(AppColors.textSecondary(colorScheme))
+        }
+    }
+
+    private var quickAccessContent: some View {
+        Group {
+            Toggle(loc.localized("settings.sidebarQuickAccess.show"), isOn: $prefs.showSidebarQuickAccess)
+            Text(verbatim: loc.localized("settings.sidebarQuickAccess.showDescription"))
+                .font(.caption)
+                .foregroundStyle(AppColors.textSecondary(colorScheme))
+        }
+    }
+
+    private var boxArtContent: some View {
+        Group {
+            Toggle(loc.localized("boxArt.pivotingEnabled"), isOn: $boxArtPivotingEnabled)
+            Toggle(loc.localized("settings.hltb.enabled"), isOn: $hltbEnabled)
+            Text(loc.localized("settings.hltb.enabledDescription"))
+                .font(.caption)
+                .foregroundStyle(AppColors.textSecondary(colorScheme))
+            Text(loc.localized("boxArt.pivotingDescription"))
+                .font(.caption)
+                .foregroundStyle(AppColors.textSecondary(colorScheme))
+        }
+    }
+
+    private var categoriesContent: some View {
+        Group {
+            Toggle(loc.localized("settings.categories.askToAddAfterCreate"), isOn: $categoryAskToAddAfterCreate)
+            Text(loc.localized("settings.categories.askToAddAfterCreateDescription"))
+                .font(.caption)
+                .foregroundStyle(AppColors.textSecondary(colorScheme))
+        }
+    }
+
+    private var applicationContent: some View {
+        Group {
+            LabeledContent(loc.localized("settings.version")) {
+                Text(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0")
+            }
+            LabeledContent(loc.localized("settings.build")) {
+                Text(Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "1")
+            }
+
+            Divider()
+
+            Toggle(loc.localized("settings.autoCheckUpdates"), isOn: $autoCheckUpdates)
+            Text(loc.localized("settings.autoCheckUpdatesDescription"))
+                .font(.caption)
+                .foregroundStyle(AppColors.textSecondary(colorScheme))
+
+            SettingsRow(loc.localized("settings.systemNotifications")) {
+                HStack(spacing: AppSpacing.sm) {
+                    if NotificationService.shared.isAuthorized {
+                        SettingsActionButton(loc.localized("settings.notificationsTest")) {
+                            NotificationService.shared.sendNotification(
+                                title: loc.localized("settings.notificationsTestTitle"),
+                                body: loc.localized("settings.notificationsTestBody")
+                            )
+                        }
+                    }
+                    SettingsActionButton(NotificationService.shared.isAuthorized ? loc.localized("settings.enabled") : loc.localized("settings.enable")) {
+                        Task {
+                            let granted = await NotificationService.shared.requestAuthorization()
+                            if granted {
+                                NotificationService.shared.sendNotification(
+                                    title: loc.localized("settings.notificationsTestTitle"),
+                                    body: loc.localized("settings.notificationsTestBody")
+                                )
+                            }
+                        }
+                    }
+                    .disabled(NotificationService.shared.isAuthorized)
+                }
+            }
+        }
+    }
+
+    private var openCriticContent: some View {
+        Group {
+            SecureField(loc.localized("settings.openCritic.apiKey"), text: $openCriticAPIKey)
+                .textFieldStyle(.roundedBorder)
+                .font(.system(size: 12))
+            HStack(alignment: .firstTextBaseline, spacing: AppSpacing.xl) {
+                Text(loc.localized("settings.openCritic.apiKeyDescription"))
+                    .font(.caption)
+                    .foregroundStyle(AppColors.textSecondary(colorScheme))
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                if openCritic.isTestingConnection {
+                    ProgressView()
+                        .controlSize(.small)
+                }
+                SettingsActionButton(openCritic.isTestingConnection
+                                   ? loc.localized("settings.openCritic.testing")
+                                   : loc.localized("settings.openCritic.testConnection")) {
+                    Task {
+                        await OpenCriticService.shared.testAPIConnection()
+                    }
+                }
+                .disabled(openCritic.isTestingConnection)
+            }
+            if let msg = openCritic.connectionTestMessage {
+                HStack(alignment: .firstTextBaseline, spacing: 6) {
+                    Image(systemName: openCritic.connectionTestSuccess == true
+                          ? "checkmark.circle.fill" : "xmark.circle.fill")
+                        .foregroundStyle(openCritic.connectionTestSuccess == true ? .green : .red)
+                    Text(msg)
+                        .font(.caption2)
+                }
+                .foregroundStyle(AppColors.textTertiary(colorScheme))
+            }
+            if let attributed = try? AttributedString(
+                markdown: loc.localized("settings.openCritic.apiKeyWarning"),
+                options: .init(interpretedSyntax: .inlineOnlyPreservingWhitespace)
+            ) {
+                Text(attributed)
+                    .font(.caption2)
+                    .foregroundStyle(AppColors.textTertiary(colorScheme))
+            } else {
+                Text(loc.localized("settings.openCritic.apiKeyWarning"))
+                    .font(.caption2)
+                    .foregroundStyle(AppColors.textTertiary(colorScheme))
+            }
+        }
+    }
+
+    // MARK: - Empty State
+
+    private var noResultsView: some View {
+        VStack {
+            Text("\(loc.localized("general.noMatchingSettings")) \"\(searchText)\"")
+                .font(.caption)
+                .foregroundStyle(AppColors.textSecondary(colorScheme))
+                .frame(maxWidth: .infinity, alignment: .center)
+                .padding(.vertical, AppSpacing.xl2)
+        }
+        .frame(maxWidth: .infinity)
+    }
+
+    // MARK: - Computed
+
+    private var previewAccent: Color {
+        if pending.theme == .custom { return pending.customColor }
+        return pending.theme.accent
+    }
+
+    private var previewAccentDimmed: Color {
+        if pending.theme == .custom { return AccentColorTheme.dimmedColor(from: pending.customColor) }
+        return pending.theme.accentDimmed
+    }
+
+    private var previewAccentDark: Color {
+        if pending.theme == .custom { return AccentColorTheme.darkColor(from: pending.customColor) }
+        return pending.theme.accentDark
+    }
+
+    private var previewAccentSecondary: Color {
+        if pending.theme == .custom { return pending.customColor }
+        return pending.theme.secondaryAccent
+    }
+
+    private var themeHasChanged: Bool {
+        let themeChanged = pending.theme != themeManager.currentTheme
+        let customColorChanged = pending.theme == .custom && pending.customColor != themeManager.customAccentColor
+        let toolbarChanged = pending.toolbarAccent != themeManager.toolbarAccentEnabled
+        let tintedSurfacesChanged = pending.tintedSurfaces != themeManager.tintedSurfacesEnabled
+        let appearanceChanged = pending.appearanceMode != themeManager.appearanceMode
+        return themeChanged || customColorChanged || toolbarChanged || tintedSurfacesChanged || appearanceChanged
+    }
+
+    private var hasMatchingSections: Bool {
+        matchesSearch("Language Region systems language emulation core country localization") ||
+        matchesSearch("Theme accent color appearance mode light dark gaming tinted surfaces toolbar") ||
+        matchesSearch("library hero header collection banner show hide") ||
+        matchesSearch("sidebar quick access tiles all games favorites recent show hide collapse") ||
+        matchesSearch("boxArt pivoting 3D tilt cursor") ||
+        matchesSearch("categories category add game prompt ask create") ||
+        matchesSearch("Application version build notifications updates")
+    }
+
+    private func languageDisplayName(for lang: String) -> String {
+        switch lang.lowercased() {
+        case "en": return "English"
+        case "es": return "Español"
+        case "pt": return "Português"
+        case "ja": return "日本語"
+        default: return lang.uppercased()
+        }
+    }
+
+    private func languageFlag(for lang: String) -> String {
+        switch lang.lowercased() {
+        case "en": return "🇺🇸"
+        case "es": return "🇦🇷"
+        case "pt": return "🇧🇷"
+        case "ja": return "🇯🇵"
+        default: return "🌐"
+        }
     }
 
     // MARK: - Theme Circle Button
 
     private func themeGridButton(_ theme: AccentColorTheme) -> some View {
         ThemeIconButton(
-        iconName: theme.iconAssetName,
-        label: theme.displayName,
-        isSelected: pending.theme == theme,
-        colorScheme: colorScheme
+            iconName: theme.iconAssetName,
+            label: theme.displayName,
+            isSelected: pending.theme == theme,
+            colorScheme: colorScheme
         ) {
             pending.theme = theme
         }
+    }
 }
 
 // MARK: - Theme Icon Button
@@ -513,67 +735,6 @@ private struct CustomThemeButton: View {
         .buttonStyle(.plain)
         .onHover { isHovered = $0 }
     }
-}
-
-    private var previewAccent: Color {
-        if pending.theme == .custom { return pending.customColor }
-        return pending.theme.accent
-    }
-
-    private var previewAccentDimmed: Color {
-        if pending.theme == .custom { return AccentColorTheme.dimmedColor(from: pending.customColor) }
-        return pending.theme.accentDimmed
-    }
-
-    private var previewAccentDark: Color {
-        if pending.theme == .custom { return AccentColorTheme.darkColor(from: pending.customColor) }
-        return pending.theme.accentDark
-    }
-
-    private var previewAccentSecondary: Color {
-        if pending.theme == .custom { return pending.customColor }
-        return pending.theme.secondaryAccent
-    }
-
-    private var themeHasChanged: Bool {
-        let themeChanged = pending.theme != themeManager.currentTheme
-        let customColorChanged = pending.theme == .custom && pending.customColor != themeManager.customAccentColor
-        let toolbarChanged = pending.toolbarAccent != themeManager.toolbarAccentEnabled
-        let tintedSurfacesChanged = pending.tintedSurfaces != themeManager.tintedSurfacesEnabled
-        let appearanceChanged = pending.appearanceMode != themeManager.appearanceMode
-        return themeChanged || customColorChanged || toolbarChanged || tintedSurfacesChanged || appearanceChanged
-    }
-
-    private var hasMatchingSections: Bool {
-        matchesSearch("Language Region systems language emulation core country localization") ||
-        matchesSearch("Theme accent color appearance mode light dark gaming tinted surfaces toolbar") ||
-        matchesSearch("library hero header collection banner show hide") ||
-        matchesSearch("sidebar quick access tiles all games favorites recent show hide collapse") ||
-        matchesSearch("boxArt pivoting 3D tilt cursor") ||
-        matchesSearch("categories category add game prompt ask create") ||
-        matchesSearch("Application version build notifications updates")
-    }
-
-    private func languageDisplayName(for lang: String) -> String {
-        switch lang.lowercased() {
-        case "en": return "English"
-        case "es": return "Español"
-        case "pt": return "Português"
-        case "ja": return "日本語"
-        default: return lang.uppercased()
-        }
-    }
-
-    private func languageFlag(for lang: String) -> String {
-        switch lang.lowercased() {
-        case "en": return "🇺🇸"
-        case "es": return "🇦🇷"
-        case "pt": return "🇧🇷"
-        case "ja": return "🇯🇵"
-        default: return "🌐"
-        }
-    }
-
 }
 
 // MARK: - Theme Preview Card
@@ -673,5 +834,83 @@ private struct ThemePreviewCard: View {
         .padding(4)
         .background(previewBackgroundColor)
         .clipShape(RoundedRectangle(cornerRadius: AppRadius.md))
+    }
+}
+
+// MARK: - Stat Pill
+
+/// A pill-shaped stat chip echoing the number pills on the design inspiration
+/// page: an icon, a bold value, and a small uppercase label.
+struct SettingsStatPill: View {
+    let item: Item
+    @Environment(\.colorScheme) private var colorScheme
+    @State private var isHovered = false
+
+    struct Item: Identifiable {
+        let id: String
+        let number: String
+        let label: String
+        let icon: String
+    }
+
+    var body: some View {
+        HStack(spacing: AppSpacing.sm) {
+            Image(systemName: item.icon)
+                .font(.system(size: 10, weight: .bold))
+                .foregroundStyle(AppColors.brandAccent)
+
+            Text(verbatim: item.number)
+                .font(.system(size: 15, weight: .bold, design: .rounded))
+                .monospacedDigit()
+                .foregroundStyle(AppColors.textPrimary(colorScheme))
+                .lineLimit(1)
+
+            Text(verbatim: item.label.uppercased())
+                .font(.system(size: 8, weight: .bold, design: .rounded))
+                .tracking(0.5)
+                .foregroundStyle(AppColors.textTertiary(colorScheme))
+                .lineLimit(1)
+        }
+        .padding(.horizontal, AppSpacing.md)
+        .padding(.vertical, AppSpacing.sm)
+        .background(
+            Capsule(style: .continuous)
+                .fill(AppColors.brandAccent.opacity(colorScheme == .dark ? 0.14 : 0.10))
+                .overlay(
+                    Capsule(style: .continuous)
+                        .strokeBorder(AppColors.brandAccent.opacity(isHovered ? 0.30 : 0.18), lineWidth: 1)
+                )
+        )
+        .scaleEffect(isHovered ? 1.05 : 1.0)
+        .animation(.easeOut(duration: 0.12), value: isHovered)
+        .onHover { isHovered = $0 }
+        .fixedSize()
+    }
+}
+
+// MARK: - Card Hover Effect
+
+/// Subtle lift + border brighten on hover, echoing the interactive cards on
+/// the design inspiration page.
+struct CardHoverEffect: ViewModifier {
+    let colorScheme: ColorScheme
+    @State private var isHovered = false
+
+    func body(content: Content) -> some View {
+        content
+            .scaleEffect(isHovered ? 1.005 : 1.0)
+            .animation(.easeOut(duration: 0.12), value: isHovered)
+            .overlay(
+                RoundedRectangle(cornerRadius: AppRadius.xl)
+                    .stroke(AppColors.brandAccent.opacity(isHovered ? 0.25 : 0.0), lineWidth: 1)
+                    .animation(.easeOut(duration: 0.12), value: isHovered)
+            )
+            .onHover { isHovered = $0 }
+    }
+}
+
+extension View {
+    func cardHoverEffect(colorScheme: ColorScheme) -> some View {
+        modifier(CardHoverEffect(colorScheme: colorScheme))
     }
 }

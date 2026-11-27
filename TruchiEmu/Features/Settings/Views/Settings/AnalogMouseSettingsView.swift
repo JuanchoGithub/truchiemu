@@ -31,6 +31,8 @@ struct AnalogMouseSettingsView: View {
     @Binding var focusedSectionID: String?
     @Binding var scopedSectionID: String?
 
+    @State private var contentLoaded = false
+
     static let searchKeywords: String = "analog mouse stick controller gamepad sensitivity deadzone dos scummvm pointer cursor"
 
     private let supportedSystems: [(id: String, name: String)] = [
@@ -63,26 +65,214 @@ struct AnalogMouseSettingsView: View {
     }
 
     var body: some View {
-        Form {
-            systemsSection
-            if anySystemEnabled {
-                movementSection
-                buttonMappingSection
-            }
-            if isSearching && !hasMatchingSections {
-                Section {
-                    Text(loc.localized("general.noMatchingSettings") + " \"\(searchText)\"")
-                        .font(.caption)
-                        .foregroundStyle(AppColors.textSecondary(colorScheme))
-                        .frame(maxWidth: .infinity, alignment: .center)
-                        .padding(.vertical, 20)
+        Group {
+            if contentLoaded {
+                ScrollView {
+                    ScrollViewReader { proxy in
+                        VStack(alignment: .leading, spacing: AppSpacing.lg) {
+                            // MARK: - Systems
+                            settingsCard(
+                                id: "section-systems",
+                                title: loc.localized("analogMouse.title"),
+                                icon: "computermouse.fill",
+                                keywords: "analog mouse stick controller gamepad dos scummvm pointer cursor"
+                            ) {
+                                ForEach(supportedSystems, id: \.id) { sys in
+                                    Toggle(isOn: bindingFor(systemID: sys.id)) {
+                                        HStack(spacing: 8) {
+                                            Image(systemName: iconName(for: sys.id))
+                                                .foregroundStyle(AppColors.brandAccent)
+                                                .font(.body)
+                                            Text(sys.name)
+                                                .font(.body)
+                                        }
+                                    }
+                                }
+
+                                VStack(alignment: .leading, spacing: 6) {
+                                    Text(loc.localized("analogMouse.enabledDescription"))
+                                        .font(.caption)
+                                        .foregroundStyle(AppColors.textSecondary(colorScheme))
+                                }
+                            }
+
+                            // MARK: - Movement
+                            if anySystemEnabled {
+                                settingsCard(
+                                    id: "section-movement",
+                                    title: loc.localized("analogMouse.movement"),
+                                    icon: "arrow.up.left.and.down.right.magnifyingglass",
+                                    keywords: "sensitivity deadzone stick visualizer"
+                                ) {
+                                    if enabledSystems.count > 1 {
+                                        Picker(loc.localized("analogMouse.configureSystem"), selection: $selectedSystemID) {
+                                            ForEach(enabledSystems, id: \.id) { sys in
+                                                Text(sys.name).tag(sys.id)
+                                            }
+                                        }
+                                        .pickerStyle(.segmented)
+                                    }
+
+                                    VStack(spacing: 12) {
+                                        HStack(spacing: 12) {
+                                            AnalogMouseStickView(x: lX, y: lY, deadZone: deadZone, label: "L")
+                                            AnalogMouseStickView(x: rX, y: rY, deadZone: deadZone, label: "R")
+                                        }
+
+                                        Text(loc.localized("analogMouse.stickVisualizerHint"))
+                                            .font(.caption)
+                                            .foregroundStyle(AppColors.textSecondary(colorScheme))
+                                    }
+                                    .frame(maxWidth: .infinity)
+
+                                    HStack(spacing: 0) {
+                                        Slider(value: $sensitivity, in: 0.1...5.0, step: 0.1) {
+                                            HStack {
+                                                Text(loc.localized("analogMouse.sensitivity"))
+                                                Spacer()
+                                                Text(String(format: "%.1f", sensitivity))
+                                                    .font(.system(.caption, design: .monospaced))
+                                                    .foregroundStyle(AppColors.textSecondary(colorScheme))
+                                            }
+                                        }
+                                        Button {
+                                            sensitivity = 0.8
+                                            AppSettings.setDouble("analogMouse_sensitivity_\(selectedSystemID)", value: 0.8)
+                                        } label: {
+                                            Image(systemName: "arrow.counterclockwise")
+                                                .font(.caption)
+                                        }
+                                        .buttonStyle(.plain)
+                                        .foregroundStyle(sensitivity != 0.8 ? AppColors.brandAccent : AppColors.textSecondary(colorScheme).opacity(0.3))
+                                        .disabled(sensitivity == 0.8)
+                                        .help("Reset to default")
+                                        .padding(.leading, 4)
+                                    }
+
+                                    HStack(spacing: 0) {
+                                        Slider(value: $deadZone, in: 0.0...0.5, step: 0.01) {
+                                            HStack {
+                                                Text(loc.localized("analogMouse.deadZone"))
+                                                Spacer()
+                                                Text(String(format: "%.2f", deadZone))
+                                                    .font(.system(.caption, design: .monospaced))
+                                                    .foregroundStyle(AppColors.textSecondary(colorScheme))
+                                            }
+                                        }
+                                        Button {
+                                            deadZone = 0.15
+                                            AppSettings.setDouble("analogMouse_deadZone_\(selectedSystemID)", value: 0.15)
+                                        } label: {
+                                            Image(systemName: "arrow.counterclockwise")
+                                                .font(.caption)
+                                        }
+                                        .buttonStyle(.plain)
+                                        .foregroundStyle(deadZone != 0.15 ? AppColors.brandAccent : AppColors.textSecondary(colorScheme).opacity(0.3))
+                                        .disabled(deadZone == 0.15)
+                                        .help("Reset to default")
+                                        .padding(.leading, 4)
+                                    }
+
+                                    Picker(loc.localized("analogMouse.stick"), selection: $stick) {
+                                        Text(loc.localized("analogMouse.stickLeft")).tag("left")
+                                        Text(loc.localized("analogMouse.stickRight")).tag("right")
+                                    }
+                                    .pickerStyle(.segmented)
+
+                                    VStack(alignment: .leading, spacing: 4) {
+                                        Label {
+                                            Text(loc.localized("analogMouse.secondaryStickTitle"))
+                                                .font(.caption.weight(.semibold))
+                                        } icon: {
+                                            Image(systemName: "arrow.triangle.2.circlepath")
+                                                .foregroundStyle(AppColors.brandAccent)
+                                        }
+                                        Text(loc.localized("analogMouse.secondaryStickDescription"))
+                                            .font(.caption)
+                                            .foregroundStyle(AppColors.textSecondary(colorScheme))
+                                    }
+                                    .padding(.vertical, 4)
+
+                                    VStack(alignment: .leading, spacing: 6) {
+                                        Text(loc.localized("analogMouse.movementDescription"))
+                                            .font(.caption)
+                                            .foregroundStyle(AppColors.textSecondary(colorScheme))
+                                    }
+                                }
+                                .onChange(of: sensitivity) { _, newValue in AppSettings.setDouble("analogMouse_sensitivity_\(selectedSystemID)", value: newValue) }
+                                .onChange(of: deadZone) { _, newValue in AppSettings.setDouble("analogMouse_deadZone_\(selectedSystemID)", value: newValue) }
+                                .onChange(of: stick) { _, newValue in AppSettings.set("analogMouse_stick_\(selectedSystemID)", value: newValue) }
+                            }
+
+                            // MARK: - Button Mapping
+                            if anySystemEnabled {
+                                settingsCard(
+                                    id: "section-buttonMapping",
+                                    title: loc.localized("analogMouse.buttonMapping"),
+                                    icon: "gamecontroller",
+                                    keywords: "button mapping left right middle click"
+                                ) {
+                                    Picker(loc.localized("analogMouse.buttonLeft"), selection: $buttonLeft) {
+                                        ForEach(buttonOptions, id: \.key) { opt in
+                                            Text(opt.label).tag(opt.key)
+                                        }
+                                    }
+
+                                    Picker(loc.localized("analogMouse.buttonRight"), selection: $buttonRight) {
+                                        ForEach(buttonOptions, id: \.key) { opt in
+                                            Text(opt.label).tag(opt.key)
+                                        }
+                                    }
+
+                                    Picker(loc.localized("analogMouse.buttonMiddle"), selection: $buttonMiddle) {
+                                        ForEach(buttonOptions, id: \.key) { opt in
+                                            Text(opt.label).tag(opt.key)
+                                        }
+                                    }
+
+                                    VStack(alignment: .leading, spacing: 6) {
+                                        Text(loc.localized("analogMouse.buttonMappingDescription"))
+                                            .font(.caption)
+                                            .foregroundStyle(AppColors.textSecondary(colorScheme))
+                                    }
+                                }
+                                .onChange(of: buttonLeft) { _, newValue in AppSettings.set("analogMouse_buttonLeft_\(selectedSystemID)", value: newValue) }
+                                .onChange(of: buttonRight) { _, newValue in AppSettings.set("analogMouse_buttonRight_\(selectedSystemID)", value: newValue) }
+                                .onChange(of: buttonMiddle) { _, newValue in AppSettings.set("analogMouse_buttonMiddle_\(selectedSystemID)", value: newValue) }
+                            }
+
+                            // No results message
+                            if isSearching && !hasMatchingSections {
+                                noResultsView
+                            }
+
+                            Spacer(minLength: AppSpacing.xl5)
+                        }
+                        .padding(.horizontal, AppSpacing.lg)
+                        .padding(.top, AppSpacing.md)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .onChange(of: focusedSectionID) { _, newID in
+                            guard let id = newID else { return }
+                            withAnimation { proxy.scrollTo("section-\(id)", anchor: .top) }
+                        }
+                        .onChange(of: scopedSectionID) { _, newScope in
+                            guard let id = newScope else { return }
+                            DispatchQueue.main.async {
+                                withAnimation { proxy.scrollTo("section-\(id)", anchor: .top) }
+                            }
+                        }
+                    }
                 }
+                .scrollContentBackground(.hidden)
+                .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+            } else {
+                Color.clear
+                    .frame(maxWidth: .infinity, minHeight: 400)
             }
         }
-        .scrollContentBackground(.hidden)
-        .formStyle(.grouped)
         .navigationTitle(loc.localized("analogMouse.title"))
         .onAppear {
+            contentLoaded = true
             loadAllSystems()
             startMonitorTimer()
         }
@@ -99,164 +289,6 @@ struct AnalogMouseSettingsView: View {
             AppSettings.set("analogMouse_selectedSystem", value: newValue)
             loadSettings(for: newValue)
         }
-    }
-
-    // MARK: - Systems Section
-
-    private var systemsSection: some View {
-        Section {
-            ForEach(supportedSystems, id: \.id) { sys in
-                Toggle(isOn: bindingFor(systemID: sys.id)) {
-                    HStack(spacing: 8) {
-                        Image(systemName: iconName(for: sys.id))
-                            .foregroundStyle(AppColors.brandAccent)
-                            .font(.body)
-                        Text(sys.name)
-                            .font(.body)
-                    }
-                }
-            }
-        } header: {
-            Label { Text(loc.localized("analogMouse.title")) } icon: { Image(systemName: "computermouse.fill") }
-        } footer: {
-            Text(loc.localized("analogMouse.enabledDescription"))
-        }
-    }
-
-    // MARK: - Movement Section
-
-    @ViewBuilder
-    private var movementSection: some View {
-        Section {
-            if enabledSystems.count > 1 {
-                Picker(loc.localized("analogMouse.configureSystem"), selection: $selectedSystemID) {
-                    ForEach(enabledSystems, id: \.id) { sys in
-                        Text(sys.name).tag(sys.id)
-                    }
-                }
-                .pickerStyle(.segmented)
-            }
-
-            VStack(spacing: 12) {
-                HStack(spacing: 12) {
-                    AnalogMouseStickView(x: lX, y: lY, deadZone: deadZone, label: "L")
-                    AnalogMouseStickView(x: rX, y: rY, deadZone: deadZone, label: "R")
-                }
-
-                Text(loc.localized("analogMouse.stickVisualizerHint"))
-                    .font(.caption)
-                    .foregroundStyle(AppColors.textSecondary(colorScheme))
-            }
-            .frame(maxWidth: .infinity)
-
-            HStack(spacing: 0) {
-                Slider(value: $sensitivity, in: 0.1...5.0, step: 0.1) {
-                    HStack {
-                        Text(loc.localized("analogMouse.sensitivity"))
-                        Spacer()
-                        Text(String(format: "%.1f", sensitivity))
-                            .font(.system(.caption, design: .monospaced))
-                            .foregroundStyle(AppColors.textSecondary(colorScheme))
-                    }
-                }
-                Button {
-            sensitivity = 0.8
-            AppSettings.setDouble("analogMouse_sensitivity_\(selectedSystemID)", value: 0.8)
-                } label: {
-                    Image(systemName: "arrow.counterclockwise")
-                        .font(.caption)
-                }
-                .buttonStyle(.plain)
-        .foregroundStyle(sensitivity != 0.8 ? AppColors.brandAccent : AppColors.textSecondary(colorScheme).opacity(0.3))
-        .disabled(sensitivity == 0.8)
-                .help("Reset to default")
-                .padding(.leading, 4)
-            }
-
-            HStack(spacing: 0) {
-                Slider(value: $deadZone, in: 0.0...0.5, step: 0.01) {
-                    HStack {
-                        Text(loc.localized("analogMouse.deadZone"))
-                        Spacer()
-                        Text(String(format: "%.2f", deadZone))
-                            .font(.system(.caption, design: .monospaced))
-                            .foregroundStyle(AppColors.textSecondary(colorScheme))
-                    }
-                }
-                Button {
-                    deadZone = 0.15
-                    AppSettings.setDouble("analogMouse_deadZone_\(selectedSystemID)", value: 0.15)
-                } label: {
-                    Image(systemName: "arrow.counterclockwise")
-                        .font(.caption)
-                }
-                .buttonStyle(.plain)
-                .foregroundStyle(deadZone != 0.15 ? AppColors.brandAccent : AppColors.textSecondary(colorScheme).opacity(0.3))
-                .disabled(deadZone == 0.15)
-                .help("Reset to default")
-                .padding(.leading, 4)
-            }
-
-            Picker(loc.localized("analogMouse.stick"), selection: $stick) {
-                Text(loc.localized("analogMouse.stickLeft")).tag("left")
-                Text(loc.localized("analogMouse.stickRight")).tag("right")
-            }
-            .pickerStyle(.segmented)
-
-            VStack(alignment: .leading, spacing: 4) {
-                Label {
-                    Text(loc.localized("analogMouse.secondaryStickTitle"))
-                        .font(.caption.weight(.semibold))
-                } icon: {
-                    Image(systemName: "arrow.triangle.2.circlepath")
-                        .foregroundStyle(AppColors.brandAccent)
-                }
-                Text(loc.localized("analogMouse.secondaryStickDescription"))
-                    .font(.caption)
-                    .foregroundStyle(AppColors.textSecondary(colorScheme))
-            }
-            .padding(.vertical, 4)
-
-        } header: {
-            Label { Text(loc.localized("analogMouse.movement")) } icon: { Image(systemName: "arrow.up.left.and.down.right.magnifyingglass") }
-        } footer: {
-            Text(loc.localized("analogMouse.movementDescription"))
-        }
-        .onChange(of: sensitivity) { _, newValue in AppSettings.setDouble("analogMouse_sensitivity_\(selectedSystemID)", value: newValue) }
-        .onChange(of: deadZone) { _, newValue in AppSettings.setDouble("analogMouse_deadZone_\(selectedSystemID)", value: newValue) }
-        .onChange(of: stick) { _, newValue in AppSettings.set("analogMouse_stick_\(selectedSystemID)", value: newValue) }
-    }
-
-    // MARK: - Button Mapping Section
-
-    @ViewBuilder
-    private var buttonMappingSection: some View {
-        Section {
-            Picker(loc.localized("analogMouse.buttonLeft"), selection: $buttonLeft) {
-                ForEach(buttonOptions, id: \.key) { opt in
-                    Text(opt.label).tag(opt.key)
-                }
-            }
-
-            Picker(loc.localized("analogMouse.buttonRight"), selection: $buttonRight) {
-                ForEach(buttonOptions, id: \.key) { opt in
-                    Text(opt.label).tag(opt.key)
-                }
-            }
-
-            Picker(loc.localized("analogMouse.buttonMiddle"), selection: $buttonMiddle) {
-                ForEach(buttonOptions, id: \.key) { opt in
-                    Text(opt.label).tag(opt.key)
-                }
-            }
-        } header: {
-            Label { Text(loc.localized("analogMouse.buttonMapping")) } icon: { Image(systemName: "gamecontroller") }
-        } footer: {
-            Text(loc.localized("analogMouse.buttonMappingDescription"))
-        }
-        .onChange(of: buttonLeft) { _, newValue in AppSettings.set("analogMouse_buttonLeft_\(selectedSystemID)", value: newValue) }
-        .onChange(of: buttonRight) { _, newValue in AppSettings.set("analogMouse_buttonRight_\(selectedSystemID)", value: newValue) }
-        .onChange(of: buttonMiddle) { _, newValue in AppSettings.set("analogMouse_buttonMiddle_\(selectedSystemID)", value: newValue) }
     }
 
     // MARK: - Helpers
@@ -312,6 +344,58 @@ struct AnalogMouseSettingsView: View {
         matchesSearch("analog mouse stick controller gamepad") ||
         matchesSearch("sensitivity deadzone stick") ||
         matchesSearch("button mapping left right middle click")
+    }
+
+    private var noResultsView: some View {
+        VStack {
+            Text(loc.localized("general.noMatchingSettings") + " \"\(searchText)\"")
+                .font(.caption)
+                .foregroundStyle(AppColors.textSecondary(colorScheme))
+                .frame(maxWidth: .infinity, alignment: .center)
+                .padding(.vertical, 20)
+        }
+        .frame(maxWidth: .infinity)
+    }
+
+    // MARK: - Card Helper
+
+    @ViewBuilder
+    private func settingsCard<Content: View>(
+        id: String,
+        title: String,
+        icon: String,
+        keywords: String,
+        @ViewBuilder content: () -> Content
+    ) -> some View {
+        if sectionVisible(id) && matchesSearch(keywords) {
+            VStack(alignment: .leading, spacing: AppSpacing.md) {
+                HStack(spacing: AppSpacing.sm) {
+                    Image(systemName: icon)
+                        .font(.body)
+                        .foregroundStyle(AppColors.textTertiary(colorScheme))
+                    Text(title)
+                        .font(AppTypography.headingSmall)
+                        .foregroundStyle(AppColors.textPrimary(colorScheme))
+                }
+                content()
+            }
+            .padding(AppSpacing.xl)
+            .background(
+                RoundedRectangle(cornerRadius: AppRadius.xl)
+                    .fill(AppColors.cardBackgroundSubtle(colorScheme))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: AppRadius.xl)
+                            .stroke(AppColors.cardBorder(colorScheme), lineWidth: 1)
+                    )
+            )
+            .cardHoverEffect(colorScheme: colorScheme)
+            .id(id)
+        }
+    }
+
+    private func sectionVisible(_ id: String) -> Bool {
+        guard let scope = scopedSectionID else { return true }
+        return scope == id || scope == id.replacingOccurrences(of: "section-", with: "")
     }
 
     private func loadAllSystems() {

@@ -44,6 +44,11 @@ struct SavesSettingsView: View {
         return SettingsIndex.matches(haystack: keywords, query: searchText)
     }
 
+    private func sectionVisible(_ id: String) -> Bool {
+        guard let scope = scopedSectionID else { return true }
+        return scope == id || scope == id.replacingOccurrences(of: "section-", with: "")
+    }
+
     private var byteFormatter: ByteCountFormatter {
         let f = ByteCountFormatter()
         f.countStyle = .file
@@ -54,180 +59,179 @@ struct SavesSettingsView: View {
         byteFormatter.string(fromByteCount: bytes)
     }
 
-    private func sectionVisible(_ id: String) -> Bool {
-        guard let scope = scopedSectionID else { return true }
-        return scope == id || scope == id.replacingOccurrences(of: "section-", with: "")
-    }
-
-    @ViewBuilder
-    private var progressiveSavesSection: some View {
-        Section(header: Label(loc.localized("settings.saves.progressiveSaves"), systemImage: "arrow.triangle.2.circlepath")) {
-            Toggle(loc.localized("settings.saves.progressiveSaves"), isOn: $progressiveSaves)
-            Text(loc.localized("settings.saves.progressiveSavesDescription"))
-                .font(.caption)
-                .foregroundStyle(AppColors.textSecondary(colorScheme))
-
-            if progressiveSaves {
-                SettingsRow(loc.localized("settings.saves.autoSlotCount")) {
-                    Picker(loc.localized("settings.saves.autoSlotCount"), selection: $autoSlotCount) {
-                        ForEach(1...5, id: \.self) { count in
-                            Text("\(count)").tag(count)
-                        }
-                    }
-                    .pickerStyle(.segmented)
-                    .labelsHidden()
-                    .frame(width: 200)
-                }
-                Text(loc.localized("settings.saves.slotCountDescription"))
-                    .font(.caption)
-                    .foregroundStyle(AppColors.textSecondary(colorScheme))
-            }
-        }
-        .id("section-progressiveSaves")
-    }
-
-    @ViewBuilder
-    private var formContent: some View {
-        if (!isSearching || matchesSearch("storage path folder directory disk size stats SRAM location migration")) && sectionVisible("section-saveDirectories") {
-            Section(header: Label(loc.localized("saveDirectories.title"), systemImage: "folder.fill")) {
-                StatGroup(
-                    AppStatCard(
-                        icon: "memorychip",
-                        value: byteString(from: saveFileSize),
-                        label: loc.localized("saveDirectories.saveFiles"),
-                        accent: AppColors.brandAccent
-                    ),
-                    AppStatCard(
-                        icon: "gamecontroller.fill",
-                        value: byteString(from: saveStateSize),
-                        label: loc.localized("saveDirectories.saveStates"),
-                        accent: AppColors.accentTertiary
-                    ),
-                    AppStatCard(
-                        icon: "externaldrive.fill",
-                        value: byteString(from: saveFileSize + saveStateSize),
-                        label: loc.localized("saveDirectories.total"),
-                        accent: AppColors.warning(colorScheme)
-                    )
-                )
-
-                if directoryManager.needsMigration {
-                    Divider()
-                    Label { Text(loc.localized("saveDirectories.existingSavesFound")) } icon: { Image(systemName: "exclamationmark.triangle") }
-                        .font(.caption)
-                        .foregroundStyle(AppColors.warning(colorScheme))
-                    SettingsActionButton(loc.localized("saveDirectories.migrateSaveFiles"), systemImage: "arrow.right.doc.on.clipboard") {
-                        showingMigrationAlert = true
-                    }
-                }
-
-                Divider()
-
-                AppPathRow(
-                    loc.localized("saveDirectories.saveFilesSRAM"),
-                    url: directoryManager.savefilesDirectory
-                )
-
-                AppPathRow(
-                    loc.localized("saveDirectories.saveStates"),
-                    url: directoryManager.statesDirectory
-                )
-
-                AppPathRow(
-                    loc.localized("saveDirectories.systemBIOS"),
-                    url: directoryManager.activeSystemDirectory
-                )
-
-                Divider()
-                    .padding(.vertical, AppSpacing.xs)
-
-                HStack {
-                    SettingsActionButton(loc.localized("saveDirectories.changeSaveDirectory"), systemImage: "folder") {
-                        pickSaveDirectory()
-                    }
-                }
-            }
-            .id("section-saveDirectories")
-        }
-
-        if (!isSearching || matchesSearch("Auto save on exit auto-load compress states LZ4")) && sectionVisible("section-saveStates") {
-            Section(header: Label(loc.localized("settings.saveStates"), systemImage: "doc.badge.clock")) {
-                Toggle(loc.localized("settings.autoSaveOnExit"), isOn: $autoSaveOnExit)
-                Toggle(loc.localized("settings.autoLoadOnStart"), isOn: $autoLoadOnStart)
-                Toggle(loc.localized("settings.compressSaveStates"), isOn: $compressSaveStates)
-            }
-            .id("section-saveStates")
-        }
-
-        if (!isSearching || matchesSearch("Progressive saves auto slot rotation version count")) && sectionVisible("section-progressiveSaves") {
-            progressiveSavesSection
-        }
-
-        if (!isSearching || matchesSearch("Save manager browse delete manage review")) && sectionVisible("section-saveManager") {
-            Section {
-                Text(loc.localized("settings.saves.saveManagerDescription"))
-                    .font(.caption)
-                    .foregroundStyle(AppColors.textSecondary(colorScheme))
-                SettingsActionButton(loc.localized("settings.saves.saveManager"), systemImage: "externaldrive") {
-                    showSaveManager = true
-                }
-            } header: {
-                Label(loc.localized("settings.saves.manage"), systemImage: "wrench.and.screwdriver")
-            }
-            .id("section-saveManager")
-        }
-
-        if (!isSearching || matchesSearch("Repair relink orphan lost missing states crash")) && sectionVisible("section-saveRepair") {
-            Section {
-                Text(loc.localized("settings.saves.repairDescription"))
-                    .font(.caption)
-                    .foregroundStyle(AppColors.textSecondary(colorScheme))
-                SettingsActionButton(loc.localized(isRepairing ? "settings.saves.repairRunning" : "settings.saves.repairButton"), systemImage: "wrench.and.screwdriver") {
-                    runRepair()
-                }
-                .disabled(isRepairing)
-                if let repairResult {
-                    Text(repairResult)
-                        .font(.caption)
-                        .foregroundStyle(AppColors.textSecondary(colorScheme))
-                }
-            } header: {
-                Label(loc.localized("settings.saves.repair"), systemImage: "arrow.triangle.2.circlepath")
-            }
-            .id("section-saveRepair")
-        }
-
-        if isSearching && !hasMatchingSections {
-            Section {
-                Text(loc.localized("boxArt.noMatchingSettings"))
-                    .font(.caption)
-                    .foregroundStyle(AppColors.textSecondary(colorScheme))
-                    .frame(maxWidth: .infinity, alignment: .center)
-                     .padding(.vertical, AppSpacing.xl2)
-            }
-        }
-    }
-
     var body: some View {
         Group {
             if contentLoaded {
-                ScrollViewReader { proxy in
-                    Form {
-                        formContent
-                    }
-                    .scrollContentBackground(.hidden)
-                    .formStyle(.grouped)
-                    .onChange(of: focusedSectionID) { _, newID in
-                        guard let id = newID else { return }
-                        withAnimation { proxy.scrollTo("section-\(id)", anchor: .top) }
-                    }
-                    .onChange(of: scopedSectionID) { _, newScope in
-                        guard let id = newScope else { return }
-                        DispatchQueue.main.async {
+                ScrollView {
+                    ScrollViewReader { proxy in
+                        VStack(alignment: .leading, spacing: AppSpacing.lg) {
+                            if !isSearching {
+                                statPillsRow
+                            }
+
+                            settingsCard(
+                                id: "section-saveDirectories",
+                                title: loc.localized("saveDirectories.title"),
+                                icon: "folder.fill",
+                                keywords: "storage path folder directory disk size stats SRAM location migration"
+                            ) {
+                                VStack(alignment: .leading, spacing: AppSpacing.md) {
+                                    StatGroup(
+                                        AppStatCard(
+                                            icon: "memorychip",
+                                            value: byteString(from: saveFileSize),
+                                            label: loc.localized("saveDirectories.saveFiles"),
+                                            accent: AppColors.brandAccent
+                                        ),
+                                        AppStatCard(
+                                            icon: "gamecontroller.fill",
+                                            value: byteString(from: saveStateSize),
+                                            label: loc.localized("saveDirectories.saveStates"),
+                                            accent: AppColors.accentTertiary
+                                        ),
+                                        AppStatCard(
+                                            icon: "externaldrive.fill",
+                                            value: byteString(from: saveFileSize + saveStateSize),
+                                            label: loc.localized("saveDirectories.total"),
+                                            accent: AppColors.warning(colorScheme)
+                                        )
+                                    )
+
+                                    if directoryManager.needsMigration {
+                                        Divider()
+                                        Label { Text(loc.localized("saveDirectories.existingSavesFound")) } icon: { Image(systemName: "exclamationmark.triangle") }
+                                            .font(.caption)
+                                            .foregroundStyle(AppColors.warning(colorScheme))
+                                        SettingsActionButton(loc.localized("saveDirectories.migrateSaveFiles"), systemImage: "arrow.right.doc.on.clipboard") {
+                                            showingMigrationAlert = true
+                                        }
+                                    }
+
+                                    Divider()
+                                        .padding(.vertical, AppSpacing.xs)
+
+                                    AppPathRow(
+                                        loc.localized("saveDirectories.saveFilesSRAM"),
+                                        url: directoryManager.savefilesDirectory
+                                    )
+
+                                    AppPathRow(
+                                        loc.localized("saveDirectories.saveStates"),
+                                        url: directoryManager.statesDirectory
+                                    )
+
+                                    AppPathRow(
+                                        loc.localized("saveDirectories.systemBIOS"),
+                                        url: directoryManager.activeSystemDirectory
+                                    )
+
+                                    Divider()
+                                        .padding(.vertical, AppSpacing.xs)
+
+                                    HStack {
+                                        SettingsActionButton(loc.localized("saveDirectories.changeSaveDirectory"), systemImage: "folder") {
+                                            pickSaveDirectory()
+                                        }
+                                    }
+                                }
+                            }
+
+                            settingsCard(
+                                id: "section-saveStates",
+                                title: loc.localized("settings.saveStates"),
+                                icon: "doc.badge.clock",
+                                keywords: "Auto save on exit auto-load compress states LZ4"
+                            ) {
+                                Toggle(loc.localized("settings.autoSaveOnExit"), isOn: $autoSaveOnExit)
+                                Toggle(loc.localized("settings.autoLoadOnStart"), isOn: $autoLoadOnStart)
+                                Toggle(loc.localized("settings.compressSaveStates"), isOn: $compressSaveStates)
+                            }
+
+                            settingsCard(
+                                id: "section-progressiveSaves",
+                                title: loc.localized("settings.saves.progressiveSaves"),
+                                icon: "arrow.triangle.2.circlepath",
+                                keywords: "Progressive saves auto slot rotation version count"
+                            ) {
+                                Toggle(loc.localized("settings.saves.progressiveSaves"), isOn: $progressiveSaves)
+                                Text(loc.localized("settings.saves.progressiveSavesDescription"))
+                                    .font(.caption)
+                                    .foregroundStyle(AppColors.textSecondary(colorScheme))
+
+                                if progressiveSaves {
+                                    SettingsRow(loc.localized("settings.saves.autoSlotCount")) {
+                                        Picker(loc.localized("settings.saves.autoSlotCount"), selection: $autoSlotCount) {
+                                            ForEach(1...5, id: \.self) { count in
+                                                Text("\(count)").tag(count)
+                                            }
+                                        }
+                                        .pickerStyle(.segmented)
+                                        .labelsHidden()
+                                        .frame(width: 200)
+                                    }
+                                    Text(loc.localized("settings.saves.slotCountDescription"))
+                                        .font(.caption)
+                                        .foregroundStyle(AppColors.textSecondary(colorScheme))
+                                }
+                            }
+
+                            settingsCard(
+                                id: "section-saveManager",
+                                title: loc.localized("settings.saves.manage"),
+                                icon: "wrench.and.screwdriver",
+                                keywords: "Save manager browse delete manage review"
+                            ) {
+                                Text(loc.localized("settings.saves.saveManagerDescription"))
+                                    .font(.caption)
+                                    .foregroundStyle(AppColors.textSecondary(colorScheme))
+                                SettingsActionButton(loc.localized("settings.saves.saveManager"), systemImage: "externaldrive") {
+                                    showSaveManager = true
+                                }
+                            }
+
+                            settingsCard(
+                                id: "section-saveRepair",
+                                title: loc.localized("settings.saves.repair"),
+                                icon: "arrow.triangle.2.circlepath",
+                                keywords: "Repair relink orphan lost missing states crash"
+                            ) {
+                                Text(loc.localized("settings.saves.repairDescription"))
+                                    .font(.caption)
+                                    .foregroundStyle(AppColors.textSecondary(colorScheme))
+                                SettingsActionButton(loc.localized(isRepairing ? "settings.saves.repairRunning" : "settings.saves.repairButton"), systemImage: "wrench.and.screwdriver") {
+                                    runRepair()
+                                }
+                                .disabled(isRepairing)
+                                if let repairResult {
+                                    Text(repairResult)
+                                        .font(.caption)
+                                        .foregroundStyle(AppColors.textSecondary(colorScheme))
+                                }
+                            }
+
+                            if isSearching && !hasMatchingSections {
+                                noResultsView
+                            }
+
+                            Spacer(minLength: AppSpacing.xl5)
+                        }
+                        .padding(.horizontal, AppSpacing.lg)
+                        .padding(.top, AppSpacing.md)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .onChange(of: focusedSectionID) { _, newID in
+                            guard let id = newID else { return }
                             withAnimation { proxy.scrollTo("section-\(id)", anchor: .top) }
+                        }
+                        .onChange(of: scopedSectionID) { _, newScope in
+                            guard let id = newScope else { return }
+                            DispatchQueue.main.async {
+                                withAnimation { proxy.scrollTo("section-\(id)", anchor: .top) }
+                            }
                         }
                     }
                 }
+                .scrollContentBackground(.hidden)
+                .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
             } else {
                 Color.clear
                     .frame(maxWidth: .infinity, minHeight: 400)
@@ -276,6 +280,64 @@ struct SavesSettingsView: View {
         }
     }
 
+    // MARK: - Card Helper
+
+    @ViewBuilder
+    private func settingsCard<Content: View>(
+        id: String,
+        title: String,
+        icon: String,
+        keywords: String,
+        @ViewBuilder content: () -> Content
+    ) -> some View {
+        if sectionVisible(id) && matchesSearch(keywords) {
+            VStack(alignment: .leading, spacing: AppSpacing.md) {
+                HStack(spacing: AppSpacing.sm) {
+                    Image(systemName: icon)
+                        .font(.body)
+                        .foregroundStyle(AppColors.textTertiary(colorScheme))
+                    Text(title)
+                        .font(AppTypography.headingSmall)
+                        .foregroundStyle(AppColors.textPrimary(colorScheme))
+                }
+                content()
+            }
+            .padding(AppSpacing.xl)
+            .background(
+                RoundedRectangle(cornerRadius: AppRadius.xl)
+                    .fill(AppColors.cardBackgroundSubtle(colorScheme))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: AppRadius.xl)
+                            .stroke(AppColors.cardBorder(colorScheme), lineWidth: 1)
+                    )
+            )
+            .cardHoverEffect(colorScheme: colorScheme)
+            .id(id)
+        }
+    }
+
+    // MARK: - Stat Pills
+
+    private var statPillsRow: some View {
+        HStack(spacing: AppSpacing.md) {
+            SettingsStatPill(item: .init(
+                id: "saveFiles",
+                number: byteString(from: saveFileSize),
+                label: loc.localized("saveDirectories.saveFiles"),
+                icon: "memorychip"
+            ))
+            SettingsStatPill(item: .init(
+                id: "saveStates",
+                number: byteString(from: saveStateSize),
+                label: loc.localized("saveDirectories.saveStates"),
+                icon: "gamecontroller.fill"
+            ))
+        }
+        .padding(.bottom, AppSpacing.xs)
+    }
+
+    // MARK: - Helpers
+
     private var hasMatchingSections: Bool {
         matchesSearch("Progressive saves auto slot rotation version count") ||
         matchesSearch("Auto save on exit auto-load compress states LZ4") ||
@@ -284,19 +346,25 @@ struct SavesSettingsView: View {
         matchesSearch("Save manager browse delete manage review")
     }
 
-    // Copies orphan save-state files (pre-migration keys, or keys from
-    // before a database loss and re-add) to current stable keys.
-    // Sources are kept as backup. The result names what was relinked and,
-    // importantly, what is still unlinked (no game claims those files,
-    // usually because the ROM is no longer in the library).
+    private var noResultsView: some View {
+        VStack {
+            Text(loc.localized("boxArt.noMatchingSettings") + " \"\(searchText)\"")
+                .font(.caption)
+                .foregroundStyle(AppColors.textSecondary(colorScheme))
+                .frame(maxWidth: .infinity, alignment: .center)
+                .padding(.vertical, AppSpacing.xl2)
+        }
+        .frame(maxWidth: .infinity)
+    }
+
+    // MARK: - Actions
+
     private func runRepair() {
         isRepairing = true
         repairResult = nil
         Task { @MainActor in
             let refs = library.roms.map { $0.stableRomRef }
             let report = SaveStateReconciler.shared.relink(roms: refs)
-            // Only files no game claims. Legacy sources of rescued games
-            // stay on disk as backup and are not reported here.
             let leftover = SaveStateReconciler.shared.unlinked(roms: refs)
             var parts: [String] = []
             if report.filesCopied > 0 {

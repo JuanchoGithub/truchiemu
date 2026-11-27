@@ -385,6 +385,7 @@ VStack(alignment: .leading, spacing: AppSpacing.md) {
         }
         .padding(AppSpacing.xl3)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
         .onReceive(checkForUpdatesFromMenu) { _ in
             Task {
                 isCheckingUpdates = true

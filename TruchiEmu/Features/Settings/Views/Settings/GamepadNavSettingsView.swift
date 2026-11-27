@@ -3,7 +3,8 @@ import AppKit
 
 /// Reusable gamepad-navigation binding content. Embedded as the "App" tab
 /// of the Hotkeys settings page. Renders inside an enclosing `Form` scope
-/// provided by the host, so it starts directly with `Section { ... }`.
+/// provided by the host, so it uses `settingsCard` containers directly
+/// (each with its own `id` for the parent `ScrollViewReader` to scroll to).
 struct GamepadNavContent: View {
     @Environment(\.colorScheme) private var colorScheme
     @ObservedObject private var loc = LocalizationManager.shared
@@ -29,105 +30,205 @@ struct GamepadNavContent: View {
         return scope == id || scope == id.replacingOccurrences(of: "section-", with: "")
     }
 
+    private func matchesSearch(_ keywords: String) -> Bool {
+        if searchText.isEmpty { return true }
+        if matchesPage() { return true }
+        return SettingsIndex.matches(haystack: keywords, query: searchText)
+    }
+
     var body: some View {
-        Section {
-            VStack(alignment: .leading, spacing: AppSpacing.xs) {
-                Text(loc.localized("gamepadNav.section"))
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(AppColors.textPrimary(colorScheme))
-                Toggle(loc.localized("gamepadNav.enableJoystickNavigation"), isOn: $configManager.isEnabled)
-                    .font(.caption)
-            }
-            .padding(.vertical, AppSpacing.xxs)
-        }
-        .id("section-enable")
-
-        if sectionVisible("enable") && (!isSearching || matchesPage() || matchesAnyLabel(navigationActions)) {
-            Section(header: Label(loc.localized("gamepadNav.section.navigation"), systemImage: "dpad.up.filled")) {
-                actionGrid(navigationActions)
-            }
-            .id("section-navigation")
-        }
-
-        if sectionVisible("zones") && (!isSearching || matchesPage() || matchesAnyLabel(zoneActions)) {
-            Section(header: Label(loc.localized("gamepadNav.section.zones"), systemImage: "square.stack.3d.up")) {
-                actionGrid(zoneActions)
-            }
-            .id("section-zones")
-        }
-
-        if sectionVisible("scrolling") && (!isSearching || matchesPage() || matchesAnyLabel(scrollActions)) {
-            Section(header: Label(loc.localized("gamepadNav.section.scrolling"), systemImage: "arrow.up.arrow.down")) {
-                actionGrid(scrollActions)
-            }
-            .id("section-scrolling")
-        }
-
-        if sectionVisible("actions") && (!isSearching || matchesPage() || matchesAnyLabel(coreActions)) {
-            Section(header: Label(loc.localized("gamepadNav.section.actions"), systemImage: "hand.tap")) {
-                actionGrid(coreActions)
-            }
-            .id("section-actions")
-        }
-
-        if sectionVisible("library") && (!isSearching || matchesPage() || matchesAnyLabel(libraryActions)) {
-            Section(header: Label(loc.localized("gamepadNav.section.library"), systemImage: "book")) {
-                actionGrid(libraryActions)
-            }
-            .id("section-library")
-        }
-
-        if sectionVisible("gameWindow") && (!isSearching || matchesPage() || matchesAnyLabel(gameWindowActions)) {
-            Section(header: Label(loc.localized("gamepadNav.section.gameWindow"), systemImage: "gamecontroller")) {
-                actionGrid(gameWindowActions)
-            }
-            .id("section-gameWindow")
-        }
-
-        if sectionVisible("tvMode") && (!isSearching || matchesPage() || matchesAnyLabel(tvModeActions)) {
-            Section {
-                actionGrid(tvModeActions)
-                Text(loc.localized("gamepadNav.section.tvModeDescription"))
-                    .font(.caption)
-                    .foregroundStyle(AppColors.textSecondary(colorScheme))
-                    .fixedSize(horizontal: false, vertical: true)
-            } header: {
-                Label(loc.localized("gamepadNav.section.tvMode"), systemImage: "tv")
-            }
-            .id("section-tvMode")
-        }
-
-        if sectionVisible("reset") && (!isSearching || matchesPage()) {
-            Section(header: Label(loc.localized("gamepadNav.section.reset"), systemImage: "arrow.uturn.backward")) {
+        VStack(alignment: .leading, spacing: AppSpacing.lg) {
+            // MARK: - Enable
+            settingsCard(
+                id: "section-enable",
+                title: loc.localized("gamepadNav.section"),
+                icon: "gamecontroller.fill",
+                keywords: "gamepad nav enable joystick navigation"
+            ) {
                 VStack(alignment: .leading, spacing: AppSpacing.xs) {
-                    Text(loc.localized("gamepadNav.resetDescription"))
+                    Text(loc.localized("gamepadNav.section"))
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(AppColors.textPrimary(colorScheme))
+                    Toggle(loc.localized("gamepadNav.enableJoystickNavigation"), isOn: $configManager.isEnabled)
+                        .font(.caption)
+                }
+                .padding(.vertical, AppSpacing.xxs)
+            }
+
+            // MARK: - Navigation
+            if sectionVisible("enable") && (!isSearching || matchesPage() || matchesAnyLabel(navigationActions)) {
+                settingsCard(
+                    id: "section-navigation",
+                    title: loc.localized("gamepadNav.section.navigation"),
+                    icon: "dpad.up.filled",
+                    keywords: "navigation navigate up down left right dpad"
+                ) {
+                    actionGrid(navigationActions)
+                }
+            }
+
+            // MARK: - Zones
+            if sectionVisible("zones") && (!isSearching || matchesPage() || matchesAnyLabel(zoneActions)) {
+                settingsCard(
+                    id: "section-zones",
+                    title: loc.localized("gamepadNav.section.zones"),
+                    icon: "square.stack.3d.up",
+                    keywords: "zones focus prev next sidebar content toolbar"
+                ) {
+                    actionGrid(zoneActions)
+                }
+            }
+
+            // MARK: - Scrolling
+            if sectionVisible("scrolling") && (!isSearching || matchesPage() || matchesAnyLabel(scrollActions)) {
+                settingsCard(
+                    id: "section-scrolling",
+                    title: loc.localized("gamepadNav.section.scrolling"),
+                    icon: "arrow.up.arrow.down",
+                    keywords: "scroll up down page up page down"
+                ) {
+                    actionGrid(scrollActions)
+                }
+            }
+
+            // MARK: - Actions
+            if sectionVisible("actions") && (!isSearching || matchesPage() || matchesAnyLabel(coreActions)) {
+                settingsCard(
+                    id: "section-actions",
+                    title: loc.localized("gamepadNav.section.actions"),
+                    icon: "hand.tap",
+                    keywords: "select cancel context menu toggle view mode focus search cycle sort"
+                ) {
+                    actionGrid(coreActions)
+                }
+            }
+
+            // MARK: - Library
+            if sectionVisible("library") && (!isSearching || matchesPage() || matchesAnyLabel(libraryActions)) {
+                settingsCard(
+                    id: "section-library",
+                    title: loc.localized("gamepadNav.section.library"),
+                    icon: "book",
+                    keywords: "library open settings launch game"
+                ) {
+                    actionGrid(libraryActions)
+                }
+            }
+
+            // MARK: - Game Window
+            if sectionVisible("gameWindow") && (!isSearching || matchesPage() || matchesAnyLabel(gameWindowActions)) {
+                settingsCard(
+                    id: "section-gameWindow",
+                    title: loc.localized("gamepadNav.section.gameWindow"),
+                    icon: "gamecontroller",
+                    keywords: "game window show toolbar close window"
+                ) {
+                    actionGrid(gameWindowActions)
+                }
+            }
+
+            // MARK: - TV Mode
+            if sectionVisible("tvMode") && (!isSearching || matchesPage() || matchesAnyLabel(tvModeActions)) {
+                settingsCard(
+                    id: "section-tvMode",
+                    title: loc.localized("gamepadNav.section.tvMode"),
+                    icon: "tv",
+                    keywords: "tv mode enter television"
+                ) {
+                    actionGrid(tvModeActions)
+                    Text(loc.localized("gamepadNav.section.tvModeDescription"))
                         .font(.caption)
                         .foregroundStyle(AppColors.textSecondary(colorScheme))
                         .fixedSize(horizontal: false, vertical: true)
-                    SettingsActionButton(loc.localized("gamepadNav.resetToDefaults")) {
-                        configManager.resetToDefaults()
+                }
+            }
+
+            // MARK: - Reset
+            if sectionVisible("reset") && (!isSearching || matchesPage()) {
+                settingsCard(
+                    id: "section-reset",
+                    title: loc.localized("gamepadNav.section.reset"),
+                    icon: "arrow.uturn.backward",
+                    keywords: "reset defaults restore"
+                ) {
+                    VStack(alignment: .leading, spacing: AppSpacing.xs) {
+                        Text(loc.localized("gamepadNav.resetDescription"))
+                            .font(.caption)
+                            .foregroundStyle(AppColors.textSecondary(colorScheme))
+                            .fixedSize(horizontal: false, vertical: true)
+                        SettingsActionButton(loc.localized("gamepadNav.resetToDefaults")) {
+                            configManager.resetToDefaults()
+                        }
                     }
                 }
             }
-            .id("section-reset")
-        }
 
-        if isSearching
-            && !matchesPage()
-            && !matchesAnyLabel(navigationActions)
-            && !matchesAnyLabel(zoneActions)
-            && !matchesAnyLabel(scrollActions)
-            && !matchesAnyLabel(coreActions)
-            && !matchesAnyLabel(libraryActions)
-            && !matchesAnyLabel(gameWindowActions)
-            && !matchesAnyLabel(tvModeActions) {
-            Section {
-                Text("\(loc.localized("general.noMatchingSettings")) \"\(searchText)\"")
-                    .font(.caption)
-                    .foregroundStyle(AppColors.textSecondary(colorScheme))
-                    .frame(maxWidth: .infinity, alignment: .center)
-                    .padding(.vertical, AppSpacing.xl2)
+            // No results message
+            if isSearching
+                && !matchesPage()
+                && !matchesAnyLabel(navigationActions)
+                && !matchesAnyLabel(zoneActions)
+                && !matchesAnyLabel(scrollActions)
+                && !matchesAnyLabel(coreActions)
+                && !matchesAnyLabel(libraryActions)
+                && !matchesAnyLabel(gameWindowActions)
+                && !matchesAnyLabel(tvModeActions) {
+                noResultsView
             }
+
+            Spacer(minLength: AppSpacing.xl5)
+        }
+        .padding(.horizontal, AppSpacing.lg)
+        .padding(.top, AppSpacing.md)
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    // MARK: - No results
+
+    private var noResultsView: some View {
+        VStack {
+            Text("\(loc.localized("general.noMatchingSettings")) \"\(searchText)\"")
+                .font(.caption)
+                .foregroundStyle(AppColors.textSecondary(colorScheme))
+                .frame(maxWidth: .infinity, alignment: .center)
+                .padding(.vertical, AppSpacing.xl2)
+        }
+        .frame(maxWidth: .infinity)
+    }
+
+    // MARK: - Card Helper
+
+    @ViewBuilder
+    private func settingsCard<Content: View>(
+        id: String,
+        title: String,
+        icon: String,
+        keywords: String,
+        @ViewBuilder content: () -> Content
+    ) -> some View {
+        if sectionVisible(id) && matchesSearch(keywords) {
+            VStack(alignment: .leading, spacing: AppSpacing.md) {
+                HStack(spacing: AppSpacing.sm) {
+                    Image(systemName: icon)
+                        .font(.body)
+                        .foregroundStyle(AppColors.textTertiary(colorScheme))
+                    Text(title)
+                        .font(AppTypography.headingSmall)
+                        .foregroundStyle(AppColors.textPrimary(colorScheme))
+                }
+                content()
+            }
+            .padding(AppSpacing.xl)
+            .background(
+                RoundedRectangle(cornerRadius: AppRadius.xl)
+                    .fill(AppColors.cardBackgroundSubtle(colorScheme))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: AppRadius.xl)
+                            .stroke(AppColors.cardBorder(colorScheme), lineWidth: 1)
+                    )
+            )
+            .cardHoverEffect(colorScheme: colorScheme)
+            .id(id)
         }
     }
 

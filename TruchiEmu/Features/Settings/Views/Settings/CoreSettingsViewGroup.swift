@@ -89,7 +89,7 @@ struct CoreSettingsView: View {
                             .fill(AppColors.divider(colorScheme))
                             .frame(height: 1)
 
-                        SystemCoresView(system: selectedSystem, coreManager: coreManager)
+                        SystemCoresCardView(system: selectedSystem, coreManager: coreManager)
                             .id(coreManager.installedCores.count + coreManager.availableCores.count)
                     }
                 } else if isSearching && enabledSystems.isEmpty && availableSystems.isEmpty {
@@ -98,13 +98,6 @@ struct CoreSettingsView: View {
                     } description: {
                         Text("\(loc.localized("general.noMatchingSettings")) \"\(searchText)\"")
                     }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                } else {
-                    AppEmptyState(
-                        icon: "gamecontroller",
-                        title: loc.localized("cores.selectSystem"),
-                        description: loc.localized("cores.selectSystemDescription")
-                    )
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
             }
@@ -333,9 +326,9 @@ struct CoreSettingsView: View {
     }
 }
 
-// MARK: - System Cores Detail (Form style)
+// MARK: - System Cores Detail (Card style)
 
-struct SystemCoresView: View {
+struct SystemCoresCardView: View {
     let system: SystemInfo
     @ObservedObject var coreManager: CoreManager
     @ObservedObject private var loc = LocalizationManager.shared
@@ -359,76 +352,96 @@ struct SystemCoresView: View {
     }
 
     var body: some View {
-        Form {
-            if installedCoresForSystem.isEmpty && coresForSystem.isEmpty {
-                Section {
-                    VStack(spacing: AppSpacing.xl) {
-                        Image(systemName: "cpu")
-                            .font(.system(size: 32))
-                            .foregroundColor(AppColors.textMuted(colorScheme))
-                        Text(loc.localized("cores.noCoresAvailable"))
-                            .foregroundColor(AppColors.textSecondary(colorScheme))
-                            .multilineTextAlignment(.center)
-                        SettingsActionButton(loc.localized("cores.importCustom"), systemImage: "square.and.arrow.down") {
-                            showImporter = true
-                        }
-                        .disabled(coreManager.isDownloadingCore)
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, AppSpacing.xl2)
-                }
-            } else {
-                if !installedCoresForSystem.isEmpty {
-                    Section {
-                        ForEach(installedCoresForSystem) { core in
-                            InstalledCoreRowView(
-                                core: core,
-                                isExpanded: expandedCoreID == core.id,
-                                onToggle: {
-                                    withAnimation {
-                                        if expandedCoreID == core.id {
-                                            expandedCoreID = nil
-                                        } else {
-                                            expandedCoreID = core.id
-                                        }
-                                    }
-                                },
-                                onShowOptions: {
-                                    showOptionsFor = core.id
-                                },
-                                onDelete: {
-                                    coreManager.deleteCore(core)
-                                },
-                                coreManager: coreManager
-                            )
-                        }
-                    } header: {
-                        Label(loc.localized("cores.installed"), systemImage: "checkmark.circle.fill")
-                    }
-                }
-
-                if !coresForSystem.isEmpty {
-                    let availableForDownload = coresForSystem.filter { remoteCore in
-                        !coreManager.isInstalled(coreID: remoteCore.coreID)
-                    }
-
-                    if !availableForDownload.isEmpty {
-                        Section {
-                            ForEach(availableForDownload) { remoteCore in
-                                DownloadableCoreRowView(
-                                    remoteCore: remoteCore,
-                                    coreManager: coreManager
-                                )
+        ScrollView {
+            ScrollViewReader { proxy in
+                VStack(alignment: .leading, spacing: AppSpacing.lg) {
+                    if installedCoresForSystem.isEmpty && coresForSystem.isEmpty {
+                        settingsCard(
+                            id: "section-noCores",
+                            title: loc.localized("cores.noCoresAvailable"),
+                            icon: "cpu",
+                            keywords: "cores no cores available import custom"
+                        ) {
+                            VStack(spacing: AppSpacing.xl) {
+                                Image(systemName: "cpu")
+                                    .font(.system(size: 32))
+                                    .foregroundColor(AppColors.textMuted(colorScheme))
+                                Text(loc.localized("cores.noCoresAvailable"))
+                                    .foregroundColor(AppColors.textSecondary(colorScheme))
+                                    .multilineTextAlignment(.center)
+                                SettingsActionButton(loc.localized("cores.importCustom"), systemImage: "square.and.arrow.down") {
+                                    showImporter = true
+                                }
+                                .disabled(coreManager.isDownloadingCore)
                             }
-                        } header: {
-                            Label(loc.localized("cores.availableForDownload"), systemImage: "icloud.and.arrow.down")
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, AppSpacing.xl2)
+                        }
+                    } else {
+                        if !installedCoresForSystem.isEmpty {
+                            settingsCard(
+                                id: "section-installedCores",
+                                title: loc.localized("cores.installed"),
+                                icon: "checkmark.circle.fill",
+                                keywords: "cores installed delete update version"
+                            ) {
+                                ForEach(installedCoresForSystem) { core in
+                                    InstalledCoreRowView(
+                                        core: core,
+                                        isExpanded: expandedCoreID == core.id,
+                                        onToggle: {
+                                            withAnimation {
+                                                if expandedCoreID == core.id {
+                                                    expandedCoreID = nil
+                                                } else {
+                                                    expandedCoreID = core.id
+                                                }
+                                            }
+                                        },
+                                        onShowOptions: {
+                                            showOptionsFor = core.id
+                                        },
+                                        onDelete: {
+                                            coreManager.deleteCore(core)
+                                        },
+                                        coreManager: coreManager
+                                    )
+                                }
+                            }
+                        }
+
+                        if !coresForSystem.isEmpty {
+                            let availableForDownload = coresForSystem.filter { remoteCore in
+                                !coreManager.isInstalled(coreID: remoteCore.coreID)
+                            }
+
+                            if !availableForDownload.isEmpty {
+                                settingsCard(
+                                    id: "section-availableCores",
+                                    title: loc.localized("cores.availableForDownload"),
+                                    icon: "icloud.and.arrow.down",
+                                    keywords: "cores available download install"
+                                ) {
+                                    ForEach(availableForDownload) { remoteCore in
+                                        DownloadableCoreRowView(
+                                            remoteCore: remoteCore,
+                                            coreManager: coreManager
+                                        )
+                                    }
+                                }
+                            }
                         }
                     }
+
+                    Spacer(minLength: AppSpacing.xl5)
                 }
+                .padding(.horizontal, AppSpacing.lg)
+                .padding(.top, AppSpacing.md)
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
-        .formStyle(.grouped)
         .scrollContentBackground(.hidden)
+        .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
         .fileImporter(isPresented: $showImporter, allowedContentTypes: [.zip, .item], allowsMultipleSelection: false) { result in
             switch result {
             case .success(let urls):
@@ -466,6 +479,40 @@ struct SystemCoresView: View {
                     .gamepadDismissable { showOptionsFor = nil }
             }
         }
+    }
+
+    // MARK: - Card Helper
+
+    @ViewBuilder
+    private func settingsCard<Content: View>(
+        id: String,
+        title: String,
+        icon: String,
+        keywords: String,
+        @ViewBuilder content: () -> Content
+    ) -> some View {
+        VStack(alignment: .leading, spacing: AppSpacing.md) {
+            HStack(spacing: AppSpacing.sm) {
+                Image(systemName: icon)
+                    .font(.body)
+                    .foregroundStyle(AppColors.textTertiary(colorScheme))
+                Text(title)
+                    .font(AppTypography.headingSmall)
+                    .foregroundStyle(AppColors.textPrimary(colorScheme))
+            }
+            content()
+        }
+        .padding(AppSpacing.xl)
+        .background(
+            RoundedRectangle(cornerRadius: AppRadius.xl)
+                .fill(AppColors.cardBackgroundSubtle(colorScheme))
+                .overlay(
+                    RoundedRectangle(cornerRadius: AppRadius.xl)
+                        .stroke(AppColors.cardBorder(colorScheme), lineWidth: 1)
+                )
+        )
+        .cardHoverEffect(colorScheme: colorScheme)
+        .id(id)
     }
 }
 

@@ -51,7 +51,12 @@ struct MoveListSettingsView: View {
         Group {
             switch navLevel {
             case .overview:
-                MoveListOverviewView(onBrowseGames: { navLevel = .gamesList })
+                MoveListOverviewView(
+                    onBrowseGames: { navLevel = .gamesList },
+                    searchText: $searchText,
+                    focusedSectionID: $focusedSectionID,
+                    scopedSectionID: $scopedSectionID
+                )
             case .gamesList:
                 MoveDataGamesView(onBack: { navLevel = .overview }, onSelectGame: { name, custom in
                     navLevel = .characters(gameName: name, isCustom: custom)
@@ -127,6 +132,10 @@ private struct MoveListOverviewView: View {
     @ObservedObject private var themeManager = ThemeManager.shared
     let onBrowseGames: () -> Void
 
+    @Binding var searchText: String
+    @Binding var focusedSectionID: String?
+    @Binding var scopedSectionID: String?
+
     @State private var residualDelay: Double = AppSettings.getDouble("moveListResidualDelay", defaultValue: 0.25)
     @State private var inputTimeout: Double = AppSettings.getDouble("moveListInputTimeout", defaultValue: 1.0)
     @State private var chargeThreshold: Double = AppSettings.getDouble("moveListChargeThreshold", defaultValue: 0.8)
@@ -134,118 +143,225 @@ private struct MoveListOverviewView: View {
     @State private var buttonDisplayMode: ButtonDisplayMode = ButtonDisplayMode.current
     @State private var showMoveNames: Bool = AppSettings.getBool("moveListShowMoveNames", defaultValue: false)
 
+    private var isSearching: Bool {
+        !searchText.isEmpty
+    }
+
+    private func sectionVisible(_ id: String) -> Bool {
+        guard let scope = scopedSectionID else { return true }
+        return scope == id || scope == id.replacingOccurrences(of: "section-", with: "")
+    }
+
+    private func matchesSearch(_ keywords: String) -> Bool {
+        if searchText.isEmpty { return true }
+        if SettingsSearchRuntime.pageMatches(.moveList, query: searchText) { return true }
+        return SettingsIndex.matches(haystack: keywords, query: searchText)
+    }
+
     var body: some View {
-        Form {
-            gamesSection
-            inputTimingSection
-            displaySection
+        ScrollView {
+            ScrollViewReader { proxy in
+                VStack(alignment: .leading, spacing: AppSpacing.lg) {
+                    // MARK: - Games Section
+                    if (!isSearching || matchesSearch("settings.moveList.games manage games browse")) && sectionVisible("section-games") {
+                        settingsCard(
+                            id: "section-games",
+                            title: loc.localized("settings.moveList.games"),
+                            icon: "gamecontroller",
+                            keywords: "settings.moveList.games manage games browse"
+                        ) {
+                            Text(loc.localized("settings.moveList.gamesDesc"))
+                                .font(.caption)
+                                .foregroundStyle(AppColors.textSecondary(colorScheme))
+
+                            SettingsActionButton(loc.localized("settings.moveList.manageGames"), systemImage: "list.bullet.clipboard", action: onBrowseGames)
+                        }
+                    }
+
+                    // MARK: - Input Timing Section
+                    if (!isSearching || matchesSearch("settings.moveList.inputTiming residual delay input timeout charge threshold")) && sectionVisible("section-inputTiming") {
+                        settingsCard(
+                            id: "section-inputTiming",
+                            title: loc.localized("settings.moveList.inputTiming"),
+                            icon: "timer",
+                            keywords: "settings.moveList.inputTiming residual delay input timeout charge threshold"
+                        ) {
+                            VStack(alignment: .leading, spacing: AppSpacing.xs) {
+                                HStack {
+                                    Text(loc.localized("settings.moveList.residualDelay"))
+                                    Spacer()
+                                    Text("\(Int(residualDelay * 1000)) ms")
+                                        .font(.system(size: 13, weight: .medium, design: .monospaced))
+                                        .foregroundStyle(AppColors.textSecondary(colorScheme))
+                                }
+                                Slider(value: $residualDelay, in: 0...0.5, step: 0.01)
+                                    .onChange(of: residualDelay) { _, newValue in
+                                        AppSettings.setDouble("moveListResidualDelay", value: newValue)
+                                    }
+                                Text(loc.localized("settings.moveList.residualDelayDesc"))
+                                    .font(.caption)
+                                    .foregroundStyle(AppColors.textSecondary(colorScheme))
+                            }
+
+                            VStack(alignment: .leading, spacing: AppSpacing.xs) {
+                                HStack {
+                                    Text(loc.localized("settings.moveList.inputTimeout"))
+                                    Spacer()
+                                    Text(String(format: "%.1f s", inputTimeout))
+                                        .font(.system(size: 13, weight: .medium, design: .monospaced))
+                                        .foregroundStyle(AppColors.textSecondary(colorScheme))
+                                }
+                                Slider(value: $inputTimeout, in: 0.5...3.0, step: 0.1)
+                                    .onChange(of: inputTimeout) { _, newValue in
+                                        AppSettings.setDouble("moveListInputTimeout", value: newValue)
+                                    }
+                                Text(loc.localized("settings.moveList.inputTimeoutDesc"))
+                                    .font(.caption)
+                                    .foregroundStyle(AppColors.textSecondary(colorScheme))
+                            }
+
+                            VStack(alignment: .leading, spacing: AppSpacing.xs) {
+                                HStack {
+                                    Text(loc.localized("settings.moveList.chargeThreshold"))
+                                    Spacer()
+                                    Text(String(format: "%.1f s", chargeThreshold))
+                                        .font(.system(size: 13, weight: .medium, design: .monospaced))
+                                        .foregroundStyle(AppColors.textSecondary(colorScheme))
+                                }
+                                Slider(value: $chargeThreshold, in: 0.3...2.0, step: 0.1)
+                                    .onChange(of: chargeThreshold) { _, newValue in
+                                        AppSettings.setDouble("moveListChargeThreshold", value: newValue)
+                                    }
+                                Text(loc.localized("settings.moveList.chargeThresholdDesc"))
+                                    .font(.caption)
+                                    .foregroundStyle(AppColors.textSecondary(colorScheme))
+                            }
+                        }
+                    }
+
+                    // MARK: - Display Section
+                    if (!isSearching || matchesSearch("settings.moveList.display max moves show move names button display mode")) && sectionVisible("section-display") {
+                        settingsCard(
+                            id: "section-display",
+                            title: loc.localized("settings.moveList.display"),
+                            icon: "eye",
+                            keywords: "settings.moveList.display max moves show move names button display mode"
+                        ) {
+                            Stepper(value: $maxMoves, in: 3...10) {
+                                Text(loc.localized("settings.moveList.maxMoves"))
+                                Spacer()
+                                Text("\(maxMoves)")
+                                    .font(.system(size: 15, weight: .semibold, design: .monospaced))
+                                    .foregroundStyle(AppColors.textSecondary(colorScheme))
+                            }
+                            .onChange(of: maxMoves) { _, newValue in
+                                AppSettings.setInt("moveListMaxMoves", value: newValue)
+                            }
+                            Text(loc.localized("settings.moveList.maxMovesDesc"))
+                                .font(.caption)
+                                .foregroundStyle(AppColors.textSecondary(colorScheme))
+
+                            Toggle(loc.localized("settings.moveList.showMoveNames"), isOn: $showMoveNames)
+                                .onChange(of: showMoveNames) { _, newValue in
+                                    AppSettings.setBool("moveListShowMoveNames", value: newValue)
+                                }
+                            Text(loc.localized("settings.moveList.showMoveNamesDesc"))
+                                .font(.caption)
+                                .foregroundStyle(AppColors.textSecondary(colorScheme))
+
+                            Picker(loc.localized("settings.moveList.buttonDisplayMode"), selection: $buttonDisplayMode) {
+                                ForEach(ButtonDisplayMode.allCases, id: \.self) { mode in
+                                    Text(loc.localized("settings.moveList.buttonDisplay.\(mode.rawValue)"))
+                                        .tag(mode)
+                                }
+                            }
+                            .onChange(of: buttonDisplayMode) { _, newValue in
+                                AppSettings.set(ButtonDisplayMode.settingsKey, value: newValue.rawValue)
+                            }
+                            Text(loc.localized("settings.moveList.buttonDisplayModeDesc"))
+                                .font(.caption)
+                                .foregroundStyle(AppColors.textSecondary(colorScheme))
+                        }
+                    }
+
+                    // No results message
+                    if isSearching && !hasMatchingSections {
+                        noResultsView
+                    }
+
+                    Spacer(minLength: AppSpacing.xl5)
+                }
+                .padding(.horizontal, AppSpacing.lg)
+                .padding(.top, AppSpacing.md)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .onChange(of: focusedSectionID) { _, newID in
+                    guard let id = newID else { return }
+                    withAnimation { proxy.scrollTo("section-\(id)", anchor: .top) }
+                }
+                .onChange(of: scopedSectionID) { _, newScope in
+                    guard let id = newScope else { return }
+                    DispatchQueue.main.async {
+                        withAnimation { proxy.scrollTo("section-\(id)", anchor: .top) }
+                    }
+                }
+            }
         }
         .scrollContentBackground(.hidden)
-        .formStyle(.grouped)
         .background(AppColors.windowBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled))
     }
 
-    private var gamesSection: some View {
-        Section(header: Label(loc.localized("settings.moveList.games"), systemImage: "gamecontroller")) {
-            Text(loc.localized("settings.moveList.gamesDesc"))
-                .font(.caption)
-                .foregroundStyle(AppColors.textSecondary(colorScheme))
+    private var hasMatchingSections: Bool {
+        matchesSearch("settings.moveList.games manage games browse") ||
+        matchesSearch("settings.moveList.inputTiming residual delay input timeout charge threshold") ||
+        matchesSearch("settings.moveList.display max moves show move names button display mode")
+    }
 
-            SettingsActionButton(loc.localized("settings.moveList.manageGames"), systemImage: "list.bullet.clipboard", action: onBrowseGames)
+    // MARK: - Card Helper
+
+    @ViewBuilder
+    private func settingsCard<Content: View>(
+        id: String,
+        title: String,
+        icon: String,
+        keywords: String,
+        @ViewBuilder content: () -> Content
+    ) -> some View {
+        if sectionVisible(id) && matchesSearch(keywords) {
+            VStack(alignment: .leading, spacing: AppSpacing.md) {
+                HStack(spacing: AppSpacing.sm) {
+                    Image(systemName: icon)
+                        .font(.body)
+                        .foregroundStyle(AppColors.textTertiary(colorScheme))
+                    Text(title)
+                        .font(AppTypography.headingSmall)
+                        .foregroundStyle(AppColors.textPrimary(colorScheme))
+                }
+                content()
+            }
+            .padding(AppSpacing.xl)
+            .background(
+                RoundedRectangle(cornerRadius: AppRadius.xl)
+                    .fill(AppColors.cardBackgroundSubtle(colorScheme))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: AppRadius.xl)
+                            .stroke(AppColors.cardBorder(colorScheme), lineWidth: 1)
+                    )
+            )
+            .cardHoverEffect(colorScheme: colorScheme)
+            .id(id)
         }
     }
 
-    private var inputTimingSection: some View {
-        Section(header: Label(loc.localized("settings.moveList.inputTiming"), systemImage: "timer")) {
-            VStack(alignment: .leading, spacing: AppSpacing.xs) {
-                HStack {
-                    Text(loc.localized("settings.moveList.residualDelay"))
-                    Spacer()
-                    Text("\(Int(residualDelay * 1000)) ms")
-                        .font(.system(size: 13, weight: .medium, design: .monospaced))
-                        .foregroundStyle(AppColors.textSecondary(colorScheme))
-                }
-                Slider(value: $residualDelay, in: 0...0.5, step: 0.01)
-                    .onChange(of: residualDelay) { _, newValue in
-                        AppSettings.setDouble("moveListResidualDelay", value: newValue)
-                    }
-                Text(loc.localized("settings.moveList.residualDelayDesc"))
-                    .font(.caption)
-                    .foregroundStyle(AppColors.textSecondary(colorScheme))
-            }
+    // MARK: - Empty State
 
-            VStack(alignment: .leading, spacing: AppSpacing.xs) {
-                HStack {
-                    Text(loc.localized("settings.moveList.inputTimeout"))
-                    Spacer()
-                    Text(String(format: "%.1f s", inputTimeout))
-                        .font(.system(size: 13, weight: .medium, design: .monospaced))
-                        .foregroundStyle(AppColors.textSecondary(colorScheme))
-                }
-                Slider(value: $inputTimeout, in: 0.5...3.0, step: 0.1)
-                    .onChange(of: inputTimeout) { _, newValue in
-                        AppSettings.setDouble("moveListInputTimeout", value: newValue)
-                    }
-                Text(loc.localized("settings.moveList.inputTimeoutDesc"))
-                    .font(.caption)
-                    .foregroundStyle(AppColors.textSecondary(colorScheme))
-            }
-
-            VStack(alignment: .leading, spacing: AppSpacing.xs) {
-                HStack {
-                    Text(loc.localized("settings.moveList.chargeThreshold"))
-                    Spacer()
-                    Text(String(format: "%.1f s", chargeThreshold))
-                        .font(.system(size: 13, weight: .medium, design: .monospaced))
-                        .foregroundStyle(AppColors.textSecondary(colorScheme))
-                }
-                Slider(value: $chargeThreshold, in: 0.3...2.0, step: 0.1)
-                    .onChange(of: chargeThreshold) { _, newValue in
-                        AppSettings.setDouble("moveListChargeThreshold", value: newValue)
-                    }
-                Text(loc.localized("settings.moveList.chargeThresholdDesc"))
-                    .font(.caption)
-                    .foregroundStyle(AppColors.textSecondary(colorScheme))
-            }
+    private var noResultsView: some View {
+        VStack {
+            Text("\(loc.localized("general.noMatchingSettings")) \"\(searchText)\"")
+                .font(.caption)
+                .foregroundStyle(AppColors.textSecondary(colorScheme))
+                .frame(maxWidth: .infinity, alignment: .center)
+                .padding(.vertical, AppSpacing.xl2)
         }
-    }
-
-    private var displaySection: some View {
-        Section(header: Label(loc.localized("settings.moveList.display"), systemImage: "eye")) {
-            Stepper(value: $maxMoves, in: 3...10) {
-                Text(loc.localized("settings.moveList.maxMoves"))
-                Spacer()
-                Text("\(maxMoves)")
-                    .font(.system(size: 15, weight: .semibold, design: .monospaced))
-                    .foregroundStyle(AppColors.textSecondary(colorScheme))
-            }
-            .onChange(of: maxMoves) { _, newValue in
-                AppSettings.setInt("moveListMaxMoves", value: newValue)
-            }
-            Text(loc.localized("settings.moveList.maxMovesDesc"))
-                .font(.caption)
-                .foregroundStyle(AppColors.textSecondary(colorScheme))
-
-            Toggle(loc.localized("settings.moveList.showMoveNames"), isOn: $showMoveNames)
-                .onChange(of: showMoveNames) { _, newValue in
-                    AppSettings.setBool("moveListShowMoveNames", value: newValue)
-                }
-            Text(loc.localized("settings.moveList.showMoveNamesDesc"))
-                .font(.caption)
-                .foregroundStyle(AppColors.textSecondary(colorScheme))
-
-            Picker(loc.localized("settings.moveList.buttonDisplayMode"), selection: $buttonDisplayMode) {
-                ForEach(ButtonDisplayMode.allCases, id: \.self) { mode in
-                    Text(loc.localized("settings.moveList.buttonDisplay.\(mode.rawValue)"))
-                        .tag(mode)
-                }
-            }
-            .onChange(of: buttonDisplayMode) { _, newValue in
-                AppSettings.set(ButtonDisplayMode.settingsKey, value: newValue.rawValue)
-            }
-            Text(loc.localized("settings.moveList.buttonDisplayModeDesc"))
-                .font(.caption)
-                .foregroundStyle(AppColors.textSecondary(colorScheme))
-        }
+        .frame(maxWidth: .infinity)
     }
 }

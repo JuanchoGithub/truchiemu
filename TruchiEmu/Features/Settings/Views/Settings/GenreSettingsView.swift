@@ -169,22 +169,67 @@ struct GenreSettingsView: View {
     var body: some View {
         Group {
             if contentLoaded {
-                ScrollViewReader { proxy in
-                    Form {
-                        groupingSection
-                        overviewSection
-                        genresSection
-                        newGenreSection
-                        noResultsSection
-                    }
-                    .scrollContentBackground(.hidden)
-                    .formStyle(.grouped)
-                    .onChange(of: focusedSectionID) { _, newID in
-                        guard let id = newID else { return }
-                        withAnimation { proxy.scrollTo("section-\(id)", anchor: .top) }
+                ScrollView {
+                    ScrollViewReader { proxy in
+                        VStack(alignment: .leading, spacing: AppSpacing.lg) {
+                            if !isSearching {
+                                statPillsRow
+                            }
+
+                            settingsCard(
+                                id: "section-grouping",
+                                title: loc.localized("genre.grouping.title"),
+                                icon: "rectangle.3.group",
+                                keywords: "genres grouping minimal detailed raw"
+                            ) {
+                                groupingSectionContent
+                            }
+
+                            settingsCard(
+                                id: "section-overview",
+                                title: loc.localized("genre.overview"),
+                                icon: "tag.fill",
+                                keywords: "overview total merged custom hidden"
+                            ) {
+                                overviewSectionContent
+                            }
+
+                            settingsCard(
+                                id: "section-genres",
+                                title: loc.localized("genre.mappings"),
+                                icon: "arrow.triangle.branch",
+                                keywords: "genres"
+                            ) {
+                                genresSectionContent
+                            }
+
+                            settingsCard(
+                                id: "section-newGenre",
+                                title: loc.localized("genre.newGenre"),
+                                icon: "plus",
+                                keywords: "genres new create custom"
+                            ) {
+                                newGenreSectionContent
+                            }
+
+                            if isSearching && !hasMatchingSections {
+                                noResultsView
+                            }
+
+                            Spacer(minLength: AppSpacing.xl5)
+                        }
+                        .padding(.horizontal, AppSpacing.lg)
+                        .padding(.top, AppSpacing.md)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .onChange(of: focusedSectionID) { _, newID in
+                            guard let id = newID else { return }
+                            withAnimation { proxy.scrollTo("section-\(id)", anchor: .top) }
+                        }
+                        .id(refreshID)
                     }
                 }
-                .id(refreshID)
+                .scrollContentBackground(.hidden)
+                .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
             } else {
                 Color.clear
                     .frame(maxWidth: .infinity, minHeight: 400)
@@ -220,179 +265,226 @@ struct GenreSettingsView: View {
         }
     }
 
+    // MARK: - Card Helper
+
+    @ViewBuilder
+    private func settingsCard<Content: View>(
+        id: String,
+        title: String,
+        icon: String,
+        keywords: String,
+        @ViewBuilder content: () -> Content
+    ) -> some View {
+        if sectionVisible(id) && matchesSearch(keywords) {
+            VStack(alignment: .leading, spacing: AppSpacing.md) {
+                HStack(spacing: AppSpacing.sm) {
+                    Image(systemName: icon)
+                        .font(.body)
+                        .foregroundStyle(AppColors.textTertiary(colorScheme))
+                    Text(title)
+                        .font(AppTypography.headingSmall)
+                        .foregroundStyle(AppColors.textPrimary(colorScheme))
+                }
+                content()
+            }
+            .padding(AppSpacing.xl)
+            .background(
+                RoundedRectangle(cornerRadius: AppRadius.xl)
+                    .fill(AppColors.cardBackgroundSubtle(colorScheme))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: AppRadius.xl)
+                            .stroke(AppColors.cardBorder(colorScheme), lineWidth: 1)
+                    )
+            )
+            .cardHoverEffect(colorScheme: colorScheme)
+            .id(id)
+        }
+    }
+
+    // MARK: - Stat Pills
+
+    private var statPillsRow: some View {
+        HStack(spacing: AppSpacing.md) {
+            SettingsStatPill(item: .init(
+                id: "total",
+                number: "\(cachedGroups.count)",
+                label: loc.localized("genre.total"),
+                icon: "rectangle.3.group"
+            ))
+            SettingsStatPill(item: .init(
+                id: "merged",
+                number: "\(mergedCount)",
+                label: loc.localized("genre.merged"),
+                icon: "arrow.triangle.branch"
+            ))
+            SettingsStatPill(item: .init(
+                id: "custom",
+                number: "\(customCount)",
+                label: loc.localized("genre.custom"),
+                icon: "plus.circle"
+            ))
+        }
+        .padding(.bottom, AppSpacing.xs)
+    }
+
     // MARK: - Grouping Picker Section
 
     @ViewBuilder
-    private var groupingSection: some View {
+    private var groupingSectionContent: some View {
         let grouping = genreManager.genreGrouping
         let isCustom = grouping == .custom
 
-        Section {
-            Text(loc.localized("genre.grouping.display"))
-                .font(.subheadline)
-                .foregroundStyle(AppColors.textSecondary(colorScheme))
+        Text(loc.localized("genre.grouping.display"))
+            .font(.subheadline)
+            .foregroundStyle(AppColors.textSecondary(colorScheme))
 
-            Picker(selection: Binding(get: {
-                grouping == .custom ? GenreGrouping.detailed : grouping
-            }, set: { newValue in
-                guard newValue != grouping else { return }
-                genreManager.applyGrouping(newValue)
-                recacheData()
-                refreshID = UUID()
-            })) {
-                Text(verbatim: loc.localized("genre.grouping.minimal.label"))
-                    .tag(GenreGrouping.minimal)
-                Text(verbatim: loc.localized("genre.grouping.detailed.label"))
-                    .tag(GenreGrouping.detailed)
-                Text(verbatim: loc.localized("genre.grouping.raw.label"))
-                    .tag(GenreGrouping.raw)
-            } label: {
-                EmptyView()
+        Picker(selection: Binding(get: {
+            grouping == .custom ? GenreGrouping.detailed : grouping
+        }, set: { newValue in
+            guard newValue != grouping else { return }
+            genreManager.applyGrouping(newValue)
+            recacheData()
+            refreshID = UUID()
+        })) {
+            Text(verbatim: loc.localized("genre.grouping.minimal.label"))
+                .tag(GenreGrouping.minimal)
+            Text(verbatim: loc.localized("genre.grouping.detailed.label"))
+                .tag(GenreGrouping.detailed)
+            Text(verbatim: loc.localized("genre.grouping.raw.label"))
+                .tag(GenreGrouping.raw)
+        } label: {
+            EmptyView()
+        }
+        .pickerStyle(.segmented)
+
+        GenreGroupingDiagram(grouping: grouping)
+            .padding(.vertical, AppSpacing.sm)
+
+        if isCustom {
+            HStack(spacing: AppSpacing.sm) {
+                Image(systemName: "exclamationmark.triangle")
+                    .font(.caption)
+                    .foregroundStyle(AppColors.warning(colorScheme))
+                Text(loc.localized("genre.grouping.custom.hint"))
+                    .font(.caption)
+                    .foregroundStyle(AppColors.textSecondary(colorScheme))
+                Spacer()
+                Text(loc.localized("genre.grouping.custom"))
+                    .font(.caption2)
+                    .fontWeight(.medium)
+                    .foregroundStyle(AppColors.accentSecondaryForScheme(colorScheme))
+                    .padding(.horizontal, AppSpacing.sm)
+                    .padding(.vertical, AppSpacing.xxs)
+                    .background(AppColors.accentSecondaryForScheme(colorScheme).opacity(0.12))
+                    .clipShape(Capsule())
             }
-            .pickerStyle(.segmented)
-
-            GenreGroupingDiagram(grouping: grouping)
-                .padding(.vertical, AppSpacing.sm)
-
-            if isCustom {
-                HStack(spacing: AppSpacing.sm) {
-                    Image(systemName: "exclamationmark.triangle")
-                        .font(.caption)
-                        .foregroundStyle(AppColors.warning(colorScheme))
-                    Text(loc.localized("genre.grouping.custom.hint"))
-                        .font(.caption)
-                        .foregroundStyle(AppColors.textSecondary(colorScheme))
-                    Spacer()
-                    Text(loc.localized("genre.grouping.custom"))
-                        .font(.caption2)
-                        .fontWeight(.medium)
-                        .foregroundStyle(AppColors.accentSecondaryForScheme(colorScheme))
-                        .padding(.horizontal, AppSpacing.sm)
-                        .padding(.vertical, AppSpacing.xxs)
-                        .background(AppColors.accentSecondaryForScheme(colorScheme).opacity(0.12))
-                        .clipShape(Capsule())
-                }
-            } else if grouping != .raw {
-                Label {
-                    Text(loc.localized("genre.grouping.\(grouping.rawValue).description"))
-                        .font(.caption)
-                        .foregroundStyle(AppColors.textSecondary(colorScheme))
-                        .multilineTextAlignment(.leading)
-                } icon: {
-                    Image(systemName: "info.circle")
-                        .font(.caption)
-                        .foregroundStyle(AppColors.textTertiary(colorScheme))
-                }
-                .labelStyle(.titleAndIcon)
-                .frame(maxWidth: .infinity, alignment: .leading)
-            }
-
-            if genreManager.hasOverrides {
-                HStack(spacing: AppSpacing.sm) {
-                    Image(systemName: "pencil.circle")
-                        .font(.caption)
-                        .foregroundStyle(AppColors.accentSecondaryForScheme(colorScheme))
-                    Text(loc.localized("genre.grouping.hasOverrides"))
-                        .font(.caption)
-                        .foregroundStyle(AppColors.textSecondary(colorScheme))
-                    Spacer()
-                    Button(loc.localized("genre.grouping.reset")) {
-                        genreManager.resetOverrides()
-                        recacheData()
-                        refreshID = UUID()
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .controlSize(.small)
-                    .tint(AppColors.warning(colorScheme))
-                }
-            }
-
-            if grouping == .raw {
-                Text(loc.localized("genre.grouping.raw.hint"))
+        } else if grouping != .raw {
+            Label {
+                Text(loc.localized("genre.grouping.\(grouping.rawValue).description"))
+                    .font(.caption)
+                    .foregroundStyle(AppColors.textSecondary(colorScheme))
+                    .multilineTextAlignment(.leading)
+            } icon: {
+                Image(systemName: "info.circle")
                     .font(.caption)
                     .foregroundStyle(AppColors.textTertiary(colorScheme))
             }
-        } header: {
-            Label(loc.localized("genre.grouping.title"), systemImage: "rectangle.3.group")
+            .labelStyle(.titleAndIcon)
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .id("section-grouping")
+
+        if genreManager.hasOverrides {
+            HStack(spacing: AppSpacing.sm) {
+                Image(systemName: "pencil.circle")
+                    .font(.caption)
+                    .foregroundStyle(AppColors.accentSecondaryForScheme(colorScheme))
+                Text(loc.localized("genre.grouping.hasOverrides"))
+                    .font(.caption)
+                    .foregroundStyle(AppColors.textSecondary(colorScheme))
+                Spacer()
+                Button(loc.localized("genre.grouping.reset")) {
+                    genreManager.resetOverrides()
+                    recacheData()
+                    refreshID = UUID()
+                }
+                .buttonStyle(.borderedProminent)
+                .controlSize(.small)
+                .tint(AppColors.warning(colorScheme))
+            }
+        }
+
+        if grouping == .raw {
+            Text(loc.localized("genre.grouping.raw.hint"))
+                .font(.caption)
+                .foregroundStyle(AppColors.textTertiary(colorScheme))
+        }
     }
 
     // MARK: - Overview Section
 
     @ViewBuilder
-    private var overviewSection: some View {
-        if (!isSearching || matchesSearch("overview total merged custom hidden")) && sectionVisible("section-overview") {
-            Section(header: Label(loc.localized("genre.overview"), systemImage: "tag.fill")) {
-                LazyVGrid(columns: [GridItem(.adaptive(minimum: 100))], spacing: AppSpacing.lg) {
-                    AppStatCard(
-                        icon: "rectangle.3.group",
-                        value: "\(cachedGroups.count)",
-                        label: loc.localized("genre.total")
-                    )
-                    AppStatCard(
-                        icon: "arrow.triangle.branch",
-                        value: "\(mergedCount)",
-                        label: loc.localized("genre.merged"),
-                        accent: AppColors.accentSecondaryForScheme(colorScheme)
-                    )
-                    AppStatCard(
-                        icon: "plus.circle",
-                        value: "\(customCount)",
-                        label: loc.localized("genre.custom"),
-                        accent: AppColors.success(colorScheme)
-                    )
-                    if hiddenCount > 0 {
-                        AppStatCard(
-                            icon: "eye.slash",
-                            value: "\(hiddenCount)",
-                            label: loc.localized("genre.hidden"),
-                            accent: AppColors.textTertiary(colorScheme)
-                        )
-                    }
-                    AppStatCard(
-                        icon: "square.stack.3d.down.right",
-                        value: "\(tier4Count)",
-                        label: "Tier-4",
-                        accent: AppColors.textSecondary(colorScheme)
-                    )
-                    AppStatCard(
-                        icon: "square.stack.3d.up",
-                        value: "\(tier3Count)",
-                        label: "Tier-3",
-                        accent: AppColors.textSecondary(colorScheme)
-                    )
-                }
-                .padding(.vertical, AppSpacing.sm)
+    private var overviewSectionContent: some View {
+        LazyVGrid(columns: [GridItem(.adaptive(minimum: 100))], spacing: AppSpacing.lg) {
+            AppStatCard(
+                icon: "rectangle.3.group",
+                value: "\(cachedGroups.count)",
+                label: loc.localized("genre.total")
+            )
+            AppStatCard(
+                icon: "arrow.triangle.branch",
+                value: "\(mergedCount)",
+                label: loc.localized("genre.merged"),
+                accent: AppColors.accentSecondaryForScheme(colorScheme)
+            )
+            AppStatCard(
+                icon: "plus.circle",
+                value: "\(customCount)",
+                label: loc.localized("genre.custom"),
+                accent: AppColors.success(colorScheme)
+            )
+            if hiddenCount > 0 {
+                AppStatCard(
+                    icon: "eye.slash",
+                    value: "\(hiddenCount)",
+                    label: loc.localized("genre.hidden"),
+                    accent: AppColors.textTertiary(colorScheme)
+                )
             }
-            .id("section-overview")
+            AppStatCard(
+                icon: "square.stack.3d.down.right",
+                value: "\(tier4Count)",
+                label: "Tier-4",
+                accent: AppColors.textSecondary(colorScheme)
+            )
+            AppStatCard(
+                icon: "square.stack.3d.up",
+                value: "\(tier3Count)",
+                label: "Tier-3",
+                accent: AppColors.textSecondary(colorScheme)
+            )
         }
+        .padding(.vertical, AppSpacing.sm)
     }
 
     // MARK: - Genres Section
 
     @ViewBuilder
-    private var genresSection: some View {
-        if (!isSearching || matchesSearch("genres")) && sectionVisible("section-genres") {
-            Section(header: Label(loc.localized("genre.mappings"), systemImage: "arrow.triangle.branch")) {
-                if cachedGroups.isEmpty && !isCreatingNew {
-                    Text(loc.localized("genre.noResults"))
-                        .font(.body)
-                        .foregroundStyle(AppColors.textSecondary(colorScheme))
-                        .frame(maxWidth: .infinity, alignment: .center)
-                        .padding(.vertical, AppSpacing.xl2)
-                } else {
-                    // Inline new genre creator
-                    if isCreatingNew {
-                        newGenreEditor
-                    }
-
-                    ForEach(filteredGroups) { group in
-                        genreRow(group: group)
-                    }
-                }
+    private var genresSectionContent: some View {
+        if cachedGroups.isEmpty && !isCreatingNew {
+            Text(loc.localized("genre.noResults"))
+                .font(.body)
+                .foregroundStyle(AppColors.textSecondary(colorScheme))
+                .frame(maxWidth: .infinity, alignment: .center)
+                .padding(.vertical, AppSpacing.xl2)
+        } else {
+            // Inline new genre creator
+            if isCreatingNew {
+                newGenreEditor
             }
-            .id("section-genres")
+
+            ForEach(filteredGroups) { group in
+                genreRow(group: group)
+            }
         }
     }
 
@@ -474,33 +566,32 @@ struct GenreSettingsView: View {
     // MARK: - New Genre Section
 
     @ViewBuilder
-    private var newGenreSection: some View {
-        Section {
-            Button {
-                isCreatingNew = true
-                newGenreName = ""
-                expandedID = nil
-            } label: {
-                Label(loc.localized("genre.newGenre"), systemImage: "plus")
-            }
-            .buttonStyle(.borderedProminent)
-            .controlSize(.large)
-            .disabled(isCreatingNew)
+    private var newGenreSectionContent: some View {
+        Button {
+            isCreatingNew = true
+            newGenreName = ""
+            expandedID = nil
+        } label: {
+            Label(loc.localized("genre.newGenre"), systemImage: "plus")
         }
+        .buttonStyle(.borderedProminent)
+        .controlSize(.large)
+        .disabled(isCreatingNew)
     }
 
     // MARK: - No Results
 
     @ViewBuilder
-    private var noResultsSection: some View {
+    private var noResultsView: some View {
         if isSearching && !hasMatchingSections {
-            Section {
+            VStack {
                 Text("\(loc.localized("genre.noResults")) \"\(searchText)\"")
                     .font(.caption)
                     .foregroundStyle(AppColors.textSecondary(colorScheme))
                     .frame(maxWidth: .infinity, alignment: .center)
                     .padding(.vertical, AppSpacing.xl2)
             }
+            .frame(maxWidth: .infinity)
         }
     }
 
@@ -764,7 +855,7 @@ struct GenreSettingsView: View {
                                 .padding(.leading, 16)
                             }
 
-                            // Add genre to this Tier 2 folder
+                            // Add genre to this Tier 2 folder
                             let available = cachedOriginalGenres.filter { !tier3Originals.contains($0) }.sorted()
                             if !available.isEmpty {
                                 Menu {
@@ -785,7 +876,7 @@ struct GenreSettingsView: View {
                                 .padding(.top, 4)
                             }
 
-                            // Move this Tier 2 folder to a different Tier 1 group
+                            // Move this Tier 2 folder to a different Tier 1 group
                             let allTier1 = Set(GenreManager.minimalMappings.values)
                             let otherGroups = allTier1.filter { $0 != group.displayName }.sorted()
                             if !otherGroups.isEmpty {

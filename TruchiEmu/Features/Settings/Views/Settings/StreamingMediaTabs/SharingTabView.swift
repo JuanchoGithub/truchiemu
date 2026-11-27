@@ -9,19 +9,45 @@ struct SharingTabView: View {
     @State private var customDurationText: String = "60"
 
     var body: some View {
-        Form {
-            if !isSearching || matchesSearch("share button single press long press behavior") {
-                shareButtonSection
-            }
+        Group {
+            ScrollView {
+                ScrollViewReader { proxy in
+                    VStack(alignment: .leading, spacing: AppSpacing.lg) {
+                        if !isSearching {
+                            statPillsRow
+                        }
 
-            if !isSearching || matchesSearch("save last moments clip buffer retro game clip rolling buffer") {
-                saveLastMomentsSection
+                        settingsCard(
+                            id: "section-shareButton",
+                            title: loc.localized("media.shareButton"),
+                            icon: "shareplay",
+                            keywords: "share button single press long press behavior"
+                        ) {
+                            shareButtonSectionContent
+                        }
+
+                        settingsCard(
+                            id: "section-saveLastMoments",
+                            title: loc.localized("media.saveLastMoments"),
+                            icon: "clock.arrow.circlepath",
+                            keywords: "save last moments clip buffer retro game clip rolling buffer"
+                        ) {
+                            saveLastMomentsSectionContent
+                        }
+
+                        if isSearching && !hasAnyResults {
+                            noResultsView
+                        }
+
+                        Spacer(minLength: AppSpacing.xl5)
+                    }
+                    .padding(.horizontal, AppSpacing.lg)
+                    .padding(.top, AppSpacing.md)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
             }
-        }
-        .scrollContentBackground(.hidden)
-        .formStyle(.grouped)
-        .onAppear {
-            customDurationText = String(Int(config.rollingBuffer.customSeconds))
+            .scrollContentBackground(.hidden)
+            .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
         }
     }
 
@@ -33,12 +59,58 @@ struct SharingTabView: View {
         return SettingsIndex.matches(haystack: keywords, query: searchText)
     }
 
-    private var shareBehaviors: [ShareBehavior] {
-        ShareBehavior.allCases
+    // MARK: - Card Helper
+
+    @ViewBuilder
+    private func settingsCard<Content: View>(
+        id: String,
+        title: String,
+        icon: String,
+        keywords: String,
+        @ViewBuilder content: () -> Content
+    ) -> some View {
+        VStack(alignment: .leading, spacing: AppSpacing.md) {
+            HStack(spacing: AppSpacing.sm) {
+                Image(systemName: icon)
+                    .font(.body)
+                    .foregroundStyle(AppColors.textTertiary(colorScheme))
+                Text(title)
+                    .font(AppTypography.headingSmall)
+                    .foregroundStyle(AppColors.textPrimary(colorScheme))
+            }
+            content()
+        }
+        .padding(AppSpacing.xl)
+        .background(
+            RoundedRectangle(cornerRadius: AppRadius.xl)
+                .fill(AppColors.cardBackgroundSubtle(colorScheme))
+                .overlay(
+                    RoundedRectangle(cornerRadius: AppRadius.xl)
+                        .stroke(AppColors.cardBorder(colorScheme), lineWidth: 1)
+                )
+        )
+        .cardHoverEffect(colorScheme: colorScheme)
+        .id(id)
     }
 
-    private var shareButtonSection: some View {
-        Section {
+    // MARK: - Stat Pills
+
+    private var statPillsRow: some View {
+        HStack(spacing: AppSpacing.md) {
+            SettingsStatPill(item: .init(
+                id: "shareBehaviors",
+                number: "\(ShareBehavior.allCases.count)",
+                label: "behaviors",
+                icon: "shareplay"
+            ))
+        }
+        .padding(.bottom, AppSpacing.xs)
+    }
+
+    // MARK: - Section Content
+
+    private var shareButtonSectionContent: some View {
+        Group {
             MediaHotkeyBindingRow(action: .shareButton, sectionKey: "settings.media.hotkey.shareSection")
             Text(loc.localized("settings.media.hotkey.editInHotkeys"))
                 .font(.caption2)
@@ -73,31 +145,11 @@ struct SharingTabView: View {
                         loc.localized(config.share.longPress.localizationKey)))
                 .font(.caption)
                 .foregroundColor(AppColors.textSecondary(colorScheme))
-        } header: {
-            Label(loc.localized("media.shareButton"), systemImage: "shareplay")
         }
     }
 
-    private var saveLastMomentsSection: some View {
-        Section {
-            Toggle(loc.localized("media.saveLastMomentsEnable"), isOn: Binding(
-                get: { config.rollingBuffer.enabled },
-                set: { newValue in
-                    config.rollingBuffer.enabled = newValue
-                    config.rollingBuffer.save()
-                    RollingVideoBufferService.shared.isEnabled = newValue
-                    if !newValue {
-                        if config.share.singlePress == .saveLastXSeconds {
-                            config.share.singlePress = .none
-                        }
-                        if config.share.longPress == .saveLastXSeconds {
-                            config.share.longPress = .none
-                        }
-                        config.share.save()
-                    }
-                }
-            ))
-
+    private var saveLastMomentsSectionContent: some View {
+        Group {
             if config.rollingBuffer.enabled {
                 Picker(loc.localized("media.saveLastMomentsDuration"), selection: Binding(
                     get: { config.rollingBuffer.duration },
@@ -143,12 +195,34 @@ struct SharingTabView: View {
                     }
                 ))
             }
-        } header: {
-            Label(loc.localized("media.saveLastMoments"), systemImage: "clock.arrow.circlepath")
-        } footer: {
+
             if !config.rollingBuffer.enabled {
                 Text(loc.localized("settings.media.rolling.disabledHint"))
+                    .font(.caption)
+                    .foregroundStyle(AppColors.textSecondary(colorScheme))
             }
         }
+    }
+
+    // MARK: - Helpers
+
+    private var hasAnyResults: Bool {
+        matchesSearch("share button single press long press behavior")
+        || matchesSearch("save last moments clip buffer retro game clip rolling buffer")
+    }
+
+    private var noResultsView: some View {
+        VStack {
+            Text("\(loc.localized("general.noMatchingSettings")) \"\(searchText)\"")
+                .font(.caption)
+                .foregroundStyle(AppColors.textSecondary(colorScheme))
+                .frame(maxWidth: .infinity, alignment: .center)
+                .padding(.vertical, AppSpacing.xl2)
+        }
+        .frame(maxWidth: .infinity)
+    }
+
+    private var shareBehaviors: [ShareBehavior] {
+        ShareBehavior.allCases
     }
 }

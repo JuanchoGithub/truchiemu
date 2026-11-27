@@ -78,81 +78,118 @@ struct MoveDataMovesView: View {
     }
 
     private var contentList: some View {
-        Form {
-            if isCommonMoveset {
-                customMovesSectionCommon
-                commonBundledMovesSection
-                commonEmptyOrAddSection
-            } else if let char = character {
-                customMovesSection(char: char)
-                bundledMovesSection(char: char)
-                emptyOrAddSection(char: char)
+        ScrollView {
+            ScrollViewReader { proxy in
+                VStack(alignment: .leading, spacing: AppSpacing.lg) {
+                    if isCommonMoveset {
+                        // Custom moves (common)
+                        if !storageService.getCustomMoves(gameName: gameName, characterName: characterName).isEmpty {
+                            settingsCard(
+                                id: "section-customCommon",
+                                title: loc.localized("settings.moveList.custom"),
+                                icon: "plus.circle.fill",
+                                keywords: "custom moves"
+                            ) {
+                                ForEach(storageService.getCustomMoves(gameName: gameName, characterName: characterName), id: \.compositeKey) { entry in
+                                    customMoveRow(entry: entry)
+                                }
+                            }
+                        }
+
+                        // Bundled moves (common), grouped by category
+                        if !commonMoves.isEmpty {
+                            let grouped = Dictionary(grouping: commonMoves, by: { $0.category })
+                            let sortedCategories = grouped.keys.sorted()
+
+                            ForEach(sortedCategories, id: \.self) { category in
+                                let catLabel = MoveListService.shared.resolveCategoryLabel(category, gameCategories: fightDataGame?.categories ?? [:])
+                                settingsCard(
+                                    id: "section-bundledCommon-\(category)",
+                                    title: catLabel,
+                                    icon: "gamecontroller",
+                                    keywords: "bundled moves \(category)"
+                                ) {
+                                    ForEach(grouped[category] ?? [], id: \.id) { move in
+                                        bundledMoveRow(move: move)
+                                    }
+                                }
+                            }
+                        }
+
+                        // Empty state (common)
+                        if commonMoves.isEmpty && storageService.getCustomMoves(gameName: gameName, characterName: characterName).isEmpty {
+                            settingsCard(
+                                id: "section-emptyCommon",
+                                title: loc.localized("settings.moveList.noMoves"),
+                                icon: "gamecontroller",
+                                keywords: "no moves add move"
+                            ) {
+                                ContentUnavailableView(
+                                    label: { Label(loc.localized("settings.moveList.noMoves"), systemImage: "gamecontroller") },
+                                    description: { Text(loc.localized("settings.moveList.addMovePrompt")) }
+                                )
+                            }
+                        }
+                    } else if let char = character {
+                        // Custom moves
+                        if !storageService.getCustomMoves(gameName: gameName, characterName: characterName).isEmpty {
+                            settingsCard(
+                                id: "section-custom",
+                                title: loc.localized("settings.moveList.custom"),
+                                icon: "plus.circle.fill",
+                                keywords: "custom moves"
+                            ) {
+                                ForEach(storageService.getCustomMoves(gameName: gameName, characterName: characterName), id: \.compositeKey) { entry in
+                                    customMoveRow(entry: entry)
+                                }
+                            }
+                        }
+
+                        // Bundled moves, grouped by category
+                        if !char.moves.isEmpty {
+                            let grouped = Dictionary(grouping: char.moves, by: { $0.category })
+                            let sortedCategories = grouped.keys.sorted()
+
+                            ForEach(sortedCategories, id: \.self) { category in
+                                let catLabel = MoveListService.shared.resolveCategoryLabel(category, gameCategories: fightDataGame?.categories ?? [:])
+                                settingsCard(
+                                    id: "section-bundled-\(category)",
+                                    title: catLabel,
+                                    icon: "gamecontroller",
+                                    keywords: "bundled moves \(category)"
+                                ) {
+                                    ForEach(grouped[category] ?? [], id: \.id) { move in
+                                        bundledMoveRow(move: move)
+                                    }
+                                }
+                            }
+                        }
+
+                        // Empty state
+                        if char.moves.isEmpty && storageService.getCustomMoves(gameName: gameName, characterName: characterName).isEmpty {
+                            settingsCard(
+                                id: "section-empty",
+                                title: loc.localized("settings.moveList.noMoves"),
+                                icon: "gamecontroller",
+                                keywords: "no moves add move"
+                            ) {
+                                ContentUnavailableView(
+                                    label: { Label(loc.localized("settings.moveList.noMoves"), systemImage: "gamecontroller") },
+                                    description: { Text(loc.localized("settings.moveList.addMovePrompt")) }
+                                )
+                            }
+                        }
+                    }
+
+                    Spacer(minLength: AppSpacing.xl5)
+                }
+                .padding(.horizontal, AppSpacing.lg)
+                .padding(.top, AppSpacing.md)
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
         .scrollContentBackground(.hidden)
-        .formStyle(.grouped)
-    }
-
-    @ViewBuilder
-    private var customMovesSectionCommon: some View {
-        let customEntries = storageService.getCustomMoves(gameName: gameName, characterName: characterName)
-        if !customEntries.isEmpty {
-            Section {
-                ForEach(customEntries, id: \.compositeKey) { entry in
-                    customMoveRow(entry: entry)
-                }
-            } header: {
-                Label(loc.localized("settings.moveList.custom"), systemImage: "plus.circle.fill")
-                    .foregroundStyle(.green)
-            }
-        }
-    }
-
-    @ViewBuilder
-    private var commonBundledMovesSection: some View {
-        let moves = commonMoves
-        if !moves.isEmpty {
-            let grouped = Dictionary(grouping: moves, by: { $0.category })
-            let sortedCategories = grouped.keys.sorted()
-
-            ForEach(sortedCategories, id: \.self) { category in
-                let catLabel = MoveListService.shared.resolveCategoryLabel(category, gameCategories: fightDataGame?.categories ?? [:])
-                Section {
-                    ForEach(grouped[category] ?? [], id: \.id) { move in
-                        bundledMoveRow(move: move)
-                    }
-                } header: {
-                    Label(catLabel, systemImage: "gamecontroller")
-                }
-            }
-        }
-    }
-
-    @ViewBuilder
-    private var commonEmptyOrAddSection: some View {
-        if commonMoves.isEmpty && storageService.getCustomMoves(gameName: gameName, characterName: characterName).isEmpty {
-            Section {
-                ContentUnavailableView(
-                    label: { Label(loc.localized("settings.moveList.noMoves"), systemImage: "gamecontroller") },
-                    description: { Text(loc.localized("settings.moveList.addMovePrompt")) }
-                )
-            }
-        }
-    }
-
-    @ViewBuilder
-    private func customMovesSection(char: FightDataCharacter) -> some View {
-        let customEntries = storageService.getCustomMoves(gameName: gameName, characterName: characterName)
-        if !customEntries.isEmpty {
-            Section {
-                ForEach(customEntries, id: \.compositeKey) { entry in
-                    customMoveRow(entry: entry)
-                }
-            } header: {
-                Label(loc.localized("settings.moveList.custom"), systemImage: "plus.circle.fill")
-                    .foregroundStyle(.green)
-            }
-        }
+        .background(AppColors.windowBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled))
     }
 
     @ViewBuilder
@@ -196,26 +233,6 @@ struct MoveDataMovesView: View {
     }
 
     @ViewBuilder
-    private func bundledMovesSection(char: FightDataCharacter) -> some View {
-        let bundledMoves = char.moves
-        if !bundledMoves.isEmpty {
-            let grouped = Dictionary(grouping: bundledMoves, by: { $0.category })
-            let sortedCategories = grouped.keys.sorted()
-
-            ForEach(sortedCategories, id: \.self) { category in
-                let catLabel = MoveListService.shared.resolveCategoryLabel(category, gameCategories: fightDataGame?.categories ?? [:])
-                Section {
-                    ForEach(grouped[category] ?? [], id: \.id) { move in
-                        bundledMoveRow(move: move)
-                    }
-                } header: {
-                    Label(catLabel, systemImage: "gamecontroller")
-                }
-            }
-        }
-    }
-
-    @ViewBuilder
     private func bundledMoveRow(move: FightDataMove) -> some View {
         let isFav = storageService.isFavorite(gameName: gameName, characterName: characterName, moveId: move.id)
         let isHid = storageService.isHidden(gameName: gameName, characterName: characterName, moveId: move.id)
@@ -244,18 +261,6 @@ struct MoveDataMovesView: View {
         .contextMenu {
             moveContextMenu(entry: nil, move: move, isFav: isFav, isHid: isHid, hasOverride: overrideEntry != nil, isCustom: false)
                 .menuIconsAlwaysVisible()
-        }
-    }
-
-    @ViewBuilder
-    private func emptyOrAddSection(char: FightDataCharacter) -> some View {
-        if char.moves.isEmpty && storageService.getCustomMoves(gameName: gameName, characterName: characterName).isEmpty {
-            Section {
-                ContentUnavailableView(
-                    label: { Label(loc.localized("settings.moveList.noMoves"), systemImage: "gamecontroller") },
-                    description: { Text(loc.localized("settings.moveList.addMovePrompt")) }
-                )
-            }
         }
     }
 
@@ -426,7 +431,40 @@ struct MoveDataMovesView: View {
             }
         }
     }
-}
+
+    // MARK: - Card Helper
+
+    @ViewBuilder
+    private func settingsCard<Content: View>(
+        id: String,
+        title: String,
+        icon: String,
+        keywords: String,
+        @ViewBuilder content: () -> Content
+    ) -> some View {
+        VStack(alignment: .leading, spacing: AppSpacing.md) {
+            HStack(spacing: AppSpacing.sm) {
+                Image(systemName: icon)
+                    .font(.body)
+                    .foregroundStyle(AppColors.textTertiary(colorScheme))
+                Text(title)
+                    .font(AppTypography.headingSmall)
+                    .foregroundStyle(AppColors.textPrimary(colorScheme))
+            }
+            content()
+        }
+        .padding(AppSpacing.xl)
+        .background(
+            RoundedRectangle(cornerRadius: AppRadius.xl)
+                .fill(AppColors.cardBackgroundSubtle(colorScheme))
+                .overlay(
+                    RoundedRectangle(cornerRadius: AppRadius.xl)
+                        .stroke(AppColors.cardBorder(colorScheme), lineWidth: 1)
+                )
+        )
+        .cardHoverEffect(colorScheme: colorScheme)
+        .id(id)
+    }
 
     private struct MoveContent: View {
         let move: FightDataMove
@@ -446,3 +484,4 @@ struct MoveDataMovesView: View {
             }
         }
     }
+}

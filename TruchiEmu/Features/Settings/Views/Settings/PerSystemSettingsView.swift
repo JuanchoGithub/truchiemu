@@ -363,6 +363,40 @@ struct PerSystemDetailView: View {
         }
     }
 
+    // MARK: - Card Helper
+
+    @ViewBuilder
+    private func settingsCard<Content: View>(
+        id: String,
+        title: String,
+        icon: String,
+        keywords: String,
+        @ViewBuilder content: () -> Content
+    ) -> some View {
+        VStack(alignment: .leading, spacing: AppSpacing.md) {
+            HStack(spacing: AppSpacing.sm) {
+                Image(systemName: icon)
+                    .font(.body)
+                    .foregroundStyle(AppColors.textTertiary(colorScheme))
+                Text(title)
+                    .font(AppTypography.headingSmall)
+                    .foregroundStyle(AppColors.textPrimary(colorScheme))
+            }
+            content()
+        }
+        .padding(AppSpacing.xl)
+        .background(
+            RoundedRectangle(cornerRadius: AppRadius.xl)
+                .fill(AppColors.cardBackgroundSubtle(colorScheme))
+                .overlay(
+                    RoundedRectangle(cornerRadius: AppRadius.xl)
+                        .stroke(AppColors.cardBorder(colorScheme), lineWidth: 1)
+                )
+        )
+        .cardHoverEffect(colorScheme: colorScheme)
+        .id(id)
+    }
+
     // MARK: - Header
 
     private var systemHeader: some View {
@@ -422,20 +456,21 @@ struct PerSystemDetailView: View {
     }
 
     private var boxArtStyleView: some View {
-        Form {
-            Section(header: Label(loc.localized("library.boxArtStyle"), systemImage: "photo.stack")) {
-                Picker(loc.localized("library.boxArtStyle"), selection: Binding<BoxType>(
-                    get: { prefs.boxType(for: system.id) },
-                    set: { prefs.setBoxType($0, for: system.id) }
-                )) {
-                    ForEach(BoxType.allCases) { type in
-                        Label(loc.localized(type.localizationKey), systemImage: type.iconName).tag(type)
-                    }
+        settingsCard(
+            id: "section-boxArtStyle",
+            title: loc.localized("library.boxArtStyle"),
+            icon: "photo.stack",
+            keywords: "box art style"
+        ) {
+            Picker(loc.localized("library.boxArtStyle"), selection: Binding<BoxType>(
+                get: { prefs.boxType(for: system.id) },
+                set: { prefs.setBoxType($0, for: system.id) }
+            )) {
+                ForEach(BoxType.allCases) { type in
+                    Label(loc.localized(type.localizationKey), systemImage: type.iconName).tag(type)
                 }
             }
         }
-        .scrollContentBackground(.hidden)
-        .formStyle(.grouped)
     }
 
     private var coreView: some View {
@@ -465,7 +500,7 @@ struct PerSystemDetailView: View {
             .padding(.horizontal, AppSpacing.lg)
             .padding(.vertical, AppSpacing.md)
 
-            SystemCoresView(system: system, coreManager: coreManager)
+            SystemCoresCardView(system: system, coreManager: coreManager)
                 .id(coreManager.installedCores.count + coreManager.availableCores.count)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -474,53 +509,53 @@ struct PerSystemDetailView: View {
     private var achievementsSettingsView: some View {
         let perSystemKey = "ra_hardcore_system_\(system.id)"
 
-        return Form {
-            Section(header: Label(loc.localized("hardcore.perSystem"), systemImage: "shield.lefthalf.filled")) {
-                CompactSegmentedPicker(
-                    options: [
-                        .init(id: 0, title: "\(loc.localized("hardcore.useDefault")) (\(loc.localized(achievementsService.hardcoreMode ? "hardcore.enabled" : "hardcore.disabled")))"),
-                        .init(id: 1, title: loc.localized("hardcore.enabled")),
-                        .init(id: 2, title: loc.localized("hardcore.disabled"))
-                    ],
-                    selection: Binding<Int>(
-                        get: {
-                            if !achievementsService.isEnabled { return 0 }
-                            if let perSystem = AppSettings.get(perSystemKey, type: Bool.self) {
-                                return perSystem ? 1 : 2
-                            }
-                            return 0
-                        },
-                        set: { newValue in
-                            switch newValue {
-                            case 0:
-                                AppSettings.remove(perSystemKey)
-                            case 1:
-                                AppSettings.setBool(perSystemKey, value: true)
-                            case 2:
-                                AppSettings.setBool(perSystemKey, value: false)
-                            default:
-                                break
-                            }
+        return settingsCard(
+            id: "section-hardcorePerSystem",
+            title: loc.localized("hardcore.perSystem"),
+            icon: "shield.lefthalf.filled",
+            keywords: "hardcore per system retro achievements"
+        ) {
+            CompactSegmentedPicker(
+                options: [
+                    .init(id: 0, title: "\(loc.localized("hardcore.useDefault")) (\(loc.localized(achievementsService.hardcoreMode ? "hardcore.enabled" : "hardcore.disabled")))"),
+                    .init(id: 1, title: loc.localized("hardcore.enabled")),
+                    .init(id: 2, title: loc.localized("hardcore.disabled"))
+                ],
+                selection: Binding<Int>(
+                    get: {
+                        if !achievementsService.isEnabled { return 0 }
+                        if let perSystem = AppSettings.get(perSystemKey, type: Bool.self) {
+                            return perSystem ? 1 : 2
                         }
-                    )
+                        return 0
+                    },
+                    set: { newValue in
+                        switch newValue {
+                        case 0:
+                            AppSettings.remove(perSystemKey)
+                        case 1:
+                            AppSettings.setBool(perSystemKey, value: true)
+                        case 2:
+                            AppSettings.setBool(perSystemKey, value: false)
+                        default:
+                            break
+                        }
+                    }
                 )
-                .disabled(!achievementsService.isEnabled)
-                .opacity(achievementsService.isEnabled ? 1 : 0.5)
+            )
+            .disabled(!achievementsService.isEnabled)
+            .opacity(achievementsService.isEnabled ? 1 : 0.5)
 
-                if !achievementsService.isEnabled {
-                    Text(loc.localized("hardcore.requireRA"))
-                        .font(.caption)
-                        .foregroundColor(AppColors.textTertiary(colorScheme))
-                }
-            }
-            Section {
-                Text(loc.localized("hardcore.perSystemDescription"))
+            if !achievementsService.isEnabled {
+                Text(loc.localized("hardcore.requireRA"))
                     .font(.caption)
                     .foregroundColor(AppColors.textTertiary(colorScheme))
             }
+
+            Text(loc.localized("hardcore.perSystemDescription"))
+                .font(.caption)
+                .foregroundColor(AppColors.textTertiary(colorScheme))
         }
-        .scrollContentBackground(.hidden)
-        .formStyle(.grouped)
     }
 
     // MARK: - Inactive Placeholder

@@ -13,6 +13,7 @@ struct LibrarySettingsView: View {
     @State private var showHiddenGamesCategory = true
     @State private var displayOptionsExpanded = false
     @State private var showWizardConfirmation = false
+    @State private var contentLoaded = false
     @ObservedObject var prefs = SystemPreferences.shared
     @ObservedObject private var loc = LocalizationManager.shared
     
@@ -83,182 +84,296 @@ private enum LibrarySection: CaseIterable, Identifiable {
         return LibrarySection.allCases.filter { $0.matches(searchText) }
     }
     
+    private var isSearching: Bool {
+        !searchText.isEmpty
+    }
+
 var body: some View {
-        ScrollViewReader { proxy in
-        Form {
-              // Library Folders Section
-              if visibleSections.contains(.libraryFolders) {
-                  LibraryFoldersSection(
-                      scanningFolders: $scanningFolders,
-                      rebuildTargetFolder: $rebuildTargetFolder,
-                      searchText: searchText
-                  )
-                  .id("section-libraryFolders")
-              }
+        Group {
+            if contentLoaded {
+                ScrollViewReader { proxy in
+                    ScrollView {
+                        VStack(alignment: .leading, spacing: AppSpacing.lg) {
+                            if !isSearching {
+                                statPillsRow
+                            }
 
-              // Hide Rules Section
-              if visibleSections.contains(.hideRules) {
-                  Section {
-                      Toggle(loc.localized("settings.showHiddenGamesCategory"), isOn: $showHiddenGamesCategory)
-                      Text(loc.localized("settings.hiddenGamesDescription"))
-                          .font(.caption)
-                          .foregroundStyle(AppColors.textSecondary(colorScheme))
-                  } header: {
-                      Label { Text(loc.localized("settings.hiddenGames")) } icon: { Image(systemName: "eye.slash") }
-                  }
-                  .id("section-hideRules")
-              }
+                            // Library Folders Section
+                            if visibleSections.contains(.libraryFolders) {
+                                settingsCard(
+                                    id: "section-libraryFolders",
+                                    title: loc.localized("library.libraryFolders"),
+                                    icon: "folder.fill",
+                                    keywords: "library folders roms games scan rescan primary folder subfolders add folder refresh rebuild"
+                                ) {
+                                    LibraryFoldersSection(
+                                        scanningFolders: $scanningFolders,
+                                        rebuildTargetFolder: $rebuildTargetFolder,
+                                        searchText: searchText
+                                    )
+                                }
+                            }
 
-              // Other Display Options Section (collapsible)
-              if visibleSections.contains(.displayOptions) {
-                  Section {
-                      Button(action: { withAnimation { displayOptionsExpanded.toggle() } }) {
-                          HStack {
-                              Label { Text(loc.localized("library.otherDisplayOptions")) } icon: { Image(systemName: "eyeglasses") }
-                              Spacer()
-                              Image(systemName: displayOptionsExpanded ? "chevron.down" : "chevron.right")
-                                  .font(.caption)
-                                  .foregroundStyle(AppColors.textSecondary(colorScheme))
-                          }
-                          .contentShape(Rectangle())
-                      }
-                      .buttonStyle(.plain)
-                      
-                      if displayOptionsExpanded {
-                          Toggle(loc.localized("library.showBiosFiles"), isOn: $prefs.showBiosFiles)
-                          Text(loc.localized("library.showBiosFilesDescription"))
-                              .font(.caption)
-                              .foregroundStyle(AppColors.textSecondary(colorScheme))
-                          
-                          Toggle(loc.localized("library.showHiddenMAMEFiles"), isOn: $prefs.showHiddenMAMEFiles)
-                          Text(loc.localized("library.showHiddenMAMEFilesDescription"))
-                              .font(.caption)
-                              .foregroundStyle(AppColors.textSecondary(colorScheme))
+                            // Hide Rules Section
+                            if visibleSections.contains(.hideRules) {
+                                settingsCard(
+                                    id: "section-hideRules",
+                                    title: loc.localized("settings.hiddenGames"),
+                                    icon: "eye.slash",
+                                    keywords: "hidden games category sidebar visibility"
+                                ) {
+                                    Toggle(loc.localized("settings.showHiddenGamesCategory"), isOn: $showHiddenGamesCategory)
+                                    Text(loc.localized("settings.hiddenGamesDescription"))
+                                        .font(.caption)
+                                        .foregroundStyle(AppColors.textSecondary(colorScheme))
+                                }
+                            }
 
-                          Toggle(loc.localized("settings.mergeGBGBC"), isOn: Binding(
-                              get: { SystemDatabaseWrapper.shared.mergeGBGBC },
-                              set: { SystemDatabaseWrapper.shared.mergeGBGBC = $0 }
-                          ))
-                          Text(loc.localized("settings.mergeGBGBCDescription"))
-                              .font(.caption)
-                              .foregroundStyle(AppColors.textSecondary(colorScheme))
+                            // Other Display Options Section (collapsible)
+                            if visibleSections.contains(.displayOptions) {
+                                settingsCard(
+                                    id: "section-displayOptions",
+                                    title: loc.localized("library.otherDisplayOptions"),
+                                    icon: "eyeglasses",
+                                    keywords: "display options show bios files hidden mame game list sidebar merge gbc gb fbneo"
+                                ) {
+                                    Button(action: { withAnimation { displayOptionsExpanded.toggle() } }) {
+                                        HStack {
+                                            Label { Text(loc.localized("library.otherDisplayOptions")) } icon: { Image(systemName: "eyeglasses") }
+                                            Spacer()
+                                            Image(systemName: displayOptionsExpanded ? "chevron.down" : "chevron.right")
+                                                .font(.caption)
+                                                .foregroundStyle(AppColors.textSecondary(colorScheme))
+                                        }
+                                        .contentShape(Rectangle())
+                                    }
+                                    .buttonStyle(.plain)
+                                    
+                                    if displayOptionsExpanded {
+                                        Toggle(loc.localized("library.showBiosFiles"), isOn: $prefs.showBiosFiles)
+                                        Text(loc.localized("library.showBiosFilesDescription"))
+                                            .font(.caption)
+                                            .foregroundStyle(AppColors.textSecondary(colorScheme))
+                                        
+                                        Toggle(loc.localized("library.showHiddenMAMEFiles"), isOn: $prefs.showHiddenMAMEFiles)
+                                        Text(loc.localized("library.showHiddenMAMEFilesDescription"))
+                                            .font(.caption)
+                                            .foregroundStyle(AppColors.textSecondary(colorScheme))
 
-                          Toggle(loc.localized("settings.mergeMameFBA"), isOn: Binding(
-                              get: { SystemDatabaseWrapper.shared.mergeMameFBA },
-                              set: { SystemDatabaseWrapper.shared.mergeMameFBA = $0 }
-                          ))
-                          Text(loc.localized("settings.mergeMameFBADescription"))
-                              .font(.caption)
-                              .foregroundStyle(AppColors.textSecondary(colorScheme))
-                      }
-                  }
-                  .id("section-displayOptions")
-              }
-              
-              // Cache Section
-              if visibleSections.contains(.cache) {
-                  ExtractedROMCacheSettingsView()
-                  .id("section-cache")
-              }
-             
-              // Maintenance Section - put at bottom
-              if visibleSections.contains(.maintenance) {
-                  Section {
-                      SettingsActionButton(loc.localized("library.fullLibraryRescan"), systemImage: "arrow.clockwise.circle.fill") { showFullRescanConfirmation = true }
-                      .disabled(library.isScanning)
-                      .confirmationDialog(
-                          loc.localized("library.fullRescanConfirmationTitle"),
-                          isPresented: $showFullRescanConfirmation,
-                          titleVisibility: .visible
-                      ) {
-                          Button(loc.localized("library.fullRescanConfirm")) {
-                              Task { await library.fullRescan() }
-                          }
-                          Button(loc.localized("library.cancel"), role: .cancel) {}
-                      } message: {
-                          Text(loc.localized("library.fullRescanConfirmationMessage"))
-                      }
-                     
-                      SettingsActionButton(loc.localized("library.runSetupWizard"), systemImage: "wand.and.stars") { showWizardConfirmation = true }
-                      .confirmationDialog(
-                          loc.localized("library.runSetupWizardConfirmationTitle"),
-                          isPresented: $showWizardConfirmation,
-                          titleVisibility: .visible
-                      ) {
-                          Button(loc.localized("library.runSetupWizardConfirm")) {
-                              library.hasCompletedOnboarding = false
-                              AppSettings.setBool("has_completed_onboarding", value: false)
-                              SetupWizardState.shared.resetForReRun()
-                              NotificationCenter.default.post(name: .closeAppSettings, object: nil)
-                          }
-                          Button(loc.localized("library.cancel"), role: .cancel) {}
-                      } message: {
-                          Text(loc.localized("library.runSetupWizardConfirmationMessage"))
-                      }
-                     
-                     LabeledContent(loc.localized("library.totalGames")) {
-                         Text("\(library.roms.count)")
-                             .foregroundStyle(AppColors.textSecondary(colorScheme))
-                     }
-                     
-                     LabeledContent(loc.localized("library.primaryFolders")) {
-                         Text("\(library.primaryFolders.count)")
-                             .foregroundStyle(AppColors.textSecondary(colorScheme))
-                     }
-                 } header: {
-                     Label { Text(loc.localized("library.maintenance")) } icon: { Image(systemName: "wrench.and.screwdriver") }
-                 }
-                 .id("section-maintenance")
-             }
-             
-             // Show "No results" message when searching and no sections match
-             if !searchText.isEmpty && visibleSections.isEmpty {
-                 Section {
-                     ContentUnavailableView {
-                         Label { Text(loc.localized("library.noResults")) } icon: { Image(systemName: "magnifyingglass") }
-                     } description: {
-                         Text(loc.localized("library.noSettingsMatch"))
-}
-             .padding(.vertical, AppSpacing.xl2)
+                                        Toggle(loc.localized("settings.mergeGBGBC"), isOn: Binding(
+                                            get: { SystemDatabaseWrapper.shared.mergeGBGBC },
+                                            set: { SystemDatabaseWrapper.shared.mergeGBGBC = $0 }
+                                        ))
+                                        Text(loc.localized("settings.mergeGBGBCDescription"))
+                                            .font(.caption)
+                                            .foregroundStyle(AppColors.textSecondary(colorScheme))
+
+                                        Toggle(loc.localized("settings.mergeMameFBA"), isOn: Binding(
+                                            get: { SystemDatabaseWrapper.shared.mergeMameFBA },
+                                            set: { SystemDatabaseWrapper.shared.mergeMameFBA = $0 }
+                                        ))
+                                        Text(loc.localized("settings.mergeMameFBADescription"))
+                                            .font(.caption)
+                                            .foregroundStyle(AppColors.textSecondary(colorScheme))
+                                    }
+                                }
+                            }
+                            
+                            // Cache Section
+                            if visibleSections.contains(.cache) {
+                                settingsCard(
+                                    id: "section-cache",
+                                    title: loc.localized("settings.extractedCache"),
+                                    icon: "internaldrive",
+                                    keywords: "extracted ROM cache archive zip 7z rar storage cleanup TTL"
+                                ) {
+                                    ExtractedROMCacheSettingsView()
+                                }
+                            }
+                           
+                            // Maintenance Section - put at bottom
+                            if visibleSections.contains(.maintenance) {
+                                settingsCard(
+                                    id: "section-maintenance",
+                                    title: loc.localized("library.maintenance"),
+                                    icon: "wrench.and.screwdriver",
+                                    keywords: "maintenance rescan scan refresh full library total games folder setup wizard"
+                                ) {
+                                    SettingsActionButton(loc.localized("library.fullLibraryRescan"), systemImage: "arrow.clockwise.circle.fill") { showFullRescanConfirmation = true }
+                                    .disabled(library.isScanning)
+                                    .confirmationDialog(
+                                        loc.localized("library.fullRescanConfirmationTitle"),
+                                        isPresented: $showFullRescanConfirmation,
+                                        titleVisibility: .visible
+                                    ) {
+                                        Button(loc.localized("library.fullRescanConfirm")) {
+                                            Task { await library.fullRescan() }
+                                        }
+                                        Button(loc.localized("library.cancel"), role: .cancel) {}
+                                    } message: {
+                                        Text(loc.localized("library.fullRescanConfirmationMessage"))
+                                    }
+                                   
+                                    SettingsActionButton(loc.localized("library.runSetupWizard"), systemImage: "wand.and.stars") { showWizardConfirmation = true }
+                                    .confirmationDialog(
+                                        loc.localized("library.runSetupWizardConfirmationTitle"),
+                                        isPresented: $showWizardConfirmation,
+                                        titleVisibility: .visible
+                                    ) {
+                                        Button(loc.localized("library.runSetupWizardConfirm")) {
+                                            library.hasCompletedOnboarding = false
+                                            AppSettings.setBool("has_completed_onboarding", value: false)
+                                            SetupWizardState.shared.resetForReRun()
+                                            NotificationCenter.default.post(name: .closeAppSettings, object: nil)
+                                        }
+                                        Button(loc.localized("library.cancel"), role: .cancel) {}
+                                    } message: {
+                                        Text(loc.localized("library.runSetupWizardConfirmationMessage"))
+                                    }
+                                   
+                                    LabeledContent(loc.localized("library.totalGames")) {
+                                        Text("\(library.roms.count)")
+                                            .foregroundStyle(AppColors.textSecondary(colorScheme))
+                                    }
+                                    
+                                    LabeledContent(loc.localized("library.primaryFolders")) {
+                                        Text("\(library.primaryFolders.count)")
+                                            .foregroundStyle(AppColors.textSecondary(colorScheme))
+                                    }
+                                }
+                            }
+                            
+                            // Show "No results" message when searching and no sections match
+                            if isSearching && visibleSections.isEmpty {
+                                noResultsView
+                            }
+
+                            Spacer(minLength: AppSpacing.xl5)
+                        }
+                        .padding(.horizontal, AppSpacing.lg)
+                        .padding(.top, AppSpacing.md)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .onChange(of: focusedSectionID) { _, newID in
+                            guard let id = newID else { return }
+                            withAnimation { proxy.scrollTo("section-\(id)", anchor: .top) }
+                        }
+                    }
+                }
+                .scrollContentBackground(.hidden)
+                .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+            } else {
+                Color.clear
+                    .frame(maxWidth: .infinity, minHeight: 400)
             }
         }
-    }
-    .scrollContentBackground(.hidden)
-    .formStyle(.grouped)
-    .onChange(of: focusedSectionID) { _, newID in
-        guard let id = newID else { return }
-        withAnimation { proxy.scrollTo("section-\(id)", anchor: .top) }
-    }
-}
-.navigationTitle(loc.localized("library.title"))
-.onAppear {
-    showHiddenGamesCategory = AppSettings.getBool("showHiddenGamesCategory", defaultValue: true)
-}
-.onChange(of: showHiddenGamesCategory) { _, newValue in
-    AppSettings.setBool("showHiddenGamesCategory", value: newValue)
-    NotificationCenter.default.post(name: .hiddenGamesCategoryChanged, object: nil)
-}
-.sheet(item: $rebuildTargetFolder) { folder in
-    RebuildOptionsSheet(folder: folder, library: library, automation: LibraryAutomationCoordinator.shared)
-        .gamepadDismissable { rebuildTargetFolder = nil }
-}
-}
-
-private func addLibraryFolder() {
-        let panel = NSOpenPanel()
-        panel.canChooseDirectories = true
-        panel.canChooseFiles = false
-        panel.prompt = "Add Folder"
-        if panel.runModal() == .OK, let url = panel.url {
-            library.addPrimaryFolder(url: url)
-            NotificationCenter.default.post(name: .closeAppSettings, object: nil)
+        .navigationTitle(loc.localized("library.title"))
+        .onAppear {
+            showHiddenGamesCategory = AppSettings.getBool("showHiddenGamesCategory", defaultValue: true)
+            DispatchQueue.main.async {
+                contentLoaded = true
+            }
         }
+        .onChange(of: showHiddenGamesCategory) { _, newValue in
+            AppSettings.setBool("showHiddenGamesCategory", value: newValue)
+            NotificationCenter.default.post(name: .hiddenGamesCategoryChanged, object: nil)
+        }
+        .sheet(item: $rebuildTargetFolder) { folder in
+            RebuildOptionsSheet(folder: folder, library: library, automation: LibraryAutomationCoordinator.shared)
+                .gamepadDismissable { rebuildTargetFolder = nil }
+        }
+    }
+
+    private var statPillsRow: some View {
+        HStack(spacing: AppSpacing.md) {
+            ForEach(statPills) { pill in
+                SettingsStatPill(item: pill)
+            }
+        }
+        .padding(.bottom, AppSpacing.xs)
+    }
+
+    private var statPills: [SettingsStatPill.Item] {
+        var items: [SettingsStatPill.Item] = []
+        items.append(SettingsStatPill.Item(
+            id: "games",
+            number: "\(library.roms.count)",
+            label: loc.localized("settings.unit.games"),
+            icon: "gamecontroller.fill"
+        ))
+        items.append(SettingsStatPill.Item(
+            id: "folders",
+            number: "\(library.primaryFolders.count)",
+            label: loc.localized("settings.unit.folders"),
+            icon: "folder.fill"
+        ))
+        return items
+    }
+
+    private var hasMatchingSections: Bool {
+        true
+    }
+
+    private var noResultsView: some View {
+        VStack {
+            ContentUnavailableView {
+                Label { Text(loc.localized("library.noResults")) } icon: { Image(systemName: "magnifyingglass") }
+            } description: {
+                Text(loc.localized("library.noSettingsMatch"))
+            }
+            .padding(.vertical, AppSpacing.xl2)
+        }
+        .frame(maxWidth: .infinity)
+    }
+
+    @ViewBuilder
+    private func settingsCard<Content: View>(
+        id: String,
+        title: String,
+        icon: String,
+        keywords: String,
+        @ViewBuilder content: () -> Content
+    ) -> some View {
+        if sectionVisible(id) && matchesSearch(keywords) {
+            VStack(alignment: .leading, spacing: AppSpacing.md) {
+                HStack(spacing: AppSpacing.sm) {
+                    Image(systemName: icon)
+                        .font(.body)
+                        .foregroundStyle(AppColors.textTertiary(colorScheme))
+                    Text(title)
+                        .font(AppTypography.headingSmall)
+                        .foregroundStyle(AppColors.textPrimary(colorScheme))
+                }
+                content()
+            }
+            .padding(AppSpacing.xl)
+            .background(
+                RoundedRectangle(cornerRadius: AppRadius.xl)
+                    .fill(AppColors.cardBackgroundSubtle(colorScheme))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: AppRadius.xl)
+                            .stroke(AppColors.cardBorder(colorScheme), lineWidth: 1)
+                    )
+            )
+            .cardHoverEffect(colorScheme: colorScheme)
+            .id(id)
+        }
+    }
+
+    private func sectionVisible(_ id: String) -> Bool {
+        guard let scope = scopedSectionID else { return true }
+        return scope == id || scope == id.replacingOccurrences(of: "section-", with: "")
+    }
+
+    private func matchesSearch(_ keywords: String) -> Bool {
+        if searchText.isEmpty { return true }
+        return SettingsIndex.matches(haystack: keywords, query: searchText)
     }
 }
 
 // MARK: - Library Folders Section (flat rows for view recycling)
 struct LibraryFoldersSection: View {
     @EnvironmentObject var library: ROMLibrary
+    @Environment(\.colorScheme) var colorScheme
     @Binding var scanningFolders: Set<String>
     @Binding var rebuildTargetFolder: ROMLibraryFolder?
     var searchText: String
@@ -300,7 +415,17 @@ struct LibraryFoldersSection: View {
     }
 
     var body: some View {
-        Section {
+        VStack(alignment: .leading, spacing: AppSpacing.md) {
+            HStack(spacing: AppSpacing.sm) {
+                Image(systemName: "folder.fill")
+                    .font(.body)
+                    .foregroundStyle(AppColors.textSecondary(colorScheme))
+                Text(loc.localized("library.libraryFolders"))
+                    .font(AppTypography.headingSmall)
+                    .foregroundStyle(AppColors.textPrimary(colorScheme))
+            }
+            .padding(.bottom, AppSpacing.xs)
+
             if library.primaryFolders.isEmpty {
                 ContentUnavailableView {
                     Label { Text(loc.localized("library.noLibraryFolders")) } icon: { Image(systemName: "folder") }
@@ -331,8 +456,6 @@ struct LibraryFoldersSection: View {
                 Label { Text(loc.localized("library.addFolder")) } icon: { Image(systemName: "plus") }
             }
             .padding(.top, AppSpacing.md)
-        } header: {
-            Label { Text(loc.localized("library.libraryFolders")) } icon: { Image(systemName: "folder.fill") }
         }
     }
 
@@ -755,4 +878,3 @@ struct RebuildOptionsSheet: View {
         .background(AppColors.cardBackgroundSubtle(colorScheme))
     }
 }
-

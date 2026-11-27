@@ -161,6 +161,7 @@ struct ControllerSettingsView: View {
     @Binding var scopedSectionID: String?
 
     @ObservedObject private var themeManager = ThemeManager.shared
+    @State private var contentLoaded = false
 
     static let searchKeywords: String = "controllers gamepad keyboard mapping player buttons input"
 
@@ -169,7 +170,7 @@ struct ControllerSettingsView: View {
     init(systemID: String? = nil, searchText: Binding<String> = .constant(""), focusedSectionID: Binding<String?> = .constant(nil),
          scopedSectionID: Binding<String?> = .constant(nil)) {
         self.initSystemID = systemID
-        _searchText = searchText
+        self._searchText = searchText
         self._focusedSectionID = focusedSectionID
         self._scopedSectionID = scopedSectionID
         if let sid = systemID {
@@ -181,284 +182,352 @@ struct ControllerSettingsView: View {
     }
 
     var body: some View {
-        Form {
-            if !filteredSystemsForDisplay.isEmpty {
-                Section {
-                    HStack(spacing: 12) {
-                        Picker(loc.localized("controllers.system"), selection: $selectedSystemID) {
-                            Text(loc.localized("controllers.globalDefault")).tag("default")
-                            Divider()
-                            ForEach(filteredSystemsForDisplay, id: \.id) { sys in
-                                Text(sys.name).tag(sys.id)
-                            }
-                        }
-                        .frame(maxWidth: 240)
+        Group {
+            if contentLoaded {
+                ScrollView {
+                    ScrollViewReader { proxy in
+                        VStack(alignment: .leading, spacing: AppSpacing.lg) {
+                            if !filteredSystemsForDisplay.isEmpty {
+                                settingsCard(
+                                    id: "section-systemPicker",
+                                    title: loc.localized("controllers.system"),
+                                    icon: "macwindow",
+                                    keywords: "controllers system default system picker"
+                                ) {
+                                    HStack(spacing: 12) {
+                                        Picker(loc.localized("controllers.system"), selection: $selectedSystemID) {
+                                            Text(loc.localized("controllers.globalDefault")).tag("default")
+                                            Divider()
+                                            ForEach(filteredSystemsForDisplay, id: \.id) { sys in
+                                                Text(sys.name).tag(sys.id)
+                                            }
+                                        }
+                                        .frame(maxWidth: 240)
 
-                        if isGenesisSystem {
-                            Picker(loc.localized("controllers.genesisControllerType"), selection: genesisControllerTypeBinding) {
-                                Text(loc.localized("training.genesis.3button")).tag(AppSettings.GenesisControllerType.threeButton)
-                                Text(loc.localized("training.genesis.6button")).tag(AppSettings.GenesisControllerType.sixButton)
-                            }
-                            .frame(maxWidth: 180)
-                        }
+                                        if isGenesisSystem {
+                                            Picker(loc.localized("controllers.genesisControllerType"), selection: genesisControllerTypeBinding) {
+                                                Text(loc.localized("training.genesis.3button")).tag(AppSettings.GenesisControllerType.threeButton)
+                                                Text(loc.localized("training.genesis.6button")).tag(AppSettings.GenesisControllerType.sixButton)
+                                            }
+                                            .frame(maxWidth: 180)
+                                        }
 
-                        Spacer()
-                    }
-                }
-            }
-
-            Section(loc.localized("controllers.wiiControllerType")) {
-                Picker(loc.localized("controllers.wiiControllerType"), selection: wiiControllerTypeBinding) {
-                    Text(loc.localized("controllers.wii.auto")).tag(AppSettings.WiiControllerType.auto)
-                    Text(loc.localized("controllers.wii.wiimote")).tag(AppSettings.WiiControllerType.wiimote)
-                    Text(loc.localized("controllers.wii.wiimoteSideways")).tag(AppSettings.WiiControllerType.wiimoteSideways)
-                    Text(loc.localized("controllers.wii.wiimoteNunchuk")).tag(AppSettings.WiiControllerType.wiimoteNunchuk)
-                    Text(loc.localized("controllers.wii.wiimoteClassic")).tag(AppSettings.WiiControllerType.wiimoteClassic)
-                    Text(loc.localized("controllers.wii.wiimoteClassicPro")).tag(AppSettings.WiiControllerType.wiimoteClassicPro)
-                }
-                Text(loc.localized("controllers.wiiControllerTypeHelp"))
-                    .font(.caption)
-                    .foregroundColor(AppColors.textSecondary(colorScheme))
-                    // Capped so this help line does not set the minimum width of
-                    // the whole page when the navigation rails are open.
-                    .fixedSize(horizontal: false, vertical: true)
-                    .frame(maxWidth: 400, alignment: .leading)
-            }
-
-            if isWiiSystem {
-                Section(loc.localized("controllers.wiiIR.title")) {
-                    Picker(loc.localized("controllers.wiiIR.mode"), selection: wiiIRModeBinding) {
-                        ForEach(WiiIRSettings.IRMode.allCases) { mode in
-                            Text(loc.localized(mode.labelKey)).tag(mode)
-                        }
-                    }
-                    Picker(loc.localized("controllers.wiiIR.sensorBar"), selection: wiiSensorBarBinding) {
-                        ForEach(WiiIRSettings.SensorBarPosition.allCases) { pos in
-                            Text(loc.localized(pos.labelKey)).tag(pos)
-                        }
-                    }
-                    VStack(spacing: AppSpacing.sm) {
-                        IRSettingSlider(
-                            label: loc.localized("controllers.wiiIR.yaw"),
-                            value: wiiYawBinding,
-                            range: 0...100,
-                            defaultValue: Double(WiiIRSettings.Defaults.yaw)
-                        )
-                        IRSettingSlider(
-                            label: loc.localized("controllers.wiiIR.pitch"),
-                            value: wiiPitchBinding,
-                            range: 0...100,
-                            defaultValue: Double(WiiIRSettings.Defaults.pitch)
-                        )
-                        IRSettingSlider(
-                            label: loc.localized("controllers.wiiIR.verticalOffset"),
-                            value: wiiVerticalOffsetBinding,
-                            range: -50...50,
-                            defaultValue: Double(WiiIRSettings.Defaults.verticalOffset)
-                        )
-                    }
-                    Text(loc.localized("controllers.wiiIR.help"))
-                        .font(.caption)
-                        .foregroundColor(AppColors.textSecondary(colorScheme))
-                        .fixedSize(horizontal: false, vertical: true)
-                        .frame(maxWidth: 400, alignment: .leading)
-                }
-            }
-
-            if !searchText.isEmpty {
-                Section {
-                    SearchResultIndicator(
-                        searchText: searchText,
-                        sectionKeywords: Self.searchKeywords,
-                        sectionName: loc.localized("controllers.controllers")
-                    )
-                }
-            }
-
-            if controllerService.isParentModeActive {
-                Section {
-                    HStack(spacing: 6) {
-                        Image(systemName: "exclamationmark.triangle.fill")
-                        .foregroundColor(AppColors.warning(colorScheme))
-                        Text(loc.localized("controllers.parentModeWarning"))
-                        .font(.caption)
-                        .foregroundColor(AppColors.warning(colorScheme))
-                        Spacer()
-                        Button(loc.localized("controllers.parentModeWhatIsThis")) {
-                            showParentModeHelp = true
-                        }
-                        .font(.caption)
-                        .foregroundColor(AppColors.accentSecondaryForScheme(colorScheme))
-                        .buttonStyle(.plain)
-                        .sheet(isPresented: $showParentModeHelp) {
-                            VStack(alignment: .leading, spacing: 12) {
-                                Text(loc.localized("controllers.parentModeExplanationTitle"))
-                                    .font(.headline)
-                                Text(loc.localized("controllers.parentModeExplanation"))
-                                    .font(.body)
-                                    .fixedSize(horizontal: false, vertical: true)
-                                HStack {
-                                    Spacer()
-                                    Button(loc.localized("controllers.parentModeGotIt")) {
-                                        showParentModeHelp = false
+                                        Spacer()
                                     }
-                                    .buttonStyle(.borderedProminent)
-                                    .controlSize(.small)
                                 }
                             }
-                            .padding(20)
-                            .frame(width: 400)
-                            .gamepadDismissable { showParentModeHelp = false }
-                        }
-                    }
-                }
-            }
 
-            Section(loc.localized("controllers.connectedControllers")) {
-                ForEach(controllerService.connectedControllers, id: \.id) { player in
-                    ControllerRowView(
-                        player: player,
-                        isSelected: selectedControllerId == player.id,
-                        isInParentMode: controllerService.controllerIsInParentMode(player),
-                        onSelect: { selectedControllerId = player.id },
-                        onToggleSlot: { slot in
-                            if player.isKeyboard {
-                                toggleKeyboardSlot(player: player, slot: slot)
-                            } else if let gc = player.gcController {
-                                controllerService.toggleController(gc, player: slot)
-                            } else if player.isSDL, let id = player.sdlInstanceID {
-                                controllerService.toggleSDLController(id, player: slot)
+                            settingsCard(
+                                id: "section-wiiControllerType",
+                                title: loc.localized("controllers.wiiControllerType"),
+                                icon: "gamecontroller",
+                                keywords: "wii controller type wiimote nunchuk classic"
+                            ) {
+                                Picker(loc.localized("controllers.wiiControllerType"), selection: wiiControllerTypeBinding) {
+                                    Text(loc.localized("controllers.wii.auto")).tag(AppSettings.WiiControllerType.auto)
+                                    Text(loc.localized("controllers.wii.wiimote")).tag(AppSettings.WiiControllerType.wiimote)
+                                    Text(loc.localized("controllers.wii.wiimoteSideways")).tag(AppSettings.WiiControllerType.wiimoteSideways)
+                                    Text(loc.localized("controllers.wii.wiimoteNunchuk")).tag(AppSettings.WiiControllerType.wiimoteNunchuk)
+                                    Text(loc.localized("controllers.wii.wiimoteClassic")).tag(AppSettings.WiiControllerType.wiimoteClassic)
+                                    Text(loc.localized("controllers.wii.wiimoteClassicPro")).tag(AppSettings.WiiControllerType.wiimoteClassicPro)
+                                }
+                                Text(loc.localized("controllers.wiiControllerTypeHelp"))
+                                    .font(.caption)
+                                    .foregroundColor(AppColors.textSecondary(colorScheme))
+                                    .fixedSize(horizontal: false, vertical: true)
+                                    .frame(maxWidth: 400, alignment: .leading)
                             }
-                        },
-                        onDisable: {
-                            if player.isKeyboard {
-                                controllerService.resetKeyboard()
-                            } else if let gc = player.gcController {
-                                controllerService.disableController(gc)
-                            } else if player.isSDL, let id = player.sdlInstanceID {
-                                controllerService.disableSDLController(id)
+
+                            if isWiiSystem {
+                                settingsCard(
+                                    id: "section-wiiIR",
+                                    title: loc.localized("controllers.wiiIR.title"),
+                                    icon: "sensor.tag.radiowaves.forward",
+                                    keywords: "wii IR mode sensor bar yaw pitch vertical offset"
+                                ) {
+                                    Picker(loc.localized("controllers.wiiIR.mode"), selection: wiiIRModeBinding) {
+                                        ForEach(WiiIRSettings.IRMode.allCases) { mode in
+                                            Text(loc.localized(mode.labelKey)).tag(mode)
+                                        }
+                                    }
+                                    Picker(loc.localized("controllers.wiiIR.sensorBar"), selection: wiiSensorBarBinding) {
+                                        ForEach(WiiIRSettings.SensorBarPosition.allCases) { pos in
+                                            Text(loc.localized(pos.labelKey)).tag(pos)
+                                        }
+                                    }
+                                    VStack(spacing: AppSpacing.sm) {
+                                        IRSettingSlider(
+                                            label: loc.localized("controllers.wiiIR.yaw"),
+                                            value: wiiYawBinding,
+                                            range: 0...100,
+                                            defaultValue: Double(WiiIRSettings.Defaults.yaw)
+                                        )
+                                        IRSettingSlider(
+                                            label: loc.localized("controllers.wiiIR.pitch"),
+                                            value: wiiPitchBinding,
+                                            range: 0...100,
+                                            defaultValue: Double(WiiIRSettings.Defaults.pitch)
+                                        )
+                                        IRSettingSlider(
+                                            label: loc.localized("controllers.wiiIR.verticalOffset"),
+                                            value: wiiVerticalOffsetBinding,
+                                            range: -50...50,
+                                            defaultValue: Double(WiiIRSettings.Defaults.verticalOffset)
+                                        )
+                                    }
+                                    Text(loc.localized("controllers.wiiIR.help"))
+                                        .font(.caption)
+                                        .foregroundColor(AppColors.textSecondary(colorScheme))
+                                        .fixedSize(horizontal: false, vertical: true)
+                                        .frame(maxWidth: 400, alignment: .leading)
+                                }
+                            }
+
+                            if !searchText.isEmpty {
+                                settingsCard(
+                                    id: "section-searchIndicator",
+                                    title: loc.localized("controllers.controllers"),
+                                    icon: "magnifyingglass",
+                                    keywords: Self.searchKeywords
+                                ) {
+                                    SearchResultIndicator(
+                                        searchText: searchText,
+                                        sectionKeywords: Self.searchKeywords,
+                                        sectionName: loc.localized("controllers.controllers")
+                                    )
+                                }
+                            }
+
+                            if controllerService.isParentModeActive {
+                                settingsCard(
+                                    id: "section-parentMode",
+                                    title: loc.localized("controllers.parentMode"),
+                                    icon: "exclamationmark.triangle.fill",
+                                    keywords: "parent mode warning"
+                                ) {
+                                    HStack(spacing: 6) {
+                                        Image(systemName: "exclamationmark.triangle.fill")
+                                        .foregroundColor(AppColors.warning(colorScheme))
+                                        Text(loc.localized("controllers.parentModeWarning"))
+                                        .font(.caption)
+                                        .foregroundColor(AppColors.warning(colorScheme))
+                                        Spacer()
+                                        Button(loc.localized("controllers.parentModeWhatIsThis")) {
+                                            showParentModeHelp = true
+                                        }
+                                        .font(.caption)
+                                        .foregroundColor(AppColors.accentSecondaryForScheme(colorScheme))
+                                        .buttonStyle(.plain)
+                                        .sheet(isPresented: $showParentModeHelp) {
+                                            VStack(alignment: .leading, spacing: 12) {
+                                                Text(loc.localized("controllers.parentModeExplanationTitle"))
+                                                    .font(.headline)
+                                                Text(loc.localized("controllers.parentModeExplanation"))
+                                                    .font(.body)
+                                                    .fixedSize(horizontal: false, vertical: true)
+                                                HStack {
+                                                    Spacer()
+                                                    Button(loc.localized("controllers.parentModeGotIt")) {
+                                                        showParentModeHelp = false
+                                                    }
+                                                    .buttonStyle(.borderedProminent)
+                                                    .controlSize(.small)
+                                                }
+                                            }
+                                            .padding(20)
+                                            .frame(width: 400)
+                                            .gamepadDismissable { showParentModeHelp = false }
+                                        }
+                                    }
+                                }
+                            }
+
+                            settingsCard(
+                                id: "section-connectedControllers",
+                                title: loc.localized("controllers.connectedControllers"),
+                                icon: "gamecontroller",
+                                keywords: "connected controllers keyboard slot test"
+                            ) {
+                                ForEach(controllerService.connectedControllers, id: \.id) { player in
+                                    ControllerRowView(
+                                        player: player,
+                                        isSelected: selectedControllerId == player.id,
+                                        isInParentMode: controllerService.controllerIsInParentMode(player),
+                                        onSelect: { selectedControllerId = player.id },
+                                        onToggleSlot: { slot in
+                                            if player.isKeyboard {
+                                                toggleKeyboardSlot(player: player, slot: slot)
+                                            } else if let gc = player.gcController {
+                                                controllerService.toggleController(gc, player: slot)
+                                            } else if player.isSDL, let id = player.sdlInstanceID {
+                                                controllerService.toggleSDLController(id, player: slot)
+                                            }
+                                        },
+                                        onDisable: {
+                                            if player.isKeyboard {
+                                                controllerService.resetKeyboard()
+                                            } else if let gc = player.gcController {
+                                                controllerService.disableController(gc)
+                                            } else if player.isSDL, let id = player.sdlInstanceID {
+                                                controllerService.disableSDLController(id)
+                                            }
+                                        }
+                                    )
+                                }
+
+                                Button {
+                                    showTestSheet = true
+                                } label: {
+                                    HStack(spacing: 6) {
+                                        Image(systemName: "gamecontroller")
+                                        Text(loc.localized("controllers.testSheet.openTester"))
+                                    }
+                                }
+                                .buttonStyle(.borderedProminent)
+                                .controlSize(.small)
+                                .tint(AppColors.brandAccent)
+                                .disabled(!canTestSelectedController)
+                                .help(canTestSelectedController ? "" : loc.localized("controllers.testSheet.openTesterDisabled"))
+                                .sheet(isPresented: $showTestSheet) {
+                                    if let player = selectedPlayerController, !player.isKeyboard {
+                                        ControllerTestSheet(
+                                            player: player,
+                                            systemID: selectedSystemID,
+                                            onDismiss: { showTestSheet = false }
+                                        )
+                                        .environmentObject(controllerService)
+                                    }
+                                }
+
+                                Toggle(isOn: Binding(
+                                    get: { controllerService.replaceKeyboardWithController },
+                                    set: { controllerService.replaceKeyboardWithController = $0 }
+                                )) {
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        Text(loc.localized("controllers.replaceKeyboard"))
+                                            .font(.body)
+                                        Text(loc.localized("controllers.replaceKeyboardDetail"))
+                                            .font(.caption)
+                                            .foregroundColor(AppColors.textTertiary(colorScheme))
+                                            .fixedSize(horizontal: false, vertical: true)
+                                    }
+                                }
+                                .toggleStyle(.switch)
+                                .controlSize(.small)
+                            }
+
+                            settingsCard(
+                                id: "section-savedConfigs",
+                                title: loc.localized("controllers.savedConfigs"),
+                                icon: "square.and.arrow.down.on.square",
+                                keywords: "saved configs save load delete config"
+                            ) {
+                                HStack(alignment: .center, spacing: 6) {
+                                    TextField(loc.localized("controllers.configName"), text: $configName)
+                                    .textFieldStyle(.roundedBorder)
+
+                                    SettingsActionButton(loc.localized("controllers.save")) {
+                                        saveCurrentConfig()
+                                    }
+                                    .disabled(configName.isEmpty)
+
+                                    SettingsActionButton("", systemImage: "trash", role: .destructive) {
+                                        deleteConfig(name: configName)
+                                    }
+                                    .disabled(configName.isEmpty || savedConfigs[configName] == nil)
+
+                                    Picker("", selection: $configName) {
+                                        Text(loc.localized("controllers.selectConfig")).tag("")
+                                        ForEach(Array(savedConfigs.keys.sorted()), id: \.self) { name in
+                                            Text(name).tag(name)
+                                        }
+                                    }
+                                    .pickerStyle(.menu)
+                                    .frame(width: 140)
+                                    .onChange(of: configName) { _, newValue in
+                                        if !newValue.isEmpty && savedConfigs[newValue] != nil {
+                                            loadConfig(name: newValue)
+                                        }
+                                    }
+                                }
+                            }
+
+                            // Main content area
+                            if let player = selectedPlayerController {
+                                if player.isKeyboard {
+                                    settingsCard(
+                                        id: "section-keyboardMapping",
+                                        title: loc.localized("controllers.keyboardMapping"),
+                                        icon: "keyboard",
+                                        keywords: "keyboard mapping keys conflicts"
+                                    ) {
+                                        keyboardMappingContent
+                                    }
+                                } else {
+                                    settingsCard(
+                                        id: "section-buttonMappingList",
+                                        title: loc.localized("controllers.buttonMapping"),
+                                        icon: "gamecontroller",
+                                        keywords: "button mapping gamepad sticks deadzone calibration"
+                                    ) {
+                                        ButtonMappingList(systemID: selectedSystemID, player: player, controllerService: controllerService)
+                                            .id("\(selectedSystemID)|\(player.id.uuidString)")
+                                    }
+                                }
+                            }
+
+                            // Quick Save / Quick Load hotkeys.
+                            settingsCard(
+                                id: "section-quickHotkeys",
+                                title: loc.localized("controllers.quickHotkeys"),
+                                icon: "square.and.arrow.down.on.square",
+                                keywords: "quick hotkeys save load state override"
+                            ) {
+                                quickHotkeysContent
+                            }
+
+                            // No results message
+                            if isSearching && !hasMatchingSections {
+                                noResultsView
+                            }
+
+                            Spacer(minLength: AppSpacing.xl5)
+                        }
+                        .padding(.horizontal, AppSpacing.lg)
+                        .padding(.top, AppSpacing.md)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .onChange(of: focusedSectionID) { _, newID in
+                            guard let id = newID else { return }
+                            withAnimation { proxy.scrollTo("section-\(id)", anchor: .top) }
+                        }
+                        .onChange(of: scopedSectionID) { _, newScope in
+                            guard let id = newScope else { return }
+                            DispatchQueue.main.async {
+                                withAnimation { proxy.scrollTo("section-\(id)", anchor: .top) }
                             }
                         }
-                    )
-                }
-
-                Button {
-                    showTestSheet = true
-                } label: {
-                    HStack(spacing: 6) {
-                        Image(systemName: "gamecontroller")
-                        Text(loc.localized("controllers.testSheet.openTester"))
                     }
                 }
-                .buttonStyle(.borderedProminent)
-                .controlSize(.small)
-                .tint(AppColors.brandAccent)
-                .disabled(!canTestSelectedController)
-                .help(canTestSelectedController ? "" : loc.localized("controllers.testSheet.openTesterDisabled"))
-                .sheet(isPresented: $showTestSheet) {
-                    if let player = selectedPlayerController, !player.isKeyboard {
-                        ControllerTestSheet(
-                            player: player,
-                            systemID: selectedSystemID,
-                            onDismiss: { showTestSheet = false }
-                        )
-                        .environmentObject(controllerService)
-                    }
-                }
-
-                Toggle(isOn: Binding(
-                    get: { controllerService.replaceKeyboardWithController },
-                    set: { controllerService.replaceKeyboardWithController = $0 }
-                )) {
-                    // Title above the detail line: side by side, the two labels
-                    // made this row wider than the detail pane in the Per-System
-                    // tree.
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(loc.localized("controllers.replaceKeyboard"))
-                            .font(.body)
-                        Text(loc.localized("controllers.replaceKeyboardDetail"))
-                            .font(.caption)
-                            .foregroundColor(AppColors.textTertiary(colorScheme))
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
-                }
-                .toggleStyle(.switch)
-                .controlSize(.small)
-            }
-
-            Section(loc.localized("controllers.savedConfigs")) {
-                HStack(alignment: .center, spacing: 6) {
-                    TextField(loc.localized("controllers.configName"), text: $configName)
-                    .textFieldStyle(.roundedBorder)
-
-                    SettingsActionButton(loc.localized("controllers.save")) {
-                        saveCurrentConfig()
-                    }
-                    .disabled(configName.isEmpty)
-
-                    SettingsActionButton("", systemImage: "trash", role: .destructive) {
-                        deleteConfig(name: configName)
-                    }
-                    .disabled(configName.isEmpty || savedConfigs[configName] == nil)
-
-                    Picker("", selection: $configName) {
-                        Text(loc.localized("controllers.selectConfig")).tag("")
-                        ForEach(Array(savedConfigs.keys.sorted()), id: \.self) { name in
-                            Text(name).tag(name)
-                        }
-                    }
-                    .pickerStyle(.menu)
-                    .frame(width: 140)
-                    .onChange(of: configName) { _, newValue in
-                        if !newValue.isEmpty && savedConfigs[newValue] != nil {
-                            loadConfig(name: newValue)
-                        }
-                    }
-                }
-            }
-
-            // Main content area
-            if let player = selectedPlayerController {
-                if player.isKeyboard {
-                    Section {
-                        keyboardMappingContent
-                    }
-                } else {
-                    Section {
-                        // `ButtonMappingList` copies the mapping into @State, so
-                        // SwiftUI would keep the previous system's copy when only
-                        // the system picker changes. Give the view a new identity
-                        // per system/controller so its state reloads from storage.
-                        ButtonMappingList(systemID: selectedSystemID, player: player, controllerService: controllerService)
-                            .id("\(selectedSystemID)|\(player.id.uuidString)")
-                    }
-                }
-            }
-
-            // Quick Save / Quick Load hotkeys. Always shown: when a real
-            // system is selected this edits the per-system override (the
-            // global fallback is unchanged); when "Global Default" is
-            // selected this edits the global binding directly (mirrors the
-            // Hotkeys settings page). Intentionally at the bottom — it's
-            // the least important section of the Controls tab.
-            Section(loc.localized("controllers.quickHotkeys")) {
-                quickHotkeysContent
+                .scrollContentBackground(.hidden)
+                .background(AppColors.windowBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled))
+            } else {
+                Color.clear
+                    .frame(maxWidth: .infinity, minHeight: 400)
             }
         }
-        .scrollContentBackground(.hidden)
-        .formStyle(.grouped)
-        .background(AppColors.windowBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled))
-  .onAppear {
- if initSystemID == nil, let saved = AppSettings.getString("controller_selectedSystemID") {
- selectedSystemID = saved
- }
- applyPendingControllerSelection()
- loadSavedConfigs()
- }
- .onReceive(NotificationCenter.default.publisher(for: .openAppSettings)) { _ in
- applyPendingControllerSelection()
- }
- .onChange(of: controllerService.connectedControllers.map(\.id)) { _, newIds in
+        .navigationTitle(loc.localized("settings.controllers"))
+        .onAppear {
+            contentLoaded = true
+            if initSystemID == nil, let saved = AppSettings.getString("controller_selectedSystemID") {
+                selectedSystemID = saved
+            }
+            applyPendingControllerSelection()
+            loadSavedConfigs()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .openAppSettings)) { _ in
+            applyPendingControllerSelection()
+        }
+        .onChange(of: controllerService.connectedControllers.map(\.id)) { _, newIds in
             guard let currentId = selectedControllerId else {
                 selectedControllerId = newIds.first
                 return
@@ -841,8 +910,73 @@ struct ControllerSettingsView: View {
             AppSettings.setData("controller_saved_configs", value: data)
         }
     }
-}
 
+    // MARK: - Search
+
+    private var isSearching: Bool { !searchText.isEmpty }
+
+    private var hasMatchingSections: Bool {
+        matchesSearch(Self.searchKeywords)
+    }
+
+    private func matchesSearch(_ keywords: String) -> Bool {
+        if searchText.isEmpty { return true }
+        if SettingsSearchRuntime.pageMatches(.controllers, query: searchText) { return true }
+        return SettingsIndex.matches(haystack: keywords, query: searchText)
+    }
+
+    private var noResultsView: some View {
+        VStack {
+            Text(loc.localized("general.noMatchingSettings") + " \"\(searchText)\"")
+                .font(.caption)
+                .foregroundStyle(AppColors.textSecondary(colorScheme))
+                .frame(maxWidth: .infinity, alignment: .center)
+                .padding(.vertical, 20)
+        }
+        .frame(maxWidth: .infinity)
+    }
+
+    // MARK: - Card Helper
+
+    @ViewBuilder
+    private func settingsCard<Content: View>(
+        id: String,
+        title: String,
+        icon: String,
+        keywords: String,
+        @ViewBuilder content: () -> Content
+    ) -> some View {
+        if sectionVisible(id) && matchesSearch(keywords) {
+            VStack(alignment: .leading, spacing: AppSpacing.md) {
+                HStack(spacing: AppSpacing.sm) {
+                    Image(systemName: icon)
+                        .font(.body)
+                        .foregroundStyle(AppColors.textTertiary(colorScheme))
+                    Text(title)
+                        .font(AppTypography.headingSmall)
+                        .foregroundStyle(AppColors.textPrimary(colorScheme))
+                }
+                content()
+            }
+            .padding(AppSpacing.xl)
+            .background(
+                RoundedRectangle(cornerRadius: AppRadius.xl)
+                    .fill(AppColors.cardBackgroundSubtle(colorScheme))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: AppRadius.xl)
+                            .stroke(AppColors.cardBorder(colorScheme), lineWidth: 1)
+                    )
+            )
+            .cardHoverEffect(colorScheme: colorScheme)
+            .id(id)
+        }
+    }
+
+    private func sectionVisible(_ id: String) -> Bool {
+        guard let scope = scopedSectionID else { return true }
+        return scope == id || scope == id.replacingOccurrences(of: "section-", with: "")
+    }
+}
 
 // MARK: - Search Result Indicator
 struct SearchResultIndicator: View {
@@ -881,7 +1015,6 @@ struct SearchResultIndicator: View {
     }
 }
 
-
 // MARK: - Deadzone Sliders Section
 struct DeadzoneSlidersSection: View {
     @Environment(\.colorScheme) private var colorScheme
@@ -894,8 +1027,6 @@ struct DeadzoneSlidersSection: View {
         controllerService.connectedControllers.first(where: { $0.id == selectedControllerId })
     }
 
-    // When a controller has both gcController and sdlInstanceID populated,
-    // GC takes precedence (mirrors the historical single-path behavior).
     private var usesSDL: Bool {
         guard let player = selectedPlayer else { return false }
         return player.gcController == nil && player.isSDL
@@ -1207,11 +1338,6 @@ struct StickVisualizerView: View {
     @State private var rawLY: Double = 0
     @State private var rawRX: Double = 0
     @State private var rawRY: Double = 0
-    // Tracks the GCController whose thumbstick valueChangedHandler closures
-    // are currently attached to this view's @State. Required because
-    // valueChangedHandler is persistent on the controller — switching the
-    // selection to an SDL controller does NOT auto-detach the previous GC
-    // handlers, so the previous GC controller would keep driving the dots.
     @State private var attachedGCController: GCController?
     @EnvironmentObject var controllerService: ControllerService
     @ObservedObject private var loc = LocalizationManager.shared
@@ -1220,7 +1346,6 @@ struct StickVisualizerView: View {
         controllerService.connectedControllers.first(where: { $0.id == selectedControllerId })
     }
 
-    // GC takes precedence when both are present (see DeadzoneSlidersSection).
     private var usesSDL: Bool {
         guard let player = selectedPlayer else { return false }
         return player.gcController == nil && player.isSDL
@@ -1263,9 +1388,6 @@ struct StickVisualizerView: View {
         return controllerService.calibration(forSDL: player.sdlInstanceID ?? 0)
     }
 
-    /// The calibration used for display. During a live calibration session the
-    /// in-progress maxima drive the red arcs so the user sees them grow;
-    /// otherwise the stored calibration is used.
     private func displayCalibration(stick: Int) -> StickCalibration {
         let stored = storedCalibration
         if let session = calibrationSession, session.isActive {
@@ -1298,23 +1420,11 @@ struct StickVisualizerView: View {
         .onAppear { monitorSelectedController() }
         .onChange(of: selectedControllerId) { monitorSelectedController() }
         .onDisappear { detachAll() }
-        // When `ControllerInputObserver` (used by the controller test
-        // sheet) opens, it overwrites the GC `valueChangedHandler` chains
-        // the visualizer relies on. On `stopObserving` it nils them out,
-        // leaving the visualizer stuck with no handler — the stick dots
-        // freeze. Re-attach on the observer's "stopped" notification so
-        // the user sees the sticks move again as soon as the test sheet
-        // closes.
         .onReceive(NotificationCenter.default.publisher(for: .controllerInputObserverStopped)) { _ in
             monitorSelectedController()
         }
     }
 
-    /// Detach all previously-attached input sources. The GC thumbstick
-    /// `valueChangedHandler` is persistent on the controller, so it must be
-    /// explicitly nilled out — otherwise the previous GC controller keeps
-    /// firing into this view's @State even after the user selects an SDL
-    /// controller. The SDL observer is single-slot and cleared symmetrically.
     private func detachAll() {
         if let gc = attachedGCController, let gamepad = gc.extendedGamepad {
             gamepad.leftThumbstick.valueChangedHandler = nil
@@ -1325,8 +1435,6 @@ struct StickVisualizerView: View {
     }
 
     private func monitorSelectedController() {
-        // Drop any previously-attached handlers before binding new ones,
-        // so exactly one input source drives the dots at a time.
         detachAll()
 
         guard let player = selectedPlayer else { return }
@@ -1364,9 +1472,6 @@ struct StickVisualizerView: View {
             }
         }
 
-        // Reset dot positions so stale state from the previous selection
-        // doesn't linger on-screen if the newly-selected controller hasn't
-        // reported an axis event yet.
         effLX = 0; effLY = 0; effRX = 0; effRY = 0
         rawLX = 0; rawLY = 0; rawRX = 0; rawRY = 0
     }
@@ -1395,9 +1500,6 @@ struct ButtonMappingList: View {
             initialMapping = controllerService.mapping(for: player.gcController?.vendorName ?? "Unknown", systemID: systemID)
         }
         _currentMapping = State(initialValue: initialMapping)
-        // Read the mapping for *this* system. `player.sdlMapping` is the
-        // global default, which would show another scope's mapping when a
-        // per-system mapping exists.
         let initialSDKMapping: SDLControllerMapping
         if let identity = player.identityKey {
             initialSDKMapping = controllerService.sdlMapping(forIdentity: identity, systemID: systemID)
@@ -1488,9 +1590,6 @@ struct ButtonMappingList: View {
                 }
                 .padding(.vertical, 12)
 
-                // Stick visualizer + deadzone sliders. Only relevant for
-                // gamepads — keyboard player would never end up in this view
-                // (the parent switch routes keyboard to keyboardMappingContent).
                 if !player.isKeyboard {
                     Divider()
                         .padding(.horizontal, 12)
@@ -1529,8 +1628,6 @@ struct ButtonMappingList: View {
         }
     }
 
-    // MARK: SDL Capture
-
     private func startSDLListening(for btn: RetroButton) {
         listeningFor = btn
         capturedName = nil
@@ -1560,8 +1657,6 @@ struct ButtonMappingList: View {
             controllerService.connectedControllers[idx].sdlMapping = mapping
         }
     }
-
-    // MARK: GC Capture
 
     private func startGCListening(for btn: RetroButton) {
         listeningFor = btn
@@ -1671,20 +1766,13 @@ struct MappingRowView: View {
 // MARK: - Compact Stick View
 struct CompactStickView: View {
     @Environment(\.colorScheme) private var colorScheme
-    /// Physical stick position (unscaled), drawn as the main dot.
     let x: Double
     let y: Double
     let label: String
     var deadZone: Double = 0.15
-    /// Captured stick range (up/down/left/right maxima). When present, red arcs
-    /// are drawn at the physical edges the stick reaches.
     var calibrationMax: StickCalibration? = nil
-    /// Calibrated output position. When a calibration is stored a hollow ring
-    /// is drawn here showing where the stick's output lands after scaling.
     var effectiveX: Double? = nil
     var effectiveY: Double? = nil
-    /// True during a live calibration session — the dot is drawn amber to
-    /// signal the recording state.
     var isRecording: Bool = false
 
     var body: some View {
@@ -1738,10 +1826,6 @@ struct CompactStickView: View {
         }
     }
 
-    /// Red arc showing the captured max edge for one direction of the stick.
-    /// Uses the same scale as the dot (34 of radius 40) so the raw dot rides
-    /// exactly along the captured edge. Angles use the shape's y-down
-    /// coordinate space: 0° = right, -90° = up.
     private func edgeArc(radius: Float, start: Double, end: Double) -> some View {
         Path { path in
             path.addArc(center: CGPoint(x: 40, y: 40),

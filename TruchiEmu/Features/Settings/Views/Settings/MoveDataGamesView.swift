@@ -20,11 +20,7 @@ struct MoveDataGamesView: View {
             navBar
             Divider()
             searchBar
-            Form {
-                gamesListSection
-            }
-            .scrollContentBackground(.hidden)
-            .formStyle(.grouped)
+            contentList
         }
         .background(AppColors.windowBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled))
         .onAppear {
@@ -115,81 +111,98 @@ struct MoveDataGamesView: View {
         .padding(.vertical, AppSpacing.sm)
     }
 
-    private var gamesListSection: some View {
-        Section(header: Label(loc.localized("settings.moveList.games"), systemImage: "gamecontroller")) {
-            HStack(spacing: AppSpacing.md) {
-                Button(action: { showAddGameSheet = true }) {
-                    Label(loc.localized("settings.moveList.addGame"), systemImage: "plus")
-                }
-                .buttonStyle(.borderedProminent)
-                .controlSize(.small)
-                .tint(.green)
-
-                SettingsActionButton(loc.localized("settings.moveList.importJSON"), systemImage: "square.and.arrow.down") { showImportPanel = true }
-
-                Spacer()
-            }
-            .listRowBackground(Color.clear)
-
-            let custom = storageService.customGames
-            if !custom.isEmpty {
-                Section {
-                    ForEach(custom, id: \.gameName) { game in
-                        HStack(spacing: 0) {
-                            Button(action: { onSelectGame(game.gameName, true) }) {
-                                GameRowView(
-                                    name: game.gameName,
-                                    subtitle: game.isImported ? loc.localized("settings.moveList.imported") : nil,
-                                    year: nil,
-                                    characterCount: customGameCharCount(game.gameName),
-                                    isCustom: true,
-                                    colorScheme: colorScheme
-                                )
+    private var contentList: some View {
+        ScrollView {
+            ScrollViewReader { proxy in
+                VStack(alignment: .leading, spacing: AppSpacing.lg) {
+                    settingsCard(
+                        id: "section-games",
+                        title: loc.localized("settings.moveList.games"),
+                        icon: "gamecontroller",
+                        keywords: "games add import custom bundled json"
+                    ) {
+                        HStack(spacing: AppSpacing.md) {
+                            Button(action: { showAddGameSheet = true }) {
+                                Label(loc.localized("settings.moveList.addGame"), systemImage: "plus")
                             }
-                            .buttonStyle(.plain)
+                            .buttonStyle(.borderedProminent)
+                            .controlSize(.small)
+                            .tint(.green)
 
-                            Menu {
-                                Group {
-                                Button(role: .destructive) {
-                                    storageService.deleteCustomGame(name: game.gameName)
-                                } label: {
-                                    Label(loc.localized("settings.moveList.deleteGame"), systemImage: "trash")
+                            SettingsActionButton(loc.localized("settings.moveList.importJSON"), systemImage: "square.and.arrow.down") { showImportPanel = true }
+
+                            Spacer()
+                        }
+
+                        let custom = storageService.customGames
+                        if !custom.isEmpty {
+                            Section {
+                                ForEach(custom, id: \.gameName) { game in
+                                    HStack(spacing: 0) {
+                                        Button(action: { onSelectGame(game.gameName, true) }) {
+                                            GameRowView(
+                                                name: game.gameName,
+                                                subtitle: game.isImported ? loc.localized("settings.moveList.imported") : nil,
+                                                year: nil,
+                                                characterCount: customGameCharCount(game.gameName),
+                                                isCustom: true,
+                                                colorScheme: colorScheme
+                                            )
+                                        }
+                                        .buttonStyle(.plain)
+
+                                        Menu {
+                                            Group {
+                                            Button(role: .destructive) {
+                                                storageService.deleteCustomGame(name: game.gameName)
+                                            } label: {
+                                                Label(loc.localized("settings.moveList.deleteGame"), systemImage: "trash")
+                                            }
+                                            }
+                                            .menuIconsAlwaysVisible()
+                                        } label: {
+                                            Image(systemName: "ellipsis.circle")
+                                                .font(.title3)
+                                                .foregroundStyle(AppColors.textTertiary(colorScheme))
+                                                .frame(width: 32, height: 32)
+                                        }
+                                        .menuIndicator(.hidden)
+                                    }
                                 }
-                                }
-                                .menuIconsAlwaysVisible()
-                            } label: {
-                                Image(systemName: "ellipsis.circle")
-                                    .font(.title3)
-                                    .foregroundStyle(AppColors.textTertiary(colorScheme))
-                                    .frame(width: 32, height: 32)
+                            } header: {
+                                Label(loc.localized("settings.moveList.customGames"), systemImage: "plus.circle.fill")
+                                    .foregroundStyle(.green)
                             }
-                            .menuIndicator(.hidden)
+                        }
+
+                        Section {
+                            ForEach(filteredEntries, id: \.file) { entry in
+                                Button(action: { onSelectGame(entry.name, false) }) {
+                                    GameRowView(
+                                        name: entry.name,
+                                        subtitle: entry.manufacturer,
+                                        year: entry.year,
+                                        characterCount: 0,
+                                        isCustom: false,
+                                        colorScheme: colorScheme
+                                    )
+                                }
+                                .buttonStyle(.plain)
+                            }
+                        } header: {
+                            Label(loc.localized("settings.moveList.bundledGames"), systemImage: "square.stack.3d.down.forward")
                         }
                     }
-                } header: {
-                    Label(loc.localized("settings.moveList.customGames"), systemImage: "plus.circle.fill")
-                        .foregroundStyle(.green)
-                }
-            }
 
-            Section {
-                ForEach(filteredEntries, id: \.file) { entry in
-                    Button(action: { onSelectGame(entry.name, false) }) {
-                        GameRowView(
-                            name: entry.name,
-                            subtitle: entry.manufacturer,
-                            year: entry.year,
-                            characterCount: 0,
-                            isCustom: false,
-                            colorScheme: colorScheme
-                        )
-                    }
-                    .buttonStyle(.plain)
+                    Spacer(minLength: AppSpacing.xl5)
                 }
-            } header: {
-                Label(loc.localized("settings.moveList.bundledGames"), systemImage: "square.stack.3d.down.forward")
+                .padding(.horizontal, AppSpacing.lg)
+                .padding(.top, AppSpacing.md)
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
+        .scrollContentBackground(.hidden)
+        .background(AppColors.windowBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled))
     }
 
     private var filteredEntries: [FightDataIndexEntry] {
@@ -207,6 +220,40 @@ struct MoveDataGamesView: View {
               let data = entry.gameJSON.data(using: .utf8),
               let game = try? JSONDecoder().decode(FightDataGame.self, from: data) else { return 0 }
         return game.characters.count
+    }
+
+    // MARK: - Card Helper
+
+    @ViewBuilder
+    private func settingsCard<Content: View>(
+        id: String,
+        title: String,
+        icon: String,
+        keywords: String,
+        @ViewBuilder content: () -> Content
+    ) -> some View {
+        VStack(alignment: .leading, spacing: AppSpacing.md) {
+            HStack(spacing: AppSpacing.sm) {
+                Image(systemName: icon)
+                    .font(.body)
+                    .foregroundStyle(AppColors.textTertiary(colorScheme))
+                Text(title)
+                    .font(AppTypography.headingSmall)
+                    .foregroundStyle(AppColors.textPrimary(colorScheme))
+            }
+            content()
+        }
+        .padding(AppSpacing.xl)
+        .background(
+            RoundedRectangle(cornerRadius: AppRadius.xl)
+                .fill(AppColors.cardBackgroundSubtle(colorScheme))
+                .overlay(
+                    RoundedRectangle(cornerRadius: AppRadius.xl)
+                        .stroke(AppColors.cardBorder(colorScheme), lineWidth: 1)
+                )
+        )
+        .cardHoverEffect(colorScheme: colorScheme)
+        .id(id)
     }
 }
 

@@ -1,5 +1,7 @@
 import SwiftUI
 
+// MARK: - Toolbar Settings
+
 struct ToolbarSettingsView: View {
     @Environment(\.colorScheme) private var colorScheme
     @Binding var searchText: String
@@ -34,61 +36,295 @@ struct ToolbarSettingsView: View {
     }
 
     var body: some View {
-        ScrollViewReader { proxy in
-            Form {
-                previewSection
-                behaviorSection
-                groupOrderSection
-                ForEach(preferences.groupOrder) { group in
-                    itemsSection(group)
+        Group {
+            if contentLoaded {
+                ScrollView {
+                    ScrollViewReader { proxy in
+                        VStack(alignment: .leading, spacing: AppSpacing.lg) {
+                            if !isSearching {
+                                statPillsRow
+                            }
+
+                            settingsCard(
+                                id: "section-preview",
+                                title: loc.localized("gameToolbar.preview"),
+                                icon: "eye",
+                                keywords: "toolbar preview layout order"
+                            ) {
+                                previewSectionContent
+                            }
+
+                            settingsCard(
+                                id: "section-behavior",
+                                title: loc.localized("gameToolbar.behavior"),
+                                icon: "slider.horizontal.3",
+                                keywords: "toolbar behavior auto hide delay pin visible keep"
+                            ) {
+                                behaviorSectionContent
+                            }
+
+                            settingsCard(
+                                id: "section-groups",
+                                title: loc.localized("gameToolbar.groups"),
+                                icon: "square.grid.2x2",
+                                keywords: "toolbar groups order reorder layout"
+                            ) {
+                                groupOrderSectionContent
+                            }
+
+                            ForEach(preferences.groupOrder) { group in
+                                settingsCard(
+                                    id: "section-\(group.rawValue)",
+                                    title: loc.localized(group.localizationKey),
+                                    icon: groupIcon(group),
+                                    keywords: itemsSectionKeywords(group)
+                                ) {
+                                    itemsSectionContent(group)
+                                }
+                            }
+
+                            settingsCard(
+                                id: "section-reset",
+                                title: loc.localized("gameToolbar.reset"),
+                                icon: "arrow.counterclockwise",
+                                keywords: "toolbar reset defaults restore"
+                            ) {
+                                resetSectionContent
+                            }
+
+                            if isSearching && !anySectionMatches {
+                                noResultsView
+                            }
+
+                            Spacer(minLength: AppSpacing.xl5)
+                        }
+                        .padding(.horizontal, AppSpacing.lg)
+                        .padding(.top, AppSpacing.md)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .onChange(of: focusedSectionID) { _, newID in
+                            guard let id = newID else { return }
+                            withAnimation { proxy.scrollTo("section-\(id)", anchor: .top) }
+                        }
+                        .onChange(of: scopedSectionID) { _, newScope in
+                            guard let id = newScope else { return }
+                            DispatchQueue.main.async {
+                                withAnimation { proxy.scrollTo("section-\(id)", anchor: .top) }
+                            }
+                        }
+                    }
                 }
-                resetSection
-                noMatchSection
+                .scrollContentBackground(.hidden)
+                .background(AppColors.windowBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled))
+            } else {
+                Color.clear
+                    .frame(maxWidth: .infinity, minHeight: 400)
             }
-            .scrollContentBackground(.hidden)
-            .formStyle(.grouped)
-            .onChange(of: focusedSectionID) { _, newID in
-                guard let id = newID else { return }
-                withAnimation { proxy.scrollTo("section-\(id)", anchor: .top) }
+        }
+        .navigationTitle(loc.localized("settings.gameToolbar"))
+        .onAppear {
+            contentLoaded = true
+        }
+    }
+
+    @State private var contentLoaded = false
+
+    // MARK: - Stat Pills
+
+    private var statPillsRow: some View {
+        HStack(spacing: AppSpacing.md) {
+            SettingsStatPill(item: .init(
+                id: "groups",
+                number: "\(preferences.groupOrder.count)",
+                label: "groups",
+                icon: "square.grid.2x2"
+            ))
+            SettingsStatPill(item: .init(
+                id: "items",
+                number: "\(preferences.groupOrder.flatMap { preferences.items(in: $0) }.count)",
+                label: "items",
+                icon: "slider.horizontal.3"
+            ))
+        }
+        .padding(.bottom, AppSpacing.xs)
+    }
+
+    // MARK: - Card Helper
+
+    @ViewBuilder
+    private func settingsCard<Content: View>(
+        id: String,
+        title: String,
+        icon: String,
+        keywords: String,
+        @ViewBuilder content: () -> Content
+    ) -> some View {
+        if sectionVisible(id) && matchesSearch(keywords) {
+            VStack(alignment: .leading, spacing: AppSpacing.md) {
+                HStack(spacing: AppSpacing.sm) {
+                    Image(systemName: icon)
+                        .font(.body)
+                        .foregroundStyle(AppColors.textTertiary(colorScheme))
+                    Text(title)
+                        .font(AppTypography.headingSmall)
+                        .foregroundStyle(AppColors.textPrimary(colorScheme))
+                }
+                content()
             }
-            .onChange(of: scopedSectionID) { _, newScope in
-                guard let id = newScope else { return }
-                DispatchQueue.main.async {
-                    withAnimation { proxy.scrollTo("section-\(id)", anchor: .top) }
+            .padding(AppSpacing.xl)
+            .background(
+                RoundedRectangle(cornerRadius: AppRadius.xl)
+                    .fill(AppColors.cardBackgroundSubtle(colorScheme))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: AppRadius.xl)
+                            .stroke(AppColors.cardBorder(colorScheme), lineWidth: 1)
+                    )
+            )
+            .cardHoverEffect(colorScheme: colorScheme)
+            .id(id)
+        }
+    }
+
+    // MARK: - Section Content
+
+    private var previewSectionContent: some View {
+        Group {
+            if previewGroups.isEmpty {
+                Text(verbatim: loc.localized("gameToolbar.previewEmpty"))
+                    .font(.caption)
+                    .foregroundColor(AppColors.textSecondary(colorScheme))
+            } else {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    previewToolbar
+                        .fixedSize(horizontal: true, vertical: false)
+                        .frame(maxWidth: .infinity, alignment: .center)
+                        .padding(12)
                 }
             }
         }
     }
+
+    private var behaviorSectionContent: some View {
+        Group {
+            SettingsRow(
+                loc.localized("gameToolbar.pinVisible"),
+                description: loc.localized("gameToolbar.pinVisibleDescription")
+            ) {
+                Toggle("", isOn: Binding(
+                    get: { preferences.pinVisible },
+                    set: { preferences.pinVisible = $0 }
+                ))
+                .labelsHidden()
+                .accessibilityLabel(loc.localized("gameToolbar.pinVisible"))
+            }
+
+            SettingsRow(
+                loc.localized("gameToolbar.autoHideDelay"),
+                description: loc.localized("gameToolbar.autoHideDelayDescription")
+            ) {
+                HStack(spacing: 10) {
+                    Slider(
+                        value: Binding(
+                            get: { preferences.autoHideDelay },
+                            set: { preferences.autoHideDelay = $0 }
+                        ),
+                        in: 1...15,
+                        step: 0.5
+                    )
+                    .frame(width: 160)
+                    .accessibilityLabel(loc.localized("gameToolbar.autoHideDelay"))
+                    Text(verbatim: String(format: "%.1fs", preferences.autoHideDelay))
+                        .font(.system(size: 11, weight: .medium))
+                        .monospacedDigit()
+                        .foregroundColor(AppColors.textSecondary(colorScheme))
+                        .frame(width: 40, alignment: .trailing)
+                }
+            }
+        }
+    }
+
+    private var groupOrderSectionContent: some View {
+        Group {
+            ForEach(preferences.groupOrder) { group in
+                HStack(spacing: 10) {
+                    Image(systemName: "line.3.horizontal")
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundColor(AppColors.textTertiary(colorScheme))
+                        .frame(width: 16, height: 24)
+                        .contentShape(Rectangle())
+                        .draggable(group.rawValue)
+                        .help(loc.localized("gameToolbar.dragToReorder"))
+                    Image(systemName: groupIcon(group))
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundColor(AppColors.brandAccent)
+                        .frame(width: 18)
+                    Text(verbatim: loc.localized(group.localizationKey))
+                        .font(.body)
+                    Spacer()
+                }
+                .padding(.vertical, 4)
+                .contentShape(Rectangle())
+                .dropDestination(for: String.self) { payload, _ in
+                    guard let raw = payload.first,
+                          let dragged = GameToolbarGroup(rawValue: raw) else { return false }
+                    preferences.moveGroup(dragged, to: group)
+                    return true
+                }
+            }
+        }
+    }
+
+    private func itemsSectionContent(_ group: GameToolbarGroup) -> some View {
+        let items = preferences.items(in: group)
+        return Group {
+            ForEach(items) { item in
+                HStack(spacing: 8) {
+                    Image(systemName: "line.3.horizontal")
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundColor(AppColors.textTertiary(colorScheme))
+                        .frame(width: 16, height: 24)
+                        .contentShape(Rectangle())
+                        .draggable(item.id.rawValue)
+                        .help(loc.localized("gameToolbar.dragToReorder"))
+                    SettingsRow(
+                        loc.localized(item.labelKey),
+                        description: item.isRequired ? loc.localized("gameToolbar.requiredDescription") : nil
+                    ) {
+                        Toggle("", isOn: Binding(
+                            get: { preferences.isEnabled(item.id) },
+                            set: { preferences.setEnabled(item.id, $0) }
+                        ))
+                        .labelsHidden()
+                        .disabled(item.isRequired)
+                        .accessibilityLabel(loc.localized(item.labelKey))
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                .contentShape(Rectangle())
+                .dropDestination(for: String.self) { payload, _ in
+                    guard let raw = payload.first,
+                          let dragged = GameToolbarItemID(rawValue: raw),
+                          preferences.items(in: group).contains(where: { $0.id == dragged }) else { return false }
+                    preferences.moveItem(dragged, to: item.id)
+                    return true
+                }
+            }
+        }
+    }
+
+    private var resetSectionContent: some View {
+        Group {
+            Button(loc.localized("gameToolbar.reset")) {
+                preferences.resetToDefaults()
+            }
+        }
+    }
+
+    // MARK: - Preview (moved from Form section)
 
     private var previewGroups: [(group: GameToolbarGroup, items: [GameToolbarItem])] {
         preferences.groupOrder.compactMap { group in
             let items = preferences.items(in: group).filter { preferences.isEnabled($0.id) }
             return items.isEmpty ? nil : (group, items)
-        }
-    }
-
-    @ViewBuilder
-    private var previewSection: some View {
-        if matchesSearch("toolbar preview layout order") && sectionVisible("section-preview") {
-            Section(content: {
-                if previewGroups.isEmpty {
-                    Text(verbatim: loc.localized("gameToolbar.previewEmpty"))
-                        .font(.caption)
-                        .foregroundColor(AppColors.textSecondary(colorScheme))
-                } else {
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        previewToolbar
-                            .fixedSize(horizontal: true, vertical: false)
-                            .frame(maxWidth: .infinity, alignment: .center)
-                            .padding(12)
-                    }
-                }
-            }, header: {
-                Label { Text(verbatim: loc.localized("gameToolbar.preview")) } icon: { Image(systemName: "eye") }
-            }, footer: {
-                Text(verbatim: loc.localized("gameToolbar.previewDescription"))
-            })
-            .id("section-preview")
         }
     }
 
@@ -228,163 +464,14 @@ struct ToolbarSettingsView: View {
             .padding(.horizontal, 1.5)
     }
 
-    @ViewBuilder
-    private var groupOrderSection: some View {
-        if matchesSearch("toolbar groups order reorder layout") && sectionVisible("section-groups") {
-            Section(content: {
-                ForEach(preferences.groupOrder) { group in
-                    HStack(spacing: 10) {
-                        Image(systemName: "line.3.horizontal")
-                            .font(.system(size: 12, weight: .semibold))
-                            .foregroundColor(AppColors.textTertiary(colorScheme))
-                            .frame(width: 16, height: 24)
-                            .contentShape(Rectangle())
-                            .draggable(group.rawValue)
-                            .help(loc.localized("gameToolbar.dragToReorder"))
-                        Image(systemName: groupIcon(group))
-                            .font(.system(size: 13, weight: .semibold))
-                            .foregroundColor(AppColors.brandAccent)
-                            .frame(width: 18)
-                        Text(verbatim: loc.localized(group.localizationKey))
-                            .font(.body)
-                        Spacer()
-                    }
-                    .padding(.vertical, 4)
-                    .contentShape(Rectangle())
-                    .dropDestination(for: String.self) { payload, _ in
-                        guard let raw = payload.first,
-                              let dragged = GameToolbarGroup(rawValue: raw) else { return false }
-                        preferences.moveGroup(dragged, to: group)
-                        return true
-                    }
-                }
-            }, header: {
-                Label { Text(verbatim: loc.localized("gameToolbar.groups")) } icon: { Image(systemName: "square.grid.2x2") }
-            }, footer: {
-                Text(verbatim: loc.localized("gameToolbar.groupsDescription"))
-            })
-            .id("section-groups")
-        }
-    }
+    // MARK: - Helpers
 
-    @ViewBuilder
-    private var behaviorSection: some View {
-        if matchesSearch("toolbar behavior auto hide delay pin visible keep") && sectionVisible("section-behavior") {
-            Section(content: {
-                SettingsRow(
-                    loc.localized("gameToolbar.pinVisible"),
-                    description: loc.localized("gameToolbar.pinVisibleDescription")
-                ) {
-                    Toggle("", isOn: Binding(
-                        get: { preferences.pinVisible },
-                        set: { preferences.pinVisible = $0 }
-                    ))
-                    .labelsHidden()
-                    .accessibilityLabel(loc.localized("gameToolbar.pinVisible"))
-                }
-
-                SettingsRow(
-                    loc.localized("gameToolbar.autoHideDelay"),
-                    description: loc.localized("gameToolbar.autoHideDelayDescription")
-                ) {
-                    HStack(spacing: 10) {
-                        Slider(
-                            value: Binding(
-                                get: { preferences.autoHideDelay },
-                                set: { preferences.autoHideDelay = $0 }
-                            ),
-                            in: 1...15,
-                            step: 0.5
-                        )
-                        .frame(width: 160)
-                        .accessibilityLabel(loc.localized("gameToolbar.autoHideDelay"))
-                        Text(verbatim: String(format: "%.1fs", preferences.autoHideDelay))
-                            .font(.system(size: 11, weight: .medium))
-                            .monospacedDigit()
-                            .foregroundColor(AppColors.textSecondary(colorScheme))
-                            .frame(width: 40, alignment: .trailing)
-                    }
-                }
-            }, header: {
-                Label { Text(verbatim: loc.localized("gameToolbar.behavior")) } icon: { Image(systemName: "slider.horizontal.3") }
-            }, footer: {
-                Text(verbatim: loc.localized("gameToolbar.behaviorDescription"))
-            })
-            .id("section-behavior")
+    private var noResultsView: some View {
+        VStack {
+            Text(verbatim: loc.localized("general.noMatchingSettings") + " \"\(searchText)\"")
+                .foregroundColor(AppColors.textSecondary(colorScheme))
         }
-    }
-
-    @ViewBuilder
-    private func itemsSection(_ group: GameToolbarGroup) -> some View {
-        let items = preferences.items(in: group)
-        let keywords = items.map { loc.localized($0.labelKey) }.joined(separator: " ") + " " + loc.localized(group.localizationKey)
-        if !items.isEmpty && matchesSearch(keywords) && sectionVisible("section-\(group.rawValue)") {
-            Section(content: {
-                ForEach(items) { item in
-                    HStack(spacing: 8) {
-                        Image(systemName: "line.3.horizontal")
-                            .font(.system(size: 12, weight: .semibold))
-                            .foregroundColor(AppColors.textTertiary(colorScheme))
-                            .frame(width: 16, height: 24)
-                            .contentShape(Rectangle())
-                            .draggable(item.id.rawValue)
-                            .help(loc.localized("gameToolbar.dragToReorder"))
-                        SettingsRow(
-                            loc.localized(item.labelKey),
-                            description: item.isRequired ? loc.localized("gameToolbar.requiredDescription") : nil
-                        ) {
-                            Toggle("", isOn: Binding(
-                                get: { preferences.isEnabled(item.id) },
-                                set: { preferences.setEnabled(item.id, $0) }
-                            ))
-                            .labelsHidden()
-                            .disabled(item.isRequired)
-                            .accessibilityLabel(loc.localized(item.labelKey))
-                        }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    }
-                    .contentShape(Rectangle())
-                    .dropDestination(for: String.self) { payload, _ in
-                        guard let raw = payload.first,
-                              let dragged = GameToolbarItemID(rawValue: raw),
-                              preferences.items(in: group).contains(where: { $0.id == dragged }) else { return false }
-                        preferences.moveItem(dragged, to: item.id)
-                        return true
-                    }
-                }
-            }, header: {
-                Label {
-                    Text(verbatim: loc.localized(group.localizationKey))
-                } icon: {
-                    Image(systemName: groupIcon(group))
-                }
-            })
-            .id("section-\(group.rawValue)")
-        }
-    }
-
-    @ViewBuilder
-    private var resetSection: some View {
-        if matchesSearch("toolbar reset defaults restore") && sectionVisible("section-reset") {
-            Section {
-                Button(loc.localized("gameToolbar.reset")) {
-                    preferences.resetToDefaults()
-                }
-            } footer: {
-                Text(verbatim: loc.localized("gameToolbar.resetDescription"))
-            }
-            .id("section-reset")
-        }
-    }
-
-    @ViewBuilder
-    private var noMatchSection: some View {
-        if isSearching && !anySectionMatches {
-            Section {
-                Text(verbatim: loc.localized("general.noMatchingSettings") + " \"\(searchText)\"")
-                    .foregroundColor(AppColors.textSecondary(colorScheme))
-            }
-        }
+        .frame(maxWidth: .infinity)
     }
 
     private var anySectionMatches: Bool {
@@ -398,6 +485,11 @@ struct ToolbarSettingsView: View {
         }
         if matchesSearch("toolbar reset defaults restore") { return true }
         return false
+    }
+
+    private func itemsSectionKeywords(_ group: GameToolbarGroup) -> String {
+        let items = preferences.items(in: group)
+        return items.map { loc.localized($0.labelKey) }.joined(separator: " ") + " " + loc.localized(group.localizationKey)
     }
 
     private func groupIcon(_ group: GameToolbarGroup) -> String {

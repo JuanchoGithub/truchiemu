@@ -86,98 +86,110 @@ struct MoveDataCharactersView: View {
     }
 
     private var contentList: some View {
-        Form {
-            if let game = fightDataGame {
-                let sortedChars = game.characters.sorted(by: { $0.name.localizedStandardCompare($1.name) == .orderedAscending })
-                let commonMoves = game.commonCommands ?? []
+        ScrollView {
+            ScrollViewReader { proxy in
+                VStack(alignment: .leading, spacing: AppSpacing.lg) {
+                    settingsCard(
+                        id: "section-characters",
+                        title: loc.localized("settings.moveList.charactersTitle"),
+                        icon: "person.2.fill",
+                        keywords: "characters moves list add delete hide unhide"
+                    ) {
+                        if let game = fightDataGame {
+                            let sortedChars = game.characters.sorted(by: { $0.name.localizedStandardCompare($1.name) == .orderedAscending })
+                            let commonMoves = game.commonCommands ?? []
 
-                Section {
-                    if !commonMoves.isEmpty {
-                        Button(action: { onSelectCharacter("__common__") }) {
-                            CommonMovesetRowView(
-                                moveCount: commonMoves.count,
-                                entries: storageService.getEntriesForGame(gameName: gameName, characterName: "__common__"),
-                                colorScheme: colorScheme
-                            )
-                        }
-                        .buttonStyle(.plain)
-                    }
-
-                    ForEach(sortedChars) { character in
-                        let charHidden = storageService.isCharacterHidden(gameName: gameName, characterName: character.name)
-                        HStack(spacing: 0) {
-                            Button(action: { onSelectCharacter(character.name) }) {
-                                CharacterRowView(
-                                    name: character.name,
-                                    isHidden: charHidden,
-                                    moveCount: character.moves.count,
-                                    entries: storageService.getEntriesForGame(gameName: gameName, characterName: character.name),
-                                    colorScheme: colorScheme,
-                                    characterColor: characterColor(for: character.name)
-                                )
-                            }
-                            .buttonStyle(.plain)
-
-                            Menu {
-                                Group {
-                                Button {
-                                    onSelectCharacter(character.name)
-                                } label: {
-                                    Label("Edit Moves", systemImage: "square.and.pencil")
-                                }
-                                Button {
-                                    storageService.toggleCharacterHidden(gameName: gameName, characterName: character.name)
-                                } label: {
-                                    Label(
-                                        charHidden ? loc.localized("settings.moveList.unhideCharacter") : loc.localized("settings.moveList.hideCharacter"),
-                                        systemImage: charHidden ? "eye" : "eye.slash"
+                            if !commonMoves.isEmpty {
+                                Button(action: { onSelectCharacter("__common__") }) {
+                                    CommonMovesetRowView(
+                                        moveCount: commonMoves.count,
+                                        entries: storageService.getEntriesForGame(gameName: gameName, characterName: "__common__"),
+                                        colorScheme: colorScheme
                                     )
                                 }
-                                Button(role: .destructive) {
-                                    showDeleteConfirmation = character.name
-                                } label: {
-                                    Label(loc.localized("settings.moveList.deleteCharacter"), systemImage: "trash")
-                                }
-                                }
-                                .menuIconsAlwaysVisible()
-                            } label: {
-                                Image(systemName: "ellipsis.circle")
-                                    .font(.title3)
-                                    .foregroundStyle(AppColors.textTertiary(colorScheme))
-                                    .frame(width: 32, height: 32)
+                                .buttonStyle(.plain)
                             }
-                            .menuIndicator(.hidden)
+
+                            ForEach(sortedChars) { character in
+                                let charHidden = storageService.isCharacterHidden(gameName: gameName, characterName: character.name)
+                                HStack(spacing: 0) {
+                                    Button(action: { onSelectCharacter(character.name) }) {
+                                        CharacterRowView(
+                                            name: character.name,
+                                            isHidden: charHidden,
+                                            moveCount: character.moves.count,
+                                            entries: storageService.getEntriesForGame(gameName: gameName, characterName: character.name),
+                                            colorScheme: colorScheme,
+                                            characterColor: characterColor(for: character.name)
+                                        )
+                                    }
+                                    .buttonStyle(.plain)
+
+                                    Menu {
+                                        Group {
+                                        Button {
+                                            onSelectCharacter(character.name)
+                                        } label: {
+                                            Label("Edit Moves", systemImage: "square.and.pencil")
+                                        }
+                                        Button {
+                                            storageService.toggleCharacterHidden(gameName: gameName, characterName: character.name)
+                                        } label: {
+                                            Label(
+                                                charHidden ? loc.localized("settings.moveList.unhideCharacter") : loc.localized("settings.moveList.hideCharacter"),
+                                                systemImage: charHidden ? "eye" : "eye.slash"
+                                            )
+                                        }
+                                        Button(role: .destructive) {
+                                            showDeleteConfirmation = character.name
+                                        } label: {
+                                            Label(loc.localized("settings.moveList.deleteCharacter"), systemImage: "trash")
+                                        }
+                                        }
+                                        .menuIconsAlwaysVisible()
+                                    } label: {
+                                        Image(systemName: "ellipsis.circle")
+                                            .font(.title3)
+                                            .foregroundStyle(AppColors.textTertiary(colorScheme))
+                                            .frame(width: 32, height: 32)
+                                    }
+                                    .menuIndicator(.hidden)
+                                }
+                            }
+
+                            Button(action: { showAddCharacterSheet = true }) {
+                                Label(loc.localized("settings.moveList.addCharacter"), systemImage: "person.badge.plus")
+                                    .font(.system(size: 12))
+                            }
+                            .buttonStyle(.borderedProminent)
+                            .controlSize(.small)
+                            .tint(.green)
+                            .frame(maxWidth: .infinity, alignment: .center)
+                        } else {
+                            ContentUnavailableView(
+                                label: { Label(loc.localized("settings.moveList.noCharacters"), systemImage: "person.2.slash") },
+                                description: { Text(loc.localized("settings.moveList.addCharacterPrompt")) }
+                            )
+                            Button(action: { showAddCharacterSheet = true }) {
+                                Label(loc.localized("settings.moveList.addCharacter"), systemImage: "person.badge.plus")
+                                    .font(.system(size: 12))
+                            }
+                            .buttonStyle(.borderedProminent)
+                            .controlSize(.small)
+                            .tint(.green)
+                            .frame(maxWidth: .infinity, alignment: .center)
                         }
                     }
-                }
 
-                Button(action: { showAddCharacterSheet = true }) {
-                    Label(loc.localized("settings.moveList.addCharacter"), systemImage: "person.badge.plus")
-                        .font(.system(size: 12))
+                    Spacer(minLength: AppSpacing.xl5)
                 }
-                .buttonStyle(.borderedProminent)
-                .controlSize(.small)
-                .tint(.green)
-                .listRowBackground(Color.clear)
-                .frame(maxWidth: .infinity, alignment: .center)
-            } else {
-                ContentUnavailableView(
-                    label: { Label(loc.localized("settings.moveList.noCharacters"), systemImage: "person.2.slash") },
-                    description: { Text(loc.localized("settings.moveList.addCharacterPrompt")) }
-                )
-                Button(action: { showAddCharacterSheet = true }) {
-                    Label(loc.localized("settings.moveList.addCharacter"), systemImage: "person.badge.plus")
-                        .font(.system(size: 12))
-                }
-                .buttonStyle(.borderedProminent)
-                .controlSize(.small)
-                .tint(.green)
-                .listRowBackground(Color.clear)
-                .frame(maxWidth: .infinity, alignment: .center)
+                .padding(.horizontal, AppSpacing.lg)
+                .padding(.top, AppSpacing.md)
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
         .scrollContentBackground(.hidden)
-        .formStyle(.grouped)
+        .background(AppColors.windowBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled))
     }
 
     private func characterColor(for name: String) -> Color {
@@ -292,6 +304,40 @@ struct MoveDataCharactersView: View {
                 fightDataGame = try? JSONDecoder().decode(FightDataGame.self, from: updatedData)
             }
         }
+    }
+
+    // MARK: - Card Helper
+
+    @ViewBuilder
+    private func settingsCard<Content: View>(
+        id: String,
+        title: String,
+        icon: String,
+        keywords: String,
+        @ViewBuilder content: () -> Content
+    ) -> some View {
+        VStack(alignment: .leading, spacing: AppSpacing.md) {
+            HStack(spacing: AppSpacing.sm) {
+                Image(systemName: icon)
+                    .font(.body)
+                    .foregroundStyle(AppColors.textTertiary(colorScheme))
+                Text(title)
+                    .font(AppTypography.headingSmall)
+                    .foregroundStyle(AppColors.textPrimary(colorScheme))
+            }
+            content()
+        }
+        .padding(AppSpacing.xl)
+        .background(
+            RoundedRectangle(cornerRadius: AppRadius.xl)
+                .fill(AppColors.cardBackgroundSubtle(colorScheme))
+                .overlay(
+                    RoundedRectangle(cornerRadius: AppRadius.xl)
+                        .stroke(AppColors.cardBorder(colorScheme), lineWidth: 1)
+                )
+        )
+        .cardHoverEffect(colorScheme: colorScheme)
+        .id(id)
     }
 }
 

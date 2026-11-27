@@ -35,6 +35,8 @@ struct WhatsNewView: View {
                     MarkdownBodyView(markdown: body)
                         .padding(AppSpacing.md)
                 }
+                .background(AppColors.cardBackgroundSubtle(colorScheme))
+                .clipShape(RoundedRectangle(cornerRadius: AppRadius.lg))
             } else if isLoading {
                 ProgressView()
                     .frame(maxWidth: .infinity, maxHeight: .infinity)

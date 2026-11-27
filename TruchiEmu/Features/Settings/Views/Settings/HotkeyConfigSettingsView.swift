@@ -1,6 +1,47 @@
 import SwiftUI
 import AppKit
 
+// MARK: - Standalone Card Helper
+
+@ViewBuilder
+func settingsCard<Content: View>(
+    id: String,
+    title: String,
+    icon: String,
+    keywords: String,
+    sectionVisible: @escaping (String) -> Bool,
+    matchesSearch: @escaping (String) -> Bool,
+    colorScheme: ColorScheme,
+    @ViewBuilder content: () -> Content
+) -> some View {
+    if sectionVisible(id) && matchesSearch(keywords) {
+        VStack(alignment: .leading, spacing: AppSpacing.md) {
+            HStack(spacing: AppSpacing.sm) {
+                Image(systemName: icon)
+                    .font(.body)
+                    .foregroundStyle(AppColors.textTertiary(colorScheme))
+                Text(title)
+                    .font(AppTypography.headingSmall)
+                    .foregroundStyle(AppColors.textPrimary(colorScheme))
+            }
+            content()
+        }
+        .padding(AppSpacing.xl)
+        .background(
+            RoundedRectangle(cornerRadius: AppRadius.xl)
+                .fill(AppColors.cardBackgroundSubtle(colorScheme))
+                .overlay(
+                    RoundedRectangle(cornerRadius: AppRadius.xl)
+                        .stroke(AppColors.cardBorder(colorScheme), lineWidth: 1)
+                )
+        )
+        .cardHoverEffect(colorScheme: colorScheme)
+        .id(id)
+    }
+}
+
+// MARK: - Hotkey Config Settings View
+
 struct HotkeyConfigSettingsView: View {
     @Environment(\.colorScheme) private var colorScheme
     @ObservedObject private var loc = LocalizationManager.shared
@@ -11,6 +52,7 @@ struct HotkeyConfigSettingsView: View {
     @Binding var scopedSectionID: String?
 
     @State private var tab: HotkeyTab = HotkeyTab.load()
+    @State private var contentLoaded = false
 
     init(searchText: Binding<String> = .constant(""), focusedSectionID: Binding<String?> = .constant(nil),
          scopedSectionID: Binding<String?> = .constant(nil)) {
@@ -39,20 +81,17 @@ struct HotkeyConfigSettingsView: View {
         return scope == id || scope == id.replacingOccurrences(of: "section-", with: "")
     }
 
-    private func applyTarget(_ id: String, proxy: ScrollViewProxy) {
+    private func applyTarget(_ id: String) {
         switch id {
-        // App tab = Gamepad Navigation bindings.
         case "tabApp", "enable", "navigation", "zones", "scrolling", "actions",
              "library", "gameWindow", "tvMode", "reset":
             tab = .app
-        // In-Game tab = General + Slots shortcuts (used during gameplay).
         case "tabInGame", "general", "slots", "inGame-reset",
              "saveState", "loadState", "undoLoadState", "slotNext", "slotPrev",
              "toggleInputCapture", "toggleGuideSidebar",
              "slot0", "slot1", "slot2", "slot3", "slot4",
              "slot5", "slot6", "slot7", "slot8", "slot9":
             tab = .inGame
-        // Special tab = Training, Speed/Rewind, Capture, system-specific (Wii).
         case "tabSpecial", "training", "speedRewind", "capture", "wii", "special-reset",
              "toggleTrainingMode", "trainingReset", "trainingToggleRecording", "trainingStartPlayback",
              "rewind", "slowMotion", "fastForward", "pause",
@@ -61,97 +100,105 @@ struct HotkeyConfigSettingsView: View {
         default:
             break
         }
-        DispatchQueue.main.async {
-            withAnimation { proxy.scrollTo("section-\(id)", anchor: .top) }
-        }
     }
 
     var body: some View {
-        VStack(spacing: 0) {
-            if !isSearching {
-                Picker("", selection: Binding(
-                    get: { tab },
-                    set: { newTab in
-                        tab = newTab
-                        newTab.save()
-                    }
-                )) {
-                    ForEach(HotkeyTab.allCases) { t in
-                        Text(loc.localized(t.localizationKey)).tag(t)
-                    }
-                }
-                .pickerStyle(.segmented)
-                .labelsHidden()
-                .padding(.horizontal)
-                .padding(.top, AppSpacing.md)
-                .padding(.bottom, AppSpacing.sm)
-            }
+        Group {
+            if contentLoaded {
+                ScrollView {
+                    ScrollViewReader { proxy in
+                        VStack(alignment: .leading, spacing: AppSpacing.lg) {
+                            if !isSearching {
+                                Picker("", selection: Binding(
+                                    get: { tab },
+                                    set: { newTab in
+                                        tab = newTab
+                                        newTab.save()
+                                    }
+                                )) {
+                                    ForEach(HotkeyTab.allCases) { t in
+                                        Text(loc.localized(t.localizationKey)).tag(t)
+                                    }
+                                }
+                                .pickerStyle(.segmented)
+                                .labelsHidden()
+                                .padding(.horizontal, AppSpacing.lg)
+                                .padding(.top, AppSpacing.md)
+                                .padding(.bottom, AppSpacing.sm)
+                            }
 
-            ScrollViewReader { proxy in
-                Group {
-                    switch tab {
-                    case .app:
-                        // App tab hosts the Gamepad Navigation bindings. The
-                        // content is a sequence of `Section` views, so it is
-                        // wrapped in its own `Form` here (the other tabs use
-                        // `HotkeyTabContent` which produces their own `Form`).
-                        Form {
-                            GamepadNavContent(
-                                searchText: $searchText,
-                                scopedSectionID: scopedSectionID
-                            )
+                            Group {
+                                switch tab {
+                                case .app:
+                                    GamepadNavCardContent(
+                                        searchText: $searchText,
+                                        scopedSectionID: scopedSectionID
+                                    )
+                                case .inGame:
+                                    HotkeyTabCardContent(
+                                        tab: .inGame,
+                                        sections: inGameSections,
+                                        explainer: true,
+                                        resetActionKey: "hotkeys.resetToDefaults",
+                                        resetDescriptionKey: "hotkeys.resetDescription",
+                                        searchText: searchText,
+                                        scopedSectionID: scopedSectionID,
+                                        matchesSearch: matchesSearch,
+                                        matchesAnyLabel: matchesAnyLabel,
+                                        sectionVisible: sectionVisible
+                                    )
+                                case .special:
+                                    HotkeyTabCardContent(
+                                        tab: .special,
+                                        sections: specialSections,
+                                        explainer: false,
+                                        resetActionKey: "hotkeys.resetToDefaults",
+                                        resetDescriptionKey: "hotkeys.resetDescription",
+                                        searchText: searchText,
+                                        scopedSectionID: scopedSectionID,
+                                        matchesSearch: matchesSearch,
+                                        matchesAnyLabel: matchesAnyLabel,
+                                        sectionVisible: sectionVisible
+                                    )
+                                }
+                            }
+                            .onChange(of: focusedSectionID) { _, newID in
+                                guard let id = newID else { return }
+                                applyTarget(id)
+                                DispatchQueue.main.async {
+                                    withAnimation { proxy.scrollTo("section-\(id)", anchor: .top) }
+                                }
+                            }
+                            .onChange(of: scopedSectionID) { _, newScope in
+                                guard let id = newScope else { return }
+                                applyTarget(id)
+                                DispatchQueue.main.async {
+                                    withAnimation { proxy.scrollTo("section-\(id)", anchor: .top) }
+                                }
+                            }
+
+                            Spacer(minLength: AppSpacing.xl5)
                         }
-                        .scrollContentBackground(.hidden)
-                        .formStyle(.grouped)
-                        .id("section-tabApp")
-                    case .inGame:
-                        HotkeyTabContent(
-                            tab: .inGame,
-                            sections: inGameSections,
-                            explainer: true,
-                            resetActionKey: "hotkeys.resetToDefaults",
-                            resetDescriptionKey: "hotkeys.resetDescription",
-                            searchText: searchText,
-                            scopedSectionID: scopedSectionID,
-                            matchesSearch: matchesSearch,
-                            matchesAnyLabel: matchesAnyLabel,
-                            sectionVisible: sectionVisible
-                        )
-                        .id("section-tabInGame")
-                    case .special:
-                        HotkeyTabContent(
-                            tab: .special,
-                            sections: specialSections,
-                            explainer: false,
-                            resetActionKey: "hotkeys.resetToDefaults",
-                            resetDescriptionKey: "hotkeys.resetDescription",
-                            searchText: searchText,
-                            scopedSectionID: scopedSectionID,
-                            matchesSearch: matchesSearch,
-                            matchesAnyLabel: matchesAnyLabel,
-                            sectionVisible: sectionVisible
-                        )
-                        .id("section-tabSpecial")
+                        .padding(.horizontal, AppSpacing.lg)
+                        .padding(.top, AppSpacing.md)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                     }
                 }
-                .onChange(of: focusedSectionID) { _, newID in
-                    guard let id = newID else { return }
-                    applyTarget(id, proxy: proxy)
-                }
-                .onChange(of: scopedSectionID) { _, newScope in
-                    guard let id = newScope else { return }
-                    applyTarget(id, proxy: proxy)
-                }
+                .scrollContentBackground(.hidden)
+                .background(AppColors.windowBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled))
+            } else {
+                Color.clear
+                    .frame(maxWidth: .infinity, minHeight: 400)
             }
         }
-        .background(AppColors.windowBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled))
         .navigationTitle(loc.localized("settings.hotkeys"))
         .onAppear {
             tab = HotkeyTab.load()
+            contentLoaded = true
         }
     }
 
-    fileprivate struct SectionDescriptor {
+    struct SectionDescriptor {
         let id: String
         let titleKey: String
         let icon: String
@@ -212,7 +259,321 @@ struct HotkeyConfigSettingsView: View {
     }
 }
 
-private struct HotkeyTabContent: View {
+// MARK: - Gamepad Nav Card Content
+
+struct GamepadNavCardContent: View {
+    @Environment(\.colorScheme) private var colorScheme
+    @ObservedObject private var loc = LocalizationManager.shared
+    @ObservedObject private var configManager = GamepadNavConfigManager.shared
+
+    @Binding var searchText: String
+    let scopedSectionID: String?
+
+    @State private var settingsGamepadContext: GamepadNavContext?
+    @State private var contentLoaded = false
+
+    private var isSearching: Bool { !searchText.isEmpty }
+
+    private func matchesPage() -> Bool {
+        SettingsSearchRuntime.pageMatches(.hotkeys, query: searchText)
+    }
+
+    private func matchesAnyLabel(_ actions: [GamepadNavAction]) -> Bool {
+        actions.contains { SettingsIndex.matches(haystack: loc.localized($0.localizationKey), query: searchText) }
+    }
+
+    private func sectionVisible(_ id: String) -> Bool {
+        guard let scope = scopedSectionID else { return true }
+        return scope == id || scope == id.replacingOccurrences(of: "section-", with: "")
+    }
+
+    var body: some View {
+        Group {
+            if contentLoaded {
+                ScrollView {
+                    ScrollViewReader { proxy in
+                        VStack(alignment: .leading, spacing: AppSpacing.lg) {
+                            if !isSearching {
+                                statPillsRow
+                            }
+
+                            settingsCard(
+                                id: "section-enable",
+                                title: loc.localized("gamepadNav.section"),
+                                icon: "dpad.up.filled",
+                                keywords: "gamepad nav enable joystick navigation",
+                                sectionVisible: sectionVisible,
+                                matchesSearch: { _ in true },
+                                colorScheme: colorScheme
+                            ) {
+                                VStack(alignment: .leading, spacing: AppSpacing.xs) {
+                                    Text(loc.localized("gamepadNav.section"))
+                                        .font(.caption.weight(.semibold))
+                                        .foregroundStyle(AppColors.textPrimary(colorScheme))
+                                    Toggle(loc.localized("gamepadNav.enableJoystickNavigation"), isOn: $configManager.isEnabled)
+                                        .font(.caption)
+                                }
+                            }
+
+                            settingsCard(
+                                id: "section-navigation",
+                                title: loc.localized("gamepadNav.section.navigation"),
+                                icon: "dpad.up.filled",
+                                keywords: "gamepad nav navigation",
+                                sectionVisible: sectionVisible,
+                                matchesSearch: { _ in true },
+                                colorScheme: colorScheme
+                            ) {
+                                actionGrid(navigationActions)
+                            }
+
+                            settingsCard(
+                                id: "section-zones",
+                                title: loc.localized("gamepadNav.section.zones"),
+                                icon: "square.stack.3d.up",
+                                keywords: "gamepad nav zones",
+                                sectionVisible: sectionVisible,
+                                matchesSearch: { _ in true },
+                                colorScheme: colorScheme
+                            ) {
+                                actionGrid(zoneActions)
+                            }
+
+                            settingsCard(
+                                id: "section-scrolling",
+                                title: loc.localized("gamepadNav.section.scrolling"),
+                                icon: "arrow.up.arrow.down",
+                                keywords: "gamepad nav scrolling",
+                                sectionVisible: sectionVisible,
+                                matchesSearch: { _ in true },
+                                colorScheme: colorScheme
+                            ) {
+                                actionGrid(scrollActions)
+                            }
+
+                            settingsCard(
+                                id: "section-actions",
+                                title: loc.localized("gamepadNav.section.actions"),
+                                icon: "hand.tap",
+                                keywords: "gamepad nav actions",
+                                sectionVisible: sectionVisible,
+                                matchesSearch: { _ in true },
+                                colorScheme: colorScheme
+                            ) {
+                                actionGrid(coreActions)
+                            }
+
+                            settingsCard(
+                                id: "section-library",
+                                title: loc.localized("gamepadNav.section.library"),
+                                icon: "book",
+                                keywords: "gamepad nav library",
+                                sectionVisible: sectionVisible,
+                                matchesSearch: { _ in true },
+                                colorScheme: colorScheme
+                            ) {
+                                actionGrid(libraryActions)
+                            }
+
+                            settingsCard(
+                                id: "section-gameWindow",
+                                title: loc.localized("gamepadNav.section.gameWindow"),
+                                icon: "gamecontroller",
+                                keywords: "gamepad nav game window",
+                                sectionVisible: sectionVisible,
+                                matchesSearch: { _ in true },
+                                colorScheme: colorScheme
+                            ) {
+                                actionGrid(gameWindowActions)
+                            }
+
+                            settingsCard(
+                                id: "section-tvMode",
+                                title: loc.localized("gamepadNav.section.tvMode"),
+                                icon: "tv",
+                                keywords: "gamepad nav tv mode",
+                                sectionVisible: sectionVisible,
+                                matchesSearch: { _ in true },
+                                colorScheme: colorScheme
+                            ) {
+                                VStack(alignment: .leading, spacing: AppSpacing.md) {
+                                    actionGrid(tvModeActions)
+                                    Text(loc.localized("gamepadNav.section.tvModeDescription"))
+                                        .font(.caption)
+                                        .foregroundStyle(AppColors.textSecondary(colorScheme))
+                                        .fixedSize(horizontal: false, vertical: true)
+                                }
+                            }
+
+                            settingsCard(
+                                id: "section-reset",
+                                title: loc.localized("gamepadNav.section.reset"),
+                                icon: "arrow.uturn.backward",
+                                keywords: "gamepad nav reset",
+                                sectionVisible: sectionVisible,
+                                matchesSearch: { _ in true },
+                                colorScheme: colorScheme
+                            ) {
+                                VStack(alignment: .leading, spacing: AppSpacing.xs) {
+                                    Text(loc.localized("gamepadNav.resetDescription"))
+                                        .font(.caption)
+                                        .foregroundStyle(AppColors.textSecondary(colorScheme))
+                                        .fixedSize(horizontal: false, vertical: true)
+                                    SettingsActionButton(loc.localized("gamepadNav.resetToDefaults")) {
+                                        configManager.resetToDefaults()
+                                    }
+                                }
+                            }
+
+                            if isSearching && !anySectionMatches {
+                                noResultsView
+                            }
+
+                            Spacer(minLength: AppSpacing.xl5)
+                        }
+                        .padding(.horizontal, AppSpacing.lg)
+                        .padding(.top, AppSpacing.md)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .onChange(of: scopedSectionID) { _, newScope in
+                            guard let id = newScope else { return }
+                            DispatchQueue.main.async {
+                                withAnimation { proxy.scrollTo("section-\(id)", anchor: .top) }
+                            }
+                        }
+                    }
+                }
+                .scrollContentBackground(.hidden)
+                .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+            } else {
+                Color.clear
+                    .frame(maxWidth: .infinity, minHeight: 400)
+            }
+        }
+        .onAppear {
+            contentLoaded = true
+        }
+    }
+
+    // MARK: - Stat Pills
+
+    private var statPillsRow: some View {
+        HStack(spacing: AppSpacing.md) {
+            SettingsStatPill(item: .init(
+                id: "actions",
+                number: "\(navigationActions.count + zoneActions.count + scrollActions.count + coreActions.count + libraryActions.count + gameWindowActions.count + tvModeActions.count)",
+                label: "bindings",
+                icon: "gamecontroller"
+            ))
+        }
+        .padding(.bottom, AppSpacing.xs)
+    }
+
+    // MARK: - Action groupings
+
+    private var navigationActions: [GamepadNavAction] {
+        [.navigateUp, .navigateDown, .navigateLeft, .navigateRight]
+    }
+
+    private var zoneActions: [GamepadNavAction] {
+        [.focusPrevZone, .focusNextZone, .focusSidebarZone, .focusContentZone, .focusToolbarZone]
+    }
+
+    private var scrollActions: [GamepadNavAction] {
+        [.scrollUp, .scrollDown, .pageUp, .pageDown]
+    }
+
+    private var coreActions: [GamepadNavAction] {
+        [.select, .cancel, .contextMenu, .toggleViewMode, .focusSearch, .cycleSortOrder]
+    }
+
+    private var libraryActions: [GamepadNavAction] {
+        [.openSettings, .launchGame]
+    }
+
+    private var gameWindowActions: [GamepadNavAction] {
+        [.showGameToolbar, .closeWindow]
+    }
+
+    private var tvModeActions: [GamepadNavAction] {
+        [.enterTVMode]
+    }
+
+    // MARK: Grid rows
+
+    @ViewBuilder
+    private func actionGrid(_ actions: [GamepadNavAction]) -> some View {
+        Grid(alignment: .leading, horizontalSpacing: 16, verticalSpacing: 0) {
+            ForEach(Array(actions.enumerated()), id: \.offset) { index, action in
+                actionRow(action: action, isLast: index == actions.count - 1)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func actionRow(action: GamepadNavAction, isLast: Bool) -> some View {
+        GridRow {
+            Text(loc.localized(action.localizationKey))
+                .lineLimit(1)
+                .truncationMode(.tail)
+                .frame(width: 220, alignment: .leading)
+                .gridColumnAlignment(.leading)
+            Picker(loc.localized("gamepadNav.bindButton"), selection: pickerSelection(for: action)) {
+                Text(loc.localized("gamepadNav.unbound")).tag(GamepadNavButton?.none)
+                ForEach(GamepadNavButton.availableForMapping, id: \.self) { button in
+                    Text(button.displayName).tag(GamepadNavButton?.some(button))
+                }
+            }
+            .pickerStyle(.menu)
+            .labelsHidden()
+            .gridColumnAlignment(.trailing)
+            .frame(maxWidth: 200)
+        }
+        .padding(.vertical, AppSpacing.xxs)
+        .overlay(alignment: .bottom) {
+            if !isLast {
+                Divider()
+                    .overlay(AppColors.divider(colorScheme))
+            }
+        }
+    }
+
+    private func pickerSelection(for action: GamepadNavAction) -> Binding<GamepadNavButton?> {
+        Binding(
+            get: { GamepadNavConfigManager.shared.button(for: action) },
+            set: { newValue in
+                GamepadNavConfigManager.shared.update(action, binding: GamepadNavBinding(button: newValue))
+            }
+        )
+    }
+
+    // MARK: - Helpers
+
+    private var noResultsView: some View {
+        VStack {
+            Text("\(loc.localized("general.noMatchingSettings")) \"\(searchText)\"")
+                .font(.caption)
+                .foregroundStyle(AppColors.textSecondary(colorScheme))
+                .frame(maxWidth: .infinity, alignment: .center)
+                .padding(.vertical, AppSpacing.xl2)
+        }
+        .frame(maxWidth: .infinity)
+    }
+
+    private var anySectionMatches: Bool {
+        matchesPage()
+        || matchesAnyLabel(navigationActions)
+        || matchesAnyLabel(zoneActions)
+        || matchesAnyLabel(scrollActions)
+        || matchesAnyLabel(coreActions)
+        || matchesAnyLabel(libraryActions)
+        || matchesAnyLabel(gameWindowActions)
+        || matchesAnyLabel(tvModeActions)
+    }
+}
+
+// MARK: - Hotkey Tab Card Content
+
+struct HotkeyTabCardContent: View {
     @Environment(\.colorScheme) private var colorScheme
     @ObservedObject private var loc = LocalizationManager.shared
     @ObservedObject private var hotkeyManager = HotkeyConfigManager.shared
@@ -229,54 +590,81 @@ private struct HotkeyTabContent: View {
     let sectionVisible: (String) -> Bool
 
     private var isSearching: Bool { !searchText.isEmpty }
-
-    private var allTabActions: [HotkeyAction] {
-        sections.flatMap(\.actions)
-    }
+    @State private var contentLoaded = false
 
     var body: some View {
-        Form {
-            if explainer {
-                Section {
-                    VStack(alignment: .leading, spacing: AppSpacing.xs) {
-                        Text(loc.localized("hotkeys.explainerTitle"))
-                            .font(.caption.weight(.semibold))
-                            .foregroundStyle(AppColors.textPrimary(colorScheme))
-                        Text(loc.localized("hotkeys.explainerBody"))
-                            .font(.caption)
-                            .foregroundStyle(AppColors.textSecondary(colorScheme))
-                            .fixedSize(horizontal: false, vertical: true)
+        Group {
+            if contentLoaded {
+                ScrollView {
+                    ScrollViewReader { proxy in
+                        VStack(alignment: .leading, spacing: AppSpacing.lg) {
+                            if explainer && !isSearching {
+                                settingsCard(
+                                    id: "section-explainer",
+                                    title: loc.localized("hotkeys.explainerTitle"),
+                                    icon: "keyboard",
+                                    keywords: "hotkeys explainer",
+                                    sectionVisible: sectionVisible,
+                                    matchesSearch: { _ in true },
+                                    colorScheme: colorScheme
+                                ) {
+                                    VStack(alignment: .leading, spacing: AppSpacing.xs) {
+                                        Text(loc.localized("hotkeys.explainerBody"))
+                                            .font(.caption)
+                                            .foregroundStyle(AppColors.textSecondary(colorScheme))
+                                            .fixedSize(horizontal: false, vertical: true)
+                                    }
+                                    .padding(.vertical, AppSpacing.xxs)
+                                }
+                            }
+
+                            ForEach(sections, id: \.id) { section in
+                                if sectionVisible(section.id) && (!isSearching
+                                    || matchesSearch(section.searchKeywords)
+                                    || matchesAnyLabel(section.actions)) {
+                                    settingsCard(
+                                        id: "section-\(section.id)",
+                                        title: loc.localized(section.titleKey),
+                                        icon: section.icon,
+                                        keywords: section.searchKeywords,
+                                        sectionVisible: sectionVisible,
+                                        matchesSearch: matchesSearch,
+                                        colorScheme: colorScheme
+                                    ) {
+                                        hotkeyActionGrid(section.actions)
+                                    }
+                                }
+                            }
+
+                            resetCardContent
+
+                            if isSearching && !anySectionMatches {
+                                noResultsView
+                            }
+
+                            Spacer(minLength: AppSpacing.xl5)
+                        }
+                        .padding(.horizontal, AppSpacing.lg)
+                        .padding(.top, AppSpacing.md)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .onChange(of: scopedSectionID) { _, newScope in
+                            guard let id = newScope else { return }
+                            DispatchQueue.main.async {
+                                withAnimation { proxy.scrollTo("section-\(id)", anchor: .top) }
+                            }
+                        }
                     }
-                    .padding(.vertical, AppSpacing.xxs)
                 }
-                .id("section-explainer")
-            }
-
-            ForEach(sections, id: \.id) { section in
-                if sectionVisible(section.id) && (!isSearching
-                    || matchesSearch(section.searchKeywords)
-                    || matchesAnyLabel(section.actions)) {
-                    Section(header: Label(loc.localized(section.titleKey), systemImage: section.icon)) {
-                        hotkeyActionGrid(section.actions)
-                    }
-                    .id("section-\(section.id)")
-                }
-            }
-
-            resetSection
-
-            if isSearching && !anySectionMatches {
-                Section {
-                    Text("\(loc.localized("general.noMatchingSettings")) \"\(searchText)\"")
-                        .font(.caption)
-                        .foregroundStyle(AppColors.textSecondary(colorScheme))
-                        .frame(maxWidth: .infinity, alignment: .center)
-                        .padding(.vertical, AppSpacing.xl2)
-                }
+                .scrollContentBackground(.hidden)
+                .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+            } else {
+                Color.clear
+                    .frame(maxWidth: .infinity, minHeight: 400)
             }
         }
-        .scrollContentBackground(.hidden)
-        .formStyle(.grouped)
+        .onAppear {
+            contentLoaded = true
+        }
     }
 
     private var anySectionMatches: Bool {
@@ -286,22 +674,35 @@ private struct HotkeyTabContent: View {
     }
 
     @ViewBuilder
-    private var resetSection: some View {
+    private var resetCardContent: some View {
         let resetID = "\(tab.rawValue)-reset"
         if sectionVisible(resetID) && (!isSearching || matchesSearch("reset defaults restore")) {
-            Section(header: Label(loc.localized("hotkeys.reset"), systemImage: "arrow.counterclockwise")) {
-                Text(loc.localized(resetDescriptionKey))
-                    .font(.caption)
-                    .foregroundStyle(AppColors.textSecondary(colorScheme))
+            settingsCard(
+                id: "section-\(resetID)",
+                title: loc.localized("hotkeys.reset"),
+                icon: "arrow.counterclockwise",
+                keywords: "reset defaults restore",
+                sectionVisible: sectionVisible,
+                matchesSearch: { _ in true },
+                colorScheme: colorScheme
+            ) {
+                VStack(alignment: .leading, spacing: AppSpacing.xs) {
+                    Text(loc.localized(resetDescriptionKey))
+                        .font(.caption)
+                        .foregroundStyle(AppColors.textSecondary(colorScheme))
 
-                SettingsActionButton(loc.localized(resetActionKey)) {
-                    hotkeyManager.resetActionsToDefaults(allTabActions)
+                    SettingsActionButton(loc.localized(resetActionKey)) {
+                        hotkeyManager.resetActionsToDefaults(allTabActions)
+                    }
+                    .controlSize(.small)
+                    .disabled(allTabActions.allSatisfy { hotkeyManager.isAtDefault($0) })
                 }
-                .controlSize(.small)
-                .disabled(allTabActions.allSatisfy { hotkeyManager.isAtDefault($0) })
             }
-            .id("section-\(resetID)")
         }
+    }
+
+    private var allTabActions: [HotkeyAction] {
+        sections.flatMap(\.actions)
     }
 
     @ViewBuilder
@@ -330,7 +731,20 @@ private struct HotkeyTabContent: View {
             }
         }
     }
+
+    private var noResultsView: some View {
+        VStack {
+            Text("\(loc.localized("general.noMatchingSettings")) \"\(searchText)\"")
+                .font(.caption)
+                .foregroundStyle(AppColors.textSecondary(colorScheme))
+                .frame(maxWidth: .infinity, alignment: .center)
+                .padding(.vertical, AppSpacing.xl2)
+        }
+        .frame(maxWidth: .infinity)
+    }
 }
+
+// MARK: - Hotkey Capture Button (unchanged)
 
 struct HotkeyCaptureButton: NSViewRepresentable {
     var binding: HotkeyBinding

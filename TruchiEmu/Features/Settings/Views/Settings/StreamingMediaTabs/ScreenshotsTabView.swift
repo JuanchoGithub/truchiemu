@@ -10,82 +10,201 @@ struct ScreenshotsTabView: View {
     @State private var showFolderPicker = false
 
     var body: some View {
-        Form {
-            Section {
-                MediaHotkeyBindingRow(action: .screenshot, sectionKey: "settings.media.hotkey.screenshotSection")
-                Text(loc.localized("settings.media.hotkey.editInHotkeys"))
-                    .font(.caption2)
-                    .foregroundStyle(AppColors.textSecondary(colorScheme))
-            } header: {
-                Label(loc.localized("settings.media.hotkey.screenshotSection"), systemImage: "keyboard")
-            }
-
-            Section {
-                HStack {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("screenshot.includeNative")
-                            .lineLimit(1)
-                        Text("screenshot.includeNativeHelp")
-                            .font(.caption2)
-                            .foregroundStyle(AppColors.textSecondary(colorScheme))
-                    }
-                    Spacer(minLength: 0)
-                    Toggle("", isOn: Binding(
-                        get: { config.screenshot.includeNative },
-                        set: { config.screenshot.includeNative = $0; config.screenshot.save() }
-                    ))
-                    .toggleStyle(.switch)
-                    .labelsHidden()
-                }
-                .padding(.vertical, AppSpacing.xxs)
-            } header: {
-                Label(loc.localized("screenshot.section"), systemImage: "camera")
-            }
-
-            Section {
-                HStack(spacing: 8) {
-                    Text(verbatim: displayPath)
-                        .font(.system(size: 12))
-                        .foregroundStyle(AppColors.textSecondary(colorScheme))
-                        .lineLimit(1)
-                        .truncationMode(.middle)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    SettingsActionButton(loc.localized("settings.streaming.browse")) {
-                        showFolderPicker = true
-                    }
-                    if config.screenshot.hasCustomPath {
-                        SettingsActionButton(loc.localized("settings.media.reset")) {
-                            config.screenshot.outputPath = ""
-                            config.screenshot.save()
-                            customPath = ""
+        Group {
+            ScrollView {
+                ScrollViewReader { proxy in
+                    VStack(alignment: .leading, spacing: AppSpacing.lg) {
+                        if !isSearching {
+                            statPillsRow
                         }
+
+                        settingsCard(
+                            id: "section-screenshotHotkey",
+                            title: loc.localized("settings.media.hotkey.screenshotSection"),
+                            icon: "keyboard",
+                            keywords: "screenshot hotkey"
+                        ) {
+                            screenshotHotkeySectionContent
+                        }
+
+                        settingsCard(
+                            id: "section-screenshotIncludeNative",
+                            title: loc.localized("screenshot.section"),
+                            icon: "camera",
+                            keywords: "screenshot include native"
+                        ) {
+                            screenshotIncludeNativeSectionContent
+                        }
+
+                        settingsCard(
+                            id: "section-screenshotPath",
+                            title: loc.localized("settings.media.screenshotPath"),
+                            icon: "folder",
+                            keywords: "screenshot output path folder"
+                        ) {
+                            screenshotPathSectionContent
+                        }
+
+                        if isSearching && !hasAnyResults {
+                            noResultsView
+                        }
+
+                        Spacer(minLength: AppSpacing.xl5)
                     }
+                    .padding(.horizontal, AppSpacing.lg)
+                    .padding(.top, AppSpacing.md)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
-                .folderDialog(
-                    isPresented: $showFolderPicker,
-                    path: $customPath,
-                    prompt: "Choose a folder for screenshots"
-                )
-                .onChange(of: customPath) { _, newValue in
-                    config.screenshot.outputPath = newValue
-                    config.screenshot.save()
-                }
-                Text(loc.localized("settings.media.screenshotPathDescription"))
-                    .font(.caption)
-                    .foregroundColor(AppColors.textSecondary(colorScheme))
-            } header: {
-                Label(loc.localized("settings.media.screenshotPath"), systemImage: "folder")
             }
-        }
-        .scrollContentBackground(.hidden)
-        .formStyle(.grouped)
-        .onAppear {
-            customPath = config.screenshot.outputPath
+            .scrollContentBackground(.hidden)
+            .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
         }
     }
 
+    private var isSearching: Bool { !searchText.isEmpty }
+
+    private func matchesSearch(_ keywords: String) -> Bool {
+        if searchText.isEmpty { return true }
+        if SettingsSearchRuntime.pageMatches(.streaming, query: searchText) { return true }
+        return SettingsIndex.matches(haystack: keywords, query: searchText)
+    }
+
+    // MARK: - Card Helper
+
+    @ViewBuilder
+    private func settingsCard<Content: View>(
+        id: String,
+        title: String,
+        icon: String,
+        keywords: String,
+        @ViewBuilder content: () -> Content
+    ) -> some View {
+        VStack(alignment: .leading, spacing: AppSpacing.md) {
+            HStack(spacing: AppSpacing.sm) {
+                Image(systemName: icon)
+                    .font(.body)
+                    .foregroundStyle(AppColors.textTertiary(colorScheme))
+                Text(title)
+                    .font(AppTypography.headingSmall)
+                    .foregroundStyle(AppColors.textPrimary(colorScheme))
+            }
+            content()
+        }
+        .padding(AppSpacing.xl)
+        .background(
+            RoundedRectangle(cornerRadius: AppRadius.xl)
+                .fill(AppColors.cardBackgroundSubtle(colorScheme))
+                .overlay(
+                    RoundedRectangle(cornerRadius: AppRadius.xl)
+                        .stroke(AppColors.cardBorder(colorScheme), lineWidth: 1)
+                )
+        )
+        .cardHoverEffect(colorScheme: colorScheme)
+        .id(id)
+    }
+
+    // MARK: - Stat Pills
+
+    private var statPillsRow: some View {
+        HStack(spacing: AppSpacing.md) {
+            SettingsStatPill(item: .init(
+                id: "screenshotSettings",
+                number: "3",
+                label: "sections",
+                icon: "camera"
+            ))
+        }
+        .padding(.bottom, AppSpacing.xs)
+    }
+
+    // MARK: - Section Content
+
+    private var screenshotHotkeySectionContent: some View {
+        Group {
+            MediaHotkeyBindingRow(action: .screenshot, sectionKey: "settings.media.hotkey.screenshotSection")
+            Text(loc.localized("settings.media.hotkey.editInHotkeys"))
+                .font(.caption2)
+                .foregroundStyle(AppColors.textSecondary(colorScheme))
+        }
+    }
+
+    private var screenshotIncludeNativeSectionContent: some View {
+        Group {
+            HStack {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("screenshot.includeNative")
+                        .lineLimit(1)
+                    Text("screenshot.includeNativeHelp")
+                        .font(.caption2)
+                        .foregroundStyle(AppColors.textSecondary(colorScheme))
+                }
+                Spacer(minLength: 0)
+                Toggle("", isOn: Binding(
+                    get: { config.screenshot.includeNative },
+                    set: { config.screenshot.includeNative = $0; config.screenshot.save() }
+                ))
+                .toggleStyle(.switch)
+                .labelsHidden()
+            }
+            .padding(.vertical, AppSpacing.xxs)
+        }
+    }
+
+    private var screenshotPathSectionContent: some View {
+        Group {
+            HStack(spacing: 8) {
+                Text(verbatim: displayPath)
+                    .font(.system(size: 12))
+                    .foregroundStyle(AppColors.textSecondary(colorScheme))
+                    .lineLimit(1)
+                    .truncationMode(.middle)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                SettingsActionButton(loc.localized("settings.streaming.browse")) {
+                    showFolderPicker = true
+                }
+                if config.screenshot.hasCustomPath {
+                    SettingsActionButton(loc.localized("settings.media.reset")) {
+                        config.screenshot.outputPath = ""
+                        config.screenshot.save()
+                        customPath = ""
+                    }
+                }
+            }
+            .folderDialog(
+                isPresented: $showFolderPicker,
+                path: $customPath,
+                prompt: "Choose a folder for screenshots"
+            )
+            .onChange(of: customPath) { _, newValue in
+                config.screenshot.outputPath = newValue
+                config.screenshot.save()
+            }
+            Text(loc.localized("settings.media.screenshotPathDescription"))
+                .font(.caption)
+                .foregroundColor(AppColors.textSecondary(colorScheme))
+        }
+    }
+
+    // MARK: - Helpers
+
     private var displayPath: String {
-        if !config.screenshot.outputPath.isEmpty { return config.screenshot.outputPath }
-        return ScreenshotService.baseDirectory.path
+        config.screenshot.outputPath.isEmpty
+            ? loc.localized("settings.media.defaultPath")
+            : config.screenshot.outputPath
+    }
+
+    private var hasAnyResults: Bool {
+        true
+    }
+
+    private var noResultsView: some View {
+        VStack {
+            Text("\(loc.localized("general.noMatchingSettings")) \"\(searchText)\"")
+                .font(.caption)
+                .foregroundStyle(AppColors.textSecondary(colorScheme))
+                .frame(maxWidth: .infinity, alignment: .center)
+                .padding(.vertical, AppSpacing.xl2)
+        }
+        .frame(maxWidth: .infinity)
     }
 }

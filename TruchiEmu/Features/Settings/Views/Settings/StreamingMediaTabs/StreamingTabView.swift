@@ -33,44 +33,104 @@ struct StreamingTabView: View {
     }
 
     var body: some View {
-        Form {
-            if sectionVisible("section-streamingEnable") {
-                Section {
-                    Toggle(loc.localized("settings.streaming.enable"), isOn: Binding(
-                        get: { config.streaming.enabled },
-                        set: { config.streaming.enabled = $0; config.streaming.save() }
-                    ))
-                    Text(loc.localized("settings.streaming.enableDescription"))
-                        .font(.caption)
-                        .foregroundColor(AppColors.textSecondary(colorScheme))
-                } header: {
-                    Label(loc.localized("settings.streaming.enable"), systemImage: "antenna.radiowaves.left.and.right")
-                }
-                .id("section-streamingEnable")
-            }
+        Group {
+            ScrollView {
+                ScrollViewReader { proxy in
+                    VStack(alignment: .leading, spacing: AppSpacing.lg) {
+                        settingsCard(
+                            id: "section-streamingEnable",
+                            title: loc.localized("settings.streaming.enable"),
+                            icon: "antenna.radiowaves.left.and.right",
+                            keywords: "streaming enable"
+                        ) {
+                            Toggle(loc.localized("settings.streaming.enable"), isOn: Binding(
+                                get: { config.streaming.enabled },
+                                set: { config.streaming.enabled = $0; config.streaming.save() }
+                            ))
+                            Text(loc.localized("settings.streaming.enableDescription"))
+                                .font(.caption)
+                                .foregroundColor(AppColors.textSecondary(colorScheme))
+                        }
 
-            if config.streaming.enabled {
-                if sectionVisible("section-streamingResolution") {
-                    streamResolutionSection
-                }
-                if sectionVisible("section-recordWithShaders") {
-                    recordWithShadersSection
-                }
-                if sectionVisible("section-destinations") {
-                    destinationsGroup
-                }
-            } else {
-                if sectionVisible("section-streamingOff") {
-                    streamingOffSummary
-                }
-            }
+                        if config.streaming.enabled {
+                            settingsCard(
+                                id: "section-streamingResolution",
+                                title: loc.localized("settings.streaming.resolution"),
+                                icon: "rectangle.expand.vertical",
+                                keywords: "streaming resolution"
+                            ) {
+                                Picker(loc.localized("settings.streaming.resolution"), selection: Binding(
+                                    get: { config.streaming.resolution },
+                                    set: { config.streaming.resolution = $0; config.streaming.save() }
+                                )) {
+                                    ForEach(StreamResolution.allCases) { res in
+                                        Text(loc.localized(res.localizationKey)).tag(res)
+                                    }
+                                }
+                            }
 
-            if sectionVisible("section-streamingBadge") {
-                streamingBadgeSection
+                            settingsCard(
+                                id: "section-recordWithShaders",
+                                title: loc.localized("settings.streaming.recordWithShaders"),
+                                icon: "tv",
+                                keywords: "record with shaders"
+                            ) {
+                                Toggle(loc.localized("settings.streaming.recordWithShaders"), isOn: Binding(
+                                    get: { config.streaming.recordWithShaders },
+                                    set: { config.streaming.recordWithShaders = $0; config.streaming.save() }
+                                ))
+                                Text(loc.localized("settings.streaming.recordWithShadersDescription"))
+                                    .font(.caption)
+                                    .foregroundColor(AppColors.textSecondary(colorScheme))
+                            }
+
+                            settingsCard(
+                                id: "section-destinations",
+                                title: loc.localized("settings.streaming.destinations"),
+                                icon: "network",
+                                keywords: "streaming destinations twitch youtube custom"
+                            ) {
+                                destinationsGroupContent
+                            }
+                        } else {
+                            settingsCard(
+                                id: "section-streamingOff",
+                                title: loc.localized("settings.media.streamingOff.summary"),
+                                icon: "info.circle",
+                                keywords: "streaming off disabled"
+                            ) {
+                                VStack(alignment: .leading, spacing: 6) {
+                                    HStack(spacing: 4) {
+                                        Image(systemName: "antenna.radiowaves.left.and.right")
+                                            .font(.caption)
+                                        Text(loc.localized("settings.media.destinations.configured"))
+                                            .font(.caption)
+                                        Text(verbatim: "\(config.destinations.configuredCount)/3")
+                                            .font(.caption).bold()
+                                    }
+                                }
+                            }
+                        }
+
+                        settingsCard(
+                            id: "section-streamingBadge",
+                            title: loc.localized("media.streamingBadge"),
+                            icon: "circlebadge",
+                            keywords: "streaming badge position"
+                        ) {
+                            streamingBadgeSectionContent
+                        }
+
+                        Spacer(minLength: AppSpacing.xl5)
+                    }
+                    .padding(.horizontal, AppSpacing.lg)
+                    .padding(.top, AppSpacing.md)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
             }
+            .scrollContentBackground(.hidden)
+            .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
         }
-        .scrollContentBackground(.hidden)
-        .formStyle(.grouped)
         .onAppear {
             let destinations = config.destinations
             twitchKey = destinations.twitchKey
@@ -83,40 +143,45 @@ struct StreamingTabView: View {
         }
     }
 
-    private var recordWithShadersSection: some View {
-        Section {
-            Toggle(loc.localized("settings.streaming.recordWithShaders"), isOn: Binding(
-                get: { config.streaming.recordWithShaders },
-                set: { config.streaming.recordWithShaders = $0; config.streaming.save() }
-            ))
-            Text(loc.localized("settings.streaming.recordWithShadersDescription"))
-                .font(.caption)
-                .foregroundColor(AppColors.textSecondary(colorScheme))
-        }
-        .id("section-recordWithShaders")
-    }
+    // MARK: - Card Helper
 
-    private var streamResolutionSection: some View {
-        Section {
-            Picker(loc.localized("settings.streaming.resolution"), selection: Binding(
-                get: { config.streaming.resolution },
-                set: { config.streaming.resolution = $0; config.streaming.save() }
-            )) {
-                ForEach(StreamResolution.allCases) { res in
-                    Text(loc.localized(res.localizationKey)).tag(res)
+    @ViewBuilder
+    private func settingsCard<Content: View>(
+        id: String,
+        title: String,
+        icon: String,
+        keywords: String,
+        @ViewBuilder content: () -> Content
+    ) -> some View {
+        if sectionVisible(id) {
+            VStack(alignment: .leading, spacing: AppSpacing.md) {
+                HStack(spacing: AppSpacing.sm) {
+                    Image(systemName: icon)
+                        .font(.body)
+                        .foregroundStyle(AppColors.textTertiary(colorScheme))
+                    Text(title)
+                        .font(AppTypography.headingSmall)
+                        .foregroundStyle(AppColors.textPrimary(colorScheme))
                 }
+                content()
             }
-        } header: {
-            Label(loc.localized("settings.streaming.resolution"), systemImage: "rectangle.expand.vertical")
-        } footer: {
-            Text(loc.localized("settings.streaming.resolutionDescription"))
-                .font(.caption)
-                .foregroundColor(AppColors.textSecondary(colorScheme))
+            .padding(AppSpacing.xl)
+            .background(
+                RoundedRectangle(cornerRadius: AppRadius.xl)
+                    .fill(AppColors.cardBackgroundSubtle(colorScheme))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: AppRadius.xl)
+                            .stroke(AppColors.cardBorder(colorScheme), lineWidth: 1)
+                    )
+            )
+            .cardHoverEffect(colorScheme: colorScheme)
+            .id(id)
         }
-        .id("section-streamingResolution")
     }
 
-    private var destinationsGroup: some View {
+    // MARK: - Section Content
+
+    private var destinationsGroupContent: some View {
         Group {
             Section {
                 TwitchSection(
@@ -127,8 +192,6 @@ struct StreamingTabView: View {
                         config.destinations.save()
                     }
                 )
-            } header: {
-                Label("Twitch", systemImage: "antenna.radiowaves.left.and.right")
             }
 
             Section {
@@ -140,8 +203,6 @@ struct StreamingTabView: View {
                         config.destinations.save()
                     }
                 )
-            } header: {
-                Label("YouTube", systemImage: "video.badge.checkmark")
             }
 
             Section {
@@ -154,31 +215,12 @@ struct StreamingTabView: View {
                     onKeyChange: { config.destinations.customKey = customKey; config.destinations.save() },
                     onURLChange: { config.destinations.customURL = customURL; config.destinations.save() }
                 )
-            } header: {
-                Label(loc.localized("settings.streaming.customStream"), systemImage: "network")
             }
         }
     }
 
-    private var streamingOffSummary: some View {
-        Section {
-            VStack(alignment: .leading, spacing: 6) {
-                HStack(spacing: 4) {
-                    Image(systemName: "antenna.radiowaves.left.and.right")
-                        .font(.caption)
-                    Text(loc.localized("settings.media.destinations.configured"))
-                        .font(.caption)
-                    Text(verbatim: "\(config.destinations.configuredCount)/3")
-                        .font(.caption).bold()
-                }
-            }
-        } header: {
-            Label(loc.localized("settings.media.streamingOff.summary"), systemImage: "info.circle")
-        }
-    }
-
-    private var streamingBadgeSection: some View {
-        Section {
+    private var streamingBadgeSectionContent: some View {
+        Group {
             Toggle(loc.localized("media.streamingBadgeEnable"), isOn: Binding(
                 get: { config.streamingBadge.enabled },
                 set: { config.streamingBadge.enabled = $0; config.streamingBadge.save(keyPrefix: "streaming_badge") }
@@ -193,9 +235,6 @@ struct StreamingTabView: View {
                     }
                 }
             }
-        } header: {
-            Label(loc.localized("media.streamingBadge"), systemImage: "circlebadge")
         }
-        .id("section-streamingBadge")
     }
 }

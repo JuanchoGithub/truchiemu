@@ -37,7 +37,7 @@ struct CheatSettingsView: View {
     }
 
     private var hasAnyResults: Bool {
-        matchesSearch("Cheat Library Summary files storage custom") ||
+        matchesSearch("Cheat Library Summary files storage custom last updated") ||
         matchesSearch("Online Database download network") ||
         matchesSearch("Apply Cheats on Launch Behavior notifications") ||
         matchesSearch("Actions Show in Finder Clear Downloaded Cheats")
@@ -63,134 +63,173 @@ struct CheatSettingsView: View {
     }
 
     var body: some View {
-        ScrollViewReader { proxy in
-        Form {
-            // MARK: - Library Section
-            if (!isSearching || matchesSearch("Cheat Library Summary files storage custom last updated")) && sectionVisible("section-librarySummary") {
-                Section {
-                    StatGroup(
-                        AppStatCard(
-                            icon: "doc.on.doc.fill",
-                            value: "\(downloadService.getDownloadedCheatCount())",
-                            label: loc.localized("cheats.files"),
-                            accent: AppColors.brandAccent
-                        ),
-                        AppStatCard(
-                            icon: "internaldrive.fill",
-                            value: formatByteSize(downloadService.getDownloadedCheatSize()),
-                            label: loc.localized("cheats.storage"),
-                            accent: AppColors.accentTertiary
-                        ),
-                        AppStatCard(
-                            icon: "wand.and.stars",
-                            value: AppSettings.getData("cheats_v2") != nil ? "Active" : "None",
-                            label: loc.localized("cheats.custom"),
-                            accent: AppColors.warning(colorScheme)
-                        )
-                    )
+        Group {
+            if true {
+                ScrollView {
+                    ScrollViewReader { proxy in
+                        VStack(alignment: .leading, spacing: AppSpacing.lg) {
+                            // Stat pills row (download count, storage, custom active state)
+                            if !isSearching {
+                                statPillsRow
+                            }
 
-                    LabeledContent(loc.localized("cheats.lastUpdated")) {
-                        Text((downloadService.lastDownloadDate ?? Date()).formatted(date: .abbreviated, time: .shortened))
-                            .font(.system(.caption, design: .monospaced))
-                            .foregroundStyle(AppColors.textSecondary(colorScheme))
-                    }
-                } header: {
-                    Label { Text(loc.localized("cheats.librarySummary")) } icon: { Image(systemName: "chart.bar.fill") }
-                }
-                .id("section-librarySummary")
-            }
+                            // MARK: - Library Section
+                            if (!isSearching || matchesSearch("Cheat Library Summary files storage custom last updated")) && sectionVisible("section-librarySummary") {
+                                settingsCard(
+                                    id: "section-librarySummary",
+                                    title: loc.localized("cheats.librarySummary"),
+                                    icon: "chart.bar.fill",
+                                    keywords: "Cheat Library Summary files storage custom last updated"
+                                ) {
+                                    StatGroup(
+                                        AppStatCard(
+                                            icon: "doc.on.doc.fill",
+                                            value: "\(downloadService.getDownloadedCheatCount())",
+                                            label: loc.localized("cheats.files"),
+                                            accent: AppColors.brandAccent
+                                        ),
+                                        AppStatCard(
+                                            icon: "internaldrive.fill",
+                                            value: formatByteSize(downloadService.getDownloadedCheatSize()),
+                                            label: loc.localized("cheats.storage"),
+                                            accent: AppColors.accentTertiary
+                                        ),
+                                        AppStatCard(
+                                            icon: "wand.and.stars",
+                                            value: AppSettings.getData("cheats_v2") != nil ? "Active" : "None",
+                                            label: loc.localized("cheats.custom"),
+                                            accent: AppColors.warning(colorScheme)
+                                        )
+                                    )
 
-            // MARK: - Behavior Section
-            if (!isSearching || matchesSearch("apply on launch notifications behavior")) && sectionVisible("section-behavior") {
-                Section {
-                    Toggle(isOn: $prefs.applyCheatsOnLaunch) {
-                        VStack(alignment: .leading, spacing: AppSpacing.xxs) {
-                            Text(loc.localized("cheats.applyOnLaunch"))
-                            Text(loc.localized("cheats.applyOnLaunchDescription"))
-                                .font(.caption)
-                                .foregroundStyle(AppColors.textSecondary(colorScheme))
+                                    LabeledContent(loc.localized("cheats.lastUpdated")) {
+                                        Text((downloadService.lastDownloadDate ?? Date()).formatted(date: .abbreviated, time: .shortened))
+                                            .font(.system(.caption, design: .monospaced))
+                                            .foregroundStyle(AppColors.textSecondary(colorScheme))
+                                    }
+                                }
+                            }
+
+                            // MARK: - Behavior Section
+                            if (!isSearching || matchesSearch("apply on launch notifications behavior")) && sectionVisible("section-behavior") {
+                                settingsCard(
+                                    id: "section-behavior",
+                                    title: loc.localized("cheats.behavior"),
+                                    icon: "gearshape",
+                                    keywords: "apply on launch notifications behavior"
+                                ) {
+                                    Toggle(isOn: $prefs.applyCheatsOnLaunch) {
+                                        VStack(alignment: .leading, spacing: AppSpacing.xxs) {
+                                            Text(loc.localized("cheats.applyOnLaunch"))
+                                            Text(loc.localized("cheats.applyOnLaunchDescription"))
+                                                .font(.caption)
+                                                .foregroundStyle(AppColors.textSecondary(colorScheme))
+                                        }
+                                    }
+                                    .onChange(of: prefs.applyCheatsOnLaunch) { _, _ in
+                                        AppSettings.setBool("applyCheatsOnLaunch", value: prefs.applyCheatsOnLaunch)
+                                    }
+
+                                    Toggle(isOn: $prefs.showCheatNotifications) {
+                                        VStack(alignment: .leading, spacing: AppSpacing.xxs) {
+                                            Text(loc.localized("cheats.notifications"))
+                                            Text(loc.localized("cheats.notificationsDescription"))
+                                                .font(.caption)
+                                                .foregroundStyle(AppColors.textSecondary(colorScheme))
+                                        }
+                                    }
+                                    .onChange(of: prefs.showCheatNotifications) { _, _ in
+                                        AppSettings.setBool("showCheatNotifications", value: prefs.showCheatNotifications)
+                                    }
+
+                                    Text(loc.localized("cheats.onlineDatabaseDescription"))
+                                        .font(.caption)
+                                        .foregroundStyle(AppColors.textSecondary(colorScheme))
+                                }
+                            }
+
+                            // MARK: - Download Section
+                            if (!isSearching || matchesSearch("Online Database download network update")) && sectionVisible("section-onlineDatabase") {
+                                settingsCard(
+                                    id: "section-onlineDatabase",
+                                    title: loc.localized("cheats.onlineDatabase"),
+                                    icon: "network",
+                                    keywords: "Online Database download network update"
+                                ) {
+                                    if downloadService.isDownloading {
+                                        downloadProgressView
+                                    } else {
+                                        downloadActionButtons
+                                    }
+                                }
+                            }
+
+                            // MARK: - Actions Section
+                            if (!isSearching || matchesSearch("Actions Show in Finder Clear Downloaded Cheats")) && sectionVisible("section-actions") {
+                                settingsCard(
+                                    id: "section-actions",
+                                    title: loc.localized("cheats.actions"),
+                                    icon: "hammer",
+                                    keywords: "Actions Show in Finder Clear Downloaded Cheats"
+                                ) {
+                                    SettingsActionButton(loc.localized("cheats.showInFinder"), systemImage: "folder", action: openCheatDirectory)
+
+                                    SettingsActionButton(loc.localized("cheats.clearDownloadedCheats"), systemImage: "trash", role: .destructive) {
+                                        showClearConfirmation = true
+                                    }
+                                }
+                            }
+
+                            // No results message
+                            if isSearching && !hasAnyResults {
+                                VStack {
+                                    HStack {
+                                        Spacer()
+                                        VStack(spacing: AppSpacing.md) {
+                                            Image(systemName: "magnifyingglass")
+                                                .font(.largeTitle)
+                                                .foregroundStyle(AppColors.textSecondary(colorScheme))
+                                            Text(loc.localized("cheats.noResults"))
+                                                .font(.headline)
+                                                .foregroundStyle(AppColors.textSecondary(colorScheme))
+                                            Text(loc.localized("cheats.tryDifferentSearch"))
+                                                .font(.caption)
+                                                .foregroundStyle(AppColors.textMuted(colorScheme))
+                                        }
+                                        .padding(.vertical, AppSpacing.xl5)
+                                        Spacer()
+                                    }
+                                }
+                                .frame(maxWidth: .infinity)
+                            }
+
+                            Spacer(minLength: AppSpacing.xl5)
+                        }
+                        .padding(.horizontal, AppSpacing.lg)
+                        .padding(.top, AppSpacing.md)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .onChange(of: focusedSectionID) { _, newID in
+                            guard let id = newID else { return }
+                            withAnimation { proxy.scrollTo("section-\(id)", anchor: .top) }
+                        }
+                        .onChange(of: scopedSectionID) { _, newScope in
+                            guard let id = newScope else { return }
+                            DispatchQueue.main.async {
+                                withAnimation { proxy.scrollTo("section-\(id)", anchor: .top) }
+                            }
                         }
                     }
-                    .onChange(of: prefs.applyCheatsOnLaunch) { _, _ in
-                        AppSettings.setBool("applyCheatsOnLaunch", value: prefs.applyCheatsOnLaunch)
-                    }
-
-                    Toggle(isOn: $prefs.showCheatNotifications) {
-                        VStack(alignment: .leading, spacing: AppSpacing.xxs) {
-                            Text(loc.localized("cheats.notifications"))
-                            Text(loc.localized("cheats.notificationsDescription"))
-                                .font(.caption)
-                                .foregroundStyle(AppColors.textSecondary(colorScheme))
-                        }
-                    }
-                    .onChange(of: prefs.showCheatNotifications) { _, _ in
-                        AppSettings.setBool("showCheatNotifications", value: prefs.showCheatNotifications)
-                    }
-                } header: {
-                    Label(loc.localized("cheats.behavior"), systemImage: "gearshape")
-                } footer: {
-                    Text(loc.localized("cheats.onlineDatabaseDescription"))
                 }
-                .id("section-behavior")
+                .scrollContentBackground(.hidden)
+                .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+            } else {
+                Color.clear
+                    .frame(maxWidth: .infinity, minHeight: 400)
             }
-
-            // MARK: - Download Section
-            if (!isSearching || matchesSearch("Online Database download network update")) && sectionVisible("section-onlineDatabase") {
-                Section {
-                    if downloadService.isDownloading {
-                        downloadProgressView
-                    } else {
-                        downloadActionButtons
-                    }
-                } header: {
-                    Label(loc.localized("cheats.onlineDatabase"), systemImage: "network")
-                }
-                .id("section-onlineDatabase")
-            }
-
-            // MARK: - Actions Section
-            if (!isSearching || matchesSearch("Actions Show in Finder Clear Downloaded Cheats")) && sectionVisible("section-actions") {
-                Section(header: Label(loc.localized("cheats.actions"), systemImage: "hammer")) {
-                    SettingsActionButton(loc.localized("cheats.showInFinder"), systemImage: "folder", action: openCheatDirectory)
-
-                    SettingsActionButton(loc.localized("cheats.clearDownloadedCheats"), systemImage: "trash", role: .destructive) {
-                        showClearConfirmation = true
-                    }
-                }
-                .id("section-actions")
-            }
-
-            // MARK: - No Results
-            if isSearching && !hasAnyResults {
-                Section {
-                    HStack {
-                        Spacer()
-                        VStack(spacing: AppSpacing.md) {
-                            Image(systemName: "magnifyingglass")
-                                .font(.largeTitle)
-                                .foregroundStyle(AppColors.textSecondary(colorScheme))
-                            Text(loc.localized("cheats.noResults"))
-                                .font(.headline)
-                                .foregroundStyle(AppColors.textSecondary(colorScheme))
-                            Text(loc.localized("cheats.tryDifferentSearch"))
-                                .font(.caption)
-                                .foregroundStyle(AppColors.textMuted(colorScheme))
-                        }
-                        .padding(.vertical, AppSpacing.xl5)
-                        Spacer()
-                    }
-                }
         }
-        }
-        .scrollContentBackground(.hidden)
-        .formStyle(.grouped)
-        .onChange(of: focusedSectionID) { _, newID in
-            guard let id = newID else { return }
-            withAnimation { proxy.scrollTo("section-\(id)", anchor: .top) }
-        }
-    .navigationTitle(loc.localized("cheats.title"))
-    .confirmationDialog(
-        loc.localized("cheats.clearDownloadedCheats"),
+        .navigationTitle(loc.localized("cheats.title"))
+        .confirmationDialog(
+            loc.localized("cheats.clearDownloadedCheats"),
             isPresented: $showClearConfirmation,
             titleVisibility: .visible
         ) {
@@ -233,10 +272,43 @@ struct CheatSettingsView: View {
             }
         }
     }
+
+    // MARK: - Stat Pills Row
+
+    private var statPillsRow: some View {
+        HStack(spacing: AppSpacing.md) {
+            ForEach(statPills) { pill in
+                SettingsStatPill(item: pill)
+            }
+        }
+        .padding(.bottom, AppSpacing.xs)
+    }
+
+    private var statPills: [SettingsStatPill.Item] {
+        var items: [SettingsStatPill.Item] = []
+        items.append(SettingsStatPill.Item(
+            id: "files",
+            number: "\(downloadService.getDownloadedCheatCount())",
+            label: loc.localized("settings.unit.files"),
+            icon: "doc.on.doc.fill"
+        ))
+        items.append(SettingsStatPill.Item(
+            id: "storage",
+            number: formatByteSize(downloadService.getDownloadedCheatSize()),
+            label: loc.localized("settings.unit.storage"),
+            icon: "internaldrive.fill"
+        ))
+        items.append(SettingsStatPill.Item(
+            id: "custom",
+            number: AppSettings.getData("cheats_v2") != nil ? "Active" : "None",
+            label: loc.localized("settings.unit.custom"),
+            icon: "wand.and.stars"
+        ))
+        return items
     }
 
     // MARK: - Improved Download Progress (No Layout Shifts)
-    
+
     private var downloadProgressView: some View {
         VStack(alignment: .leading, spacing: AppSpacing.md) {
             HStack {
@@ -343,6 +415,42 @@ struct CheatSettingsView: View {
         let cheatsDir = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
             .appendingPathComponent("TruchiEmu/cheats_downloaded")
         NSWorkspace.shared.selectFile(cheatsDir.path, inFileViewerRootedAtPath: cheatsDir.path)
+    }
+
+    // MARK: - Card Helper
+
+    @ViewBuilder
+    private func settingsCard<Content: View>(
+        id: String,
+        title: String,
+        icon: String,
+        keywords: String,
+        @ViewBuilder content: () -> Content
+    ) -> some View {
+        if sectionVisible(id) && matchesSearch(keywords) {
+            VStack(alignment: .leading, spacing: AppSpacing.md) {
+                HStack(spacing: AppSpacing.sm) {
+                    Image(systemName: icon)
+                        .font(.body)
+                        .foregroundStyle(AppColors.textTertiary(colorScheme))
+                    Text(title)
+                        .font(AppTypography.headingSmall)
+                        .foregroundStyle(AppColors.textPrimary(colorScheme))
+                }
+                content()
+            }
+            .padding(AppSpacing.xl)
+            .background(
+                RoundedRectangle(cornerRadius: AppRadius.xl)
+                    .fill(AppColors.cardBackgroundSubtle(colorScheme))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: AppRadius.xl)
+                            .stroke(AppColors.cardBorder(colorScheme), lineWidth: 1)
+                    )
+            )
+            .cardHoverEffect(colorScheme: colorScheme)
+            .id(id)
+        }
     }
 }
 

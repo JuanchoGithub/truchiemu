@@ -207,56 +207,105 @@ struct MoveEditorView: View {
     }
 
     var body: some View {
-        VStack(spacing: AppSpacing.md) {
-            HStack(spacing: 4) {
-                Button(action: { onBack?() }) {
+        ScrollView {
+            ScrollViewReader { proxy in
+                VStack(alignment: .leading, spacing: AppSpacing.lg) {
                     HStack(spacing: 4) {
-                        Image(systemName: "chevron.left")
-                            .font(.system(size: 13, weight: .semibold))
-                        Text(loc.localized("movelist.back"))
-                            .font(.system(size: 13))
+                        Button(action: { onBack?() }) {
+                            HStack(spacing: 4) {
+                                Image(systemName: "chevron.left")
+                                    .font(.system(size: 13, weight: .semibold))
+                                Text(loc.localized("movelist.back"))
+                                    .font(.system(size: 13))
+                            }
+                        }
+                        .buttonStyle(.plain)
+                        .foregroundStyle(AppColors.brandAccent)
+                        Spacer()
+                        Text(editorTitle)
+                            .font(.system(size: 14, weight: .semibold))
+                            .foregroundStyle(AppColors.textSecondary(colorScheme))
+                        Spacer()
                     }
+
+                    settingsCard(
+                        id: "section-moveInfo",
+                        title: loc.localized("settings.moveList.editor.moveInfo"),
+                        icon: "info.circle",
+                        keywords: "move name category move info"
+                    ) {
+                        moveInfoSection
+                    }
+
+                    HStack(alignment: .top, spacing: AppSpacing.md) {
+                        directionPadSection
+                            .padding(AppSpacing.md)
+                            .background(AppColors.cardBackground(colorScheme))
+                            .clipShape(RoundedRectangle(cornerRadius: AppRadius.sm))
+
+                        buttonPaletteSection
+                            .padding(AppSpacing.md)
+                            .background(AppColors.cardBackground(colorScheme))
+                            .clipShape(RoundedRectangle(cornerRadius: AppRadius.sm))
+                    }
+
+                    modifierSection
+
+                    compressedPreviewRow
+
+                    stepListSection
+                        .frame(maxHeight: .infinity)
+                        .padding(AppSpacing.md)
+                        .background(AppColors.cardBackground(colorScheme))
+                        .clipShape(RoundedRectangle(cornerRadius: AppRadius.sm))
+
+                    Divider()
+                    actionButtons
+
+                    Spacer(minLength: AppSpacing.xl5)
                 }
-                .buttonStyle(.plain)
-                .foregroundStyle(AppColors.brandAccent)
-                Spacer()
-                Text(editorTitle)
-                    .font(.system(size: 14, weight: .semibold))
-                    .foregroundStyle(AppColors.textSecondary(colorScheme))
-                Spacer()
+                .padding(.horizontal, AppSpacing.lg)
+                .padding(.top, AppSpacing.md)
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
-
-            moveInfoSection
-                .padding(AppSpacing.md)
-                .background(AppColors.cardBackground(colorScheme))
-                .clipShape(RoundedRectangle(cornerRadius: AppRadius.sm))
-
-            HStack(alignment: .top, spacing: AppSpacing.md) {
-                directionPadSection
-                    .padding(AppSpacing.md)
-                    .background(AppColors.cardBackground(colorScheme))
-                    .clipShape(RoundedRectangle(cornerRadius: AppRadius.sm))
-
-                buttonPaletteSection
-                    .padding(AppSpacing.md)
-                    .background(AppColors.cardBackground(colorScheme))
-                    .clipShape(RoundedRectangle(cornerRadius: AppRadius.sm))
-            }
-
-            modifierSection
-
-            compressedPreviewRow
-
-            stepListSection
-                .frame(maxHeight: .infinity)
-                .padding(AppSpacing.md)
-                .background(AppColors.cardBackground(colorScheme))
-                .clipShape(RoundedRectangle(cornerRadius: AppRadius.sm))
-
-            Divider()
-            actionButtons
         }
+        .scrollContentBackground(.hidden)
+        .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
         .padding(AppSpacing.lg)
+    }
+
+    // MARK: - Card Helper
+
+    @ViewBuilder
+    private func settingsCard<Content: View>(
+        id: String,
+        title: String,
+        icon: String,
+        keywords: String,
+        @ViewBuilder content: () -> Content
+    ) -> some View {
+        VStack(alignment: .leading, spacing: AppSpacing.md) {
+            HStack(spacing: AppSpacing.sm) {
+                Image(systemName: icon)
+                    .font(.body)
+                    .foregroundStyle(AppColors.textTertiary(colorScheme))
+                Text(title)
+                    .font(AppTypography.headingSmall)
+                    .foregroundStyle(AppColors.textPrimary(colorScheme))
+            }
+            content()
+        }
+        .padding(AppSpacing.xl)
+        .background(
+            RoundedRectangle(cornerRadius: AppRadius.xl)
+                .fill(AppColors.cardBackgroundSubtle(colorScheme))
+                .overlay(
+                    RoundedRectangle(cornerRadius: AppRadius.xl)
+                        .stroke(AppColors.cardBorder(colorScheme), lineWidth: 1)
+                )
+        )
+        .cardHoverEffect(colorScheme: colorScheme)
+        .id(id)
     }
 
     // MARK: - Move Info
@@ -481,7 +530,6 @@ struct MoveEditorView: View {
         guard dirTokens.count == dirs.count else { return nil }
         return (dirTokens, btnTokens)
     }
-
 
 
     // MARK: - Direction Pad
@@ -849,7 +897,7 @@ struct MoveEditorView: View {
                 current.append(s)
         } else if step.isRapid {
             current.append("^*")
-            }
+        }
             branches[branches.count - 1] = current
         }
         return branches.map { $0.joined(separator: " ") }.joined(separator: " / ")

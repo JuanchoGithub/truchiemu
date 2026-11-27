@@ -26,136 +26,195 @@ struct RecordingTabView: View {
     }
 
     var body: some View {
-        Form {
-            if sectionVisible("section-recordingEnable") {
-                Section {
-                    Toggle(loc.localized("settings.media.recording.enable"), isOn: Binding(
-                        get: { recordingEnabled },
-                        set: { newValue in
-                            recordingEnabled = newValue
-                            AppSettings.setBool("recording_local_enabled", value: newValue)
+        Group {
+            ScrollView {
+                ScrollViewReader { proxy in
+                    VStack(alignment: .leading, spacing: AppSpacing.lg) {
+                        if !searchText.isEmpty {
+                            // No stat pills for recording tab
                         }
-                    ))
-                    Text(loc.localized("settings.media.recording.enableDescription"))
-                        .font(.caption)
-                        .foregroundColor(AppColors.textSecondary(colorScheme))
-                } header: {
-                    Label(loc.localized("settings.media.recording.enable"), systemImage: "record.circle")
-                }
-                .id("section-recordingEnable")
-            }
 
-            if sectionVisible("section-recordingHotkey") {
-                Section {
-                    MediaHotkeyBindingRow(action: .recording, sectionKey: "settings.media.hotkey.recordingSection")
-                    Text(loc.localized("settings.media.hotkey.editInHotkeys"))
-                        .font(.caption2)
-                        .foregroundColor(AppColors.textSecondary(colorScheme))
-                } header: {
-                    Label(loc.localized("settings.media.hotkey.recordingSection"), systemImage: "keyboard")
-                }
-                .id("section-recordingHotkey")
-            }
+                        settingsCard(
+                            id: "section-recordingEnable",
+                            title: loc.localized("settings.media.recording.enable"),
+                            icon: "record.circle",
+                            keywords: "recording enable local"
+                        ) {
+                            Toggle(loc.localized("settings.media.recording.enable"), isOn: Binding(
+                                get: { recordingEnabled },
+                                set: { newValue in
+                                    recordingEnabled = newValue
+                                    AppSettings.setBool("recording_local_enabled", value: newValue)
+                                }
+                            ))
+                            Text(loc.localized("settings.media.recording.enableDescription"))
+                                .font(.caption)
+                                .foregroundColor(AppColors.textSecondary(colorScheme))
+                        }
 
-            if recordingEnabled {
-                if sectionVisible("section-recordWithShaders") {
-                    recordWithShadersSection
-                        .id("section-recordWithShaders")
-                }
-                if sectionVisible("section-qualitySection") {
-                    qualitySection
-                        .id("section-qualitySection")
-                }
-                if sectionVisible("section-outputPath") {
-                    outputPathSection
-                        .id("section-outputPath")
-                }
-            } else if sectionVisible("section-recordingOff") {
-                Section {
-                    VStack(alignment: .leading, spacing: 6) {
-                        HStack(spacing: 4) {
-                            Image(systemName: "slider.horizontal.3")
-                                .font(.caption)
-                            Text(verbatim: config.quality.preset.rawValue.capitalized)
-                                .font(.caption).bold()
-                            Text(verbatim: "·").font(.caption)
-                            Text(verbatim: config.quality.summaryText)
-                                .font(.caption)
+                        settingsCard(
+                            id: "section-recordingHotkey",
+                            title: loc.localized("settings.media.hotkey.recordingSection"),
+                            icon: "keyboard",
+                            keywords: "recording hotkey"
+                        ) {
+                            MediaHotkeyBindingRow(action: .recording, sectionKey: "settings.media.hotkey.recordingSection")
+                            Text(loc.localized("settings.media.hotkey.editInHotkeys"))
+                                .font(.caption2)
+                                .foregroundColor(AppColors.textSecondary(colorScheme))
                         }
-                        HStack(spacing: 4) {
-                            Image(systemName: "folder")
-                                .font(.caption)
-                            Text(verbatim: displayOutputPath)
-                                .font(.caption)
-                                .lineLimit(1)
-                                .truncationMode(.middle)
+
+                        if recordingEnabled {
+                            settingsCard(
+                                id: "section-recordWithShaders",
+                                title: loc.localized("settings.streaming.recordWithShaders"),
+                                icon: "tv",
+                                keywords: "record with shaders"
+                            ) {
+                                Toggle(loc.localized("settings.streaming.recordWithShaders"), isOn: Binding(
+                                    get: { config.streaming.recordWithShaders },
+                                    set: { config.streaming.recordWithShaders = $0; config.streaming.save() }
+                                ))
+                                Text(loc.localized("settings.streaming.recordWithShadersDescription"))
+                                    .font(.caption)
+                                    .foregroundColor(AppColors.textSecondary(colorScheme))
+                            }
+
+                            settingsCard(
+                                id: "section-qualitySection",
+                                title: loc.localized("settings.streaming.localQuality"),
+                                icon: "slider.horizontal.3",
+                                keywords: "recording quality video codec bitrate audio frame rate"
+                            ) {
+                                qualitySectionContent
+                            }
+
+                            settingsCard(
+                                id: "section-outputPath",
+                                title: loc.localized("settings.streaming.outputPath"),
+                                icon: "folder",
+                                keywords: "recording output path folder"
+                            ) {
+                                outputPathSectionContent
+                            }
+                        } else {
+                            settingsCard(
+                                id: "section-recordingOff",
+                                title: loc.localized("settings.media.recordingOff.summary"),
+                                icon: "info.circle",
+                                keywords: "recording disabled off"
+                            ) {
+                                VStack(alignment: .leading, spacing: 6) {
+                                    HStack(spacing: 4) {
+                                        Image(systemName: "slider.horizontal.3")
+                                            .font(.caption)
+                                        Text(verbatim: config.quality.preset.rawValue.capitalized)
+                                            .font(.caption).bold()
+                                        Text(verbatim: "·").font(.caption)
+                                        Text(verbatim: config.quality.summaryText)
+                                            .font(.caption)
+                                    }
+                                    HStack(spacing: 4) {
+                                        Image(systemName: "folder")
+                                            .font(.caption)
+                                        Text(verbatim: displayOutputPath)
+                                            .font(.caption)
+                                            .lineLimit(1)
+                                            .truncationMode(.middle)
+                                    }
+                                }
+                            }
                         }
+
+                        settingsCard(
+                            id: "section-recordingBadge",
+                            title: loc.localized("media.recordingBadge"),
+                            icon: "circlebadge",
+                            keywords: "recording badge position"
+                        ) {
+                            recordingBadgeSectionContent
+                        }
+
+                        Spacer(minLength: AppSpacing.xl5)
                     }
-                } header: {
-                    Label(loc.localized("settings.media.recordingOff.summary"), systemImage: "info.circle")
+                    .padding(.horizontal, AppSpacing.lg)
+                    .padding(.top, AppSpacing.md)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
-                .id("section-recordingOff")
             }
-
-            if sectionVisible("section-recordingBadge") {
-                recordingBadgeSection
-                    .id("section-recordingBadge")
-            }
+            .scrollContentBackground(.hidden)
+            .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
         }
-        .scrollContentBackground(.hidden)
-        .formStyle(.grouped)
         .onAppear {
             outputPath = config.output.localPath.isEmpty ? defaultOutputDirectory() : config.output.localPath
             qualityExpanded = config.qualityCustomizationExpanded(defaultFor: config.quality.preset)
         }
     }
 
-    private var recordWithShadersSection: some View {
-        Section {
-            Toggle(loc.localized("settings.streaming.recordWithShaders"), isOn: Binding(
-                get: { config.streaming.recordWithShaders },
-                set: { config.streaming.recordWithShaders = $0; config.streaming.save() }
-            ))
-            Text(loc.localized("settings.streaming.recordWithShadersDescription"))
-                .font(.caption)
-                .foregroundColor(AppColors.textSecondary(colorScheme))
+    // MARK: - Card Helper
+
+    @ViewBuilder
+    private func settingsCard<Content: View>(
+        id: String,
+        title: String,
+        icon: String,
+        keywords: String,
+        @ViewBuilder content: () -> Content
+    ) -> some View {
+        if sectionVisible(id) {
+            VStack(alignment: .leading, spacing: AppSpacing.md) {
+                HStack(spacing: AppSpacing.sm) {
+                    Image(systemName: icon)
+                        .font(.body)
+                        .foregroundStyle(AppColors.textTertiary(colorScheme))
+                    Text(title)
+                        .font(AppTypography.headingSmall)
+                        .foregroundStyle(AppColors.textPrimary(colorScheme))
+                }
+                content()
+            }
+            .padding(AppSpacing.xl)
+            .background(
+                RoundedRectangle(cornerRadius: AppRadius.xl)
+                    .fill(AppColors.cardBackgroundSubtle(colorScheme))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: AppRadius.xl)
+                            .stroke(AppColors.cardBorder(colorScheme), lineWidth: 1)
+                    )
+            )
+            .cardHoverEffect(colorScheme: colorScheme)
+            .id(id)
         }
     }
 
-    private var qualitySection: some View {
-        Group {
-            Section {
-                Picker(loc.localized("settings.streaming.quality"), selection: Binding(
-                    get: { config.quality.preset },
-                    set: { newPreset in
-                        config.quality.applyPreset(newPreset)
-                        config.quality.save()
-                    }
-                )) {
-                    Text(loc.localized("settings.streaming.qualityLow")).tag(RecordingQuality.low)
-                    Text(loc.localized("settings.streaming.qualityMedium")).tag(RecordingQuality.medium)
-                    Text(loc.localized("settings.streaming.qualityHigh")).tag(RecordingQuality.high)
-                    Text(loc.localized("settings.streaming.qualityLossless")).tag(RecordingQuality.lossless)
-                }
-                Text(verbatim: config.quality.summaryText)
-                    .font(.caption)
-                    .foregroundColor(AppColors.textSecondary(colorScheme))
+    // MARK: - Section Content
 
-                SettingsActionButton(loc.localized("settings.media.customize")) {
-                    qualityExpanded.toggle()
-                    config.setQualityCustomizationExpanded(qualityExpanded, for: config.quality.preset)
+    private var qualitySectionContent: some View {
+        Group {
+            Picker(loc.localized("settings.streaming.quality"), selection: Binding(
+                get: { config.quality.preset },
+                set: { newPreset in
+                    config.quality.applyPreset(newPreset)
+                    config.quality.save()
                 }
-                .controlSize(.small)
-            } header: {
-                Label(loc.localized("settings.streaming.localQuality"), systemImage: "slider.horizontal.3")
-            } footer: {
-                Text(loc.localized("settings.streaming.localQualityDescription"))
-                    .font(.caption)
-                    .foregroundStyle(AppColors.textSecondary(colorScheme))
+            )) {
+                Text(loc.localized("settings.streaming.qualityLow")).tag(RecordingQuality.low)
+                Text(loc.localized("settings.streaming.qualityMedium")).tag(RecordingQuality.medium)
+                Text(loc.localized("settings.streaming.qualityHigh")).tag(RecordingQuality.high)
+                Text(loc.localized("settings.streaming.qualityLossless")).tag(RecordingQuality.lossless)
             }
+            Text(verbatim: config.quality.summaryText)
+                .font(.caption)
+                .foregroundColor(AppColors.textSecondary(colorScheme))
+
+            SettingsActionButton(loc.localized("settings.media.customize")) {
+                qualityExpanded.toggle()
+                config.setQualityCustomizationExpanded(qualityExpanded, for: config.quality.preset)
+            }
+            .controlSize(.small)
 
             if qualityExpanded {
-                Section {
+                VStack(alignment: .leading, spacing: AppSpacing.md) {
                     Picker(loc.localized("settings.streaming.videoCodec"), selection: Binding(
                         get: { config.quality.codec },
                         set: {
@@ -231,16 +290,13 @@ struct RecordingTabView: View {
                     Text(loc.localized("settings.streaming.customQualityDescription"))
                         .font(.caption)
                         .foregroundColor(AppColors.textSecondary(colorScheme))
-                } header: {
-                    Label(loc.localized("settings.streaming.customQuality"), systemImage: "gearshape")
                 }
-                .id("section-customQuality")
             }
         }
     }
 
-    private var outputPathSection: some View {
-        Section {
+    private var outputPathSectionContent: some View {
+        Group {
             HStack(spacing: 8) {
                 Text(verbatim: displayOutputPath)
                     .font(.system(size: 12))
@@ -265,13 +321,11 @@ struct RecordingTabView: View {
             Text(loc.localized("settings.streaming.outputPathDescription"))
                 .font(.caption)
                 .foregroundColor(AppColors.textSecondary(colorScheme))
-        } header: {
-            Label(loc.localized("settings.streaming.outputPath"), systemImage: "folder")
         }
     }
 
-    private var recordingBadgeSection: some View {
-        Section {
+    private var recordingBadgeSectionContent: some View {
+        Group {
             Toggle(loc.localized("media.recordingBadgeEnable"), isOn: Binding(
                 get: { config.recordingBadge.enabled },
                 set: { config.recordingBadge.enabled = $0; config.recordingBadge.save(keyPrefix: "recording_badge") }
@@ -287,10 +341,10 @@ struct RecordingTabView: View {
                     }
                 }
             }
-        } header: {
-            Label(loc.localized("media.recordingBadge"), systemImage: "circlebadge")
         }
     }
+
+    // MARK: - Helpers
 
     private var displayOutputPath: String {
         outputPath.isEmpty ? defaultOutputDirectory() : outputPath
