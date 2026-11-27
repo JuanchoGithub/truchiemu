@@ -22,6 +22,7 @@ struct GeneralSettingsView: View {
     @Binding var activePending: PendingThemeSettings
 
     @State private var contentLoaded = false
+    @State private var showThemeStudio = false
 
     @Binding var searchText: String
     @Binding var focusedSectionID: String?
@@ -185,6 +186,17 @@ struct GeneralSettingsView: View {
             }
         }
         .navigationTitle("General")
+        .sheet(isPresented: $showThemeStudio) {
+            ThemeStudioView {
+                pending.theme = themeManager.currentTheme
+                pending.appearanceMode = themeManager.appearanceMode
+                pending.customColor = themeManager.customAccentColor
+                pending.toolbarAccent = themeManager.toolbarAccentEnabled
+                pending.tintedSurfaces = themeManager.tintedSurfacesEnabled
+                activePending = pending
+                hasPendingChanges = false
+            }
+        }
         .onAppear {
             NotificationService.shared.refreshAuthorizationStatus()
             autoCheckUpdates = AppUpdateService.shared.autoCheckEnabled
@@ -431,6 +443,14 @@ struct GeneralSettingsView: View {
             .buttonStyle(.borderedProminent)
             .disabled(!themeHasChanged)
             .frame(maxWidth: .infinity)
+
+            Button {
+                showThemeStudio = true
+            } label: {
+                Label(loc.localized("themeStudio.open"), systemImage: "swatchpalette")
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.bordered)
         }
     }
 

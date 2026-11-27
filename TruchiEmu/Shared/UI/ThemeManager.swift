@@ -35,43 +35,57 @@ import AppKit
         return currentTheme.secondaryAccent
     }
 
+    // Fixed reference surfaces used to keep custom colors legible. They match
+    // the light window background and dark card background closely enough that
+    // a custom accent which passes here passes on every real surface.
+    private static let lightContrastSurface = Color(.sRGB, red: 0.93, green: 0.93, blue: 0.93, opacity: 1.0)
+    private static let darkContrastSurface = Color(.sRGB, red: 0.17, green: 0.17, blue: 0.18, opacity: 1.0)
+
+    private func safeCustom(_ color: Color, mode: AppearanceMode) -> Color {
+        AppColors.ensureContrast(
+            color,
+            on: mode == .dark ? Self.darkContrastSurface : Self.lightContrastSurface,
+            minimum: 4.6
+        )
+    }
+
     var accentDarkMode: Color {
-        if currentTheme == .custom { return customAccentColor }
+        if currentTheme == .custom { return safeCustom(customAccentColor, mode: .dark) }
         return currentTheme.accentForDarkMode
     }
 
     var accentDimmedDarkMode: Color {
-        if currentTheme == .custom { return AccentColorTheme.dimmedColor(from: customAccentColor) }
+        if currentTheme == .custom { return AccentColorTheme.dimmedColor(from: safeCustom(customAccentColor, mode: .dark)) }
         return currentTheme.accentDimmedForDarkMode
     }
 
     var accentDarkDarkMode: Color {
-        if currentTheme == .custom { return AccentColorTheme.darkColor(from: customAccentColor) }
+        if currentTheme == .custom { return AccentColorTheme.darkColor(from: safeCustom(customAccentColor, mode: .dark)) }
         return currentTheme.accentDarkForDarkMode
     }
 
     var accentSecondaryDarkMode: Color {
-        if currentTheme == .custom { return customAccentColor }
+        if currentTheme == .custom { return safeCustom(customAccentColor, mode: .dark) }
         return currentTheme.secondaryAccentForDarkMode
     }
 
     var accentLightMode: Color {
-        if currentTheme == .custom { return customAccentColor }
+        if currentTheme == .custom { return safeCustom(customAccentColor, mode: .light) }
         return currentTheme.accentForLightMode
     }
 
     var accentDimmedLightMode: Color {
-        if currentTheme == .custom { return AccentColorTheme.dimmedColor(from: customAccentColor) }
+        if currentTheme == .custom { return AccentColorTheme.dimmedColor(from: safeCustom(customAccentColor, mode: .light)) }
         return currentTheme.accentDimmedForLightMode
     }
 
     var accentDarkLightMode: Color {
-        if currentTheme == .custom { return AccentColorTheme.darkColor(from: customAccentColor) }
+        if currentTheme == .custom { return AccentColorTheme.darkColor(from: safeCustom(customAccentColor, mode: .light)) }
         return currentTheme.accentDarkForLightMode
     }
 
     var accentSecondaryLightMode: Color {
-        if currentTheme == .custom { return customAccentColor }
+        if currentTheme == .custom { return safeCustom(customAccentColor, mode: .light) }
         return currentTheme.secondaryAccentForLightMode
     }
 
@@ -88,6 +102,14 @@ import AppKit
             self.customAccentColor = Color(.sRGB, red: 0.012, green: 0.412, blue: 0.631, opacity: 1.0)
         }
 
+        refreshColorStatics()
+    }
+    
+    private var appearanceObservation: Any?
+
+    /// Recomputes the `AppColors` statics from the current theme. Kept in one
+    /// place so live previews and persisted applies cannot drift apart.
+    private func refreshColorStatics() {
         AppColors.brandAccentLight = accentLightMode
         AppColors.brandAccentDimmed = accentDimmedLightMode
         AppColors.brandAccentDark = accentDarkLightMode
@@ -97,10 +119,30 @@ import AppKit
         AppColors.brandAccentDimmedDarkMode = accentDimmedDarkMode
         AppColors.brandAccentDarkDarkMode = accentDarkDarkMode
         AppColors.brandAccentSecondaryDarkMode = accentSecondaryDarkMode
-
     }
-    
-    private var appearanceObservation: Any?
+
+    /// Applies a theme to the running UI without saving it. Used by the Theme
+    /// Studio so users can inspect a theme and still close without committing.
+    func previewTheme(_ theme: AccentColorTheme, customColor: Color? = nil) {
+        currentTheme = theme
+        if let customColor { self.customAccentColor = customColor }
+        refreshColorStatics()
+    }
+
+    /// Changes the running appearance without saving it.
+    func previewAppearance(_ mode: AppearanceMode) {
+        applyAppearanceMode(mode, save: false)
+    }
+
+    /// Toggles the toolbar accent without saving it.
+    func previewToolbarAccent(_ enabled: Bool) {
+        toolbarAccentEnabled = enabled
+    }
+
+    /// Toggles tinted surfaces without saving it.
+    func previewTintedSurfaces(_ enabled: Bool) {
+        tintedSurfacesEnabled = enabled
+    }
 
     func applySavedAppearance() {
         applyNSAppAppearance(appearanceMode)
@@ -119,15 +161,7 @@ import AppKit
             customAccentColor = customColor
         }
 
-        AppColors.brandAccentLight = accentLightMode
-        AppColors.brandAccentDimmed = accentDimmedLightMode
-        AppColors.brandAccentDark = accentDarkLightMode
-        AppColors.brandAccentSecondaryLight = accentSecondaryLightMode
-
-        AppColors.brandAccentDarkMode = accentDarkMode
-        AppColors.brandAccentDimmedDarkMode = accentDimmedDarkMode
-        AppColors.brandAccentDarkDarkMode = accentDarkDarkMode
-        AppColors.brandAccentSecondaryDarkMode = accentSecondaryDarkMode
+        refreshColorStatics()
     }
 
     func setToolbarAccent(_ enabled: Bool) {

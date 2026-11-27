@@ -114,12 +114,19 @@ struct AppColors {
     // Rest fill for action buttons. Same neutral base as the panel but with
     // a stronger accent tint, so the button reads as themed rather than gray
     // while staying distinct from the untinted panel behind it.
+    //
+    // The base is spelled out in sRGB instead of using
+    // `NSColor.controlBackgroundColor`: that dynamic color resolves against
+    // whatever appearance is current at draw time, which painted dark fills
+    // inside light-mode windows.
     static func buttonBackground(_ colorScheme: ColorScheme) -> Color {
         let tintStrength: CGFloat = colorScheme == .dark ? 0.10 : 0.08
         let accent = accentSecondaryForScheme(colorScheme)
-        guard let baseNS = NSColor.controlBackgroundColor.usingColorSpace(.sRGB),
-              let accentNS = NSColor(accent).usingColorSpace(.sRGB),
-              let blended = baseNS.blended(withFraction: tintStrength, of: accentNS) else {
+        let base = colorScheme == .dark
+            ? NSColor(srgbRed: 0.114, green: 0.114, blue: 0.121, alpha: 1)
+            : NSColor(srgbRed: 1.0, green: 1.0, blue: 1.0, alpha: 1)
+        guard let accentNS = NSColor(accent).usingColorSpace(.sRGB),
+              let blended = base.blended(withFraction: tintStrength, of: accentNS) else {
             return cardBackground(colorScheme)
         }
         return Color(nsColor: blended)
@@ -154,7 +161,7 @@ struct AppColors {
     }
 
     static func textMuted(_ colorScheme: ColorScheme) -> Color {
-        tintedText(base: colorScheme == .dark ? .oklch(0.62, 0.01, 55) : .oklch(0.48, 0.01, 55), colorScheme: colorScheme)
+        tintedText(base: colorScheme == .dark ? .oklch(0.67, 0.01, 55) : .oklch(0.48, 0.01, 55), colorScheme: colorScheme)
     }
 
     static func textOnAccent(_ colorScheme: ColorScheme) -> Color {
@@ -167,10 +174,11 @@ struct AppColors {
     }
 
     private static func textColorOnBackground(_ bg: Color, colorScheme: ColorScheme) -> Color {
-        let light = colorScheme == .dark
-            ? Color.oklch(0.97, 0.005, 55)
-            : Color.oklch(0.98, 0.005, 55)
-        return bestText(on: bg, from: [light, .oklch(0.18, 0.02, 55)], colorScheme: colorScheme)
+        // Pure white / near-black maximize the ratio on saturated fills, so a
+        // themed button or chip never lands just under AA.
+        let light = Color.white
+        let dark = Color.oklch(0.16, 0.01, 55)
+        return bestText(on: bg, from: [light, dark], colorScheme: colorScheme)
     }
 
     /// Relative luminance of a color in sRGB space (WCAG definition).
@@ -191,6 +199,40 @@ struct AppColors {
         guard let l1 = luminance(of: fg), let l2 = luminance(of: bg) else { return nil }
         let hi = max(l1, l2), lo = min(l1, l2)
         return (hi + 0.05) / (lo + 0.05)
+    }
+
+    /// Returns `color` when it already meets `minimum` contrast on
+    /// `background`. Otherwise it walks brightness (hue and saturation kept)
+    /// toward the darker or lighter end until the ratio passes. Use for
+    /// user-authored accents so a custom theme cannot produce unreadable text.
+    static func ensureContrast(
+        _ color: Color,
+        on background: Color,
+        minimum: CGFloat = 4.5
+    ) -> Color {
+        if let ratio = contrastRatio(color, background), ratio >= minimum {
+            return color
+        }
+        guard let ns = NSColor(color).usingColorSpace(.sRGB) else { return color }
+        var hue: CGFloat = 0, saturation: CGFloat = 0, brightness: CGFloat = 0, alpha: CGFloat = 0
+        ns.getHue(&hue, saturation: &saturation, brightness: &brightness, alpha: &alpha)
+
+        let backgroundLuminance = luminance(of: background) ?? 0.5
+        let goDarker = backgroundLuminance > 0.5
+        var low: CGFloat = goDarker ? 0 : brightness
+        var high: CGFloat = goDarker ? brightness : 1
+        var best = color
+        for _ in 0..<24 {
+            let mid = (low + high) / 2
+            let candidate = Color(nsColor: NSColor(calibratedHue: hue, saturation: saturation, brightness: mid, alpha: alpha))
+            if let ratio = contrastRatio(candidate, background), ratio >= minimum {
+                best = candidate
+                if goDarker { low = mid } else { high = mid }
+            } else {
+                if goDarker { high = mid } else { low = mid }
+            }
+        }
+        return best
     }
 
     /// Selected-state fill: the deep variant wins on neon themes (calmer,
@@ -943,6 +985,7 @@ extension Text {
 // Primary action button with consistent styling
 struct AppPrimaryButtonStyle: ButtonStyle {
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.isEnabled) private var isEnabled
     var accent: Color?
     var foreground: Color?
     var fullWidth: Bool = false
@@ -960,6 +1003,7 @@ struct AppPrimaryButtonStyle: ButtonStyle {
                 Capsule()
                     .fill(resolvedAccent.opacity(configuration.isPressed ? 0.7 : 1.0))
             )
+            .opacity(isEnabled ? 1.0 : 0.45)
             .scaleEffect(configuration.isPressed ? 0.97 : 1.0)
             .animation(.easeOut(duration: 0.1), value: configuration.isPressed)
     }
@@ -968,6 +1012,7 @@ struct AppPrimaryButtonStyle: ButtonStyle {
 // Secondary/outlined button style
 struct AppSecondaryButtonStyle: ButtonStyle {
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.isEnabled) private var isEnabled
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
@@ -982,6 +1027,7 @@ struct AppSecondaryButtonStyle: ButtonStyle {
                             .stroke(AppColors.cardBorder(colorScheme), lineWidth: 1)
                     )
             )
+            .opacity(isEnabled ? 1.0 : 0.45)
             .scaleEffect(configuration.isPressed ? 0.97 : 1.0)
             .animation(.easeOut(duration: 0.1), value: configuration.isPressed)
     }

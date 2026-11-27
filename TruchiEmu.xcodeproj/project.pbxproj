@@ -1007,6 +1007,7 @@
 		A2220A22D5B0D2170D33251E /* fightdata_aof.json in Resources */ = {isa = PBXBuildFile; fileRef = 38D9797E060F13CE08CCB254 /* fightdata_aof.json */; };
 		A26ACC8D96E3331141948232 /* SaveDirectoryManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1243D5911A71789DFD45D8CA /* SaveDirectoryManager.swift */; };
 		A26E08F021EE7BBD84252BBC /* fightdata_knights.json in Resources */ = {isa = PBXBuildFile; fileRef = EE717AEB2DE84BEFAA4B823E /* fightdata_knights.json */; };
+		A273B4D87FA262C71738F665 /* ThemeStudioView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98356D9ABF21CB7FD7FDF6E5 /* ThemeStudioView.swift */; };
 		A28322A5953298E4ADE4B54C /* DINOTHAWR.png in Resources */ = {isa = PBXBuildFile; fileRef = 19BE5184F223C9FB5AAB7A18 /* DINOTHAWR.png */; };
 		A28B877A77EF71164928C438 /* SwiftDataContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 229C521334BCA5CB8DE046E8 /* SwiftDataContainer.swift */; };
 		A29907414C30FFD91369DE66 /* ScreenDescriptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC1B23140952A469B6A93FAE /* ScreenDescriptor.swift */; };
@@ -2551,6 +2552,7 @@
 		97D3860BC46E0386B253BFA2 /* input_coreLabels_redream.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_redream.json; sourceTree = "<group>"; };
 		97E8840810CCDF69082F1F21 /* input_coreLabels_mame2010.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_mame2010.json; sourceTree = "<group>"; };
 		982FAA7861CA35D95681DEB7 /* dreamcast.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = dreamcast.ico; sourceTree = "<group>"; };
+		98356D9ABF21CB7FD7FDF6E5 /* ThemeStudioView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeStudioView.swift; sourceTree = "<group>"; };
 		98AE6DD2E4411FE973DB018C /* holo_geometric_alpha.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = holo_geometric_alpha.png; sourceTree = "<group>"; };
 		98F77865FDC40E9A9F11706F /* CoreOverrideBridge.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = CoreOverrideBridge.mm; sourceTree = "<group>"; };
 		99583E44C2DDF9ED625A89DD /* input_coreLabels_gearsystem.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_gearsystem.json; sourceTree = "<group>"; };
@@ -5305,6 +5307,7 @@
 				B5307A2424529A50C5E6BF26 /* SavesSettingsView.swift */,
 				7FE2570126C33B65ED8FBC84 /* SettingsView.swift */,
 				4077D568E47AFA32B755F967 /* StreamingMediaSettingsView.swift */,
+				98356D9ABF21CB7FD7FDF6E5 /* ThemeStudioView.swift */,
 				059B489FC9D5EFEFA26D850F /* TimeMachineSettingsView.swift */,
 				35D7945D8B7FD0CFC656C535 /* ToolbarSettingsView.swift */,
 				4742B5293D8F02279D7A5427 /* TVModeMainSettingsView.swift */,
@@ -7343,6 +7346,7 @@
 				03186CB22B055CEA9CB16028 /* TapeDeck.swift in Sources */,
 				2B9825A721FDA0F1C6DD4F5F /* Technical.swift in Sources */,
 				A65710823C4D0A6B42F7EA87 /* ThemeManager.swift in Sources */,
+				A273B4D87FA262C71738F665 /* ThemeStudioView.swift in Sources */,
 				4DD1329F99229306455B3B86 /* TimeMachineBuffer.swift in Sources */,
 				56EF78D2B7AEFAED9582F023 /* TimeMachineSettingsView.swift in Sources */,
 				C03C61A374B19576151E178A /* TitlebarNotificationTicker.swift in Sources */,

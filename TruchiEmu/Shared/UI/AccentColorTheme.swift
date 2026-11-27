@@ -139,18 +139,28 @@ enum AccentColorTheme: String, CaseIterable, Codable {
         }
     }
 
+    // Light-mode accent. Every case is darkened (hue and chroma kept) until it
+    // reaches WCAG AA (4.5:1) as text on the light window background. The
+    // bright `accent` above stays the brand swatch used for fills and icons.
     var accentForLightMode: Color {
         switch self {
-        case .samus: return Color(.sRGB, red: 0.020, green: 0.370, blue: 0.454, opacity: 1.0)
-        case .protoss: return Color(.sRGB, red: 0.573, green: 0.074, blue: 0.183, opacity: 1.0)
-        case .mario: return Color(.sRGB, red: 0.584, green: 0.094, blue: 0.084, opacity: 1.0)
-        case .luigi: return Color(.sRGB, red: 0.000, green: 0.460, blue: 0.211, opacity: 1.0)
-        case .halfLife: return Color(.sRGB, red: 0.700, green: 0.280, blue: 0.000, opacity: 1.0)
-        case .zelda: return Color(.sRGB, red: 0.114, green: 0.357, blue: 0.153, opacity: 1.0)
-        case .pikachu: return Color(.sRGB, red: 0.550, green: 0.420, blue: 0.000, opacity: 1.0)
-        case .kirby: return Color(.sRGB, red: 0.700, green: 0.300, blue: 0.430, opacity: 1.0)
-        case .masterChief: return Color(.sRGB, red: 0.163, green: 0.377, blue: 0.182, opacity: 1.0)
-        default: return self.accent
+        case .samus: return Color(.sRGB, red: 0.000, green: 0.424, blue: 0.548, opacity: 1.0)
+        case .chocobo: return Color(.sRGB, red: 0.648, green: 0.281, blue: 0.000, opacity: 1.0)
+        case .protoss: return Color(.sRGB, red: 0.773, green: 0.000, blue: 0.198, opacity: 1.0)
+        case .joker: return Color(.sRGB, red: 0.475, green: 0.210, blue: 0.914, opacity: 1.0)
+        case .geralt: return Color(.sRGB, red: 0.000, green: 0.449, blue: 0.284, opacity: 1.0)
+        case .megaMan: return Color(.sRGB, red: 0.000, green: 0.426, blue: 0.536, opacity: 1.0)
+        case .custom: return Color(.sRGB, red: 0.000, green: 0.424, blue: 0.548, opacity: 1.0)
+        case .mario: return Color(.sRGB, red: 0.778, green: 0.000, blue: 0.000, opacity: 1.0)
+        case .luigi: return Color(.sRGB, red: 0.000, green: 0.456, blue: 0.092, opacity: 1.0)
+        case .sonic: return Color(.sRGB, red: 0.000, green: 0.341, blue: 0.904, opacity: 1.0)
+        case .halfLife: return Color(.sRGB, red: 0.749, green: 0.143, blue: 0.000, opacity: 1.0)
+        case .kratos: return Color(.sRGB, red: 0.778, green: 0.000, blue: 0.000, opacity: 1.0)
+        case .kirby: return Color(.sRGB, red: 0.656, green: 0.240, blue: 0.416, opacity: 1.0)
+        case .zelda: return Color(.sRGB, red: 0.021, green: 0.455, blue: 0.140, opacity: 1.0)
+        case .pikachu: return Color(.sRGB, red: 0.542, green: 0.353, blue: 0.000, opacity: 1.0)
+        case .doom: return Color(.sRGB, red: 0.545, green: 0.000, blue: 0.000, opacity: 1.0)
+        case .masterChief: return Color(.sRGB, red: 0.099, green: 0.452, blue: 0.154, opacity: 1.0)
         }
     }
 
@@ -162,32 +172,52 @@ enum AccentColorTheme: String, CaseIterable, Codable {
         Self.darkColor(from: accentForLightMode)
     }
 
+    // Light-mode secondary accent. Same rule: hue-correct and AA-safe as text,
+    // so it can back both primary buttons and tinted controls on pale surfaces.
     var secondaryAccentForLightMode: Color {
         switch self {
-        case .chocobo, .geralt: return Color(.sRGB, red: 0.596, green: 0.327, blue: 0.017, opacity: 1.0)
-        case .megaMan: return Color(.sRGB, red: 0.025, green: 0.456, blue: 0.579, opacity: 1.0)
-        case .mario: return Color(.sRGB, red: 0.250, green: 0.426, blue: 0.585, opacity: 1.0)
-        case .sonic: return Color(.sRGB, red: 0.480, green: 0.400, blue: 0.000, opacity: 1.0)
-        case .kratos: return Color(.sRGB, red: 0.550, green: 0.550, blue: 0.550, opacity: 1.0)
-        case .kirby, .luigi: return Color(.sRGB, red: 0.370, green: 0.566, blue: 0.645, opacity: 1.0)
-        case .zelda, .masterChief: return Color(.sRGB, red: 0.556, green: 0.421, blue: 0.081, opacity: 1.0)
-        case .doom: return Color(.sRGB, red: 0.700, green: 0.280, blue: 0.000, opacity: 1.0)
-        case .joker: return Color(.sRGB, red: 0.013, green: 0.382, blue: 0.268, opacity: 1.0)
-        default: return self.secondaryAccent
+        case .samus: return Color(.sRGB, red: 0.000, green: 0.442, blue: 0.383, opacity: 1.0)
+        case .chocobo: return Color(.sRGB, red: 0.621, green: 0.304, blue: 0.000, opacity: 1.0)
+        case .protoss: return Color(.sRGB, red: 0.771, green: 0.000, blue: 0.225, opacity: 1.0)
+        case .joker: return Color(.sRGB, red: 0.458, green: 0.255, blue: 0.856, opacity: 1.0)
+        case .geralt: return Color(.sRGB, red: 0.000, green: 0.451, blue: 0.254, opacity: 1.0)
+        case .megaMan: return Color(.sRGB, red: 0.000, green: 0.427, blue: 0.527, opacity: 1.0)
+        case .custom: return Color(.sRGB, red: 0.000, green: 0.442, blue: 0.383, opacity: 1.0)
+        case .mario: return Color(.sRGB, red: 0.708, green: 0.197, blue: 0.000, opacity: 1.0)
+        case .luigi: return Color(.sRGB, red: 0.000, green: 0.451, blue: 0.254, opacity: 1.0)
+        case .sonic: return Color(.sRGB, red: 0.080, green: 0.368, blue: 0.811, opacity: 1.0)
+        case .halfLife: return Color(.sRGB, red: 0.616, green: 0.299, blue: 0.000, opacity: 1.0)
+        case .kratos: return Color(.sRGB, red: 0.772, green: 0.038, blue: 0.125, opacity: 1.0)
+        case .kirby: return Color(.sRGB, red: 0.741, green: 0.038, blue: 0.446, opacity: 1.0)
+        case .zelda: return Color(.sRGB, red: 0.000, green: 0.451, blue: 0.254, opacity: 1.0)
+        case .pikachu: return Color(.sRGB, red: 0.621, green: 0.304, blue: 0.000, opacity: 1.0)
+        case .doom: return Color(.sRGB, red: 0.772, green: 0.000, blue: 0.044, opacity: 1.0)
+        case .masterChief: return Color(.sRGB, red: 0.000, green: 0.451, blue: 0.254, opacity: 1.0)
         }
     }
 
+    // Dark-mode accent. Lightened (hue and chroma kept) until it reaches AA on
+    // the dark card surface. `accentForDarkMode` is what `brandAccent` uses in
+    // dark appearance, so icons and links stay legible on every theme.
     var accentForDarkMode: Color {
         switch self {
-        case .joker: return Color(.sRGB, red: 0.650, green: 0.400, blue: 1.000, opacity: 1.0)
-        case .megaMan: return Color(.sRGB, red: 0.150, green: 0.650, blue: 0.850, opacity: 1.0)
-        case .sonic: return Color(.sRGB, red: 0.300, green: 0.600, blue: 1.000, opacity: 1.0)
-        case .protoss: return Color(.sRGB, red: 1.000, green: 0.350, blue: 0.500, opacity: 1.0)
-        case .mario: return Color(.sRGB, red: 1.000, green: 0.400, blue: 0.380, opacity: 1.0)
-        case .zelda: return Color(.sRGB, red: 0.400, green: 0.720, blue: 0.440, opacity: 1.0)
-        case .doom: return Color(.sRGB, red: 1.000, green: 0.271, blue: 0.000, opacity: 1.0)
-        case .kratos: return Color(.sRGB, red: 1.000, green: 0.333, blue: 0.333, opacity: 1.0)
-        default: return self.accent
+        case .samus: return Color(.sRGB, red: 0.171, green: 0.635, blue: 0.767, opacity: 1.0)
+        case .chocobo: return Color(.sRGB, red: 0.875, green: 0.489, blue: 0.085, opacity: 1.0)
+        case .protoss: return Color(.sRGB, red: 1.000, green: 0.365, blue: 0.454, opacity: 1.0)
+        case .joker: return Color(.sRGB, red: 0.690, green: 0.478, blue: 1.000, opacity: 1.0)
+        case .geralt: return Color(.sRGB, red: 0.178, green: 0.662, blue: 0.482, opacity: 1.0)
+        case .megaMan: return Color(.sRGB, red: 0.024, green: 0.714, blue: 0.831, opacity: 1.0)
+        case .custom: return Color(.sRGB, red: 0.171, green: 0.635, blue: 0.767, opacity: 1.0)
+        case .mario: return Color(.sRGB, red: 1.000, green: 0.379, blue: 0.322, opacity: 1.0)
+        case .luigi: return Color(.sRGB, red: 0.065, green: 0.676, blue: 0.318, opacity: 1.0)
+        case .sonic: return Color(.sRGB, red: 0.259, green: 0.590, blue: 1.000, opacity: 1.0)
+        case .halfLife: return Color(.sRGB, red: 1.000, green: 0.400, blue: 0.000, opacity: 1.0)
+        case .kratos: return Color(.sRGB, red: 1.000, green: 0.380, blue: 0.308, opacity: 1.0)
+        case .kirby: return Color(.sRGB, red: 1.000, green: 0.549, blue: 0.718, opacity: 1.0)
+        case .zelda: return Color(.sRGB, red: 0.299, green: 0.660, blue: 0.341, opacity: 1.0)
+        case .pikachu: return Color(.sRGB, red: 1.000, green: 0.800, blue: 0.000, opacity: 1.0)
+        case .doom: return Color(.sRGB, red: 0.941, green: 0.430, blue: 0.365, opacity: 1.0)
+        case .masterChief: return Color(.sRGB, red: 0.328, green: 0.656, blue: 0.352, opacity: 1.0)
         }
     }
 
@@ -201,9 +231,23 @@ enum AccentColorTheme: String, CaseIterable, Codable {
 
     var secondaryAccentForDarkMode: Color {
         switch self {
-        case .protoss: return Color(.sRGB, red: 0.650, green: 0.400, blue: 1.000, opacity: 1.0)
-        case .halfLife: return Color(.sRGB, red: 0.600, green: 0.650, blue: 0.350, opacity: 1.0)
-        default: return self.secondaryAccent
+        case .samus: return Color(.sRGB, red: 0.078, green: 0.722, blue: 0.651, opacity: 1.0)
+        case .chocobo: return Color(.sRGB, red: 0.961, green: 0.620, blue: 0.043, opacity: 1.0)
+        case .protoss: return Color(.sRGB, red: 1.000, green: 0.364, blue: 0.462, opacity: 1.0)
+        case .joker: return Color(.sRGB, red: 0.661, green: 0.491, blue: 1.000, opacity: 1.0)
+        case .geralt: return Color(.sRGB, red: 0.063, green: 0.725, blue: 0.506, opacity: 1.0)
+        case .megaMan: return Color(.sRGB, red: 0.133, green: 0.827, blue: 0.933, opacity: 1.0)
+        case .custom: return Color(.sRGB, red: 0.078, green: 0.722, blue: 0.651, opacity: 1.0)
+        case .mario: return Color(.sRGB, red: 0.976, green: 0.451, blue: 0.086, opacity: 1.0)
+        case .luigi: return Color(.sRGB, red: 0.063, green: 0.725, blue: 0.506, opacity: 1.0)
+        case .sonic: return Color(.sRGB, red: 0.303, green: 0.585, blue: 1.000, opacity: 1.0)
+        case .halfLife: return Color(.sRGB, red: 0.961, green: 0.620, blue: 0.043, opacity: 1.0)
+        case .kratos: return Color(.sRGB, red: 1.000, green: 0.375, blue: 0.359, opacity: 1.0)
+        case .kirby: return Color(.sRGB, red: 0.988, green: 0.343, blue: 0.654, opacity: 1.0)
+        case .zelda: return Color(.sRGB, red: 0.063, green: 0.725, blue: 0.506, opacity: 1.0)
+        case .pikachu: return Color(.sRGB, red: 0.961, green: 0.620, blue: 0.043, opacity: 1.0)
+        case .doom: return Color(.sRGB, red: 1.000, green: 0.378, blue: 0.334, opacity: 1.0)
+        case .masterChief: return Color(.sRGB, red: 0.063, green: 0.725, blue: 0.506, opacity: 1.0)
         }
     }
 
