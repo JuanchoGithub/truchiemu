@@ -4,6 +4,7 @@ struct ShaderGameOverrideView: View {
 @Environment(\.dismiss) private var dismiss
 @Environment(\.colorScheme) private var colorScheme
 @ObservedObject private var loc = LocalizationManager.shared
+@ObservedObject private var themeManager = ThemeManager.shared
 
 let systemID: String
 let newShaderPresetID: String
@@ -112,7 +113,7 @@ Text(loc.localized("gameOverride.override"))
             }
         }
         .padding(20)
-        .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+        .background(AppColors.windowBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled))
         .frame(width: 500, height: 400)
     }
 

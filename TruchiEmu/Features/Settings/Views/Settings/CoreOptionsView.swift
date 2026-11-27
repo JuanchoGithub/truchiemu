@@ -328,6 +328,7 @@ struct CoreOptionsView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var library: ROMLibrary
     @ObservedObject private var loc = LocalizationManager.shared
+    @ObservedObject var themeManager = ThemeManager.shared
     @State private var showSearchTips = false
 
     init(coreID: String, systemID: String? = nil, gameFilename: String? = nil) {
@@ -338,7 +339,7 @@ struct CoreOptionsView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Color(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled)).ignoresSafeArea()
+                Color(AppColors.windowBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled)).ignoresSafeArea()
 
             if viewModel.isLoading {
                 VStack(spacing: 16) {

@@ -23,6 +23,7 @@ struct LibraryGridView: View {
     @ObservedObject private var raService = RetroAchievementsService.shared
     @ObservedObject private var boxArtService = BoxArtService.shared
     @ObservedObject private var libraryAutomation = LibraryAutomationCoordinator.shared
+    @ObservedObject private var themeManager = ThemeManager.shared
     @Binding var showCreateCategorySheet: Bool
     @Binding var createCategoryTargetROMs: [ROM]
     @Binding var filter: LibraryFilter
@@ -533,7 +534,7 @@ struct LibraryGridView: View {
                 AccentSegmentedControl(
                     selection: $viewMode,
                     options: [(ViewMode.grid, "square.grid.2x2"), (ViewMode.list, "list.bullet"), (ViewMode.holo, "sparkles"), (ViewMode.tv, "tv")],
-                    accentColor: ThemeManager.shared.toolbarAccentEnabled ? AppColors.brandAccent : .blue
+                    accentColor: themeManager.toolbarAccentEnabled ? AppColors.brandAccent : .blue
                 )
                 .frame(width: 132)
                 .help(loc.localized("toolbar.switchViewMode"))

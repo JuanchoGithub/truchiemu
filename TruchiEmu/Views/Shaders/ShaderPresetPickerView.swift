@@ -588,6 +588,7 @@ struct SavedPresetRowView: View {
 struct ShaderPresetPickerView: View {
 @ObservedObject var settings: ShaderWindowSettings
 @ObservedObject private var loc = LocalizationManager.shared
+@ObservedObject private var themeManager = ThemeManager.shared
 @Environment(\.colorScheme) private var colorScheme
 
 @State private var selectedCategory: CategoryFilter = .all
@@ -663,7 +664,7 @@ controller.close()
                                 .transition(.opacity)
                         }
                     }
-                    .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+                    .background(AppColors.windowBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled))
                 }
                 .frame(minWidth: 300, maxWidth: .infinity)
 
@@ -680,7 +681,7 @@ controller.close()
                             Spacer()
                         }
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+                        .background(AppColors.windowBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled))
     } else if let selectedPreset = ShaderPreset.preset(id: settings.shaderPresetID),
                        !selectedPreset.globalUniforms.isEmpty {
                         // Built-in preset with uniforms
@@ -688,14 +689,14 @@ controller.close()
                             parameterSliders
                             savePresetBar
                         }
-                        .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+                        .background(AppColors.windowBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled))
                     } else if isSlangPresetSelected, !(slangService.activePreset?.parameters ?? reflectedSlangParams).isEmpty {
                         // Slang preset with reflected parameters
                         VStack(spacing: 0) {
                             parameterSliders
                             savePresetBar
                         }
-                        .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+                        .background(AppColors.windowBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled))
                     } else if let savedPreset = savedPresets.first(where: { $0.id.uuidString == settings.shaderPresetID }),
                              !savedPreset.uniformValues.isEmpty {
                          // Saved custom preset with uniforms
@@ -703,14 +704,14 @@ controller.close()
                             parameterSliders
                             savePresetBar
                         }
-                        .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+                        .background(AppColors.windowBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled))
                     } else if !settings.uniformValues.isEmpty {
                         // Has custom uniform values (even if not from a known preset)
                         VStack(spacing: 0) {
                             parameterSliders
                             savePresetBar
                         }
-                        .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+                        .background(AppColors.windowBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled))
                     } else if isSlangPresetSelected && isReflectingParameters {
                         // Reflection is in flight; show a spinner so the user
                         // knows parameters are loading rather than staring at
@@ -736,13 +737,13 @@ controller.close()
                             Spacer()
                         }
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+                        .background(AppColors.windowBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled))
                     }
                 }
                 .frame(minWidth: 250, maxWidth: .infinity)
             }
             .background {
-                AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled)
+                AppColors.windowBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled)
                     .ignoresSafeArea()
             }
 
@@ -887,7 +888,7 @@ controller.close()
             .padding(24)
             .frame(width: 320)
             .background {
-                AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled)
+                AppColors.windowBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled)
                     .ignoresSafeArea()
             }
             .gamepadDismissable { showSaveDialog = false }
@@ -922,7 +923,7 @@ controller.close()
             .padding(24)
             .frame(width: 320)
             .background {
-                AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled)
+                AppColors.windowBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled)
                     .ignoresSafeArea()
             }
             .gamepadDismissable { renamePreset = nil }

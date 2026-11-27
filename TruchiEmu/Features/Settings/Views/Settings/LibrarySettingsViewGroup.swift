@@ -16,6 +16,7 @@ struct LibrarySettingsView: View {
     @State private var contentLoaded = false
     @ObservedObject var prefs = SystemPreferences.shared
     @ObservedObject private var loc = LocalizationManager.shared
+    @ObservedObject private var themeManager = ThemeManager.shared
     
     // Search text passed from parent view (SettingsView)
     @Binding var searchText: String
@@ -260,7 +261,7 @@ var body: some View {
                     }
                 }
                 .scrollContentBackground(.hidden)
-                .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+                .background(AppColors.windowBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled))
             } else {
                 Color.clear
                     .frame(maxWidth: .infinity, minHeight: 400)

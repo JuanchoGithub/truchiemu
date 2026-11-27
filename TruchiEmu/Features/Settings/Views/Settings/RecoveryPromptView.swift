@@ -8,6 +8,7 @@ struct RecoveryPromptView: View {
     let onDismiss: () -> Void
 
     @ObservedObject private var loc = LocalizationManager.shared
+    @ObservedObject private var themeManager = ThemeManager.shared
     @Environment(\.colorScheme) private var colorScheme
 
     @State private var isReinstalling = false
@@ -38,7 +39,7 @@ struct RecoveryPromptView: View {
             .frame(maxWidth: .infinity)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+        .background(AppColors.windowBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled))
     }
 
     private var headerSection: some View {

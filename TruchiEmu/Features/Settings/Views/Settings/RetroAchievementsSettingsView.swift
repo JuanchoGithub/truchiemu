@@ -8,6 +8,7 @@ struct RetroAchievementsSettingsView: View {
     @ObservedObject private var loc = LocalizationManager.shared
     @ObservedObject private var raCacheCoordinator = RAGameCacheCoordinator.shared
     @ObservedObject private var raMatchProgress = RAMatchProgress.shared
+    @ObservedObject private var themeManager = ThemeManager.shared
     @EnvironmentObject private var library: ROMLibrary
     @Environment(\.colorScheme) private var colorScheme
     @State private var username = ""
@@ -258,7 +259,7 @@ struct RetroAchievementsSettingsView: View {
                     }
                 }
                 .scrollContentBackground(.hidden)
-                .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+                .background(AppColors.windowBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled))
             } else {
                 Color.clear
                     .frame(maxWidth: .infinity, minHeight: 400)
@@ -649,6 +650,7 @@ struct RetroAchievementsSettingsView: View {
 
 private struct EnableRetroAchievementsPromptView: View {
     @ObservedObject private var loc = LocalizationManager.shared
+    @ObservedObject var themeManager = ThemeManager.shared
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.dismiss) private var dismiss
     @Binding var enableHardcore: Bool
@@ -690,7 +692,7 @@ private struct EnableRetroAchievementsPromptView: View {
         }
         .padding(AppSpacing.xl2)
         .frame(width: 380)
-        .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+        .background(AppColors.windowBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled))
     }
 }
 

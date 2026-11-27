@@ -3,6 +3,7 @@ import SwiftUI
 struct PPSSPAssetDownloadSheet: View {
     @ObservedObject private var loc = LocalizationManager.shared
     @ObservedObject private var assetService = PPSSPAssetService.shared
+    @ObservedObject private var themeManager = ThemeManager.shared
     @Environment(\.colorScheme) private var colorScheme
 
     private enum Phase {
@@ -30,7 +31,7 @@ struct PPSSPAssetDownloadSheet: View {
         }
         .padding(28)
         .frame(width: 460)
-        .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+        .background(AppColors.windowBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled))
         .interactiveDismissDisabled()
     }
 

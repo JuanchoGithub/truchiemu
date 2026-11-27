@@ -3,6 +3,7 @@ import SwiftUI
 struct StreamingTabView: View {
     @Environment(\.colorScheme) private var colorScheme
     @ObservedObject private var loc = LocalizationManager.shared
+    @ObservedObject private var themeManager = ThemeManager.shared
     @Binding var config: MediaConfig
     @Binding var searchText: String
     @Binding var scopedSectionID: String?
@@ -129,7 +130,7 @@ struct StreamingTabView: View {
                 }
             }
             .scrollContentBackground(.hidden)
-            .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+            .background(AppColors.windowBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled))
         }
         .onAppear {
             let destinations = config.destinations

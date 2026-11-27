@@ -3,6 +3,7 @@ import SwiftUI
 struct HelpSettingsView: View {
     @Environment(\.colorScheme) private var colorScheme
     @ObservedObject private var loc = LocalizationManager.shared
+    @ObservedObject private var themeManager = ThemeManager.shared
 
     @Binding var searchText: String
     @Binding var focusedSectionID: String?
@@ -121,7 +122,7 @@ struct HelpSettingsView: View {
                     }
                 }
                 .scrollContentBackground(.hidden)
-                .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+                .background(AppColors.windowBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled))
             } else {
                 Color.clear
                     .frame(maxWidth: .infinity, minHeight: 400)

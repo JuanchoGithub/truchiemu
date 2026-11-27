@@ -12,6 +12,7 @@ struct BezelSelectorSheet: View {
     @StateObject private var storageManager = BezelStorageManager.shared
     @Environment(\.colorScheme) private var colorScheme
     @ObservedObject private var loc = LocalizationManager.shared
+    @ObservedObject private var themeManager = ThemeManager.shared
     
     @State private var searchQuery = ""
     @State private var localBezels: [BezelStorageManager.LocalBezelInfo] = []
@@ -186,7 +187,7 @@ struct BezelSelectorSheet: View {
                 }
             }
         }
-        .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+        .background(AppColors.windowBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled))
         .frame(width: 800, height: 550)
     }
     

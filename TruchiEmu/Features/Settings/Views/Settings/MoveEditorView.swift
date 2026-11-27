@@ -5,6 +5,7 @@ struct MoveEditorView: View {
     @Environment(\.colorScheme) private var colorScheme
     @ObservedObject private var loc = LocalizationManager.shared
     @ObservedObject private var storageService = MoveListStorageService.shared
+    @ObservedObject private var themeManager = ThemeManager.shared
     private let moveListService = MoveListService.shared
 
     let gameName: String
@@ -270,7 +271,7 @@ struct MoveEditorView: View {
             }
         }
         .scrollContentBackground(.hidden)
-        .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+        .background(AppColors.windowBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled))
         .padding(AppSpacing.lg)
     }
 

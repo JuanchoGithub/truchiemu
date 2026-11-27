@@ -9,6 +9,11 @@ import AppKit
     @Published var customAccentColor: Color
     @Published var toolbarAccentEnabled: Bool
     @Published var tintedSurfacesEnabled: Bool
+    /// Bumped whenever theme/toolbar/tinted settings change so that the root
+    /// view (`ContentView`) can refresh its entire subtree in place instead of
+    /// requiring an app relaunch. `AppColors` statics are updated synchronously,
+    /// so a re-render picks up the new colors immediately.
+    @Published var themeRevision: Int = 0
 
     var accent: Color {
         if currentTheme == .custom { return customAccentColor }
@@ -145,6 +150,8 @@ import AppKit
     }
 
     func applyNSAppAppearance(_ mode: AppearanceMode) {
+        NSAnimationContext.beginGrouping()
+        NSAnimationContext.current.duration = 0
         switch mode {
         case .light:
             NSApp.appearance = NSAppearance(named: .aqua)
@@ -153,6 +160,7 @@ import AppKit
         case .automatic:
             NSApp.appearance = resolvedSystemAppearance()
         }
+        NSAnimationContext.endGrouping()
     }
 
     private static func currentSystemIsDark() -> Bool {

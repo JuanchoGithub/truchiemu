@@ -16,7 +16,7 @@ struct LibraryChip: View {
     /// Shown as a small capsule after the title. Nil or 0 hides it.
     var count: Int? = nil
     var isActive: Bool = false
-    var tint: Color = AppColors.brandAccent
+    var tint: Color? = nil
     /// Popover rows stretch to the full width. Bar chips stay at their ideal width.
     var fillsWidth: Bool = false
     var tooltip: String? = nil
@@ -24,17 +24,20 @@ struct LibraryChip: View {
 
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @ObservedObject private var themeManager = ThemeManager.shared
     @State private var isHovered = false
 
+    private var effectiveTint: Color { tint ?? AppColors.brandAccent }
+
     private var activeFill: Color {
-        AppColors.selectedFill(for: tint)
+        AppColors.selectedFill(for: effectiveTint)
     }
 
     private var foreground: Color {
         if isActive {
             return AppColors.textOnAccent(for: activeFill, colorScheme: colorScheme)
         }
-        return isHovered ? tint : AppColors.textPrimary(colorScheme)
+        return isHovered ? effectiveTint : AppColors.textPrimary(colorScheme)
     }
 
     private var fill: Color {
@@ -57,12 +60,12 @@ struct LibraryChip: View {
                     Text(verbatim: "\(count)")
                         .font(.system(size: 9, weight: .bold, design: .rounded))
                         .monospacedDigit()
-                        .foregroundStyle(isActive ? foreground : tint)
+                        .foregroundStyle(isActive ? foreground : effectiveTint)
                         .padding(.horizontal, 5)
                         .padding(.vertical, 1)
                         .background(
                             Capsule()
-                                .fill(isActive ? Color.white.opacity(0.20) : tint.opacity(0.14))
+                                .fill(isActive ? Color.white.opacity(0.20) : effectiveTint.opacity(0.14))
                         )
                 }
             }
@@ -103,8 +106,8 @@ struct LibraryChip: View {
             }
             .shadow(
                 color: isActive
-                    ? tint.opacity(isHovered ? 0.42 : 0.30)
-                    : (isHovered ? tint.opacity(0.18) : .clear),
+                    ? effectiveTint.opacity(isHovered ? 0.42 : 0.30)
+                    : (isHovered ? effectiveTint.opacity(0.18) : .clear),
                 radius: isActive ? (isHovered ? 8 : 5) : 4,
                 y: 2
             )

@@ -9,6 +9,7 @@ import SwiftUI
 struct LibraryAtmosphere: View {
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @ObservedObject private var themeManager = ThemeManager.shared
 
     @State private var driftA = false
     @State private var driftB = false
@@ -26,7 +27,7 @@ struct LibraryAtmosphere: View {
             ZStack {
                 AppColors.windowBackground(
                     colorScheme,
-                    tinted: ThemeManager.shared.tintedSurfacesEnabled
+                    tinted: themeManager.tintedSurfacesEnabled
                 )
 
                 // Leading bloom: cool accent wash behind the hero and the

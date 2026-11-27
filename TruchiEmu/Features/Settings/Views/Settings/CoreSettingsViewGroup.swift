@@ -8,6 +8,7 @@ struct CoreSettingsView: View {
     @EnvironmentObject var coreManager: CoreManager
     @ObservedObject private var prefs = SystemPreferences.shared
     @ObservedObject private var loc = LocalizationManager.shared
+    @ObservedObject private var themeManager = ThemeManager.shared
     @Environment(SystemDatabaseWrapper.self) private var systemDatabase
     @Environment(\.colorScheme) private var colorScheme
 
@@ -186,7 +187,7 @@ struct CoreSettingsView: View {
             .padding(.vertical, 12)
         }
         .scrollContentBackground(.hidden)
-        .background(AppColors.sidebarBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+        .background(AppColors.sidebarBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled))
         .overlay(alignment: .leading) {
             Rectangle()
                 .fill(AppColors.divider(colorScheme))
@@ -332,6 +333,7 @@ struct SystemCoresCardView: View {
     let system: SystemInfo
     @ObservedObject var coreManager: CoreManager
     @ObservedObject private var loc = LocalizationManager.shared
+    @ObservedObject var themeManager = ThemeManager.shared
     @Environment(\.colorScheme) private var colorScheme
     @State private var expandedCoreID: String? = nil
     @State private var showOptionsFor: String? = nil
@@ -441,7 +443,7 @@ struct SystemCoresCardView: View {
             }
         }
         .scrollContentBackground(.hidden)
-        .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+        .background(AppColors.windowBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled))
         .fileImporter(isPresented: $showImporter, allowedContentTypes: [.zip, .item], allowsMultipleSelection: false) { result in
             switch result {
             case .success(let urls):

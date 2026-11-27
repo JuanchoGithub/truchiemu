@@ -8,7 +8,9 @@ struct DetailHeroStatItem: Identifiable {
     let icon: String
     let value: String
     let unit: String
-    var tint: Color = AppColors.brandAccent
+    var tint: Color? = nil
+
+    var effectiveTint: Color { tint ?? AppColors.brandAccent }
 }
 
 struct DetailHeroStatDeck: View {
@@ -48,11 +50,11 @@ struct DetailHeroStatDeck: View {
         HStack(spacing: 8) {
             Image(systemName: item.icon)
                 .font(.system(size: 10, weight: .bold))
-                .foregroundStyle(item.tint)
+                .foregroundStyle(item.effectiveTint)
                 .frame(width: 24, height: 24)
                 .background(
                     RoundedRectangle(cornerRadius: 7, style: .continuous)
-                        .fill(item.tint.opacity(colorScheme == .dark ? 0.20 : 0.13))
+                        .fill(item.effectiveTint.opacity(colorScheme == .dark ? 0.20 : 0.13))
                 )
 
             VStack(alignment: .leading, spacing: 0) {

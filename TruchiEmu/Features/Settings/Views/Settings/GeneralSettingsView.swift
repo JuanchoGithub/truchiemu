@@ -16,7 +16,6 @@ struct GeneralSettingsView: View {
     @State private var openCriticAPIKey: String = ""
 
     @State private var pending = PendingThemeSettings()
-    @State private var showRestartConfirmation = false
     @Binding var hasPendingChanges: Bool
     @Binding var revertRequest: Int
     @Binding var applyRequest: Int
@@ -179,7 +178,7 @@ struct GeneralSettingsView: View {
                     }
                 }
                 .scrollContentBackground(.hidden)
-                .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+                .background(AppColors.windowBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled))
             } else {
                 Color.clear
                     .frame(maxWidth: .infinity, minHeight: 400)
@@ -254,20 +253,8 @@ struct GeneralSettingsView: View {
             themeManager.setToolbarAccent(pending.toolbarAccent)
             themeManager.setTintedSurfaces(pending.tintedSurfaces)
             themeManager.applyAppearanceMode(pending.appearanceMode)
+            themeManager.themeRevision += 1
             hasPendingChanges = false
-            ThemeManager.relaunchApp()
-        }
-        .confirmationDialog(
-            loc.localized("settings.theme.restartRequired"),
-            isPresented: $showRestartConfirmation,
-            titleVisibility: .visible
-        ) {
-            Button(loc.localized("settings.theme.restartNow")) {
-                ThemeManager.relaunchApp()
-            }
-            Button(loc.localized("settings.theme.later"), role: .cancel) {}
-        } message: {
-            Text(loc.localized("settings.theme.restartMessage"))
         }
     }
 
@@ -288,7 +275,7 @@ struct GeneralSettingsView: View {
         var items: [SettingsStatPill.Item] = []
         items.append(SettingsStatPill.Item(
             id: "theme",
-            number: ThemeManager.shared.currentTheme.displayName,
+            number: themeManager.currentTheme.displayName,
             label: loc.localized("settings.unit.theme"),
             icon: "paintpalette.fill"
         ))
@@ -438,8 +425,8 @@ struct GeneralSettingsView: View {
                 themeManager.applyTheme(pending.theme, customColor: pending.theme == .custom ? pending.customColor : nil)
                 themeManager.setToolbarAccent(pending.toolbarAccent)
                 themeManager.applyAppearanceMode(pending.appearanceMode)
+                themeManager.themeRevision += 1
                 hasPendingChanges = false
-                showRestartConfirmation = true
             }
             .buttonStyle(.borderedProminent)
             .disabled(!themeHasChanged)

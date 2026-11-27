@@ -18,6 +18,7 @@ struct ImageCropView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.colorScheme) private var colorScheme
     @ObservedObject private var loc = LocalizationManager.shared
+    @ObservedObject private var themeManager = ThemeManager.shared
 
     @State private var cropRect: CGRect = .zero
     @State private var imageDisplayRect: CGRect = .zero
@@ -39,7 +40,7 @@ struct ImageCropView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled)
+                AppColors.windowBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled)
                     .ignoresSafeArea()
 
                 VStack(spacing: 16) {

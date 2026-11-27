@@ -11,6 +11,7 @@ struct PerSystemSystemsColumn: View {
     @Environment(\.colorScheme) private var colorScheme
     @Environment(SystemDatabaseWrapper.self) private var systemDB
     @ObservedObject private var loc = LocalizationManager.shared
+    @ObservedObject private var themeManager = ThemeManager.shared
 
     let activeSystemIDs: Set<String>
     let selectedSystemID: String?
@@ -80,7 +81,7 @@ struct PerSystemSystemsColumn: View {
             .padding(.vertical, 12)
         }
         .scrollContentBackground(.hidden)
-        .background(AppColors.sidebarBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+        .background(AppColors.sidebarBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled))
     }
 
     @ViewBuilder
@@ -219,6 +220,7 @@ private struct PerSystemSystemRow: View, Equatable {
 struct PerSystemOptionsColumn: View {
     @Environment(\.colorScheme) private var colorScheme
     @ObservedObject private var loc = LocalizationManager.shared
+    @ObservedObject var themeManager = ThemeManager.shared
 
     let system: SystemInfo
     let isActive: Bool
@@ -267,7 +269,7 @@ struct PerSystemOptionsColumn: View {
             .padding(.vertical, 12)
         }
         .scrollContentBackground(.hidden)
-        .background(AppColors.sidebarBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+        .background(AppColors.sidebarBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled))
     }
 
     @ViewBuilder

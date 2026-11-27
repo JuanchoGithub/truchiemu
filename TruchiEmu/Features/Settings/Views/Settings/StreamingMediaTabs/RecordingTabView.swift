@@ -3,6 +3,7 @@ import SwiftUI
 struct RecordingTabView: View {
     @Environment(\.colorScheme) private var colorScheme
     @ObservedObject private var loc = LocalizationManager.shared
+    @ObservedObject var themeManager = ThemeManager.shared
     @Binding var config: MediaConfig
     @Binding var searchText: String
     @Binding var scopedSectionID: String?
@@ -143,7 +144,7 @@ struct RecordingTabView: View {
                 }
             }
             .scrollContentBackground(.hidden)
-            .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+            .background(AppColors.windowBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled))
         }
         .onAppear {
             outputPath = config.output.localPath.isEmpty ? defaultOutputDirectory() : config.output.localPath

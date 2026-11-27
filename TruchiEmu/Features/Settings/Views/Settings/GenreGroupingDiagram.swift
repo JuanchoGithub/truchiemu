@@ -19,6 +19,7 @@ struct GenreGroupingDiagram: View {
 
     @Environment(\.colorScheme) private var colorScheme
     @ObservedObject private var loc = LocalizationManager.shared
+    @ObservedObject private var themeManager = ThemeManager.shared
 
     // MARK: - Tree model
 
@@ -149,7 +150,7 @@ struct GenreGroupingDiagram: View {
     // MARK: - Drawing: background
 
     private func drawBackground(ctx: GraphicsContext, size: CGSize) {
-        let bg = ThemeManager.shared.tintedSurfacesEnabled
+        let bg = themeManager.tintedSurfacesEnabled
             ? AppColors.cardBackground(colorScheme)
             : Color(.controlBackgroundColor)
         let rect = CGRect(origin: .zero, size: size).insetBy(dx: 1, dy: 1)

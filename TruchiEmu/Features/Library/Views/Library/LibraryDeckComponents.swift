@@ -11,15 +11,17 @@ import SwiftUI
 struct DeckPlate<Content: View>: View {
     var radius: CGFloat = 16
     var isSelected: Bool = false
-    var tint: Color = AppColors.brandAccent
+    var tint: Color? = nil
     var content: Content
 
     @Environment(\.colorScheme) private var colorScheme
 
+    private var effectiveTint: Color { tint ?? AppColors.brandAccent }
+
     init(
         radius: CGFloat = 16,
         isSelected: Bool = false,
-        tint: Color = AppColors.brandAccent,
+        tint: Color? = nil,
         @ViewBuilder content: () -> Content
     ) {
         self.radius = radius
@@ -35,7 +37,7 @@ struct DeckPlate<Content: View>: View {
                     .fill(
                         isSelected
                             ? AnyShapeStyle(LinearGradient(
-                                colors: [tint.opacity(0.92), tint.opacity(0.72)],
+                                colors: [effectiveTint.opacity(0.92), effectiveTint.opacity(0.72)],
                                 startPoint: .topLeading,
                                 endPoint: .bottomTrailing))
                             : AnyShapeStyle(AppColors.cardBackground(colorScheme))
@@ -61,7 +63,7 @@ struct LibraryQuickAccessTile: View {
     let label: String
     let count: Int
     let isSelected: Bool
-    var tint: Color = AppColors.brandAccent
+    var tint: Color? = nil
     /// Wider tiles (the odd trailing one in a two-up row) lay out horizontally
     /// so the deck never shows a tile with a dead half.
     var isWide: Bool = false
@@ -72,16 +74,18 @@ struct LibraryQuickAccessTile: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var isHovered = false
 
+    private var effectiveTint: Color { tint ?? AppColors.brandAccent }
+
     private var foreground: Color {
         isSelected
-            ? AppColors.textOnAccent(for: tint, colorScheme: colorScheme)
+            ? AppColors.textOnAccent(for: effectiveTint, colorScheme: colorScheme)
             : AppColors.textPrimary(colorScheme)
     }
 
     private var accent: Color {
         isSelected
-            ? AppColors.textOnAccent(for: tint, colorScheme: colorScheme)
-            : tint
+            ? AppColors.textOnAccent(for: effectiveTint, colorScheme: colorScheme)
+            : effectiveTint
     }
 
     private var iconBadge: some View {
@@ -129,6 +133,46 @@ struct LibraryQuickAccessTile: View {
             .foregroundStyle(isSelected ? foreground.opacity(0.85) : AppColors.textTertiary(colorScheme))
     }
 
+    private var topStatRow: some View {
+        HStack(alignment: .top, spacing: 4) {
+            iconBadge
+            Spacer(minLength: 0)
+            if isSelected {
+                Circle()
+                    .fill(accent)
+                    .frame(width: 5, height: 5)
+                    .padding(.top, 3)
+            }
+        }
+    }
+
+    private var narrowStatTile: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            topStatRow
+            
+            Spacer(minLength: 10)
+            
+            countText
+            
+            labelText
+                .padding(.top, 1)
+        }
+        .padding(10)
+        .frame(maxWidth: .infinity, minHeight: 78, alignment: .topLeading)
+    }
+
+    private var backgroundPlate: some View {
+        DeckPlate(radius: 14, isSelected: isSelected, tint: effectiveTint) {
+            LinearGradient(
+                colors: isSelected
+                    ? [Color.white.opacity(0.16), Color.clear]
+                    : [Color.white.opacity(colorScheme == .dark ? 0.045 : 0.55), Color.clear],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        }
+    }
+
     var body: some View {
         Button(action: action) {
             Group {
@@ -143,43 +187,13 @@ struct LibraryQuickAccessTile: View {
                     .padding(.vertical, 8)
                     .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
                 } else {
-                    VStack(alignment: .leading, spacing: 0) {
-                        HStack(alignment: .top, spacing: 4) {
-                            iconBadge
-                            Spacer(minLength: 0)
-                            if isSelected {
-                                Circle()
-                                    .fill(accent)
-                                    .frame(width: 5, height: 5)
-                                    .padding(.top, 3)
-                            }
-                        }
-
-                        Spacer(minLength: 10)
-
-                        countText
-
-                        labelText
-                            .padding(.top, 1)
-                    }
-                    .padding(10)
-                    .frame(maxWidth: .infinity, minHeight: 78, alignment: .topLeading)
+                    narrowStatTile
                 }
             }
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        .background {
-            DeckPlate(radius: 14, isSelected: isSelected, tint: tint) {
-                LinearGradient(
-                    colors: isSelected
-                        ? [Color.white.opacity(0.16), Color.clear]
-                        : [Color.white.opacity(colorScheme == .dark ? 0.045 : 0.55), Color.clear],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-            }
-        }
+        .background(backgroundPlate)
         .overlay {
             ZStack {
                 // Hover sheen sweeping in from the top-leading corner.
@@ -206,7 +220,7 @@ struct LibraryQuickAccessTile: View {
 
                 RoundedRectangle(cornerRadius: 14, style: .continuous)
                     .strokeBorder(
-                        isHovered && !isSelected ? tint.opacity(0.35) : .clear,
+                        isHovered && !isSelected ? effectiveTint.opacity(0.35) : .clear,
                         lineWidth: 1
                     )
                 if isGamepadFocused {
@@ -217,7 +231,7 @@ struct LibraryQuickAccessTile: View {
             .allowsHitTesting(false)
         }
         .shadow(
-            color: isSelected ? tint.opacity(isHovered ? 0.34 : 0.22) : .clear,
+            color: isSelected ? effectiveTint.opacity(isHovered ? 0.34 : 0.22) : .clear,
             radius: isHovered ? 12 : 6,
             y: isHovered ? 4 : 2
         )
@@ -250,7 +264,7 @@ struct LibraryStatTile: View {
     let icon: String
     let value: String
     let unit: String
-    var tint: Color = AppColors.brandAccent
+    var tint: Color? = nil
     /// Optional 0...1 fill drawn as a hairline meter under the label. Used by
     /// the art-coverage tile so the hero carries one real data visual.
     var progress: Double? = nil
@@ -259,12 +273,14 @@ struct LibraryStatTile: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var isHovered = false
 
+    private var effectiveTint: Color { tint ?? AppColors.brandAccent }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 2) {
             HStack(spacing: 4) {
                 Image(systemName: icon)
                     .font(.system(size: 8, weight: .bold))
-                    .foregroundStyle(tint)
+                    .foregroundStyle(effectiveTint)
 
                 Text(verbatim: value)
                     .font(.system(size: 17, weight: .bold, design: .rounded))
@@ -283,13 +299,13 @@ struct LibraryStatTile: View {
 
             if let progress {
                 Capsule()
-                    .fill(tint.opacity(0.16))
+                    .fill(effectiveTint.opacity(0.16))
                     .frame(width: 44, height: 2)
                     .overlay(alignment: .leading) {
                         Capsule()
                             .fill(
                                 LinearGradient(
-                                    colors: [tint, tint.opacity(0.65)],
+                                    colors: [effectiveTint, effectiveTint.opacity(0.65)],
                                     startPoint: .leading,
                                     endPoint: .trailing
                                 )
@@ -304,11 +320,11 @@ struct LibraryStatTile: View {
         .frame(minWidth: 60, alignment: .leading)
         .background(
             RoundedRectangle(cornerRadius: 10, style: .continuous)
-                .fill(tint.opacity(colorScheme == .dark ? (isHovered ? 0.20 : 0.13) : (isHovered ? 0.16 : 0.10)))
+                .fill(effectiveTint.opacity(colorScheme == .dark ? (isHovered ? 0.20 : 0.13) : (isHovered ? 0.16 : 0.10)))
         )
         .overlay(
             RoundedRectangle(cornerRadius: 10, style: .continuous)
-                .strokeBorder(tint.opacity(isHovered ? 0.32 : 0.16), lineWidth: 1)
+                .strokeBorder(effectiveTint.opacity(isHovered ? 0.32 : 0.16), lineWidth: 1)
         )
         .scaleEffect(isHovered && !reduceMotion ? 1.04 : 1)
         .animation(reduceMotion ? nil : AppMotion.micro, value: isHovered)

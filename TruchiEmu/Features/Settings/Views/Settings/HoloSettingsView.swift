@@ -10,6 +10,7 @@ struct HoloSettingsView: View {
 
     @ObservedObject private var loc = LocalizationManager.shared
     @ObservedObject private var settings = HoloSettingsStore.shared
+    @ObservedObject private var themeManager = ThemeManager.shared
 
     @State private var specularPower: Double = HoloSettings.specularPower
     @State private var cursorInfluence: Double = HoloSettings.cursorInfluence
@@ -404,7 +405,7 @@ struct HoloSettingsView: View {
                 }
             }
             .scrollContentBackground(.hidden)
-            .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+            .background(AppColors.windowBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled))
         }
     }
 

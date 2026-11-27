@@ -20,7 +20,7 @@ struct SetupWizardView: View {
 
     var body: some View {
         ZStack {
-            AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled)
+            AppColors.windowBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled)
                 .ignoresSafeArea()
 
             VStack(spacing: 0) {
@@ -134,7 +134,7 @@ SettingsActionButton(loc.localized("wizard.skip")) {
         SystemPreferences.shared.systemLanguage = wizard.selectedRegion
 
         // Persist theme (only if different from current — no restart here, user is prompted at Settings if they want one)
-        if wizard.selectedTheme != ThemeManager.shared.currentTheme {
+        if wizard.selectedTheme != themeManager.currentTheme {
             AppSettings.set("accentTheme", value: wizard.selectedTheme)
             ThemeManager.shared.applyTheme(wizard.selectedTheme)
         }

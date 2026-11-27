@@ -4,6 +4,7 @@ struct CoreDownloadSheet: View {
     @EnvironmentObject var coreManager: CoreManager
     @EnvironmentObject var library: ROMLibrary
     @ObservedObject private var loc = LocalizationManager.shared
+    @ObservedObject private var themeManager = ThemeManager.shared
     let pending: CoreManager.PendingCoreDownload
 
     /// Selected core id. Exposed as a binding so external controllers (e.g.
@@ -172,7 +173,7 @@ init(pending: CoreManager.PendingCoreDownload, selectedCoreID: Binding<String>? 
         }
         .padding(28)
         .frame(width: 500)
-        .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+        .background(AppColors.windowBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled))
         // Auto-select best installed core when the requested core isn't installed
         .onAppear {
             // Sync from external binding if provided

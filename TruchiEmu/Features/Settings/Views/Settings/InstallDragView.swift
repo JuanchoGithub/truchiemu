@@ -4,6 +4,7 @@ import UniformTypeIdentifiers
 struct InstallDragView: View {
     @Environment(\.colorScheme) private var colorScheme
     @ObservedObject private var loc = LocalizationManager.shared
+    @ObservedObject private var themeManager = ThemeManager.shared
     @State private var isDragOverApplications = false
     @State private var isInstalling = false
     @State private var errorMessage: String?
@@ -89,7 +90,7 @@ struct InstallDragView: View {
         }
         .padding(AppSpacing.xl5)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+        .background(AppColors.windowBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled))
     }
 
     private func handleDrop(providers: [NSItemProvider]) -> Bool {

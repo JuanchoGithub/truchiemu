@@ -9,6 +9,7 @@ struct SettingsView: View {
     @EnvironmentObject var controllerService: ControllerService
     @Environment(\.colorScheme) private var colorScheme
     @ObservedObject private var loc = LocalizationManager.shared
+    @ObservedObject private var themeManager = ThemeManager.shared
     @State private var hoveredPage: Page? = nil
 
     enum SidebarSection: String, CaseIterable, Identifiable {
@@ -345,7 +346,7 @@ struct SettingsView: View {
             // the sidebars their fixed widths first.
             detailContent
                 .id("\(selectedPage.rawValue)-\(deepLinkID)")
-                .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+                .background(AppColors.windowBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled))
                 .frame(minWidth: 630, maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
                 .frame(minWidth: 0, maxHeight: .infinity, alignment: .topLeading)
                 .clipped()
@@ -604,7 +605,7 @@ struct SettingsView: View {
             .padding(.vertical, 12)
         }
         .scrollContentBackground(.hidden)
-        .background(AppColors.sidebarBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+        .background(AppColors.sidebarBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled))
     }
 
     private func handleSystemSelection(_ system: SystemInfo) {
@@ -881,7 +882,7 @@ struct SettingsView: View {
             items.append(DeckStatItem(
                 id: "theme",
                 icon: "paintpalette.fill",
-                value: ThemeManager.shared.currentTheme.displayName,
+                value: themeManager.currentTheme.displayName,
                 unit: loc.localized("settings.unit.theme")
             ))
             items.append(DeckStatItem(
@@ -1108,7 +1109,7 @@ private struct WindowCloseInterceptor: NSViewRepresentable {
                 tm.setToolbarAccent(pending.toolbarAccent)
                 tm.setTintedSurfaces(pending.tintedSurfaces)
                 tm.applyAppearanceMode(pending.appearanceMode)
-                ThemeManager.relaunchApp()
+                tm.themeRevision += 1
                 return false
             case .alertSecondButtonReturn:
                 onRevert()

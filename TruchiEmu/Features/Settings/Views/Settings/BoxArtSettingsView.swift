@@ -26,6 +26,7 @@ struct BoxArtSettingsView: View {
     
     @ObservedObject private var loc = LocalizationManager.shared
     @ObservedObject private var syncCoordinator = MetadataSyncCoordinator.shared
+    @ObservedObject var themeManager = ThemeManager.shared
     
     init(searchText: Binding<String> = .constant(""),
          focusedSectionID: Binding<String?> = .constant(nil),
@@ -189,7 +190,7 @@ struct BoxArtSettingsView: View {
                 }
             }
             .scrollContentBackground(.hidden)
-            .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+            .background(AppColors.windowBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled))
         }
         .onAppear {
             username = BoxArtService.shared.credentials?.username ?? ""

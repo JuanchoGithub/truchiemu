@@ -8,6 +8,7 @@ struct ManualGameMatchSheet: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.colorScheme) private var colorScheme
     @ObservedObject private var loc = LocalizationManager.shared
+    @ObservedObject private var themeManager = ThemeManager.shared
 
     let rom: ROM
     let onComplete: (String) -> Void
@@ -44,7 +45,7 @@ struct ManualGameMatchSheet: View {
             footer
         }
         .frame(width: 760, height: 620)
-        .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+        .background(AppColors.windowBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled))
         .task {
             await loadCandidates()
         }
@@ -269,7 +270,7 @@ struct ManualGameMatchSheet: View {
         }
         .padding(.horizontal, AppSpacing.xl)
         .padding(.vertical, AppSpacing.lg)
-        .background(AppColors.surface(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+        .background(AppColors.surface(colorScheme, tinted: themeManager.tintedSurfacesEnabled))
     }
 
     // MARK: - Actions

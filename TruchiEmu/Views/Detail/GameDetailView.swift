@@ -8,6 +8,7 @@ struct GameDetailView: View {
     @EnvironmentObject var categoryManager: CategoryManager
     @ObservedObject var sysPrefs = SystemPreferences.shared
     @ObservedObject private var boxArtService = BoxArtService.shared
+    @ObservedObject var themeManager = ThemeManager.shared
     @Environment(\.dismiss) var dismiss
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.accessibilityReduceMotion) var reduceMotion
@@ -204,7 +205,7 @@ struct GameDetailView: View {
         }
         .scrollContentBackground(.hidden)
         .frame(width: 292)
-        .background(AppColors.sidebarBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+        .background(AppColors.sidebarBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled))
         .overlay(alignment: .leading) {
             Divider().overlay(AppColors.divider(colorScheme))
         }
@@ -433,7 +434,7 @@ struct GameDetailView: View {
                         .transition(.move(edge: .bottom).combined(with: .opacity))
                 }
             }
-            .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+            .background(AppColors.windowBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled))
             .animation(.easeInOut(duration: 0.2), value: manualAction.isVisible)
         }
 	.onAppear {
@@ -677,7 +678,7 @@ struct GameDetailView: View {
         .padding(.top, 10)
         .padding(.bottom, 12)
         .padding(.horizontal, 8)
-        .background(AppColors.sidebarBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+        .background(AppColors.sidebarBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled))
     }
 
     func sidebarItem(for section: DetailSection) -> some View {
@@ -1128,7 +1129,7 @@ struct GameDetailView: View {
         .padding(.horizontal, 16)
         .padding(.vertical, 11)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(AppColors.surface(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+        .background(AppColors.surface(colorScheme, tinted: themeManager.tintedSurfacesEnabled))
         .overlay(alignment: .top) {
             Divider().overlay(AppColors.divider(colorScheme))
         }

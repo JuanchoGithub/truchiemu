@@ -11,6 +11,7 @@ struct GamingIconBrowserView: View {
     @Environment(\.colorScheme) private var colorScheme
     @ObservedObject private var loc = LocalizationManager.shared
     @ObservedObject private var iconService = GamingIconService.shared
+    @ObservedObject private var themeManager = ThemeManager.shared
     @State private var searchText: String = ""
 
     private var isSearching: Bool {
@@ -24,7 +25,7 @@ struct GamingIconBrowserView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled)
+                AppColors.windowBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled)
                     .ignoresSafeArea()
 
                 switch iconService.state {

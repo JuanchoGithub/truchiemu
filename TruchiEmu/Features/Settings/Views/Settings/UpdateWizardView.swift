@@ -9,6 +9,7 @@ struct UpdateWizardView: View {
 
     @ObservedObject private var updateService = AppUpdateService.shared
     @ObservedObject private var loc = LocalizationManager.shared
+    @ObservedObject private var themeManager = ThemeManager.shared
     @Environment(\.colorScheme) private var colorScheme
 
     @State private var expandedReleaseIDs: Set<String> = []
@@ -29,7 +30,7 @@ struct UpdateWizardView: View {
             .frame(maxWidth: .infinity)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+        .background(AppColors.windowBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled))
     }
 
     // MARK: - Header

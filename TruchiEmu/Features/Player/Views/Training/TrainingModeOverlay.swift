@@ -3,6 +3,7 @@ import SwiftUI
 struct TrainingModeOverlay: View {
     @ObservedObject var viewModel: TrainingModeOverlayViewModel
     @ObservedObject private var loc = LocalizationManager.shared
+    @ObservedObject private var themeManager = ThemeManager.shared
     @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
@@ -97,7 +98,7 @@ struct TrainingModeOverlay: View {
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 10)
-            .background(AppColors.toolbarBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+            .background(AppColors.toolbarBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled))
 
             Divider()
 

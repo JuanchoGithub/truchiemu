@@ -23,6 +23,7 @@ struct SystemSidebarView: View {
     @ObservedObject private var raService = RetroAchievementsService.shared
     @ObservedObject private var gamepadNav = GamepadNavigationManager.shared
     @ObservedObject private var holo = HoloSaliencyService.shared
+    @ObservedObject private var themeManager = ThemeManager.shared
     @Binding var selectedFilter: LibraryFilter
     @Binding var showCreateCategorySheet: Bool
     @Binding var editingCategory: GameCategory?
@@ -303,7 +304,7 @@ struct SystemSidebarView: View {
         .padding(.horizontal, 8)
         .padding(.top, 12)
         .padding(.bottom, 8)
-        .background(AppColors.sidebarBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+        .background(AppColors.sidebarBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled))
 
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
@@ -441,7 +442,7 @@ struct SystemSidebarView: View {
         }
         .background(
             ZStack {
-                AppColors.sidebarBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled)
+                AppColors.sidebarBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled)
                 AppRetroEffects.scanlineOverlay(opacity: 0.06)
             }
         )
@@ -928,6 +929,7 @@ struct EditCategorySheet: View {
     @EnvironmentObject var categoryManager: CategoryManager
     @EnvironmentObject var library: ROMLibrary
     @ObservedObject private var loc = LocalizationManager.shared
+    @ObservedObject private var themeManager = ThemeManager.shared
     @StateObject private var draft: CategoryDraft
 
     init(category: GameCategory) {
@@ -941,7 +943,7 @@ struct EditCategorySheet: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled)
+                AppColors.windowBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled)
                     .ignoresSafeArea()
                 
                 Form {
@@ -1037,6 +1039,7 @@ struct RenameSystemSheet: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.colorScheme) private var colorScheme
     @ObservedObject private var loc = LocalizationManager.shared
+    @ObservedObject private var themeManager = ThemeManager.shared
     var system: SystemInfo
     var onRename: (String) -> Void
 
@@ -1047,7 +1050,7 @@ struct RenameSystemSheet: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled)
+                AppColors.windowBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled)
                     .ignoresSafeArea()
 
                 Form {
@@ -1161,6 +1164,7 @@ struct SFSymbolBrowserView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.colorScheme) private var colorScheme
     @ObservedObject private var loc = LocalizationManager.shared
+    @ObservedObject private var themeManager = ThemeManager.shared
     @State private var searchText: String = ""
 
     private let catalog = SFSymbolCatalog.shared
@@ -1175,7 +1179,7 @@ struct SFSymbolBrowserView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled)
+                AppColors.windowBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled)
                     .ignoresSafeArea()
 
                 ScrollView {

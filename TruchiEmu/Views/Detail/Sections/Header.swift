@@ -147,8 +147,8 @@ extension GameDetailView {
             LinearGradient(
                 stops: [
                     .init(color: .clear, location: 0.42),
-                    .init(color: AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled).opacity(0.9), location: 0.9),
-                    .init(color: AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled), location: 1.0)
+                    .init(color: AppColors.windowBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled).opacity(0.9), location: 0.9),
+                    .init(color: AppColors.windowBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled), location: 1.0)
                 ],
                 startPoint: .top,
                 endPoint: .bottom

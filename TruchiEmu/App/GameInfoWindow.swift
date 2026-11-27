@@ -7,6 +7,7 @@ struct GameInfoWindow: View {
 	@Environment(\.colorScheme) private var colorScheme
 	@Environment(\.dismiss) private var dismiss
 	@ObservedObject private var loc = LocalizationManager.shared
+	@ObservedObject private var themeManager = ThemeManager.shared
 
 	var body: some View {
 		Group {
@@ -46,7 +47,7 @@ struct GameInfoWindow: View {
 			}
 		}
 		.frame(minWidth: 900, minHeight: 700)
-		.background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+		.background(AppColors.windowBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled))
 		.onReceive(NotificationCenter.default.publisher(for: .libraryROMsRemoved)) { notification in
 			guard let removedIDs = notification.object as? Set<UUID>,
 				  let romID, removedIDs.contains(romID) else { return }

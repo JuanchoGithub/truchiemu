@@ -3,6 +3,7 @@ import SwiftUI
 struct HelpWindowView: View {
     @Environment(\.colorScheme) private var colorScheme
     @ObservedObject private var loc = LocalizationManager.shared
+    @ObservedObject private var themeManager = ThemeManager.shared
     @State private var selectedSection: HelpSection = .shortcuts
     @State private var sectionHover: HelpSection? = nil
 
@@ -39,7 +40,7 @@ struct HelpWindowView: View {
             detailContent
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
-        .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+        .background(AppColors.windowBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled))
     }
 
     private var sidebar: some View {
@@ -87,7 +88,7 @@ struct HelpWindowView: View {
             .padding(.vertical, 12)
         }
         .scrollContentBackground(.hidden)
-        .background(AppColors.sidebarBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+        .background(AppColors.sidebarBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled))
         .frame(width: 200)
     }
 

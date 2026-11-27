@@ -576,11 +576,13 @@ private struct DetailFactCell: View {
 /// after a play session sweeps to the new value instead of jumping.
 struct DetailProgressRing: View {
     let fraction: Double
-    var tint: Color = AppColors.brandAccent
+    var tint: Color? = nil
     var size: CGFloat = 78
     var lineWidth: CGFloat = 8
 
     @Environment(\.colorScheme) private var colorScheme
+
+    private var effectiveTint: Color { tint ?? AppColors.brandAccent }
 
     private var clamped: Double {
         min(max(fraction, 0), 1)
@@ -589,13 +591,13 @@ struct DetailProgressRing: View {
     var body: some View {
         ZStack {
             Circle()
-                .stroke(tint.opacity(colorScheme == .dark ? 0.18 : 0.14), lineWidth: lineWidth)
+                .stroke(effectiveTint.opacity(colorScheme == .dark ? 0.18 : 0.14), lineWidth: lineWidth)
 
             Circle()
                 .trim(from: 0, to: max(0.001, clamped))
                 .stroke(
                     AngularGradient(
-                        colors: [tint.opacity(0.55), tint, tint.opacity(0.75)],
+                        colors: [effectiveTint.opacity(0.55), effectiveTint, effectiveTint.opacity(0.75)],
                         center: .center,
                         startAngle: .degrees(-90),
                         endAngle: .degrees(270)

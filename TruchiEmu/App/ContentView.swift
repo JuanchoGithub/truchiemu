@@ -13,6 +13,7 @@ let games: [ROM]
 struct ContentView: View {
     @Environment(\.colorScheme) private var colorScheme
     @ObservedObject private var loc = LocalizationManager.shared
+    @ObservedObject private var themeManager = ThemeManager.shared
     @Environment(\.openSettings) private var openSettings
     @Environment(\.openWindow) var openWindow
     @EnvironmentObject var library: ROMLibrary
@@ -418,7 +419,7 @@ applyShaderOverrides(systemID: data.systemID, selectedGameIDs: selectedGameIDs)
             }
         }
 // Set ideal window size so the window doesn't start stretched larger than needed
-.background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+.background(AppColors.windowBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled))
 .frame(minWidth: 1000, idealWidth: 1200, minHeight: 650, idealHeight: 750)
 .toolbar {
 TickerToolbarContent()

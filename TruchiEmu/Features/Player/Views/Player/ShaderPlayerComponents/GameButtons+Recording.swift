@@ -181,6 +181,7 @@ private struct StreamPickerView: View {
     let hasCustomKey: Bool
     let dismissAction: () -> Void
     @ObservedObject private var loc = LocalizationManager.shared
+    @ObservedObject private var themeManager = ThemeManager.shared
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.dismiss) var dismiss
     @State private var sheetFocusIndex: Int = 0
@@ -313,7 +314,7 @@ private struct StreamPickerView: View {
                 }
             }
         }
-        .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+        .background(AppColors.windowBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled))
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .gamepadSheetNav(
             isPresented: $isDropdownShown,

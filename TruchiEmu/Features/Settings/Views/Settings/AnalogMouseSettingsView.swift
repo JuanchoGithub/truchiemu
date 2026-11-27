@@ -7,6 +7,7 @@ struct AnalogMouseSettingsView: View {
     @EnvironmentObject var library: ROMLibrary
     @Environment(SystemDatabaseWrapper.self) private var systemDatabase
     @ObservedObject private var loc = LocalizationManager.shared
+    @ObservedObject private var themeManager = ThemeManager.shared
     @EnvironmentObject var controllerService: ControllerService
 
     @State private var selectedSystemID: String = AppSettings.getString("analogMouse_selectedSystem", defaultValue: "dos") ?? "dos"
@@ -264,7 +265,7 @@ struct AnalogMouseSettingsView: View {
                     }
                 }
                 .scrollContentBackground(.hidden)
-                .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+                .background(AppColors.windowBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled))
             } else {
                 Color.clear
                     .frame(maxWidth: .infinity, minHeight: 400)

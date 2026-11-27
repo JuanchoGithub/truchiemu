@@ -265,6 +265,7 @@ struct GamepadNavCardContent: View {
     @Environment(\.colorScheme) private var colorScheme
     @ObservedObject private var loc = LocalizationManager.shared
     @ObservedObject private var configManager = GamepadNavConfigManager.shared
+    @ObservedObject var themeManager = ThemeManager.shared
 
     @Binding var searchText: String
     let scopedSectionID: String?
@@ -443,7 +444,7 @@ struct GamepadNavCardContent: View {
                     }
                 }
                 .scrollContentBackground(.hidden)
-                .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+                .background(AppColors.windowBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled))
             } else {
                 Color.clear
                     .frame(maxWidth: .infinity, minHeight: 400)
@@ -577,6 +578,7 @@ struct HotkeyTabCardContent: View {
     @Environment(\.colorScheme) private var colorScheme
     @ObservedObject private var loc = LocalizationManager.shared
     @ObservedObject private var hotkeyManager = HotkeyConfigManager.shared
+    @ObservedObject var themeManager = ThemeManager.shared
 
     let tab: HotkeyTab
     let sections: [HotkeyConfigSettingsView.SectionDescriptor]
@@ -656,7 +658,7 @@ struct HotkeyTabCardContent: View {
                     }
                 }
                 .scrollContentBackground(.hidden)
-                .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+                .background(AppColors.windowBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled))
             } else {
                 Color.clear
                     .frame(maxWidth: .infinity, minHeight: 400)

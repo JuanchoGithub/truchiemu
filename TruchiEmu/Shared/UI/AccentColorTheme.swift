@@ -58,7 +58,7 @@ enum AccentColorTheme: String, CaseIterable, Codable {
         case .protoss: return Color(.sRGB, red: 0.882, green: 0.114, blue: 0.282, opacity: 1.0)
         case .joker: return Color(.sRGB, red: 0.486, green: 0.227, blue: 0.929, opacity: 1.0)
         case .geralt: return Color(.sRGB, red: 0.020, green: 0.588, blue: 0.412, opacity: 1.0)
-        case .megaMan: return Color(.sRGB, red: 0.012, green: 0.412, blue: 0.631, opacity: 1.0)
+        case .megaMan: return Color(.sRGB, red: 0.024, green: 0.714, blue: 0.831, opacity: 1.0)
         case .custom: return Color(.sRGB, red: 0.031, green: 0.569, blue: 0.698, opacity: 1.0)
         case .mario: return Color(.sRGB, red: 0.898, green: 0.145, blue: 0.129, opacity: 1.0)
         case .luigi: return Color(.sRGB, red: 0.000, green: 0.659, blue: 0.302, opacity: 1.0)
@@ -80,7 +80,7 @@ enum AccentColorTheme: String, CaseIterable, Codable {
         case .protoss: return Color(.sRGB, red: 0.757, green: 0.086, blue: 0.220, opacity: 1.0)
         case .joker: return Color(.sRGB, red: 0.408, green: 0.180, blue: 0.800, opacity: 1.0)
         case .geralt: return Color(.sRGB, red: 0.016, green: 0.490, blue: 0.341, opacity: 1.0)
-        case .megaMan: return Color(.sRGB, red: 0.010, green: 0.345, blue: 0.529, opacity: 1.0)
+        case .megaMan: return Color(.sRGB, red: 0.020, green: 0.600, blue: 0.698, opacity: 1.0)
         case .custom: return Color(.sRGB, red: 0.024, green: 0.478, blue: 0.588, opacity: 1.0)
         case .mario: return Self.dimmedColor(from: Color(.sRGB, red: 0.898, green: 0.145, blue: 0.129, opacity: 1.0))
         case .luigi: return Self.dimmedColor(from: Color(.sRGB, red: 0.000, green: 0.659, blue: 0.302, opacity: 1.0))
@@ -102,7 +102,7 @@ enum AccentColorTheme: String, CaseIterable, Codable {
         case .protoss: return Color(.sRGB, red: 0.596, green: 0.059, blue: 0.157, opacity: 1.0)
         case .joker: return Color(.sRGB, red: 0.318, green: 0.125, blue: 0.647, opacity: 1.0)
         case .geralt: return Color(.sRGB, red: 0.012, green: 0.384, blue: 0.267, opacity: 1.0)
-        case .megaMan: return Color(.sRGB, red: 0.008, green: 0.271, blue: 0.416, opacity: 1.0)
+        case .megaMan: return Color(.sRGB, red: 0.017, green: 0.500, blue: 0.582, opacity: 1.0)
         case .custom: return Color(.sRGB, red: 0.016, green: 0.333, blue: 0.408, opacity: 1.0)
         case .mario: return Self.darkColor(from: Color(.sRGB, red: 0.898, green: 0.145, blue: 0.129, opacity: 1.0))
         case .luigi: return Self.darkColor(from: Color(.sRGB, red: 0.000, green: 0.659, blue: 0.302, opacity: 1.0))
@@ -119,23 +119,23 @@ enum AccentColorTheme: String, CaseIterable, Codable {
 
     var secondaryAccent: Color {
         switch self {
-        case .samus: return Color(.sRGB, red: 0.020, green: 0.588, blue: 0.412, opacity: 1.0)
-        case .chocobo: return Color(.sRGB, red: 0.882, green: 0.114, blue: 0.282, opacity: 1.0)
-        case .protoss: return Color(.sRGB, red: 0.486, green: 0.227, blue: 0.929, opacity: 1.0)
-        case .joker: return Color(.sRGB, red: 0.020, green: 0.588, blue: 0.412, opacity: 1.0)
-        case .geralt: return Color(.sRGB, red: 0.851, green: 0.467, blue: 0.024, opacity: 1.0)
-        case .megaMan: return Color(.sRGB, red: 0.039, green: 0.702, blue: 0.890, opacity: 1.0)
-        case .custom: return Color(.sRGB, red: 0.020, green: 0.588, blue: 0.412, opacity: 1.0)
-        case .mario: return Color(.sRGB, red: 0.357, green: 0.608, blue: 0.835, opacity: 1.0)
-        case .luigi: return Color(.sRGB, red: 0.529, green: 0.808, blue: 0.922, opacity: 1.0)
-        case .sonic: return Color(.sRGB, red: 1.000, green: 0.843, blue: 0.000, opacity: 1.0)
-        case .halfLife: return Color(.sRGB, red: 0.333, green: 0.420, blue: 0.184, opacity: 1.0)
-        case .kratos: return Color(.sRGB, red: 0.961, green: 0.961, blue: 0.961, opacity: 1.0)
-        case .kirby: return Color(.sRGB, red: 0.529, green: 0.808, blue: 0.922, opacity: 1.0)
-        case .zelda: return Color(.sRGB, red: 0.855, green: 0.647, blue: 0.125, opacity: 1.0)
-        case .pikachu: return Color(.sRGB, red: 0.898, green: 0.145, blue: 0.129, opacity: 1.0)
-        case .doom: return Color(.sRGB, red: 1.000, green: 0.400, blue: 0.000, opacity: 1.0)
-        case .masterChief: return Color(.sRGB, red: 0.855, green: 0.647, blue: 0.125, opacity: 1.0)
+        case .samus: return Color(.sRGB, red: 0.078, green: 0.722, blue: 0.651, opacity: 1.0)   // teal, analogous to cyan
+        case .chocobo: return Color(.sRGB, red: 0.961, green: 0.620, blue: 0.043, opacity: 1.0) // amber, lighter orange
+        case .protoss: return Color(.sRGB, red: 0.957, green: 0.247, blue: 0.369, opacity: 1.0) // rose, lighter red
+        case .joker: return Color(.sRGB, red: 0.545, green: 0.361, blue: 0.965, opacity: 1.0)   // violet, lighter purple
+        case .geralt: return Color(.sRGB, red: 0.063, green: 0.725, blue: 0.506, opacity: 1.0)  // emerald, lighter green
+        case .megaMan: return Color(.sRGB, red: 0.133, green: 0.827, blue: 0.933, opacity: 1.0) // light cyan
+        case .custom: return Color(.sRGB, red: 0.078, green: 0.722, blue: 0.651, opacity: 1.0)  // teal, matches cyan base
+        case .mario: return Color(.sRGB, red: 0.976, green: 0.451, blue: 0.086, opacity: 1.0)   // orange, lighter red
+        case .luigi: return Color(.sRGB, red: 0.063, green: 0.725, blue: 0.506, opacity: 1.0)   // emerald, lighter green
+        case .sonic: return Color(.sRGB, red: 0.231, green: 0.510, blue: 0.965, opacity: 1.0)   // blue, lighter blue
+        case .halfLife: return Color(.sRGB, red: 0.961, green: 0.620, blue: 0.043, opacity: 1.0) // amber, lighter orange
+        case .kratos: return Color(.sRGB, red: 0.937, green: 0.267, blue: 0.267, opacity: 1.0)  // red, lighter dark-red
+        case .kirby: return Color(.sRGB, red: 0.925, green: 0.282, blue: 0.600, opacity: 1.0)   // pink, lighter pink
+        case .zelda: return Color(.sRGB, red: 0.063, green: 0.725, blue: 0.506, opacity: 1.0)   // emerald, lighter green
+        case .pikachu: return Color(.sRGB, red: 0.961, green: 0.620, blue: 0.043, opacity: 1.0) // amber, lighter yellow
+        case .doom: return Color(.sRGB, red: 0.863, green: 0.149, blue: 0.149, opacity: 1.0)    // red, lighter dark-red
+        case .masterChief: return Color(.sRGB, red: 0.063, green: 0.725, blue: 0.506, opacity: 1.0) // emerald, lighter green
         }
     }
 

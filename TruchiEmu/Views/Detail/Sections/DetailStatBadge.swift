@@ -7,19 +7,21 @@ struct DetailStatBadge: View {
     let icon: String
     let value: String
     let unit: String
-    var tint: Color = AppColors.brandAccent
+    var tint: Color? = nil
 
     @Environment(\.colorScheme) private var colorScheme
+
+    private var effectiveTint: Color { tint ?? AppColors.brandAccent }
 
     var body: some View {
         HStack(spacing: 6) {
             Image(systemName: icon)
                 .font(.system(size: 9, weight: .bold))
-                .foregroundStyle(tint)
+                .foregroundStyle(effectiveTint)
                 .frame(width: 16, height: 16)
                 .background(
                     RoundedRectangle(cornerRadius: 5, style: .continuous)
-                        .fill(tint.opacity(colorScheme == .dark ? 0.20 : 0.13))
+                        .fill(effectiveTint.opacity(colorScheme == .dark ? 0.20 : 0.13))
                 )
 
             VStack(alignment: .leading, spacing: 0) {

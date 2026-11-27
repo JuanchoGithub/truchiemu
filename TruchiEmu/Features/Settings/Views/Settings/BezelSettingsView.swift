@@ -8,6 +8,7 @@ struct BezelSettingsView: View {
     @ObservedObject private var apiService = BezelAPIService.shared
     @ObservedObject private var storageManager = BezelStorageManager.shared
     @ObservedObject private var loc = LocalizationManager.shared
+    @ObservedObject private var themeManager = ThemeManager.shared
     @Environment(SystemDatabaseWrapper.self) private var systemDatabase
 
     @State private var downloadResult: String?
@@ -135,7 +136,7 @@ struct BezelSettingsView: View {
                     }
                 }
                 .scrollContentBackground(.hidden)
-                .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+                .background(AppColors.windowBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled))
             } else {
                 Color.clear
                     .frame(maxWidth: .infinity, minHeight: 400)

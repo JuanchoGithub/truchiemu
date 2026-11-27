@@ -4,6 +4,7 @@ struct HelpSheetView: View {
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.dismiss) private var dismiss
     @ObservedObject private var loc = LocalizationManager.shared
+    @ObservedObject private var themeManager = ThemeManager.shared
     @State private var selectedSection: HelpWindowView.HelpSection = .quickStart
     @State private var sectionHover: HelpWindowView.HelpSection? = nil
 
@@ -24,7 +25,7 @@ struct HelpSheetView: View {
             }
         }
         .frame(minWidth: 560, minHeight: 440, maxHeight: 600)
-        .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+        .background(AppColors.windowBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled))
         .background {
             Button("") { dismiss() }
                 .keyboardShortcut("w", modifiers: .command)

@@ -8,6 +8,7 @@ struct ExtractedROMCacheSettingsView: View {
     @State private var showInfo = false
     @State private var contentLoaded = false
     @ObservedObject private var loc = LocalizationManager.shared
+    @ObservedObject var themeManager = ThemeManager.shared
 
     private var cacheSizeString: String {
         ByteCountFormatter.string(fromByteCount: cacheSize, countStyle: .file)
@@ -86,7 +87,7 @@ struct ExtractedROMCacheSettingsView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 .scrollContentBackground(.hidden)
-                .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+                .background(AppColors.windowBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled))
             } else {
                 Color.clear
                     .frame(maxWidth: .infinity, minHeight: 400)

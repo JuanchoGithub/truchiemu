@@ -11,6 +11,7 @@ struct AppUpdateModeView: View {
     @Environment(\.openURL) private var openURL
     @ObservedObject private var loc = LocalizationManager.shared
     @ObservedObject private var updateService = AppUpdateService.shared
+    @ObservedObject private var themeManager = ThemeManager.shared
 
     @State private var isChecking = false
     @State private var checkError: String?
@@ -122,7 +123,7 @@ struct AppUpdateModeView: View {
         }
         .padding(AppSpacing.xl3)
         .frame(minWidth: 560, minHeight: 560)
-        .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+        .background(AppColors.windowBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled))
         .onAppear {
             // Force-update autocheck while in Update Mode so the user is pinged
             // the moment a fixing release goes live.

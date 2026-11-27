@@ -86,11 +86,12 @@ struct DragPreviewCard: View {
     let rom: ROM
     let preloadedImage: NSImage?
     @Environment(\.colorScheme) private var colorScheme
+    @ObservedObject private var themeManager = ThemeManager.shared
 
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 12)
-                .fill(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled).opacity(0.9))
+                .fill(AppColors.windowBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled).opacity(0.9))
         .shadow(color: .black.opacity(0.4), radius: 8, y: 4)
       
       // Fast, synchronous path so macOS accepts the drag view immediately

@@ -13,7 +13,7 @@ import SwiftUI
 /// Small uppercase tag above a title, e.g. "SETTINGS" or "NINTENDO".
 struct DeckEyebrow: View {
     let text: String
-    var tint: Color = AppColors.brandAccent
+    var tint: Color { AppColors.brandAccent }
 
     @Environment(\.colorScheme) private var colorScheme
 
@@ -45,7 +45,9 @@ struct DeckStatItem: Identifiable {
     let icon: String
     let value: String
     let unit: String
-    var tint: Color = AppColors.brandAccent
+    var tint: Color? = nil
+
+    var effectiveTint: Color { tint ?? AppColors.brandAccent }
 }
 
 struct DeckStatTile: View {
@@ -60,7 +62,7 @@ struct DeckStatTile: View {
             HStack(spacing: 4) {
                 Image(systemName: item.icon)
                     .font(.system(size: 8, weight: .bold))
-                    .foregroundStyle(item.tint)
+                    .foregroundStyle(item.effectiveTint)
 
                 Text(verbatim: item.value)
                     .font(.system(size: 17, weight: .bold, design: .rounded))
@@ -81,11 +83,11 @@ struct DeckStatTile: View {
         .frame(minWidth: 58, alignment: .leading)
         .background(
             RoundedRectangle(cornerRadius: 10, style: .continuous)
-                .fill(item.tint.opacity(colorScheme == .dark ? (isHovered ? 0.20 : 0.13) : (isHovered ? 0.16 : 0.10)))
+                .fill(item.effectiveTint.opacity(colorScheme == .dark ? (isHovered ? 0.20 : 0.13) : (isHovered ? 0.16 : 0.10)))
         )
         .overlay(
             RoundedRectangle(cornerRadius: 10, style: .continuous)
-                .strokeBorder(item.tint.opacity(isHovered ? 0.32 : 0.16), lineWidth: 1)
+                .strokeBorder(item.effectiveTint.opacity(isHovered ? 0.32 : 0.16), lineWidth: 1)
         )
         .scaleEffect(isHovered && !reduceMotion ? 1.04 : 1)
         .animation(reduceMotion ? nil : AppMotion.micro, value: isHovered)

@@ -14,6 +14,7 @@ import SwiftUI
 struct FilterPillSettingsSheet: View {
     @ObservedObject private var prefs = FilterPillPreferences.shared
     @ObservedObject private var loc = LocalizationManager.shared
+    @ObservedObject private var themeManager = ThemeManager.shared
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.dismiss) private var dismiss
 
@@ -106,7 +107,7 @@ struct FilterPillSettingsSheet: View {
             Divider()
                 .padding(.leading, 46)
         }
-        .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+        .background(AppColors.windowBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled))
         .offset(y: rowOffset(for: pill, index: index))
         .zIndex(isDragging ? 1 : 0)
         .shadow(color: .black.opacity(isDragging ? 0.25 : 0),
