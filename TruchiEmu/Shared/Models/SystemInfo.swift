@@ -881,6 +881,10 @@ class LibretroInfoManager: ObservableObject {
     
     // The current in-memory mapping
     static var coreToSystemMap: [String: Set<String>] = [:]
+
+    // Core versions from libretro-core-info .info files (display_version or version).
+    // Only changes when the core is actually updated, not on nightly rebuilds.
+    static var coreVersions: [String: String] = [:]
     
     // Helper to check if we have any mappings at all
     static var hasMappings: Bool {
@@ -1038,6 +1042,12 @@ class LibretroInfoManager: ObservableObject {
                     if let sysIDString = infoDict["systemid"] { 
                         let coreID = fileURL.deletingPathExtension().lastPathComponent 
                         var ids = sysIDString.components(separatedBy: "|").map { SystemDatabase.normalizeSystemID($0) }
+                        
+                        // Store the meaningful core version from the .info file.
+                        // Only changes when the core is actually updated, not on nightly rebuilds.
+                        if let displayVersion = infoDict["display_version"] ?? infoDict["version"] {
+                            LibretroInfoManager.coreVersions[coreID] = displayVersion
+                        }
                         
                         // Handle cores like Dolphin that declare a single systemid but have compound systemname like "GameCube / Wii"
                         if let systemName = infoDict["systemname"], systemName.contains("/") && ids.count == 1 {
