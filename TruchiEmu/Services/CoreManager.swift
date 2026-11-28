@@ -200,6 +200,7 @@ class CoreManager: ObservableObject {
     private let availableCoresKey = "available_cores_v1"
     private let coresInitialFetchDoneKey = "cores_initial_fetch_done_v1"
     private let coreUpdateCheckKey = "cores_last_core_update_check_v1"
+    private let coreUpdateCheckMigrationKey = "cores_core_update_check_migrated_v1"
     private let encoder = JSONEncoder()
     private let decoder = JSONDecoder()
 
@@ -231,6 +232,14 @@ class CoreManager: ObservableObject {
 
     init() {
         try? FileManager.default.createDirectory(at: appSupportURL, withIntermediateDirectories: true)
+        
+        // One-time migration: clear any stale core update check date that may have
+        // been recorded by a previous version (the old code set the date even when
+        // the check failed). Ensures the first check with the new logic runs.
+        if AppSettings.getBool(coreUpdateCheckMigrationKey, defaultValue: false) == false {
+            AppSettings.remove(coreUpdateCheckKey)
+            AppSettings.setBool(coreUpdateCheckMigrationKey, value: true)
+        }
         
         // ✅ MUST LOAD FIRST so the cores know which systems they belong to!
         LibretroInfoManager.loadMappings() 
@@ -366,19 +375,22 @@ class CoreManager: ObservableObject {
 
     /// Checks whether any installed core has a newer version available on the buildbot.
     /// Fetches the available core list first (if needed), then compares each installed
-    /// core's active version tag against the remote version.
+    /// core's active version against the remote version by build date.
     func checkForCoreUpdates() async {
         guard !isCheckingCoreUpdates else { return }
         isCheckingCoreUpdates = true
-        defer {
-            isCheckingCoreUpdates = false
-            AppSettings.setDate(coreUpdateCheckKey, value: Date())
-        }
 
         LoggerService.info(category: "CoreManager", "Checking for core updates...")
 
         // Ensure we have an up-to-date list of available cores
         await fetchAvailableCores()
+
+        guard !availableCores.isEmpty else {
+            LoggerService.warning(category: "CoreManager", "Core update check skipped: no available cores fetched")
+            isCheckingCoreUpdates = false
+            hasCheckedForUpdates = true
+            return
+        }
 
         var outdated: [LibretroCore] = []
         for installed in installedCores {
@@ -386,8 +398,10 @@ class CoreManager: ObservableObject {
             guard let remote = availableCores.first(where: { $0.coreID == installed.id }),
                   let remoteVersion = remote.version, !remoteVersion.isEmpty else { continue }
 
-            // Buildbot nightlies are dated builds; if the version string differs, an update is available.
-            if activeTag != remoteVersion {
+            // Compare build dates: remote newer than installed → update available.
+            // Buildbot nightly versions use formats like "unknown-2026-11-27 19:31" or "v1.2.3-2026-11-27".
+            // Installed tags use formats like "unknown-1.0-2026-07-16-00:57".
+            if isRemoteNewerThanInstalled(remoteVersion: remoteVersion, installedTag: activeTag) {
                 outdated.append(installed)
                 #if LOG_DEBUG
                 LoggerService.debug(category: "CoreManager", "Update available for \(installed.displayName): installed \(activeTag), available \(remoteVersion)")
@@ -397,7 +411,45 @@ class CoreManager: ObservableObject {
 
         coresNeedingUpdate = outdated
         hasCheckedForUpdates = true
+        // Only record the check date on a successful check so we retry on failure.
+        AppSettings.setDate(coreUpdateCheckKey, value: Date())
         LoggerService.info(category: "CoreManager", "Core update check complete: \(outdated.count) core(s) need updating")
+    }
+
+    /// Returns true if the remote version's build date is newer than the installed tag's build date.
+    private func isRemoteNewerThanInstalled(remoteVersion: String, installedTag: String) -> Bool {
+        let remoteDate = extractBuildDate(from: remoteVersion)
+        let installedDate = extractBuildDate(from: installedTag)
+
+        guard let remoteDate else {
+            // No parseable date in remote: fall back to string comparison.
+            return remoteVersion != installedTag
+        }
+        guard let installedDate else {
+            // Installed has no parseable date: treat remote as newer.
+            return true
+        }
+        return remoteDate > installedDate
+    }
+
+    /// Extracts a build date (YYYY-MM-DD HH:MM or YYYY-MM-DD) from a version string.
+    private func extractBuildDate(from version: String) -> Date? {
+        let patterns = [
+            #"(\d{4}-\d{2}-\d{2})\s+(\d{2}:\d{2})"#,   // 2026-11-27 19:31
+            #"(\d{4}-\d{2}-\d{2})"#,                    // 2026-11-27
+        ]
+        for pattern in patterns {
+            guard let regex = try? NSRegularExpression(pattern: pattern),
+                  let match = regex.firstMatch(in: version, range: NSRange(version.startIndex..., in: version)),
+                  let dateRange = Range(match.range(at: 1), in: version) else { continue }
+            let dateStr = String(version[dateRange])
+            let formatter = DateFormatter()
+            formatter.dateFormat = match.numberOfRanges > 2 ? "yyyy-MM-dd HH:mm" : "yyyy-MM-dd"
+            if let date = formatter.date(from: dateStr) {
+                return date
+            }
+        }
+        return nil
     }
 
     /// Returns true if the given core has a newer version available.
@@ -1390,7 +1442,7 @@ class CoreManager: ObservableObject {
             guard let remote = availableCores.first(where: { $0.coreID == installed.id }),
                   let remoteVersion = remote.version, !remoteVersion.isEmpty else { continue }
 
-            if activeTag != remoteVersion {
+            if isRemoteNewerThanInstalled(remoteVersion: remoteVersion, installedTag: activeTag) {
                 outdated.append(installed)
             }
         }
