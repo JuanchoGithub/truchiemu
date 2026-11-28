@@ -411,7 +411,10 @@ class CoreManager: ObservableObject {
             guard let activeTag = installed.activeVersionTag, !activeTag.isEmpty else { continue }
             guard let remote = availableCores.first(where: { $0.coreID == installed.id }) else { continue }
 
-            let remoteMeaningfulVersion = LibretroInfoManager.coreVersions[remote.coreID]
+            let remoteCoreID = remote.coreID
+            let remoteCoreIDStripped = remoteCoreID.replacingOccurrences(of: "_libretro", with: "")
+            let remoteMeaningfulVersion = LibretroInfoManager.coreVersions[remoteCoreID]
+                ?? LibretroInfoManager.coreVersions[remoteCoreIDStripped]
             let installedMeaningfulVersion = installed.activeVersion?.version
 
             LoggerService.debug(category: "CoreManager", "Comparing \(installed.displayName): installedTag=\(activeTag), installedVer=\(installedMeaningfulVersion ?? "nil"), remoteVer=\(remote.version ?? "nil"), remoteMeaningful=\(remoteMeaningfulVersion ?? "nil")")
@@ -1470,7 +1473,10 @@ class CoreManager: ObservableObject {
             guard let activeTag = installed.activeVersionTag, !activeTag.isEmpty else { continue }
             guard let remote = availableCores.first(where: { $0.coreID == installed.id }) else { continue }
 
-            let remoteMeaningfulVersion = LibretroInfoManager.coreVersions[remote.coreID]
+            let remoteCoreID = remote.coreID
+            let remoteCoreIDStripped = remoteCoreID.replacingOccurrences(of: "_libretro", with: "")
+            let remoteMeaningfulVersion = LibretroInfoManager.coreVersions[remoteCoreID]
+                ?? LibretroInfoManager.coreVersions[remoteCoreIDStripped]
             let installedMeaningfulVersion = installed.activeVersion?.version
 
             if let remoteMV = remoteMeaningfulVersion, !remoteMV.isEmpty,
