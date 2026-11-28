@@ -406,51 +406,41 @@ class CoreManager: ObservableObject {
         }
 
         var outdated: [LibretroCore] = []
+        LoggerService.info(category: "CoreManager", "Starting update comparison: \(installedCores.count) installed, \(availableCores.count) available, \(LibretroInfoManager.coreVersions.count) core versions loaded")
         for installed in installedCores {
             guard let activeTag = installed.activeVersionTag, !activeTag.isEmpty else { continue }
             guard let remote = availableCores.first(where: { $0.coreID == installed.id }) else { continue }
 
-            // Prefer meaningful version from libretro-core-info (.info files).
-            // Only changes on real version updates, not nightly rebuilds.
             let remoteMeaningfulVersion = LibretroInfoManager.coreVersions[remote.coreID]
             let installedMeaningfulVersion = installed.activeVersion?.version
 
+            LoggerService.debug(category: "CoreManager", "Comparing \(installed.displayName): installedTag=\(activeTag), installedVer=\(installedMeaningfulVersion ?? "nil"), remoteVer=\(remote.version ?? "nil"), remoteMeaningful=\(remoteMeaningfulVersion ?? "nil")")
+
             if let remoteMV = remoteMeaningfulVersion, !remoteMV.isEmpty,
                let installedMV = installedMeaningfulVersion, !installedMV.isEmpty, installedMV != "unknown" {
-                // Both have meaningful versions — compare them
                 if remoteMV != installedMV {
                     outdated.append(installed)
-                    #if LOG_DEBUG
-                    LoggerService.debug(category: "CoreManager", "Update available for \(installed.displayName): installed \(installedMV), available \(remoteMV)")
-                    #endif
+                    LoggerService.info(category: "CoreManager", "UPDATE: \(installed.displayName) installed \(installedMV) → available \(remoteMV)")
                 }
                 continue
             }
 
-            // Either remote or installed lacks a meaningful version — fall back to build-date comparison.
-            // If remote has a meaningful version but installed doesn't, the core is outdated.
             if let remoteMV = remoteMeaningfulVersion, !remoteMV.isEmpty,
                (installedMeaningfulVersion == nil || installedMeaningfulVersion!.isEmpty || installedMeaningfulVersion == "unknown") {
                 outdated.append(installed)
-                #if LOG_DEBUG
-                LoggerService.debug(category: "CoreManager", "Update available for \(installed.displayName): installed unknown, available \(remoteMV)")
-                #endif
+                LoggerService.info(category: "CoreManager", "UPDATE: \(installed.displayName) installed unknown → available \(remoteMV)")
                 continue
             }
 
-            // Fall back to build-date comparison for cores without meaningful versions.
             guard let remoteVersion = remote.version, !remoteVersion.isEmpty else { continue }
             if isRemoteNewerThanInstalled(remoteVersion: remoteVersion, installedTag: activeTag) {
                 outdated.append(installed)
-                #if LOG_DEBUG
-                LoggerService.debug(category: "CoreManager", "Update available for \(installed.displayName): installed \(activeTag), available \(remoteVersion)")
-                #endif
+                LoggerService.info(category: "CoreManager", "UPDATE: \(installed.displayName) installed \(activeTag) → available \(remoteVersion)")
             }
         }
 
         coresNeedingUpdate = outdated
         hasCheckedForUpdates = true
-        // Only record the check date on a successful check so we retry on failure.
         AppSettings.setDate(coreUpdateCheckKey, value: Date())
         LoggerService.info(category: "CoreManager", "Core update check complete: \(outdated.count) core(s) need updating")
     }
