@@ -412,16 +412,29 @@ class CoreManager: ObservableObject {
 
             // Prefer meaningful version from libretro-core-info (.info files).
             // Only changes on real version updates, not nightly rebuilds.
-            if let remoteMeaningfulVersion = LibretroInfoManager.coreVersions[remote.coreID],
-               !remoteMeaningfulVersion.isEmpty,
-               let installedMeaningfulVersion = installed.activeVersion?.version, !installedMeaningfulVersion.isEmpty,
-               installedMeaningfulVersion != "unknown" {
-                if remoteMeaningfulVersion != installedMeaningfulVersion {
+            let remoteMeaningfulVersion = LibretroInfoManager.coreVersions[remote.coreID]
+            let installedMeaningfulVersion = installed.activeVersion?.version
+
+            if let remoteMV = remoteMeaningfulVersion, !remoteMV.isEmpty,
+               let installedMV = installedMeaningfulVersion, !installedMV.isEmpty, installedMV != "unknown" {
+                // Both have meaningful versions — compare them
+                if remoteMV != installedMV {
                     outdated.append(installed)
                     #if LOG_DEBUG
-                    LoggerService.debug(category: "CoreManager", "Update available for \(installed.displayName): installed \(installedMeaningfulVersion), available \(remoteMeaningfulVersion)")
+                    LoggerService.debug(category: "CoreManager", "Update available for \(installed.displayName): installed \(installedMV), available \(remoteMV)")
                     #endif
                 }
+                continue
+            }
+
+            // Either remote or installed lacks a meaningful version — fall back to build-date comparison.
+            // If remote has a meaningful version but installed doesn't, the core is outdated.
+            if let remoteMV = remoteMeaningfulVersion, !remoteMV.isEmpty,
+               (installedMeaningfulVersion == nil || installedMeaningfulVersion!.isEmpty || installedMeaningfulVersion == "unknown") {
+                outdated.append(installed)
+                #if LOG_DEBUG
+                LoggerService.debug(category: "CoreManager", "Update available for \(installed.displayName): installed unknown, available \(remoteMV)")
+                #endif
                 continue
             }
 
@@ -1467,18 +1480,23 @@ class CoreManager: ObservableObject {
             guard let activeTag = installed.activeVersionTag, !activeTag.isEmpty else { continue }
             guard let remote = availableCores.first(where: { $0.coreID == installed.id }) else { continue }
 
-            // Prefer meaningful version from libretro-core-info (.info files).
-            if let remoteMeaningfulVersion = LibretroInfoManager.coreVersions[remote.coreID],
-               !remoteMeaningfulVersion.isEmpty,
-               let installedMeaningfulVersion = installed.activeVersion?.version, !installedMeaningfulVersion.isEmpty,
-               installedMeaningfulVersion != "unknown" {
-                if remoteMeaningfulVersion != installedMeaningfulVersion {
+            let remoteMeaningfulVersion = LibretroInfoManager.coreVersions[remote.coreID]
+            let installedMeaningfulVersion = installed.activeVersion?.version
+
+            if let remoteMV = remoteMeaningfulVersion, !remoteMV.isEmpty,
+               let installedMV = installedMeaningfulVersion, !installedMV.isEmpty, installedMV != "unknown" {
+                if remoteMV != installedMV {
                     outdated.append(installed)
                 }
                 continue
             }
 
-            // Fall back to build-date comparison for cores without meaningful versions.
+            if let remoteMV = remoteMeaningfulVersion, !remoteMV.isEmpty,
+               (installedMeaningfulVersion == nil || installedMeaningfulVersion!.isEmpty || installedMeaningfulVersion == "unknown") {
+                outdated.append(installed)
+                continue
+            }
+
             guard let remoteVersion = remote.version, !remoteVersion.isEmpty else { continue }
             if isRemoteNewerThanInstalled(remoteVersion: remoteVersion, installedTag: activeTag) {
                 outdated.append(installed)
