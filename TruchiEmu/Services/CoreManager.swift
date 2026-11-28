@@ -186,6 +186,7 @@ class CoreManager: ObservableObject {
     @Published var availableCores: [RemoteCoreInfo] = []
     @Published var isFetchingCoreList: Bool = false
     @Published var isCheckingCoreUpdates: Bool = false
+    @Published var isUpdatingAllCores: Bool = false
     @Published var hasCheckedForUpdates: Bool = false
     @Published var coresNeedingUpdate: [LibretroCore] = []
     /// The upstream version of each installed core. The value is the version of the
@@ -453,6 +454,49 @@ class CoreManager: ObservableObject {
         saveInstalledVersions()
         AppSettings.setDate(coreUpdateCheckKey, value: Date())
         LoggerService.info(category: "CoreManager", "Core update check complete: \(outdated.count) core(s) need updating")
+    }
+
+    /// Updates all cores that have a newer version.
+    /// The cores update one by one, because the download flow uses shared state.
+    func updateAllCores() async {
+        guard !isUpdatingAllCores, !isDownloadingCore, !isCheckingCoreUpdates else { return }
+        isUpdatingAllCores = true
+        defer { isUpdatingAllCores = false }
+
+        // Make sure the list of cores that need an update is correct.
+        if !hasCheckedForUpdates {
+            await checkForCoreUpdates()
+        }
+
+        let cores = coresNeedingUpdate
+        guard !cores.isEmpty else { return }
+
+        LoggerService.info(category: "CoreManager", "Updating \(cores.count) core(s)")
+        for core in cores {
+            guard let remote = availableCores.first(where: { $0.coreID == core.id }) else { continue }
+            await downloadCore(remote)
+        }
+        LoggerService.info(category: "CoreManager", "Update of all cores complete")
+    }
+
+    /// Stores the version of a downloaded build.
+    /// The UI then shows the new version at once, without a new update check.
+    private func recordInstalledVersion(coreID: String, version: String, buildDate: String) {
+        // The upstream version is the version of the core. Other strings, such as
+        // "synthetic", are not versions.
+        let upstream = LibretroInfoManager.coreVersions[coreID] ?? ""
+        let resolved = upstream.isEmpty ? version : upstream
+        guard !resolved.isEmpty, resolved != "unknown", resolved != "synthetic" else { return }
+
+        installedVersions[coreID] = resolved
+        if let date = CoreManager.parseBuildDate(buildDate) {
+            let key = installedVersionCacheKey(coreID: coreID, buildDate: date)
+            installedVersionCache[key] = resolved
+        }
+        saveInstalledVersions()
+
+        // The core no longer needs an update. Remove it from the list.
+        refreshOutdatedCores()
     }
 
     /// The upstream version of an installed core at the build date of the install.
@@ -787,6 +831,11 @@ class CoreManager: ObservableObject {
             LoggerService.debug(category: "CoreManager", "Installed cores: \(installedCores)")
             #endif
             saveInstalledCores()
+
+            // Store the version of the new build. The UI then shows the new
+            // version at once, without a new update check.
+            recordInstalledVersion(coreID: info.coreID, version: versionString, buildDate: buildDate)
+
             LoggerService.info(category: "CoreManager", "Successfully installed \(info.coreID) version \(versionString)")
         } catch {
             LoggerService.error(category: "CoreManager", "Download failed for \(info.coreID): \(error.localizedDescription)")

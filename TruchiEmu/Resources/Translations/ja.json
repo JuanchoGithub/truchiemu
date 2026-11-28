@@ -758,6 +758,8 @@
   "coreManager.updatesAvailableCount": "%d 個のアップデート利用可能",
   "coreManager.allUpToDate": "すべてのコアは最新",
   "coreManager.checkForUpdates": "アップデートを確認",
+  "coreManager.updateAll": "すべてアップデート",
+  "coreManager.updatingAll": "すべてのコアをアップデートしています...",
   "coreManager.noInstalledCores": "インストール済みコアなし",
   "coreManager.noInstalledCoresDescription": "ビルドボットからコアをインストールして開始してください。コア設定を開いて利用可能なコアを確認してください。",
   "coreManager.installedVersion": "インストール版",

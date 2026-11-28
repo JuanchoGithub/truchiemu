@@ -125,6 +125,16 @@ struct CoreManagerView: View {
                             .foregroundStyle(AppColors.warning(colorScheme))
                     }
 
+                    SettingsActionButton(loc.localized("coreManager.updateAll"),
+                                         systemImage: "arrow.down.circle.fill",
+                                         role: .warning,
+                                         prominent: true) {
+                        Task {
+                            await coreManager.updateAllCores()
+                        }
+                    }
+                    .disabled(coreManager.isUpdatingAllCores || coreManager.isDownloadingCore || coreManager.isCheckingCoreUpdates)
+
                     SettingsActionButton(loc.localized("coreManager.checkForUpdates"), systemImage: "arrow.triangle.2.circlepath") {
                         Task {
                             await coreManager.checkForCoreUpdates()
@@ -137,6 +147,16 @@ struct CoreManagerView: View {
                     HStack(spacing: AppSpacing.sm) {
                         ProgressView().controlSize(.small)
                         Text(loc.localized("coreUpdates.checkingForUpdates"))
+                            .font(.caption)
+                            .foregroundStyle(AppColors.textSecondary(colorScheme))
+                    }
+                    .padding(.top, AppSpacing.xs)
+                }
+
+                if coreManager.isUpdatingAllCores {
+                    HStack(spacing: AppSpacing.sm) {
+                        ProgressView().controlSize(.small)
+                        Text(loc.localized("coreManager.updatingAll"))
                             .font(.caption)
                             .foregroundStyle(AppColors.textSecondary(colorScheme))
                     }
@@ -363,23 +383,15 @@ struct CoreManagerRowView: View {
                 }
 
                 if coreManager.hasUpdate(for: core.id) {
-                    Button(action: {
+                    SettingsActionButton(loc.localized("coreUpdates.updateButton"),
+                                         systemImage: "arrow.down.circle",
+                                         role: .warning) {
                         Task {
                             if let remote = coreManager.availableCores.first(where: { $0.coreID == core.id }) {
                                 await coreManager.downloadCore(remote)
                             }
                         }
-                    }) {
-                        HStack(spacing: AppSpacing.xs) {
-                            Image(systemName: "arrow.down.circle")
-                                .font(.caption2)
-                            Text(loc.localized("coreUpdates.updateButton"))
-                                .font(.caption2)
-                                .fontWeight(.semibold)
-                        }
-                        .foregroundColor(AppColors.warning(colorScheme))
                     }
-                    .buttonStyle(.plain)
                     .disabled(coreManager.isDownloadingCore)
                 } else if coreManager.hasCheckedForUpdates {
                     HStack(spacing: AppSpacing.xs) {

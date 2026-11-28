@@ -584,23 +584,15 @@ struct InstalledCoreRowView: View {
                         }
 
                         if coreManager.hasUpdate(for: core.id) {
-                            Button(action: {
+                            SettingsActionButton(loc.localized("coreUpdates.updateButton"),
+                                                 systemImage: "arrow.down.circle",
+                                                 role: .warning) {
                                 Task {
                                     if let remote = coreManager.availableCores.first(where: { $0.coreID == core.id }) {
                                         await coreManager.downloadCore(remote)
                                     }
                                 }
-                            }) {
-                                HStack(spacing: AppSpacing.xs) {
-                                    Image(systemName: "arrow.down.circle")
-                                        .font(.caption2)
-                                    Text(loc.localized("coreUpdates.updateButton"))
-                                        .font(.caption2)
-                                        .fontWeight(.semibold)
-                                }
-                                .foregroundColor(AppColors.warning(colorScheme))
                             }
-                            .buttonStyle(.plain)
                             .disabled(coreManager.isDownloadingCore)
                         } else if coreManager.hasCheckedForUpdates {
                             HStack(spacing: AppSpacing.xs) {

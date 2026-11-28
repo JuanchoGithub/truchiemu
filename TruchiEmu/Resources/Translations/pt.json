@@ -758,6 +758,8 @@
   "coreManager.updatesAvailableCount": "%d atualização(ões) disponível(is)",
   "coreManager.allUpToDate": "Todos os núcleos atualizados",
   "coreManager.checkForUpdates": "Verificar Atualizações",
+  "coreManager.updateAll": "Atualizar Tudo",
+  "coreManager.updatingAll": "Atualizando todos os núcleos...",
   "coreManager.noInstalledCores": "Nenhum núcleo instalado",
   "coreManager.noInstalledCoresDescription": "Instale núcleos do buildbot para começar. Abra as configurações de Núcleos para navegar pelos disponíveis.",
   "coreManager.installedVersion": "Instalado",

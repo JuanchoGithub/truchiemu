@@ -1037,7 +1037,7 @@ struct AppSecondaryButtonStyle: ButtonStyle {
 // explicit solid background (visible against grouped-form panels) and an
 // unmistakable hover state: fill shifts to accent, text shifts to accent.
 struct SettingsActionButton: View {
-    enum Role { case standard, destructive, success }
+    enum Role { case standard, destructive, success, warning }
 
     let title: String
     var systemImage: String? = nil
@@ -1074,6 +1074,8 @@ struct SettingsActionButton: View {
             return AppColors.error(colorScheme)
         case .success:
             return AppColors.success(colorScheme)
+        case .warning:
+            return AppColors.warning(colorScheme)
         }
     }
     /// Rest-state tint: deep accent on light mode (keeps hue, holds contrast
@@ -1086,6 +1088,8 @@ struct SettingsActionButton: View {
             return AppColors.error(colorScheme)
         case .success:
             return AppColors.success(colorScheme)
+        case .warning:
+            return AppColors.warning(colorScheme)
         }
     }
     private var isActive: Bool { isHovered || isFocused }
@@ -1167,6 +1171,8 @@ struct SettingsActionButton: View {
             return AppColors.error(colorScheme).opacity(0.35)
         case .success:
             return AppColors.success(colorScheme).opacity(0.35)
+        case .warning:
+            return AppColors.warning(colorScheme).opacity(0.35)
         }
     }
 }
