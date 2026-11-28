@@ -188,6 +188,9 @@ class CoreManager: ObservableObject {
     @Published var isCheckingCoreUpdates: Bool = false
     @Published var hasCheckedForUpdates: Bool = false
     @Published var coresNeedingUpdate: [LibretroCore] = []
+    /// The upstream version of each installed core. The value is the version of the
+    /// core at the build date of the installed version.
+    @Published var installedVersions: [String: String] = [:]
     @Published var pendingDownload: PendingCoreDownload? = nil
     @Published var downloadPhase: CoreDownloadPhase = .idle
     @Published var downloadCoreName: String = ""
@@ -201,6 +204,10 @@ class CoreManager: ObservableObject {
     private let coresInitialFetchDoneKey = "cores_initial_fetch_done_v1"
     private let coreUpdateCheckKey = "cores_last_core_update_check_v1"
     private let coreUpdateCheckMigrationKey = "cores_core_update_check_migrated_v1"
+    private let installedVersionsKey = "core_installed_versions_v1"
+    /// The upstream version of an installed build. The key is the core ID and the
+    /// build date of the build.
+    private var installedVersionCache: [String: String] = [:]
     private let encoder = JSONEncoder()
     private let decoder = JSONDecoder()
 
@@ -246,6 +253,7 @@ class CoreManager: ObservableObject {
         
         loadInstalledCores()
         loadAvailableCores()
+        loadInstalledVersions()
     }   
 
     // MARK: - Core List
@@ -253,6 +261,11 @@ class CoreManager: ObservableObject {
     func fetchAvailableCores() async {
         isFetchingCoreList = true
         defer { isFetchingCoreList = false }
+
+        // The upstream version of each core comes from the core info data.
+        if LibretroInfoManager.coreVersions.isEmpty {
+            await LibretroInfoManager.shared.refreshCoreInfo()
+        }
 
         LoggerService.info(category: "CoreManager", "Fetching available cores from \(buildbotBase)")
         
@@ -330,31 +343,18 @@ class CoreManager: ObservableObject {
             var systemIDs = CoreManager.supportedSystems(for: coreID)
             systemIDs = Array(Set(systemIDs)) // deduplicate
 
-            // Fetch version from .info file asynchronously but don't block here
-            // Store build date for now, version will be resolved later or on download
+            // The buildbot does not give a version in the file name. The version
+            // comes from the core info data of the core.
+            let upstreamVersion = LibretroInfoManager.coreVersions[coreID] ?? "unknown"
+
             cores.append(RemoteCoreInfo(
             coreID: coreID,
             fileName: fileName,
             downloadURL: downloadURL,
             systemIDs: systemIDs,
             displayName: displayName,
-            version: buildDate // Temporary: use build date until full version fetch
+            version: "\(upstreamVersion)-\(buildDate)"
             ))
-        }
-
-        // Now fetch .info files in parallel for version info
-        #if LOG_DEBUG
-        LoggerService.debug(category: "CoreManager", "Fetching version info for \(cores.count) cores...")
-        #endif
-        await withTaskGroup(of: Void.self) { group in
-            for (index, core) in cores.enumerated() {
-                group.addTask {
-                    let version = await self.determineVersion(for: core.coreID, buildDate: core.version ?? "")
-                    await MainActor.run {
-                        cores[index].version = version
-                    }
-                }
-            }
         }
 
         availableCores = cores.sorted { $0.displayName < $1.displayName }
@@ -375,29 +375,21 @@ class CoreManager: ObservableObject {
 
     /// Checks whether any installed core has a newer version available on the buildbot.
     /// Fetches the available core list first (if needed), then compares each installed
-    /// core's active version against the remote version.
+    /// core's version against the latest version.
     ///
-    /// Comparison prefers meaningful versions from libretro-core-info (.info files),
-    /// which only change when a core is actually updated — not on nightly rebuilds.
-    /// Falls back to build-date comparison for cores without a meaningful version.
+    /// The installed version is the version of libretro-core-info at the build date of
+    /// the installed build. The available version is the current version of
+    /// libretro-core-info. A nightly rebuild does not change the version, so a nightly
+    /// rebuild does not show as an update.
     func checkForCoreUpdates() async {
         guard !isCheckingCoreUpdates else { return }
         isCheckingCoreUpdates = true
+        defer { isCheckingCoreUpdates = false }
 
         LoggerService.info(category: "CoreManager", "Checking for core updates...")
 
-        // Ensure we have an up-to-date list of available cores
+        // Get the list of available cores. This also loads the upstream versions.
         await fetchAvailableCores()
-
-        // Ensure libretro-core-info versions are loaded so we compare
-        // meaningful versions (not nightly build dates).
-        if LibretroInfoManager.coreVersions.isEmpty {
-            await LibretroInfoManager.shared.refreshCoreInfo()
-        }
-
-        defer {
-            isCheckingCoreUpdates = false
-        }
 
         guard !availableCores.isEmpty else {
             LoggerService.warning(category: "CoreManager", "Core update check skipped: no available cores fetched")
@@ -405,83 +397,96 @@ class CoreManager: ObservableObject {
             return
         }
 
-        var outdated: [LibretroCore] = []
-        LoggerService.info(category: "CoreManager", "Starting update comparison: \(installedCores.count) installed, \(availableCores.count) available, \(LibretroInfoManager.coreVersions.count) core versions loaded")
+        // The installed version is the upstream version at the build date of the
+        // installed build. The available version is the current upstream version.
+        var candidates: [(core: LibretroCore, buildDate: Date, availableVersion: String)] = []
         for installed in installedCores {
-            guard let activeTag = installed.activeVersionTag, !activeTag.isEmpty else { continue }
+            guard installed.source == .buildbot else { continue }
+            guard let active = installed.activeVersion,
+                  let buildDate = CoreManager.parseBuildDate(active.buildDate) else { continue }
             guard let remote = availableCores.first(where: { $0.coreID == installed.id }) else { continue }
+            guard let availableVersion = LibretroInfoManager.coreVersions[remote.coreID], !availableVersion.isEmpty else { continue }
+            candidates.append((installed, buildDate, availableVersion))
+        }
 
-            let remoteCoreID = remote.coreID
-            let remoteCoreIDStripped = remoteCoreID.replacingOccurrences(of: "_libretro", with: "")
-            let remoteMeaningfulVersion = LibretroInfoManager.coreVersions[remoteCoreID]
-                ?? LibretroInfoManager.coreVersions[remoteCoreIDStripped]
-            let installedMeaningfulVersion = installed.activeVersion?.version
-
-            LoggerService.debug(category: "CoreManager", "Comparing \(installed.displayName): installedTag=\(activeTag), installedVer=\(installedMeaningfulVersion ?? "nil"), remoteVer=\(remote.version ?? "nil"), remoteMeaningful=\(remoteMeaningfulVersion ?? "nil")")
-
-            if let remoteMV = remoteMeaningfulVersion, !remoteMV.isEmpty,
-               let installedMV = installedMeaningfulVersion, !installedMV.isEmpty, installedMV != "unknown" {
-                if remoteMV != installedMV {
-                    outdated.append(installed)
-                    LoggerService.info(category: "CoreManager", "UPDATE: \(installed.displayName) installed \(installedMV) → available \(remoteMV)")
+        // Resolve the installed version of each core. The result is cached.
+        let resolved = await withTaskGroup(of: (String, String?).self, returning: [(String, String?)].self) { group in
+            for candidate in candidates {
+                let key = installedVersionCacheKey(coreID: candidate.core.id, buildDate: candidate.buildDate)
+                if let cached = installedVersionCache[key] {
+                    group.addTask { (candidate.core.id, cached.isEmpty ? nil : cached) }
+                } else {
+                    group.addTask {
+                        let version = await CoreVersionHistoryService.shared.version(for: candidate.core.id, at: candidate.buildDate)
+                        return (candidate.core.id, version)
+                    }
                 }
-                continue
             }
+            var results: [(String, String?)] = []
+            for await result in group { results.append(result) }
+            return results
+        }
 
-            if let remoteMV = remoteMeaningfulVersion, !remoteMV.isEmpty,
-               (installedMeaningfulVersion == nil || installedMeaningfulVersion!.isEmpty || installedMeaningfulVersion == "unknown") {
-                outdated.append(installed)
-                LoggerService.info(category: "CoreManager", "UPDATE: \(installed.displayName) installed unknown → available \(remoteMV)")
-                continue
+        var outdated: [LibretroCore] = []
+        for (coreID, version) in resolved {
+            installedVersions[coreID] = version ?? ""
+            guard let candidate = candidates.first(where: { $0.core.id == coreID }) else { continue }
+            // Keep the result. The version of a build does not change.
+            let key = installedVersionCacheKey(coreID: coreID, buildDate: candidate.buildDate)
+            installedVersionCache[key] = version ?? ""
+            guard let version, !version.isEmpty else { continue }
+            if version != candidate.availableVersion {
+                outdated.append(candidate.core)
+                LoggerService.info(category: "CoreManager", "Update available for \(candidate.core.displayName): installed \(version), available \(candidate.availableVersion)")
             }
+        }
 
-            guard let remoteVersion = remote.version, !remoteVersion.isEmpty else { continue }
-            if isRemoteNewerThanInstalled(remoteVersion: remoteVersion, installedTag: activeTag) {
-                outdated.append(installed)
-                LoggerService.info(category: "CoreManager", "UPDATE: \(installed.displayName) installed \(activeTag) → available \(remoteVersion)")
-            }
+        // Keep the order of the installed cores.
+        outdated.sort { lhs, rhs in
+            guard let left = installedCores.firstIndex(where: { $0.id == lhs.id }),
+                  let right = installedCores.firstIndex(where: { $0.id == rhs.id }) else { return false }
+            return left < right
         }
 
         coresNeedingUpdate = outdated
         hasCheckedForUpdates = true
+        saveInstalledVersions()
         AppSettings.setDate(coreUpdateCheckKey, value: Date())
         LoggerService.info(category: "CoreManager", "Core update check complete: \(outdated.count) core(s) need updating")
     }
 
-    /// Returns true if the remote version's build date is newer than the installed tag's build date.
-    private func isRemoteNewerThanInstalled(remoteVersion: String, installedTag: String) -> Bool {
-        let remoteDate = extractBuildDate(from: remoteVersion)
-        let installedDate = extractBuildDate(from: installedTag)
-
-        guard let remoteDate else {
-            // No parseable date in remote: fall back to string comparison.
-            return remoteVersion != installedTag
-        }
-        guard let installedDate else {
-            // Installed has no parseable date: treat remote as newer.
-            return true
-        }
-        return remoteDate > installedDate
+    /// The upstream version of an installed core at the build date of the install.
+    func installedVersion(for core: LibretroCore) -> String? {
+        if let version = installedVersions[core.id], !version.isEmpty { return version }
+        guard let active = core.activeVersion,
+              let buildDate = CoreManager.parseBuildDate(active.buildDate) else { return nil }
+        let key = installedVersionCacheKey(coreID: core.id, buildDate: buildDate)
+        guard let cached = installedVersionCache[key], !cached.isEmpty else { return nil }
+        return cached
     }
 
-    /// Extracts a build date (YYYY-MM-DD HH:MM or YYYY-MM-DD) from a version string.
-    private func extractBuildDate(from version: String) -> Date? {
-        let patterns = [
-            #"(\d{4}-\d{2}-\d{2})\s+(\d{2}:\d{2})"#,   // 2026-11-27 19:31
-            #"(\d{4}-\d{2}-\d{2})"#,                    // 2026-11-27
-        ]
-        for pattern in patterns {
-            guard let regex = try? NSRegularExpression(pattern: pattern),
-                  let match = regex.firstMatch(in: version, range: NSRange(version.startIndex..., in: version)),
-                  let dateRange = Range(match.range(at: 1), in: version) else { continue }
-            let dateStr = String(version[dateRange])
-            let formatter = DateFormatter()
-            formatter.dateFormat = match.numberOfRanges > 2 ? "yyyy-MM-dd HH:mm" : "yyyy-MM-dd"
-            if let date = formatter.date(from: dateStr) {
-                return date
-            }
+    /// The latest upstream version of a core.
+    func availableVersion(for coreID: String) -> String? {
+        guard let version = LibretroInfoManager.coreVersions[coreID], !version.isEmpty else { return nil }
+        return version
+    }
+
+    /// The key of the cache of the installed versions. The build date is part of the
+    /// key because a new build of the same core has a different version.
+    private func installedVersionCacheKey(coreID: String, buildDate: Date) -> String {
+        "\(coreID)|\(Int(buildDate.timeIntervalSince1970))"
+    }
+
+    private func loadInstalledVersions() {
+        guard let data = AppSettings.getData(installedVersionsKey),
+              let saved = try? decoder.decode([String: String].self, from: data) else { return }
+        installedVersionCache = saved
+    }
+
+    private func saveInstalledVersions() {
+        if let data = try? encoder.encode(installedVersionCache) {
+            AppSettings.setData(installedVersionsKey, value: data)
         }
-        return nil
     }
 
     /// Returns true if the given core has a newer version available.
@@ -489,80 +494,68 @@ class CoreManager: ObservableObject {
         coresNeedingUpdate.contains { $0.id == coreID }
     }
 
-    // MARK: - Info File Processing
+    // MARK: - Version and Build Date
 
-    private let infoBaseURL = URL(string: "https://buildbot.libretro.com/assets/frontend/info/")!
-    private let infoCacheURL: URL = {
-        let base = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
-        return base.appendingPathComponent("TruchiEmu/Info", isDirectory: true)
-    }()
-
-    func parseInfoFile(_ data: Data) -> [String: String] {
-        guard let content = String(data: data, encoding: .utf8) else { return [:] }
-        var properties: [String: String] = [:]
-
-        // Parse INI-style key="value" format
-        let pattern = #"(\w+)\s*=\s*"([^"]*)""#
-        guard let regex = try? NSRegularExpression(pattern: pattern, options: []) else { return [:] }
-
-        let matches = regex.matches(in: content, range: NSRange(content.startIndex..., in: content))
-        for match in matches {
-            guard let keyRange = Range(match.range(at: 1), in: content),
-                  let valueRange = Range(match.range(at: 2), in: content) else { continue }
-            let key = String(content[keyRange])
-            let value = String(content[valueRange])
-            properties[key] = value
+    /// Splits a version folder name into the version and the build date.
+    /// The name of a version folder has the format "<version>-<build date>".
+    static func parseVersionFolderName(_ name: String) -> (version: String, buildDate: String) {
+        // The build date is at the end of the name.
+        let datePattern = #"\d{4}-\d{2}-\d{2}(?:[ T-]\d{2}[:-]\d{2}(?:[:-]\d{2})?)?$"#
+        if let range = name.range(of: datePattern, options: .regularExpression) {
+            let buildDate = normalizeBuildDate(String(name[range]))
+            var version = String(name[..<range.lowerBound])
+            if version.hasSuffix("-") { version.removeLast() }
+            // Old installs use an "unknown-" prefix before the real version.
+            if version.hasPrefix("unknown-") { version.removeFirst("unknown-".count) }
+            return (version.isEmpty ? "unknown" : version, buildDate)
         }
 
-        return properties
+        // The old format: "<version>-<build date>".
+        let parts = name.split(separator: "-", maxSplits: 1)
+        let version = parts.first.map(String.init) ?? "unknown"
+        let buildDate = parts.count > 1 ? String(parts[1]) : ""
+        return (version, buildDate)
     }
 
-    func determineVersion(for coreID: String, buildDate: String) async -> String {
-        // Ensure cache directory exists
-        try? FileManager.default.createDirectory(at: infoCacheURL, withIntermediateDirectories: true)
-
-        let infoFileName = "\(coreID).info"
-        let infoURL = infoBaseURL.appendingPathComponent(infoFileName)
-        let cachedInfoPath = infoCacheURL.appendingPathComponent(infoFileName)
-
-        var versionString = ""
-        var infoProperties: [String: String] = [:]
-
-        // Try to fetch and parse the .info file
-        do {
-            let (data, _) = try await URLSession.shared.data(from: infoURL)
-            infoProperties = parseInfoFile(data)
-
-            if let displayVersion = infoProperties["display_version"] {
-                versionString = displayVersion
-            } else if let version = infoProperties["version"] {
-                versionString = version
-            }
-
-            // Cache the .info file locally for offline use
-            try data.write(to: cachedInfoPath)
-            #if LOG_DEBUG
-            LoggerService.debug(category: "CoreManager", "Cached .info file for \(coreID): \(cachedInfoPath.path)")
-            #endif
-        } catch {
-            LoggerService.warning(category: "CoreManager", "Failed to fetch .info for \(coreID): \(error.localizedDescription)")
-            // Try to load from cache if available
-            if let cachedData = try? Data(contentsOf: cachedInfoPath) {
-                infoProperties = parseInfoFile(cachedData)
-                versionString = infoProperties["display_version"] ?? infoProperties["version"] ?? ""
-                #if LOG_DEBUG
-                LoggerService.debug(category: "CoreManager", "Using cached .info for \(coreID)")
-                #endif
-            }
+    /// Puts a build date in the format "YYYY-MM-DD HH:MM".
+    static func normalizeBuildDate(_ value: String) -> String {
+        let pattern = #"^(\d{4}-\d{2}-\d{2})[ T-](\d{2})[:-](\d{2})(?::(\d{2}))?$"#
+        guard let regex = try? NSRegularExpression(pattern: pattern),
+              let match = regex.firstMatch(in: value, range: NSRange(value.startIndex..., in: value)) else {
+            return value
         }
-
-        // Fallback to "unknown" if version is empty
-        if versionString.isEmpty {
-            versionString = "unknown"
+        func part(_ index: Int) -> String {
+            guard let range = Range(match.range(at: index), in: value) else { return "" }
+            return String(value[range])
         }
+        let date = part(1)
+        let hour = part(2)
+        let minute = part(3)
+        let second = part(4)
+        if second.isEmpty {
+            return "\(date) \(hour):\(minute)"
+        }
+        return "\(date) \(hour):\(minute):\(second)"
+    }
 
-        // Concatenate with build date (Option A + 5)
-        return "\(versionString)-\(buildDate)"
+    /// Reads the build date of a version string. The buildbot uses UTC.
+    static func parseBuildDate(_ value: String) -> Date? {
+        let formats = [
+            "yyyy-MM-dd HH:mm:ss",
+            "yyyy-MM-dd HH:mm",
+            "yyyy-MM-dd-HH-mm",
+            "yyyy-MM-dd",
+            "yyyyMMdd-HHmmss",
+            "yyyyMMdd-HHmm"
+        ]
+        for format in formats {
+            let formatter = DateFormatter()
+            formatter.locale = Locale(identifier: "en_US_POSIX")
+            formatter.timeZone = TimeZone(secondsFromGMT: 0)
+            formatter.dateFormat = format
+            if let date = formatter.date(from: value) { return date }
+        }
+        return nil
     }
 
     // MARK: - Download (user must authorize via pendingDownload)
@@ -705,11 +698,11 @@ class CoreManager: ObservableObject {
 
             downloadPhase = .installing
 
-            // Use version from RemoteCoreInfo instead of timestamp
-            // Extract version from info.version (format: "raw-version-buildDate")
-            let versionParts = (info.version ?? "unknown").split(separator: "-", maxSplits: 1)
-            let versionString = String(versionParts.first ?? "unknown")
-            let buildDate = versionParts.count > 1 ? String(versionParts[1]) : Date().ISO8601Format()
+            // Use the version from RemoteCoreInfo instead of timestamp
+            // The version string has the format "<version>-<build date>".
+            let parsedVersion = CoreManager.parseVersionFolderName(info.version ?? "unknown")
+            let versionString = parsedVersion.version
+            let buildDate = parsedVersion.buildDate
 
             // Create folder structure: coreID/version/
             let coreFolder = appSupportURL.appendingPathComponent(info.coreID, isDirectory: true)
@@ -948,23 +941,26 @@ class CoreManager: ObservableObject {
                     guard coreFolder.hasDirectoryPath else { continue }
                     let coreID = coreFolder.lastPathComponent
 
+                    // Migrate old timestamp folders before the scan.
+                    migrateTimestampToVersionFolders(in: coreFolder, coreID: coreID)
+
                     // Scan version folders
                     let versionFolders = try FileManager.default.contentsOfDirectory(at: coreFolder, includingPropertiesForKeys: nil)
                     var installedVersions: [CoreVersion] = []
                     var activeVersionTag: String?
 
-                    // Look for latest symlink
-                    let symlinkPath = coreFolder.appendingPathComponent("\(coreID).dylib")
-                    let latestDylibURL = symlinkPath
+                    // The "latest" symlink points at the active version. Repair it
+                    // first. A symlink can point to a folder that does not exist.
+                    let activeDylibURL = repairLatestSymlink(coreFolder: coreFolder, coreID: coreID, versionFolders: versionFolders)
 
                     for versionFolder in versionFolders {
                         guard versionFolder.hasDirectoryPath else { continue }
 
                         // Parse version from folder name (format: version-buildDate)
                         let folderName = versionFolder.lastPathComponent
-                        let components = folderName.split(separator: "-", maxSplits: 1)
-                        let version = components.first.map(String.init) ?? "unknown"
-                        let buildDate = components.count > 1 ? String(components[1]) : Date().ISO8601Format()
+                        let parsed = CoreManager.parseVersionFolderName(folderName)
+                        let version = parsed.version
+                        let buildDate = parsed.buildDate
 
                         // Find dylib in version folder
                         let files = try FileManager.default.contentsOfDirectory(at: versionFolder, includingPropertiesForKeys: nil)
@@ -972,7 +968,7 @@ class CoreManager: ObservableObject {
                             let fileName = file.lastPathComponent
                             if fileName.hasSuffix(".dylib") {
                             // Check if this is the active version (matches symlink target)
-                            let isActive = latestDylibURL.path == file.path
+                            let isActive = activeDylibURL?.path == file.path
 
                             // Try to get persisted info for this version first
                             let persistedVersion = persistedCores.first(where: { $0.id == coreID })?
@@ -986,6 +982,9 @@ class CoreManager: ObservableObject {
                                 remoteURL: nil
                             )
 
+                            // The name of the folder has the correct version and build date.
+                            coreVersion.version = version
+                            coreVersion.buildDate = buildDate
                             coreVersion.isActive = isActive
                             installedVersions.append(coreVersion)
 
@@ -1060,11 +1059,6 @@ class CoreManager: ObservableObject {
             }
         }
 
-        // Migrate any timestamp-based folders to version-based
-        for core in validCores {
-            migrateTimestampToVersionFolders(for: core)
-        }
-
         installedCores = validCores
 
         if cacheNeedsRepair {
@@ -1094,9 +1088,62 @@ class CoreManager: ObservableObject {
         if needsSave { saveInstalledCores() }
     }
 
-    private func migrateTimestampToVersionFolders(for core: LibretroCore) {
+    /// Makes sure that the "latest" symlink of a core points at an existing version.
+    /// The symlink can point at a folder that does not exist. This happens when a
+    /// version folder is renamed. The function returns the active dylib.
+    private func repairLatestSymlink(coreFolder: URL, coreID: String, versionFolders: [URL]) -> URL? {
+        let fileManager = FileManager.default
+        let symlinkPath = coreFolder.appendingPathComponent("\(coreID).dylib")
+
+        // The symlink is correct when it points at an existing dylib.
+        let currentTarget = try? fileManager.destinationOfSymbolicLink(atPath: symlinkPath.path)
+        if let currentTarget {
+            let target = URL(fileURLWithPath: currentTarget, relativeTo: coreFolder).standardizedFileURL
+            if fileManager.fileExists(atPath: target.path) {
+                return target
+            }
+        }
+
+        // The symlink is missing or points at a file that is not there. Use the
+        // build date of the old target to find the version folder.
+        var target: URL?
+        if let currentTarget {
+            let oldFolderName = URL(fileURLWithPath: currentTarget).deletingLastPathComponent().lastPathComponent
+            if let oldDate = CoreManager.parseBuildDate(oldFolderName) {
+                target = versionFolders.first { folder in
+                    guard let date = CoreManager.parseBuildDate(CoreManager.parseVersionFolderName(folder.lastPathComponent).buildDate) else { return false }
+                    return abs(date.timeIntervalSince(oldDate)) < 60
+                }
+            }
+        }
+
+        // Use the newest version folder when the old target does not exist.
+        if target == nil {
+            target = versionFolders
+                .filter { $0.hasDirectoryPath }
+                .compactMap { folder -> (Date, URL)? in
+                    let buildDate = CoreManager.parseVersionFolderName(folder.lastPathComponent).buildDate
+                    guard let date = CoreManager.parseBuildDate(buildDate) else { return nil }
+                    return (date, folder)
+                }
+                .max { $0.0 < $1.0 }?.1
+        }
+
+        guard let target,
+              let dylib = try? fileManager.contentsOfDirectory(at: target, includingPropertiesForKeys: nil)
+                .first(where: { $0.lastPathComponent.hasSuffix(".dylib") }) else { return nil }
+
+        // Point the symlink at the version folder again.
+        try? fileManager.removeItem(at: symlinkPath)
+        try? fileManager.createSymbolicLink(at: symlinkPath, withDestinationURL: dylib)
+        #if LOG_DEBUG
+        LoggerService.debug(category: "CoreManager", "Repaired the active version symlink of \(coreID) -> \(dylib.lastPathComponent)")
+        #endif
+        return dylib
+    }
+
+    private func migrateTimestampToVersionFolders(in coreFolder: URL, coreID: String) {
         // Migration logic for old timestamp-based structure → new version-based
-        let coreFolder = appSupportURL.appendingPathComponent(core.id)
         guard FileManager.default.fileExists(atPath: coreFolder.path) else { return }
 
         do {
@@ -1105,7 +1152,8 @@ class CoreManager: ObservableObject {
                 // Old format: "2024-01-01 12-00-00" (timestamp folder)
                 // New format: "version-buildDate"
                 let folderName = folder.lastPathComponent
-                if folderName.contains(" ") && folderName.count >= 16 {
+                let isOldTimestampFolder = folderName.range(of: #"^\d{4}-\d{2}-\d{2} \d{2}-\d{2}-\d{2}$"#, options: .regularExpression) != nil
+                if isOldTimestampFolder {
                     // This looks like an old timestamp folder
                     #if LOG_DEBUG
                     LoggerService.debug(category: "CoreManager", "Found old timestamp folder: \(folderName)")
@@ -1131,13 +1179,13 @@ class CoreManager: ObservableObject {
                         }
 
                         #if LOG_DEBUG
-                        LoggerService.debug(category: "CoreManager", "Migrated \(core.id) from timestamp to version folder")
+                        LoggerService.debug(category: "CoreManager", "Migrated \(coreID) from timestamp to version folder")
                         #endif
                     }
                 }
             }
         } catch {
-            LoggerService.error(category: "CoreManager", "Migration error for \(core.id): \(error)")
+            LoggerService.error(category: "CoreManager", "Migration error for \(coreID): \(error)")
         }
     }
 
@@ -1465,36 +1513,15 @@ class CoreManager: ObservableObject {
         await refreshOutdatedCores()
     }
 
-    /// Compares installed cores against the available core list and populates
-    /// `coresNeedingUpdate` with any core whose active version is outdated.
+    /// Updates `coresNeedingUpdate` with the cores whose version differs from the
+    /// latest version. The installed versions must already be resolved.
     private func refreshOutdatedCores() {
         var outdated: [LibretroCore] = []
         for installed in installedCores {
-            guard let activeTag = installed.activeVersionTag, !activeTag.isEmpty else { continue }
-            guard let remote = availableCores.first(where: { $0.coreID == installed.id }) else { continue }
-
-            let remoteCoreID = remote.coreID
-            let remoteCoreIDStripped = remoteCoreID.replacingOccurrences(of: "_libretro", with: "")
-            let remoteMeaningfulVersion = LibretroInfoManager.coreVersions[remoteCoreID]
-                ?? LibretroInfoManager.coreVersions[remoteCoreIDStripped]
-            let installedMeaningfulVersion = installed.activeVersion?.version
-
-            if let remoteMV = remoteMeaningfulVersion, !remoteMV.isEmpty,
-               let installedMV = installedMeaningfulVersion, !installedMV.isEmpty, installedMV != "unknown" {
-                if remoteMV != installedMV {
-                    outdated.append(installed)
-                }
-                continue
-            }
-
-            if let remoteMV = remoteMeaningfulVersion, !remoteMV.isEmpty,
-               (installedMeaningfulVersion == nil || installedMeaningfulVersion!.isEmpty || installedMeaningfulVersion == "unknown") {
-                outdated.append(installed)
-                continue
-            }
-
-            guard let remoteVersion = remote.version, !remoteVersion.isEmpty else { continue }
-            if isRemoteNewerThanInstalled(remoteVersion: remoteVersion, installedTag: activeTag) {
+            guard let availableVersion = availableVersion(for: installed.id),
+                  let installedVersion = installedVersion(for: installed),
+                  !installedVersion.isEmpty else { continue }
+            if installedVersion != availableVersion {
                 outdated.append(installed)
             }
         }

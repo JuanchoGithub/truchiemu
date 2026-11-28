@@ -573,8 +573,12 @@ struct InstalledCoreRowView: View {
                                 .font(.caption)
                                 .foregroundColor(AppColors.textSecondary(colorScheme))
                         }
-                        if let version = core.activeVersionTag {
+                        if let version = coreManager.installedVersion(for: core) {
                             Text("v\(version)")
+                                .font(.caption2)
+                                .foregroundColor(AppColors.textMuted(colorScheme))
+                        } else if let tag = core.activeVersionTag {
+                            Text("v\(tag)")
                                 .font(.caption2)
                                 .foregroundColor(AppColors.textMuted(colorScheme))
                         }

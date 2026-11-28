@@ -877,6 +877,20 @@ class LibretroInfoManager: ObservableObject {
     struct CoreInfoCache: Codable {
         let coreToSystemMap: [String: [String]]
         let lastUpdated: Date
+        var coreVersions: [String: String]
+
+        init(coreToSystemMap: [String: [String]], lastUpdated: Date, coreVersions: [String: String] = [:]) {
+            self.coreToSystemMap = coreToSystemMap
+            self.lastUpdated = lastUpdated
+            self.coreVersions = coreVersions
+        }
+
+        init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            coreToSystemMap = try container.decode([String: [String]].self, forKey: .coreToSystemMap)
+            lastUpdated = try container.decode(Date.self, forKey: .lastUpdated)
+            coreVersions = try container.decodeIfPresent([String: String].self, forKey: .coreVersions) ?? [:]
+        }
     }
     
     // The current in-memory mapping
@@ -895,7 +909,8 @@ class LibretroInfoManager: ObservableObject {
         do {
             let cache = CoreInfoCache(
                 coreToSystemMap: coreToSystemMap.mapValues { Array($0) },
-                lastUpdated: Date()
+                lastUpdated: Date(),
+                coreVersions: coreVersions
             )
             let data = try JSONEncoder().encode(cache)
             try data.write(to: mapURL)
@@ -912,6 +927,7 @@ class LibretroInfoManager: ObservableObject {
             let data = try Data(contentsOf: mapURL)
             let cache = try JSONDecoder().decode(CoreInfoCache.self, from: data)
             coreToSystemMap = cache.coreToSystemMap.mapValues { Set($0) }
+            coreVersions = cache.coreVersions
             #if LOG_DEBUG
             LoggerService.debug(category: "LibretroInfoManager", "✅ Loaded core-to-system mappings (Last updated: \(cache.lastUpdated))")
             #endif

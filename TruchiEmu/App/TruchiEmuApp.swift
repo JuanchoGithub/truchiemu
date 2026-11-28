@@ -814,11 +814,6 @@ struct ContentWithPrepopulationView: View {
             await LibretroInfoManager.shared.refreshCoreInfo()
         }
 
-        guard AppUpdateService.shared.shouldAutoCheck() else { return }
-        if let release = await AppUpdateService.shared.checkForUpdates() {
-            updateService.pendingStartupUpdate = release
-        }
-
         // Check for core updates on startup (respects 24-hour interval)
         if CoreManager.shared.shouldCheckCoreUpdates {
             await CoreManager.shared.checkForCoreUpdates()
@@ -831,6 +826,11 @@ struct ContentWithPrepopulationView: View {
                     body: String(format: LocalizationManager.shared.localized("coreUpdates.availableBody"), names + more)
                 )
             }
+        }
+
+        guard AppUpdateService.shared.shouldAutoCheck() else { return }
+        if let release = await AppUpdateService.shared.checkForUpdates() {
+            updateService.pendingStartupUpdate = release
         }
     }
 }

@@ -276,34 +276,23 @@ struct CoreManagerRowView: View {
         return names.joined(separator: ", ")
     }
 
-    private var lastUpdatedText: String {
-        if let version = core.activeVersion, let date = version.downloadedAt as Date? {
-            let formatter = RelativeDateTimeFormatter()
-            formatter.unitsStyle = .abbreviated
-            return formatter.localizedString(for: date, relativeTo: Date())
-        }
-        return loc.localized("coreManager.unknownDate")
+    private var buildDateText: String? {
+        guard let active = core.activeVersion else { return nil }
+        let buildDate = active.buildDate
+        guard !buildDate.isEmpty else { return nil }
+        return buildDate
     }
 
     private var installedVersionText: String {
-        if let v = core.activeVersion?.version, !v.isEmpty, v != "unknown" {
-            return v
-        }
-        if let tag = core.activeVersionTag, !tag.isEmpty {
-            return tag
+        if let version = coreManager.installedVersion(for: core), !version.isEmpty {
+            return version
         }
         return loc.localized("coreManager.unknownVersion")
     }
 
     private var availableVersionText: String {
-        if let remote = coreManager.availableCores.first(where: { $0.coreID == core.id }) {
-            // Prefer meaningful version from libretro-core-info
-            if let mv = LibretroInfoManager.coreVersions[remote.coreID], !mv.isEmpty {
-                return mv
-            }
-            if let v = remote.version, !v.isEmpty {
-                return v
-            }
+        if let version = coreManager.availableVersion(for: core.id), !version.isEmpty {
+            return version
         }
         return loc.localized("coreManager.unknownVersion")
     }
@@ -360,6 +349,17 @@ struct CoreManagerRowView: View {
                         .font(.caption2)
                         .fontWeight(.medium)
                         .foregroundColor(AppColors.textPrimary(colorScheme))
+                }
+
+                if let buildDateText {
+                    HStack(spacing: AppSpacing.xs) {
+                        Text(loc.localized("coreManager.buildDate"))
+                            .font(.caption2)
+                            .foregroundColor(AppColors.textTertiary(colorScheme))
+                        Text(buildDateText)
+                            .font(.caption2)
+                            .foregroundColor(AppColors.textSecondary(colorScheme))
+                    }
                 }
 
                 if coreManager.hasUpdate(for: core.id) {

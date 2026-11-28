@@ -779,6 +779,7 @@
 		7F3A0AF55C70223F0AD9607C /* SCUMMVM.png in Resources */ = {isa = PBXBuildFile; fileRef = A208B8C6B2BCD2197F46362D /* SCUMMVM.png */; };
 		7F7B70E8BE63D8BEBB523510 /* psx-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = 6418BF23C56726D09EF49C78 /* psx-cheats.zip */; };
 		7F808066143A1ED3AD596FAE /* fightdata_tekken3.json in Resources */ = {isa = PBXBuildFile; fileRef = E6E9451452ECA3885D80AE70 /* fightdata_tekken3.json */; };
+		7F8AAAD7E405FB5DCBBAA86D /* CoreVersionHistoryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28958BAA773C10CA51E24541 /* CoreVersionHistoryService.swift */; };
 		7FA4711D0BB24E28BC1F09F8 /* segacd.ico in Resources */ = {isa = PBXBuildFile; fileRef = E74CC75063C3C57BEE2E88BB /* segacd.ico */; };
 		7FBB6DEE96E75EF212830780 /* input_coreOverrides_craft.json in Resources */ = {isa = PBXBuildFile; fileRef = EEC461D9A24A22C66C6FBEA8 /* input_coreOverrides_craft.json */; };
 		7FD931C0970E489C5D88C9E6 /* input_coreLabels_tyrquake.json in Resources */ = {isa = PBXBuildFile; fileRef = C9DADC9C3C46BD2DDB4C4734 /* input_coreLabels_tyrquake.json */; };
@@ -1838,6 +1839,7 @@
 		2834DE0370867FC233E28F6F /* input_coreLabels_kronos.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_kronos.json; sourceTree = "<group>"; };
 		286915B3854F9B12D1840B8E /* mupen64plus_libretro_default.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = mupen64plus_libretro_default.json; sourceTree = "<group>"; };
 		287FE00829204F5186720397 /* input_coreOverrides_pokemini.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_pokemini.json; sourceTree = "<group>"; };
+		28958BAA773C10CA51E24541 /* CoreVersionHistoryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreVersionHistoryService.swift; sourceTree = "<group>"; };
 		28A6A8B903C37A145E5B6EE8 /* atari2600.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = atari2600.ico; sourceTree = "<group>"; };
 		2999559B85D1BC7A2C264304 /* ports@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ports@132w.png"; sourceTree = "<group>"; };
 		2A22D3CFE0F38F217152AD90 /* ATARI7800.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ATARI7800.png; sourceTree = "<group>"; };
@@ -4466,6 +4468,7 @@
 				3F31D1631DA8C12805D91493 /* CLILauncher.swift */,
 				79F9C29D41593BD0666D4215 /* CoreManager.swift */,
 				0FF63BFF980BE337C49CF0B7 /* CoreOverrideService.swift */,
+				28958BAA773C10CA51E24541 /* CoreVersionHistoryService.swift */,
 				3923EC666D7D2EBA025850F5 /* DATPrepopulationService.swift */,
 				8E47DE987F403D82F4294F3B /* DiscHeaderReader.swift */,
 				F51EE5B8DD3B40994322BB39 /* DisplaySleepManager.swift */,
@@ -6992,6 +6995,7 @@
 				32B782F66C580947F60779DB /* CoreOverrideService.swift in Sources */,
 				F0AD72CCE4B5E63664FADEB3 /* CorePickerView.swift in Sources */,
 				6122C7598552350E9FC2BFAD /* CoreSettingsViewGroup.swift in Sources */,
+				7F8AAAD7E405FB5DCBBAA86D /* CoreVersionHistoryService.swift in Sources */,
 				2C0B2084279F991E2305FE51 /* CursorAutoHideManager.swift in Sources */,
 				EADF41111698CC0392927C13 /* CurvedRowLayout.swift in Sources */,
 				DC6B2F5F12C81B3FD59F2FA1 /* DATPrepopulationService.swift in Sources */,
