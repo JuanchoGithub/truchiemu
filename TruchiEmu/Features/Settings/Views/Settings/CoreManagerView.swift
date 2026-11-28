@@ -285,6 +285,29 @@ struct CoreManagerRowView: View {
         return loc.localized("coreManager.unknownDate")
     }
 
+    private var installedVersionText: String {
+        if let v = core.activeVersion?.version, !v.isEmpty, v != "unknown" {
+            return v
+        }
+        if let tag = core.activeVersionTag, !tag.isEmpty {
+            return tag
+        }
+        return loc.localized("coreManager.unknownVersion")
+    }
+
+    private var availableVersionText: String {
+        if let remote = coreManager.availableCores.first(where: { $0.coreID == core.id }) {
+            // Prefer meaningful version from libretro-core-info
+            if let mv = LibretroInfoManager.coreVersions[remote.coreID], !mv.isEmpty {
+                return mv
+            }
+            if let v = remote.version, !v.isEmpty {
+                return v
+            }
+        }
+        return loc.localized("coreManager.unknownVersion")
+    }
+
     var body: some View {
         HStack(spacing: AppSpacing.lg) {
             Image(systemName: "cpu")
@@ -319,14 +342,25 @@ struct CoreManagerRowView: View {
             Spacer()
 
             VStack(alignment: .trailing, spacing: 2) {
-                if let version = core.activeVersionTag {
-                    Text("v\(version)")
+                HStack(spacing: AppSpacing.xs) {
+                    Text(loc.localized("coreManager.installedVersion"))
                         .font(.caption2)
-                        .foregroundColor(AppColors.textMuted(colorScheme))
+                        .foregroundColor(AppColors.textTertiary(colorScheme))
+                    Text(installedVersionText)
+                        .font(.caption2)
+                        .fontWeight(.medium)
+                        .foregroundColor(AppColors.textPrimary(colorScheme))
                 }
-                Text(lastUpdatedText)
-                    .font(.caption2)
-                    .foregroundColor(AppColors.textTertiary(colorScheme))
+
+                HStack(spacing: AppSpacing.xs) {
+                    Text(loc.localized("coreManager.availableVersion"))
+                        .font(.caption2)
+                        .foregroundColor(AppColors.textTertiary(colorScheme))
+                    Text(availableVersionText)
+                        .font(.caption2)
+                        .fontWeight(.medium)
+                        .foregroundColor(AppColors.textPrimary(colorScheme))
+                }
 
                 if coreManager.hasUpdate(for: core.id) {
                     Button(action: {

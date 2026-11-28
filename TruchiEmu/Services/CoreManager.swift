@@ -389,6 +389,12 @@ class CoreManager: ObservableObject {
         // Ensure we have an up-to-date list of available cores
         await fetchAvailableCores()
 
+        // Ensure libretro-core-info versions are loaded so we compare
+        // meaningful versions (not nightly build dates).
+        if LibretroInfoManager.coreVersions.isEmpty {
+            await LibretroInfoManager.shared.refreshCoreInfo()
+        }
+
         guard !availableCores.isEmpty else {
             LoggerService.warning(category: "CoreManager", "Core update check skipped: no available cores fetched")
             isCheckingCoreUpdates = false
