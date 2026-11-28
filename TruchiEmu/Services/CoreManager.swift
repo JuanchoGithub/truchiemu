@@ -395,9 +395,12 @@ class CoreManager: ObservableObject {
             await LibretroInfoManager.shared.refreshCoreInfo()
         }
 
+        defer {
+            isCheckingCoreUpdates = false
+        }
+
         guard !availableCores.isEmpty else {
             LoggerService.warning(category: "CoreManager", "Core update check skipped: no available cores fetched")
-            isCheckingCoreUpdates = false
             hasCheckedForUpdates = true
             return
         }
